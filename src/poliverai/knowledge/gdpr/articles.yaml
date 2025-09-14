@@ -1,0 +1,13 @@
+# Minimal structured sample; extend with full GDPR text
+- article: "Article 5(1)(e)"
+  title: "Storage limitation"
+  summary: "Personal data shall be kept no longer than is necessary."
+  tags: ["retention", "principles"]
+- article: "Article 17"
+  title: "Right to erasure ('right to be forgotten')"
+  summary: "Individuals have the right to have personal data erased."
+  tags: ["data subject rights", "erasure"]
+- article: "Article 6"
+  title: "Lawfulness of processing"
+  summary: "Processing shall be lawful only if at least one legal basis applies."
+  tags: ["lawful basis", "consent", "contract"]
