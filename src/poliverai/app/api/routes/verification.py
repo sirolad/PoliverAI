@@ -2,9 +2,13 @@ import logging
 import tempfile
 from pathlib import Path
 
-from fastapi import APIRouter, Form, UploadFile
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
+from ....core.auth import verify_token
+from ....db.users import user_db
+from ....domain.auth import User, UserTier
 from ....ingestion.readers.docx_reader import read_docx_text
 from ....ingestion.readers.html_reader import read_html_text
 from ....ingestion.readers.pdf_reader import read_pdf_text
@@ -48,6 +52,45 @@ class ComplianceResult(BaseModel):
 
 router = APIRouter(tags=["verification"])
 
+security = HTTPBearer(auto_error=False)
+
+# Dependency constants to avoid B008 errors
+SECURITY_OPTIONAL_DEPENDENCY = Depends(security)
+
+
+async def get_current_user_optional(
+    credentials: HTTPAuthorizationCredentials | None = SECURITY_OPTIONAL_DEPENDENCY,
+) -> User | None:
+    """Get current user if authenticated, None otherwise."""
+    if not credentials:
+        return None
+
+    token = credentials.credentials
+    email = verify_token(token)
+
+    if email is None:
+        return None
+
+    user_in_db = user_db.get_user_by_email(email)
+    if user_in_db is None:
+        return None
+
+    # Return user without password hash
+    return User(
+        id=user_in_db.id,
+        name=user_in_db.name,
+        email=user_in_db.email,
+        tier=user_in_db.tier,
+        credits=user_in_db.credits,
+        subscription_expires=user_in_db.subscription_expires,
+        created_at=user_in_db.created_at,
+        is_active=user_in_db.is_active,
+    )
+
+
+# Create dependency constant for get_current_user_optional to avoid B008 errors
+CURRENT_USER_OPTIONAL_DEPENDENCY = Depends(get_current_user_optional)
+
 
 @router.post("/verify", response_model=ComplianceResult)
 async def verify(
@@ -55,6 +98,7 @@ async def verify(
     analysis_mode: str | None = Form(
         "fast", description="Analysis mode: 'fast', 'balanced', or 'detailed'"
     ),
+    current_user: User | None = CURRENT_USER_OPTIONAL_DEPENDENCY,
 ) -> ComplianceResult:
     # Handle different file types properly
 
@@ -92,8 +136,25 @@ async def verify(
         except Exception as e:
             logging.warning(f"Failed to cleanup temp file: {e}")
 
+    # Check user tier and restrict analysis modes for free users
+    effective_mode = analysis_mode or "fast"
+
+    if current_user is None or current_user.tier == UserTier.FREE:
+        # Free users can only use fast mode
+        if effective_mode in ["balanced", "detailed"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={
+                    "message": "Advanced analysis modes require a Pro subscription",
+                    "upgrade_required": True,
+                    "requested_mode": effective_mode,
+                    "available_mode": "fast",
+                },
+            )
+        effective_mode = "fast"
+
     # Run RAG-based verification over clauses with specified analysis mode
-    result = analyze_policy(text, analysis_mode=analysis_mode or "fast")
+    result = analyze_policy(text, analysis_mode=effective_mode)
 
     # PERFORMANCE OPTIMIZATION: Skip RAG ingestion for verification-only requests
     # This optional step can add significant latency. Users can use the separate

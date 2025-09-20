@@ -1,0 +1,294 @@
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuth } from '@/contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
+import { CheckCircle2, Shield, Zap, Clock, FileCheck, BarChart } from 'lucide-react'
+
+interface FeatureCardProps {
+  icon: React.ElementType
+  title: string
+  description: string
+  isPro?: boolean
+}
+
+function FeatureCard({ icon: Icon, title, description, isPro = false }: FeatureCardProps) {
+  return (
+    <Card className={`h-full ${isPro ? 'border-blue-200 bg-blue-50/50' : ''}`}>
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <Icon className={`h-6 w-6 ${isPro ? 'text-blue-600' : 'text-green-600'}`} />
+          <CardTitle className="text-lg">{title}</CardTitle>
+          {isPro && (
+            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">PRO</span>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <CardDescription className="text-base">{description}</CardDescription>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default function LandingPage() {
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
+  const freeFeatures = [
+    {
+      icon: FileCheck,
+      title: 'Basic Policy Verification',
+      description: 'Upload and analyze privacy policies for basic GDPR compliance checks using rule-based detection.'
+    },
+    {
+      icon: Shield,
+      title: 'Essential Compliance Checks',
+      description: 'Detect fundamental GDPR violations and get basic recommendations for improvement.'
+    },
+    {
+      icon: Clock,
+      title: 'Fast Analysis',
+      description: 'Quick compliance screening using our optimized rule-based analysis engine.'
+    }
+  ]
+
+  const proFeatures = [
+    {
+      icon: Zap,
+      title: 'AI-Powered Deep Analysis',
+      description: 'Advanced AI analysis that detects nuanced privacy violations and complex compliance issues.',
+      isPro: true
+    },
+    {
+      icon: BarChart,
+      title: 'Comprehensive Reporting',
+      description: 'Detailed compliance reports with confidence scores, evidence, and actionable recommendations.',
+      isPro: true
+    },
+    {
+      icon: FileCheck,
+      title: 'Policy Generation & Revision',
+      description: 'Generate revised policies automatically based on detected compliance gaps.',
+      isPro: true
+    }
+  ]
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+            <span className="text-blue-600">PoliverAI</span> - Your AI-Powered GDPR Compliance Assistant
+          </h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Automatically analyze privacy policies for GDPR compliance, detect violations,
+            and generate comprehensive reports with AI-powered insights.
+          </p>
+          <div className="flex gap-4 justify-center">
+            {!isAuthenticated ? (
+              <>
+                <Button
+                  onClick={() => navigate('/signup')}
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Start Free Analysis
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate('/signup')}
+                >
+                  Upgrade to Pro
+                </Button>
+              </>
+            ) : (
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                Go to Dashboard
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Powerful Features for Every Need
+          </h2>
+          <p className="text-lg text-gray-600">
+            From basic compliance checks to advanced AI-powered analysis
+          </p>
+        </div>
+
+        {/* Free Features */}
+        <div className="mb-12">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <CheckCircle2 className="h-6 w-6 text-green-600" />
+            Free Tier Features
+          </h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            {freeFeatures.map((feature, index) => (
+              <FeatureCard key={index} {...feature} />
+            ))}
+          </div>
+        </div>
+
+        {/* Pro Features */}
+        <div>
+          <h3 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <Zap className="h-6 w-6 text-blue-600" />
+            Pro Tier Features
+          </h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            {proFeatures.map((feature, index) => (
+              <FeatureCard key={index} {...feature} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              How PoliverAI Works
+            </h2>
+            <p className="text-lg text-gray-600">
+              Simple, powerful, and intelligent GDPR compliance analysis
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                1
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Upload Your Policy</h3>
+              <p className="text-gray-600">Upload privacy policies in multiple formats (PDF, DOCX, TXT, HTML)</p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                2
+              </div>
+              <h3 className="text-xl font-semibold mb-2">AI Analysis</h3>
+              <p className="text-gray-600">Our AI analyzes your policy against GDPR requirements with multiple analysis modes</p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                3
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Get Results</h3>
+              <p className="text-gray-600">Receive detailed reports with compliance scores, violations, and actionable recommendations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Choose Your Plan
+          </h2>
+          <p className="text-lg text-gray-600">
+            Start with our free tier or upgrade for advanced AI features
+          </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+          {/* Free Plan */}
+          <Card className="h-full">
+            <CardHeader className="text-center pb-2">
+              <CardTitle className="text-2xl">Free Tier</CardTitle>
+              <div className="text-4xl font-bold text-green-600 mt-2">$0</div>
+              <CardDescription>Perfect for getting started</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <ul className="space-y-3">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <span className="text-sm">Basic policy verification</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <span className="text-sm">Rule-based compliance checks</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <span className="text-sm">Fast analysis mode</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <span className="text-sm">Basic recommendations</span>
+                </li>
+              </ul>
+              <Button className="w-full mt-6" variant="outline">
+                Get Started Free
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Pro Plan */}
+          <Card className="h-full border-blue-200 bg-blue-50/30">
+            <CardHeader className="text-center pb-2">
+              <div className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full w-fit mx-auto mb-2">
+                POPULAR
+              </div>
+              <CardTitle className="text-2xl">Pro Tier</CardTitle>
+              <div className="text-4xl font-bold text-blue-600 mt-2">$29</div>
+              <CardDescription>per month</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <ul className="space-y-3">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Everything in Free</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">AI-powered deep analysis</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Comprehensive reporting</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Policy generation & revision</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm">Priority support</span>
+                </li>
+              </ul>
+              <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700">
+                Upgrade to Pro
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      {!isAuthenticated && (
+      <div className="bg-blue-600 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to Ensure GDPR Compliance?</h2>
+          <p className="text-xl mb-8 text-blue-100">
+            Join thousands of organizations using PoliverAI to maintain privacy compliance
+          </p>
+          <Button size="lg" variant="secondary">
+            Start Your Free Analysis Today
+          </Button>
+        </div>
+      </div>
+      )}
+    </div>
+  )
+}
