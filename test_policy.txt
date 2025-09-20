@@ -1,0 +1,27 @@
+Privacy Policy
+
+Article 1: Data Collection
+We collect personal data including names, email addresses, phone numbers, and browsing behavior for the following purposes:
+- To provide our services
+- For marketing and advertising purposes
+- To comply with legal obligations
+- For analytics and improving our services
+
+Article 2: Data Retention
+We retain personal data indefinitely for business purposes. Data is stored on our servers and may be backed up to third-party cloud storage providers.
+
+Article 3: User Rights
+Users may request access to their data by contacting our support team via email. We will respond within 30 business days.
+
+Article 4: Data Sharing
+We may share personal data with:
+- Third-party advertisers
+- Business partners
+- Service providers
+- Government agencies when required by law
+
+Article 5: Cookies
+We use cookies to track user behavior and preferences. Users can disable cookies in their browser settings.
+
+Article 6: Data Security
+We implement reasonable security measures to protect personal data, including encryption and access controls.

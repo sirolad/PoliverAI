@@ -1,10 +1,10 @@
-from ..explanations import explain_finding
 from ...domain.models import Clause, Finding
 
 
 def check_retention_limits(clause: Clause) -> list[Finding]:
     findings: list[Finding] = []
-    if "retention" in clause.text.lower() and "month" not in clause.text.lower() and "year" not in clause.text.lower():
+    text_lower = clause.text.lower()
+    if "retention" in text_lower and "month" not in text_lower and "year" not in text_lower:
         findings.append(
             Finding(
                 article="Article 5(1)(e)",

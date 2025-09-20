@@ -1,15 +1,15 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List, Optional
 
 
 @dataclass
 class Clause:
     text: str
-    section: Optional[str] = None
-    start: Optional[int] = None
-    end: Optional[int] = None
+    section: str | None = None
+    start: int | None = None
+    end: int | None = None
 
 
 @dataclass
@@ -17,7 +17,7 @@ class ClauseMatch:
     clause: Clause
     article: str
     score: float
-    explanation: Optional[str] = None
+    explanation: str | None = None
 
 
 @dataclass
@@ -38,7 +38,7 @@ class Recommendation:
 class ComplianceReport:
     score: int
     confidence: float
-    matches: List[ClauseMatch] = field(default_factory=list)
-    findings: List[Finding] = field(default_factory=list)
-    recommendations: List[Recommendation] = field(default_factory=list)
+    matches: list[ClauseMatch] = field(default_factory=list)
+    findings: list[Finding] = field(default_factory=list)
+    recommendations: list[Recommendation] = field(default_factory=list)
     generated_at: datetime = field(default_factory=datetime.utcnow)

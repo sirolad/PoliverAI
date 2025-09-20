@@ -2,6 +2,23 @@
 
 Policy Verification Assistant focused on GDPR compliance. Upload policies, verify clause-level compliance, get explanations and recommendations, generate exportable reports, ask GDPR questions, and compare versions.
 
+## RAG quickstart (ingest GDPR PDF)
+1. Ensure your virtualenv is active and OpenAI key is set:
+   ```bash
+   source .venv/bin/activate
+   export POLIVERAI_OPENAI_API_KEY={{OPENAI_API_KEY}}
+   ```
+2. Ingest the included GDPR PDF into the vector store:
+   ```bash
+   poliverai ingest gdpr.pdf
+   ```
+3. Run the server and open the UI:
+   ```bash
+   ./scripts/run_server.sh
+   # open http://127.0.0.1:8000/ui
+   ```
+4. In the UI, upload your policy document on the Ingest tab (optional), then ask questions in the Ask tab.
+
 ## Features (MVP Scope)
 - Upload & verify documents (Privacy Policy, ToS, DPA)
 - Clause-level evidence & explanations

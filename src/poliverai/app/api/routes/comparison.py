@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile
 from pydantic import BaseModel
 
 
@@ -12,8 +12,8 @@ router = APIRouter(tags=["comparison"])
 
 @router.post("/compare", response_model=ComparisonResult)
 async def compare(
-    draft: UploadFile = File(...),
-    final: UploadFile = File(...),
+    draft: UploadFile,
+    final: UploadFile,
 ) -> ComparisonResult:
     # Placeholder logic: prefer the file literally named "final"
     more = "final" if final.filename else "draft"

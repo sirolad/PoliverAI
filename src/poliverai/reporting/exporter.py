@@ -1,5 +1,5 @@
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 from .pdf.weasyprint_adapter import simple_pdf_from_text
 

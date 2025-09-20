@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 
 def map_requirement_to_articles(requirement: str) -> Iterable[str]:
