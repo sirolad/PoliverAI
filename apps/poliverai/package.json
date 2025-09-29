@@ -1,0 +1,15 @@
+{
+  "name": "@poliverai/poliverai",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@react-native/metro-config": "*",
+    "@testing-library/react-native": "*",
+    "expo": "^54.0.10",
+    "metro-config": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-svg": "*",
+    "react-test-renderer": "*"
+  }
+}

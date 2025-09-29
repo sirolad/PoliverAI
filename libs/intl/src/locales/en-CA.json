@@ -1,0 +1,38 @@
+{
+  "authScreen": {
+    "header": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue managing your leads and growing your business."
+    },
+    "toggle": {
+      "signIn": "Sign In",
+      "createAccount": "Create Account"
+    },
+    "form": {
+      "signIn": "Sign In",
+      "createAccount": "Create Account",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "Your name",
+      "forgotPassword": "Forgot your password?",
+      "fillRequired": "Please fill in all required fields",
+      "invalidCredentials": "Invalid credentials",
+      "genericError": "Something went wrong"
+    },
+    "offers": {
+      "seeOffers": "See Plans & Offers",
+      "plansTitle": "Plans",
+      "featureText": "Feature bullets…",
+      "plans": ["Starter", "Pro", "Enterprise"]
+    }
+  }
+  ,
+  "platformGreeting": {
+    "default": "Welcome to PoliverAI",
+    "macos": "Welcome to PoliverAI (macOS)",
+    "windows": "Welcome to PoliverAI (Windows)"
+  }
+}

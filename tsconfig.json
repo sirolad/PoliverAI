@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/poliverai-e2e"
+    },
+    {
+      "path": "./apps/poliverai"
+    },
+    {
+      "path": "./shared-ui"
+    }
+  ]
+}

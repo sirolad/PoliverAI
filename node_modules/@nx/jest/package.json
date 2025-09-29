@@ -1,0 +1,62 @@
+{
+  "name": "@nx/jest",
+  "version": "21.5.3",
+  "private": false,
+  "description": "The Nx Plugin for Jest contains executors and generators allowing your workspace to use the powerful Jest testing capabilities.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nrwl/nx.git",
+    "directory": "packages/jest"
+  },
+  "keywords": [
+    "Monorepo",
+    "Angular",
+    "React",
+    "Web",
+    "Node",
+    "Nest",
+    "Jest",
+    "Unit Testing",
+    "CLI",
+    "Testing"
+  ],
+  "main": "./index.js",
+  "typings": "./index.d.ts",
+  "author": "Victor Savkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nrwl/nx/issues"
+  },
+  "homepage": "https://nx.dev",
+  "generators": "./generators.json",
+  "executors": "./executors.json",
+  "ng-update": {
+    "requirements": {},
+    "migrations": "./migrations.json"
+  },
+  "dependencies": {
+    "@jest/reporters": "^30.0.2",
+    "@jest/test-result": "^30.0.2",
+    "@nx/devkit": "21.5.3",
+    "@nx/js": "21.5.3",
+    "@phenomnomnominal/tsquery": "~5.0.1",
+    "identity-obj-proxy": "3.0.0",
+    "jest-config": "^30.0.2",
+    "jest-resolve": "^30.0.2",
+    "jest-util": "^30.0.2",
+    "minimatch": "9.0.3",
+    "picocolors": "^1.1.0",
+    "resolve.exports": "2.0.3",
+    "semver": "^7.5.3",
+    "tslib": "^2.3.0",
+    "yargs-parser": "21.1.1"
+  },
+  "devDependencies": {
+    "nx": "21.5.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "./index.d.ts",
+  "type": "commonjs"
+}

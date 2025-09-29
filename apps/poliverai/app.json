@@ -1,0 +1,12 @@
+{
+  "name": "PoliverAI",
+  "displayName": "PoliverAI"
+  ,
+  "platforms": ["ios", "android", "web", "macos", "windows"],
+  "expo": {
+    "name": "PoliverAI",
+    "slug": "poliverai",
+    "version": "1.0.0",
+    "platforms": ["ios", "android", "web", "macos", "windows"]
+  }
+}
