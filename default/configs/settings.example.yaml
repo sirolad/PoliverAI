@@ -1,0 +1,17 @@
+# Example runtime settings for PoliverAI
+api:
+  host: 127.0.0.1
+  port: 8000
+  prefix: /api/v1
+
+retrieval:
+  provider: faiss  # or chroma
+  embedding_model: sentence-transformers/all-MiniLM-L6-v2
+
+verification:
+  scoring:
+    clause_match_weight: 0.7
+    recommendations_weight: 0.3
+
+reports:
+  output_dir: reports

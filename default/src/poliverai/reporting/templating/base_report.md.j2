@@ -1,0 +1,23 @@
+# Compliance Report
+
+Generated: {{ generated_at }}
+
+## Summary
+- Score: {{ score }} / 100
+- Confidence: {{ confidence * 100 | round(1) }}%
+- Verdict: {{ verdict }}
+
+## Findings
+{% for f in findings %}
+- [{{ f.severity|upper }}] {{ f.article }} — {{ f.description }} ({{ '%.0f' % (f.confidence * 100) }}% conf.)
+{% endfor %}
+
+## Recommendations
+{% for r in recommendations %}
+- {{ r }}
+{% endfor %}
+
+## Evidence
+{% for e in evidence %}
+- {{ e.article }} → {{ e.policy_excerpt }} ({{ '%.0f' % (e.score * 100) }}%)
+{% endfor %}

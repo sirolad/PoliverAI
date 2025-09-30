@@ -4005,6 +4005,15 @@
         "hash": "sha512-xLFho76FA7v500XID5z/8YfGTvjQPw7/fXsq4BIrVSqetNe/o/v+KAocEw4ots6kyv3XvSTyiWKh2g3pN6xZ9Q=="
       }
     },
+    "npm:@react-navigation/drawer": {
+      "type": "npm",
+      "name": "npm:@react-navigation/drawer",
+      "data": {
+        "version": "7.5.8",
+        "packageName": "@react-navigation/drawer",
+        "hash": "sha512-x3yWHxNxEv1e3w0e72WpEVUq1g8DYQOfZnbdCcuYbLZtp6Glyk0r2rkPzpddFOby3tp05KDgwZfAZKpr3j6+6w=="
+      }
+    },
     "npm:@react-navigation/elements": {
       "type": "npm",
       "name": "npm:@react-navigation/elements",
@@ -14308,6 +14317,15 @@
         "version": "0.2.1",
         "packageName": "react-native-css-interop",
         "hash": "sha512-B88f5rIymJXmy1sNC/MhTkb3xxBej1KkuAt7TiT9iM7oXz3RM8Bn+7GUrfR02TvSgKm4cg2XiSuLEKYfKwNsjA=="
+      }
+    },
+    "npm:react-native-drawer-layout": {
+      "type": "npm",
+      "name": "npm:react-native-drawer-layout",
+      "data": {
+        "version": "4.1.13",
+        "packageName": "react-native-drawer-layout",
+        "hash": "sha512-WeTBUmPJ/ss2r2+Tuxr8Xl3u6/AM5vTg1mlt/+/4qu6vQM+szwR6RQXchB4wxI1OLROBiqYxKlmaZ2tooCZGog=="
       }
     },
     "npm:react-native-gesture-handler": {
@@ -27535,6 +27553,46 @@
     {
       "source": "npm:@react-navigation/core",
       "target": "npm:use-sync-external-store",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:@react-navigation/elements",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:color",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:react-native-drawer-layout",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:use-latest-callback",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:@react-navigation/elements",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:color",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:react-native-drawer-layout",
+      "type": "static"
+    },
+    {
+      "source": "npm:@react-navigation/drawer",
+      "target": "npm:use-latest-callback",
       "type": "static"
     },
     {
@@ -45070,6 +45128,11 @@
     {
       "source": "npm:react-native-css-interop",
       "target": "npm:semver",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-drawer-layout",
+      "target": "npm:use-latest-callback",
       "type": "static"
     },
     {

@@ -4,6 +4,9 @@ export interface UserState {
   id: string | null;
   email: string | null;
   name: string | null;
+  tier?: 'free' | 'pro' | null;
+  credits?: number | null;
+  subscription_expires?: string | null;
 }
 
 const initialState: { user: UserState | null } = {

@@ -22,7 +22,11 @@ const rootReducer = combineReducers({
   locale: localeReducer,
 });
 
-const isWeb = Platform.OS === 'web';
+// Detect web reliably: prefer feature-detection over Platform.OS because in some
+// dev setups react-native-web/platform mapping can be inconsistent. If running
+// in a browser environment, use the web storage adapter; otherwise use
+// AsyncStorage for native.
+const isWeb = typeof window !== 'undefined' && typeof window.document !== 'undefined' || Platform.OS === 'web';
 
 const storage = isWeb ? createWebStorage : AsyncStorage;
 
