@@ -16,22 +16,7 @@
             },
             "cache": true,
             "inputs": [
-              "{projectRoot}/package.json",
-              "{workspaceRoot}/tsconfig.base.json",
-              "{projectRoot}/tsconfig.json",
-              "{projectRoot}/**/*.ts",
-              "{projectRoot}/**/*.js",
-              "{projectRoot}/playwright.config.ts",
-              "{projectRoot}/src/**/*.spec.ts",
-              "{projectRoot}/src/**/*.spec.js",
-              "{projectRoot}/src/**/*.test.ts",
-              "{projectRoot}/src/**/*.test.js",
-              "{projectRoot}/src/**/*.d.ts",
-              "!{projectRoot}/out-tsc",
-              "!{projectRoot}/test-output",
-              "!{projectRoot}/eslint.config.js",
-              "!{projectRoot}/eslint.config.mjs",
-              "!{projectRoot}/eslint.config.cjs",
+              "production",
               "^production",
               {
                 "externalDependencies": [
@@ -41,7 +26,6 @@
             ],
             "outputs": [
               "{projectRoot}/out-tsc/playwright/**/*.d.ts",
-              "{projectRoot}/out-tsc/playwright/**/*.d.ts.map",
               "{projectRoot}/out-tsc/playwright/tsconfig.tsbuildinfo"
             ],
             "syncGenerators": [
@@ -283,11 +267,22 @@
               }
             ],
             "outputs": [
+              "{projectRoot}/**/*.js",
+              "{projectRoot}/**/*.cjs",
+              "{projectRoot}/**/*.mjs",
+              "{projectRoot}/**/*.jsx",
+              "{projectRoot}/**/*.js.map",
+              "{projectRoot}/**/*.jsx.map",
+              "{projectRoot}/**/*.d.ts",
+              "{projectRoot}/**/*.d.cts",
+              "{projectRoot}/**/*.d.mts",
+              "{projectRoot}/**/*.d.ts.map",
+              "{projectRoot}/**/*.d.cts.map",
+              "{projectRoot}/**/*.d.mts.map",
+              "{projectRoot}/tsconfig.tsbuildinfo",
               "{projectRoot}/dist/**/*.d.ts",
-              "{projectRoot}/dist/**/*.d.ts.map",
               "{projectRoot}/dist/tsconfig.app.tsbuildinfo",
               "{projectRoot}/out-tsc/jest/**/*.d.ts",
-              "{projectRoot}/out-tsc/jest/**/*.d.ts.map",
               "{projectRoot}/out-tsc/jest/tsconfig.tsbuildinfo"
             ],
             "syncGenerators": [
@@ -924,26 +919,7 @@
             },
             "cache": true,
             "inputs": [
-              "{projectRoot}/package.json",
-              "{workspaceRoot}/tsconfig.base.json",
-              "{projectRoot}/tsconfig.json",
-              "{projectRoot}/tsconfig.lib.json",
-              "{projectRoot}/src/**/*.js",
-              "{projectRoot}/src/**/*.jsx",
-              "{projectRoot}/src/**/*.ts",
-              "{projectRoot}/src/**/*.tsx",
-              "{workspaceRoot}/types/**/*.d.ts",
-              "!{projectRoot}/out-tsc",
-              "!{projectRoot}/dist",
-              "!{projectRoot}/src/**/*.test.ts",
-              "!{projectRoot}/src/**/*.spec.ts",
-              "!{projectRoot}/src/**/*.test.tsx",
-              "!{projectRoot}/src/**/*.spec.tsx",
-              "!{projectRoot}/src/**/*.test.js",
-              "!{projectRoot}/src/**/*.spec.js",
-              "!{projectRoot}/src/**/*.test.jsx",
-              "!{projectRoot}/src/**/*.spec.jsx",
-              "!{projectRoot}/src/TestSetup.ts",
+              "production",
               "^production",
               {
                 "externalDependencies": [
@@ -952,8 +928,20 @@
               }
             ],
             "outputs": [
+              "{projectRoot}/**/*.js",
+              "{projectRoot}/**/*.cjs",
+              "{projectRoot}/**/*.mjs",
+              "{projectRoot}/**/*.jsx",
+              "{projectRoot}/**/*.js.map",
+              "{projectRoot}/**/*.jsx.map",
+              "{projectRoot}/**/*.d.ts",
+              "{projectRoot}/**/*.d.cts",
+              "{projectRoot}/**/*.d.mts",
+              "{projectRoot}/**/*.d.ts.map",
+              "{projectRoot}/**/*.d.cts.map",
+              "{projectRoot}/**/*.d.mts.map",
+              "{projectRoot}/tsconfig.tsbuildinfo",
               "{projectRoot}/dist/**/*.d.ts",
-              "{projectRoot}/dist/**/*.d.ts.map",
               "{projectRoot}/dist/tsconfig.lib.tsbuildinfo"
             ],
             "syncGenerators": [
@@ -5053,6 +5041,15 @@
         "version": "7.12.4",
         "packageName": "@react-navigation/core",
         "hash": "sha512-xLFho76FA7v500XID5z/8YfGTvjQPw7/fXsq4BIrVSqetNe/o/v+KAocEw4ots6kyv3XvSTyiWKh2g3pN6xZ9Q=="
+      }
+    },
+    "npm:@react-navigation/drawer": {
+      "type": "npm",
+      "name": "npm:@react-navigation/drawer",
+      "data": {
+        "version": "7.5.8",
+        "packageName": "@react-navigation/drawer",
+        "hash": "sha512-x3yWHxNxEv1e3w0e72WpEVUq1g8DYQOfZnbdCcuYbLZtp6Glyk0r2rkPzpddFOby3tp05KDgwZfAZKpr3j6+6w=="
       }
     },
     "npm:@react-navigation/elements": {
@@ -15360,6 +15357,15 @@
         "hash": "sha512-B88f5rIymJXmy1sNC/MhTkb3xxBej1KkuAt7TiT9iM7oXz3RM8Bn+7GUrfR02TvSgKm4cg2XiSuLEKYfKwNsjA=="
       }
     },
+    "npm:react-native-drawer-layout": {
+      "type": "npm",
+      "name": "npm:react-native-drawer-layout",
+      "data": {
+        "version": "4.1.13",
+        "packageName": "react-native-drawer-layout",
+        "hash": "sha512-WeTBUmPJ/ss2r2+Tuxr8Xl3u6/AM5vTg1mlt/+/4qu6vQM+szwR6RQXchB4wxI1OLROBiqYxKlmaZ2tooCZGog=="
+      }
+    },
     "npm:react-native-gesture-handler": {
       "type": "npm",
       "name": "npm:react-native-gesture-handler",
@@ -18437,12 +18443,27 @@
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "@poliverai/shared-ui",
-        "type": "dynamic"
+        "target": "npm:@react-navigation/drawer",
+        "type": "static"
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "@poliverai/shared-ui",
+        "target": "npm:react-native-gesture-handler",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
+        "target": "npm:react-native-reanimated",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
+        "target": "npm:react-native-screens",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
+        "target": "npm:react-native-safe-area-context",
         "type": "static"
       },
       {
@@ -18472,11 +18493,6 @@
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:react-native-gesture-handler",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
         "target": "@poliverai/intl",
         "type": "static"
       },
@@ -18487,17 +18503,12 @@
       },
       {
         "source": "@poliverai/poliverai",
+        "target": "@poliverai/shared-ui",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
         "target": "npm:node-fetch",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
-        "target": "npm:react-native-reanimated",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
-        "target": "npm:react-native-safe-area-context",
         "type": "static"
       },
       {
@@ -18624,11 +18635,6 @@
       {
         "source": "@poliverai/shared-ui",
         "target": "@poliverai/intl",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/shared-ui",
-        "target": "@poliverai/poliverai",
         "type": "static"
       }
     ],
@@ -26032,6 +26038,28 @@
       {
         "source": "npm:@react-navigation/core",
         "target": "npm:use-sync-external-store",
+        "type": "static"
+      }
+    ],
+    "npm:@react-navigation/drawer": [
+      {
+        "source": "npm:@react-navigation/drawer",
+        "target": "npm:@react-navigation/elements",
+        "type": "static"
+      },
+      {
+        "source": "npm:@react-navigation/drawer",
+        "target": "npm:color",
+        "type": "static"
+      },
+      {
+        "source": "npm:@react-navigation/drawer",
+        "target": "npm:react-native-drawer-layout",
+        "type": "static"
+      },
+      {
+        "source": "npm:@react-navigation/drawer",
+        "target": "npm:use-latest-callback",
         "type": "static"
       }
     ],
@@ -39445,6 +39473,13 @@
         "type": "static"
       }
     ],
+    "npm:react-native-drawer-layout": [
+      {
+        "source": "npm:react-native-drawer-layout",
+        "target": "npm:use-latest-callback",
+        "type": "static"
+      }
+    ],
     "npm:react-native-gesture-handler": [
       {
         "source": "npm:react-native-gesture-handler",
@@ -43720,5 +43755,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1759192992783
+  "computedAt": 1759226690058
 }

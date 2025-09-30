@@ -1,12 +1,13 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # compiled output
-dist
-tmp
-out-tsc
+dist/
+tmp/
+out-tsc/
 
 # dependencies
-node_modules
+node_modules/
+**/node_modules/
 
 # IDEs and editors
 /.idea
@@ -17,63 +18,40 @@ node_modules
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
+# VSCode (allow checked-in settings/extensions/tasks)
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-
-# System Files
+# System files
 .DS_Store
 Thumbs.db
 
+# nx caches and workspace data
 .nx/cache
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 
-# React Native
-
-# OSX
-#
-.DS_Store
-
-# Xcode
-#
+# React Native / Xcode / macOS
 build/
+DerivedData/
 *.pbxuser
-!default.pbxuser
 *.mode1v3
-!default.mode1v3
 *.mode2v3
-!default.mode2v3
 *.perspectivev3
-!default.perspectivev3
-xcuserdata
 *.xccheckout
 *.moved-aside
-DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+xcuserdata/
 **/.xcode.env.local
 
-# Android/IntelliJ
-#
-build/
-.idea
-.gradle
+# Android / IntelliJ
+.gradle/
 local.properties
 *.iml
 *.hprof
@@ -81,19 +59,11 @@ local.properties
 *.keystore
 !debug.keystore
 
-# node.js
-#
-node_modules/
+# node.js logs
 npm-debug.log
 yarn-error.log
 
 # fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
-
 **/fastlane/report.xml
 **/fastlane/Preview.html
 **/fastlane/screenshots
@@ -106,15 +76,16 @@ yarn-error.log
 **/Pods/
 **/vendor/bundle/
 
-# Temporary files created by Metro to check the health of the file watcher
+# Metro
 .metro-health-check*
 
-# testing
-/coverage
-
-
+# testing / coverage
+coverage/
+.coverage
+htmlcov/
 test-output
 
+# Vite / Vitest timestamps
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
@@ -125,12 +96,43 @@ apps/*/.env
 !.env.example
 apps/*/.env.example
 
-
-
-
-
+# History / misc
 .history/
-.env
-# node modules
-node_modules/
-**/node_modules/
+data/chroma/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.build/
+.dist/
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+
+# Logs
+logs/
+*.log
+
+# IDE local overrides
+.vscode/
+.idea/
+
+# Reports
+reports/
+
+# Caches
+.cache/
+
+# Other
+testem.log
+/connect.lock
+/typings
+
+# Ensure sensitive or user-specific files are not committed

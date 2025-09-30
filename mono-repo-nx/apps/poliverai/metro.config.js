@@ -22,7 +22,6 @@ const customConfig = {
     // add macos/windows platforms so metro can resolve platform-specific files like *.windows.js / *.macos.js
     platforms: [...(defaultConfig.resolver?.platforms || []), 'macos', 'windows'],
     alias: {
-      '@poliverai/shared-ui': require.resolve('../../shared-ui/src/index.ts'),
       // Resolve @assets to the app assets folder so imports like @assets/.. work in RN
       '@assets': require('path').resolve(__dirname, 'assets'),
     },
