@@ -15448,3 +15448,5 @@ Skipping project "@poliverai/intl" as there is no tsconfig.json file found in th
 [NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.963Z - Time taken for 'create-project-graph-async' 126.29584700000032ms
 [NX v21.5.3 Daemon Server] - 2025-09-30T00:43:13.106Z - [SYNC]: @nx/js:typescript-sync changes: tsconfig.json, apps/poliverai/tsconfig.app.json, apps/poliverai/tsconfig.json, shared-ui/tsconfig.lib.json, shared-ui/tsconfig.json, tsconfig.base.json
 [NX v21.5.3 Daemon Server] - 2025-09-30T00:43:13.106Z - Time taken for 'run-sync-generator:@nx/js:typescript-sync' 748.3123250000008ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:42.925Z - [WATCHER]: Processing file changes in outputs
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:47.965Z - [WATCHER]: Processing file changes in outputs
