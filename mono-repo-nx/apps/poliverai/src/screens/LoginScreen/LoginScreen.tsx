@@ -76,7 +76,7 @@ export const LoginScreen: React.FC = () => {
           <Text style={styles.headerSubtitle}>Sign in to access your GDPR compliance dashboard</Text>
         </View>
 
-        <Card>
+        <Card style={styles.cardStyle}>
           <View style={{ padding: 12 }}>
             <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>Sign In</Text>
             <Text style={{ color: '#6b7280', marginBottom: 12 }}>Enter your email and password to access your account</Text>
@@ -115,11 +115,16 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header: { marginBottom: 20, alignItems: 'center' },
+  header: { marginBottom: 20, alignItems: 'center', marginTop: '10%' },
   headerTitle: { fontSize: 24, fontWeight: '800', color: '#0f172a' },
   headerSubtitle: { color: '#6b7280', marginTop: 6, textAlign: 'center' },
   errorBox: { padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, marginBottom: 12 },
   errorText: { color: '#b91c1c' },
   footerText: { marginTop: 12, alignItems: 'center' },
   smallText: { color: '#6b7280' },
+  cardStyle: {
+    width: '100%',
+    maxWidth: 450, 
+    alignSelf: 'center' 
+  }
 });
