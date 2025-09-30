@@ -1,4 +1,0 @@
-export declare const nxVersion: any;
-export declare const playwrightVersion = "^1.36.0";
-export declare const eslintPluginPlaywrightVersion = "^1.6.2";
-//# sourceMappingURL=versions.d.ts.map
