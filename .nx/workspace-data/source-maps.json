@@ -9,48 +9,48 @@
       "@nx/js/typescript"
     ],
     "targets.typecheck": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.dependsOn": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.options": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.cache": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.inputs": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.outputs": [
       "apps/poliverai/tsconfig.json",
       "@nx/js/typescript"
     ],
     "targets.typecheck.syncGenerators": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.executor": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.options.cwd": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.options.command": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata.technologies": [
       "apps/poliverai/tsconfig.json",
@@ -61,12 +61,12 @@
       "@nx/js/typescript"
     ],
     "targets.typecheck.metadata.description": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata.help": [
-      "apps/poliverai/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata.help.command": [
       "apps/poliverai/tsconfig.json",
@@ -199,6 +199,314 @@
     "targets.test.metadata.help.example": [
       "apps/poliverai/jest.config.ts",
       "@nx/jest/plugin"
+    ],
+    "projectType": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.cache": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.dependsOn": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.inputs": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.outputs": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.metadata": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.syncGenerators": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.options.cwd": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.metadata.technologies": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.metadata.technologies.0": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.metadata.description": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.metadata.help": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.metadata.help.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build.metadata.help.example": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.continuous": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.syncGenerators": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.options.cwd": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.technologies": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.technologies.0": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.description": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.help": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.help.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.help.example": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.deprecated": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.continuous": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.syncGenerators": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.options.cwd": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.technologies": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.technologies.0": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.description": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.help": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.help.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.help.example": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.continuous": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.dependsOn": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.metadata": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.options.cwd": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.metadata.technologies": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.metadata.technologies.0": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.metadata.description": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.metadata.help": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.metadata.help.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.preview.metadata.help.example": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.continuous": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.syncGenerators": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.options.buildTarget": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.options.spa": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.metadata.technologies.1": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build-deps": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.build-deps.dependsOn": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.continuous": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.dependsOn": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "name": [
       "apps/poliverai/package.json",
@@ -689,48 +997,48 @@
       "@nx/js/typescript"
     ],
     "targets.typecheck": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.dependsOn": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.options": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.cache": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.inputs": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.outputs": [
       "apps/website/tsconfig.json",
       "@nx/js/typescript"
     ],
     "targets.typecheck.syncGenerators": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.executor": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.options.cwd": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.options.command": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata.technologies": [
       "apps/website/tsconfig.json",
@@ -741,12 +1049,12 @@
       "@nx/js/typescript"
     ],
     "targets.typecheck.metadata.description": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata.help": [
-      "apps/website/tsconfig.json",
-      "@nx/js/typescript"
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "targets.typecheck.metadata.help.command": [
       "apps/website/tsconfig.json",
@@ -815,6 +1123,126 @@
     "targets.lint.metadata.help.example": [
       "eslint.config.mjs",
       "@nx/eslint/plugin"
+    ],
+    "projectType": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.continuous": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.options": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.syncGenerators": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.executor": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.options.cwd": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.options.command": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.technologies": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.technologies.0": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.description": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.help": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.help.command": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.help.example": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve.metadata.deprecated": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.continuous": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.executor": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.options": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.syncGenerators": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.options.buildTarget": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.serve-static.options.spa": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.metadata.technologies.1": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.continuous": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.dependsOn": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.executor": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.options": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.options.command": [
+      "apps/website/vite.config.ts",
+      "@nx/vite/plugin"
     ],
     "name": [
       "apps/website/package.json",

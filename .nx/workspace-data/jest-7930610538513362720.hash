@@ -1269,5 +1269,46 @@
         ]
       }
     }
+  },
+  "8830963052309965106": {
+    "targets": {
+      "test": {
+        "command": "jest",
+        "options": {
+          "cwd": "apps/poliverai",
+          "env": {
+            "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
+          }
+        },
+        "metadata": {
+          "technologies": [
+            "jest"
+          ],
+          "description": "Run Jest Tests",
+          "help": {
+            "command": "yarn jest --help",
+            "example": {
+              "options": {
+                "coverage": true
+              }
+            }
+          }
+        },
+        "cache": true,
+        "inputs": [
+          "default",
+          "^production",
+          {
+            "externalDependencies": [
+              "jest",
+              "react-native"
+            ]
+          }
+        ],
+        "outputs": [
+          "{workspaceRoot}/coverage/apps/poliverai"
+        ]
+      }
+    }
   }
 }

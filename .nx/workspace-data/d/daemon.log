@@ -15342,3 +15342,109 @@ Error [ERR_STREAM_DESTROYED]: Cannot call write after a stream was destroyed
 [NX v21.5.3 Daemon Server] - 2025-09-30T00:40:11.232Z - [WATCHER]: Stopping the watcher for /Users/gabrieldagadu/PoliverAI (sources)
 [NX v21.5.3 Daemon Server] - 2025-09-30T00:40:11.232Z - [WATCHER]: Stopping the watcher for /Users/gabrieldagadu/PoliverAI (outputs)
 [NX v21.5.3 Daemon Server] - 2025-09-30T00:40:11.235Z - Server stopped because: "Stopping the daemon the set of ignored files changed (native)"
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.585Z - Started listening on: /private/var/folders/8r/nxfdlh0d1tg_fq3n437d6ylw0000gp/T/a2fbdf90786a2319622f/d.sock
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.592Z - [WATCHER]: Subscribed to changes within: /Users/gabrieldagadu/PoliverAI (native)
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.594Z - Established a connection. Number of open connections: 1
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.599Z - Closed a connection. Number of open connections: 0
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.644Z - Established a connection. Number of open connections: 1
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.645Z - Established a connection. Number of open connections: 2
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.646Z - Closed a connection. Number of open connections: 1
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.648Z - [REQUEST]: Client Request for Project Graph Received
+Time for 'plugin worker 53367 code loading' 13.710666000843048
+Time for 'plugin worker 53368 code loading' 15.089201003313065
+Time for 'plugin worker 53369 code loading' 15.751508980989456
+Time for 'plugin worker 53370 code loading' 15.485462993383408
+Time for 'plugin worker 53371 code loading' 15.68724700808525
+Time for 'plugin worker 53372 code loading' 15.757277011871338
+Time for 'plugin worker 53373 code loading' 14.097543984651566
+Time for 'plugin worker 53374 code loading' 13.287692993879318
+Time for 'plugin worker 53375 code loading' 13.609768003225327
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:03.249Z - Time taken for 'Load Nx Plugin: /Users/gabrieldagadu/PoliverAI/node_modules/nx/src/plugins/project-json/build-nodes/project-json' 590.3739069998264ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:03.267Z - Time taken for 'Load Nx Plugin: /Users/gabrieldagadu/PoliverAI/node_modules/nx/src/plugins/package-json' 609.5166449844837ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:03.300Z - Time taken for 'loadDefaultNxPlugins' 643.6706140041351ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.660Z - Time taken for 'Load Nx Plugin: @nx/js/typescript' 2010.3404519855976ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.663Z - Time taken for 'Load Nx Plugin: @nx/jest/plugin' 2009.6938340067863ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.677Z - Time taken for 'Load Nx Plugin: @nx/eslint/plugin' 2024.7166579961777ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.678Z - Time taken for 'Load Nx Plugin: @nx/react-native/plugin' 2026.5248499810696ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.740Z - [WATCHER]: .gitignore was modified
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.741Z - [WATCHER]: Processing file changes in outputs
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.742Z - Closed a connection. Number of open connections: 0
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.742Z - [WATCHER]: Stopping the watcher for /Users/gabrieldagadu/PoliverAI (sources)
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.743Z - [WATCHER]: Stopping the watcher for /Users/gabrieldagadu/PoliverAI (outputs)
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.743Z - Server stopped because: "Stopping the daemon the set of ignored files changed (native)"
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.372Z - Started listening on: /private/var/folders/8r/nxfdlh0d1tg_fq3n437d6ylw0000gp/T/a2fbdf90786a2319622f/d.sock
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.379Z - [WATCHER]: Subscribed to changes within: /Users/gabrieldagadu/PoliverAI (native)
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.382Z - Established a connection. Number of open connections: 1
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.383Z - Established a connection. Number of open connections: 2
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.386Z - Closed a connection. Number of open connections: 1
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.395Z - [REQUEST]: Responding to the client. handleMultiGlob
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.396Z - Done responding to the client handleMultiGlob
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:07.396Z - Handled MULTI_GLOB. Handling time: 7. Response time: 1.
+Time for 'plugin worker 53521 code loading' 4.12843399999997
+Time for 'plugin worker 53517 code loading' 4.253606999999988
+Time for 'plugin worker 53519 code loading' 5.502436000000046
+Time for 'plugin worker 53518 code loading' 5.24884000000003
+Time for 'plugin worker 53523 code loading' 4.386232000000007
+Time for 'plugin worker 53520 code loading' 7.254237999999987
+Time for 'plugin worker 53522 code loading' 8.284312999999997
+Time for 'plugin worker 53524 code loading' 4.258396000000005
+Time for 'plugin worker 53525 code loading' 4.377966000000015
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:08.330Z - Time taken for 'Load Nx Plugin: /Users/gabrieldagadu/PoliverAI/node_modules/nx/src/plugins/project-json/build-nodes/project-json' 843.1999340000001ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:08.333Z - Time taken for 'Load Nx Plugin: /Users/gabrieldagadu/PoliverAI/node_modules/nx/src/plugins/package-json' 847.869019ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:08.372Z - Time taken for 'loadDefaultNxPlugins' 886.750427ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:09.546Z - Time taken for 'Load Nx Plugin: @nx/eslint/plugin' 2063.393732ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:09.608Z - Time taken for 'Load Nx Plugin: @nx/js/typescript' 2127.703788ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:09.624Z - Time taken for 'Load Nx Plugin: @nx/jest/plugin' 2140.820732ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:09.650Z - Time taken for 'Load Nx Plugin: @nx/react-native/plugin' 2167.761334ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.167Z - Time taken for 'Load Nx Plugin: @nx/vite/plugin' 2682.75196ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.176Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.176Z - [REQUEST]: 
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.176Z - [REQUEST]: 
+Time for '@nx/react-native/plugin:createNodes' 2.8737609999998313
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.195Z - Time taken for 'loadSpecifiedNxPlugins' 2695.1094519999997ms
+Time for 'nx/core/project-json:createNodes' 0.3423840000000382
+Time for '@nx/js/typescript:createNodes' 13.073438000000351
+Time for '@nx/playwright/plugin:createNodes' 23.62045900000021
+Time for 'workspace context init' 4.294366000000082
+Time for '@nx/jest/plugin:createNodes' 32.81623999999965
+Time for 'workspace context init' 4.658230999999887
+Time for 'nx/js/dependencies-and-lockfile:createNodes' 27.116159000000152
+Time for '@nx/vite/plugin:createNodes' 35.02380800000037
+Time for 'workspace context init' 4.7502770000000965
+Time for 'workspace context init' 4.84241800000018
+Time for 'nx/core/package-json:createNodes' 604.5252190000001
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.929Z - [REQUEST]: Responding to the client. handleNxWorkspaceFiles
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.929Z - Done responding to the client handleNxWorkspaceFiles
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:10.929Z - Handled GET_NX_WORKSPACE_FILES. Handling time: 3. Response time: 0.
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:11.429Z - [REQUEST]: Responding to the client. handleContextFileData
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:11.429Z - Done responding to the client handleContextFileData
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:11.429Z - Handled GET_CONTEXT_FILE_DATA. Handling time: 0. Response time: 0.
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:11.431Z - Closed a connection. Number of open connections: 0
+Time for '@nx/eslint/plugin:createNodes' 1924.8181510000004
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.179Z - Time taken for 'build-project-configs' 1941.9988009999997ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.191Z - Time taken for '@nx/js/typescript:createDependencies' 23.84503599999971ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.195Z - Time taken for '@nx/vite/plugin:createDependencies' 23.646686000000045ms
+Time for 'build typescript dependencies' 0.3235320000003412
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.255Z - Wrote project graph cache to /Users/gabrieldagadu/PoliverAI/.nx/workspace-data/project-graph.json
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.255Z - [SYNC]: collect registered sync generators
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.256Z - [SYNC]: scheduling: ["@nx/js:typescript-sync"]
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.257Z - Time taken for 'total execution time for createProjectGraph()' 81.40510799999993ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.357Z - [SYNC]: running scheduled generator @nx/js:typescript-sync
+Time for '@nx/react-native/plugin:createNodes' 1.6625519999997778
+Time for 'nx/core/project-json:createNodes' 0.18993800000043848
+Time for '@nx/playwright/plugin:createNodes' 3.4177749999998923
+Time for '@nx/js/typescript:createNodes' 7.9437690000004295
+Time for '@nx/jest/plugin:createNodes' 5.01904100000047
+Time for 'nx/core/package-json:createNodes' 3.597483999999895
+Time for '@nx/vite/plugin:createNodes' 7.084852999999384
+Time for '@nx/eslint/plugin:createNodes' 10.98195399999986
+Time for 'nx/js/dependencies-and-lockfile:createNodes' 15.044442000000345
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.745Z - Time taken for 'build-project-configs' 34.558782000000065ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.752Z - Time taken for '@nx/js/typescript:createDependencies' 22.62025199999971ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.753Z - Time taken for '@nx/vite/plugin:createDependencies' 19.273942000000716ms
+Time for 'build typescript dependencies' 0.04164000000037049
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.795Z - Wrote project graph cache to /Users/gabrieldagadu/PoliverAI/.nx/workspace-data/project-graph.json
+Skipping project "@poliverai/intl" as there is no tsconfig.json file found in the project root "libs/intl".
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:12.963Z - Time taken for 'create-project-graph-async' 126.29584700000032ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:13.106Z - [SYNC]: @nx/js:typescript-sync changes: tsconfig.json, apps/poliverai/tsconfig.app.json, apps/poliverai/tsconfig.json, shared-ui/tsconfig.lib.json, shared-ui/tsconfig.json, tsconfig.base.json
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:13.106Z - Time taken for 'run-sync-generator:@nx/js:typescript-sync' 748.3123250000008ms
