@@ -6,32 +6,57 @@ type FeatureProps = {
   title: string;
   description: string;
   emoji?: string;
+  // optional icon component (web or native). If provided, will be rendered instead of emoji.
+  icon?: React.ComponentType<any> | null;
   isPro?: boolean;
 };
 
-export function FeatureCard({ title, description, emoji, isPro }: FeatureProps) {
+export function FeatureCard({ title, description, emoji, icon, isPro }: FeatureProps) {
+  const Icon = icon as any;
+
+  const renderIcon = () => {
+    if (Icon) {
+      try {
+        // Render the provided icon component. For web this may be an SVG React component
+        // For native it may be a vector-icon component. Try to pass common sizing props.
+        return (
+          <View style={{ marginRight: 8 }}>
+            <Icon width={22} height={22} size={22} color={isPro ? '#2563eb' : '#16a34a'} />
+          </View>
+        );
+      } catch (e) {
+        // If rendering fails (e.g., web-only component on native), fall back to emoji
+      }
+    }
+
+    return (
+      <Text style={[styles.cardIcon, isPro ? styles.iconPro : styles.iconFree]}>
+        {emoji || '•'}
+      </Text>
+    );
+  };
+
   return (
     <View style={[styles.card, isPro ? styles.cardPro : null]}>
       <View style={styles.cardHeader}>
-        <Text style={[styles.cardIcon, isPro ? styles.iconPro : styles.iconFree]}>
-          {emoji || '•'}
-        </Text>
-        <Text style={styles.cardTitle}>{title}</Text>
-        {isPro && <Text style={styles.proBadge}>PRO</Text>}
+        {renderIcon()}
+        <Text style={styles.cardTitle}>{title}{isPro && <Text style={styles.proBadge}>PRO</Text>}</Text>
+        
       </View>
       <Text style={styles.cardDescription}>{description}</Text>
     </View>
   );
 }
 
-const CARD_MIN_WIDTH = Math.min(340, Math.max(280, Math.floor(width / 1.1)));
+const CARD_MIN_WIDTH = Math.min(420, Math.max(230, Math.floor(width / 1.1)));
 
 const styles = StyleSheet.create({
   card: {
     minWidth: CARD_MIN_WIDTH,
     flexBasis: CARD_MIN_WIDTH,
     borderRadius: 8,
-    padding: 14,
+    paddingVertical: 24,
+    paddingHorizontal: 24,
     backgroundColor: '#fff',
     margin: 8,
     shadowColor: '#000',
@@ -61,7 +86,7 @@ const styles = StyleSheet.create({
     color: '#2563eb',
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     flex: 1,
   },
@@ -73,9 +98,11 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     fontSize: 12,
     fontWeight: '700',
+    marginLeft: 10,
   },
   cardDescription: {
     color: '#475569',
-    marginTop: 6,
+    marginTop: 12,
+    fontSize: 17,
   },
 });

@@ -81,8 +81,10 @@ export default function LandingScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Hero */}
       <View style={styles.hero}>
-        <Text style={styles.title}>PoliverAI</Text>
-        <Text style={styles.subtitle}>Your AI-Powered GDPR Compliance Assistant</Text>
+        <View style={styles.introText}>
+          <Text style={styles.title}>PoliverAI</Text>
+          <Text style={styles.subtitle}>- Your AI-Powered GDPR Compliance Assistant</Text>
+        </View>
         <Text style={styles.lead}>
           Automatically analyze privacy policies for GDPR compliance, detect violations,
           and generate comprehensive reports with AI-powered insights.
@@ -118,14 +120,18 @@ export default function LandingScreen() {
         <Text style={styles.sectionTitle}>Powerful Features for Every Need</Text>
         <Text style={styles.sectionLead}>From basic compliance checks to advanced AI-powered analysis</Text>
 
-        <Text style={styles.subHeading}>Free Tier Features</Text>
+        <View style={styles.subHeadingContainer}>
+          <Text style={styles.subHeading}>Free Tier Features</Text>
+        </View>
         <View style={styles.grid}>
           {freeFeatures.map((f, i) => (
             <FeatureCard key={i} {...f} />
           ))}
         </View>
 
-        <Text style={styles.subHeading}>Pro Tier Features</Text>
+        <View style={styles.subHeadingContainer}>
+          <Text style={styles.subHeading}>Pro Tier Features</Text>
+        </View>
         <View style={styles.grid}>
           {proFeatures.map((f, i) => (
             <FeatureCard key={i} {...f} />
@@ -135,26 +141,28 @@ export default function LandingScreen() {
 
       {/* How it works */}
       <View style={[styles.section, styles.howItWorks]}>
-        <Text style={styles.sectionTitle}>How PoliverAI Works</Text>
-        <Text style={styles.sectionLead}>Simple, powerful, and intelligent GDPR compliance analysis</Text>
+        <View style={styles.howItWorksWrapped}>
+          <Text style={styles.sectionTitle}>How PoliverAI Works</Text>
+          <Text style={styles.sectionLead}>Simple, powerful, and intelligent GDPR compliance analysis</Text>
 
-        <View style={styles.stepsRow}>
-          <View style={styles.step}>
-            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>1</Text></View>
-            <Text style={styles.stepTitle}>Upload Your Policy</Text>
-            <Text style={styles.stepDesc}>Upload privacy policies in multiple formats (PDF, DOCX, TXT, HTML)</Text>
-          </View>
+          <View style={styles.stepsRow}>
+            <View style={styles.step}>
+              <View style={styles.stepNumber}><Text style={styles.stepNumberText}>1</Text></View>
+              <Text style={styles.stepTitle}>Upload Your Policy</Text>
+              <Text style={styles.stepDesc}>Upload privacy policies in multiple formats (PDF, DOCX, TXT, HTML)</Text>
+            </View>
 
-          <View style={styles.step}>
-            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>2</Text></View>
-            <Text style={styles.stepTitle}>AI Analysis</Text>
-            <Text style={styles.stepDesc}>Our AI analyzes your policy against GDPR requirements with multiple analysis modes</Text>
-          </View>
+            <View style={styles.step}>
+              <View style={styles.stepNumber}><Text style={styles.stepNumberText}>2</Text></View>
+              <Text style={styles.stepTitle}>AI Analysis</Text>
+              <Text style={styles.stepDesc}>Our AI analyzes your policy against GDPR requirements with multiple analysis modes</Text>
+            </View>
 
-          <View style={styles.step}>
-            <View style={styles.stepNumber}><Text style={styles.stepNumberText}>3</Text></View>
-            <Text style={styles.stepTitle}>Get Results</Text>
-            <Text style={styles.stepDesc}>Receive detailed reports with compliance scores, violations, and actionable recommendations</Text>
+            <View style={styles.step}>
+              <View style={styles.stepNumber}><Text style={styles.stepNumberText}>3</Text></View>
+              <Text style={styles.stepTitle}>Get Results</Text>
+              <Text style={styles.stepDesc}>Receive detailed reports with compliance scores, violations, and actionable recommendations</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -170,11 +178,12 @@ export default function LandingScreen() {
             <Text style={styles.pricingPrice}>$0</Text>
             <Text style={styles.pricingDesc}>Perfect for getting started</Text>
             <View style={styles.pricingList}>
-              <Text>• Basic policy verification</Text>
-              <Text>• Rule-based compliance checks</Text>
-              <Text>• Fast analysis mode</Text>
+              <Text style={styles.pricingListItem}>• Basic policy verification</Text>
+              <Text style={styles.pricingListItem}>• Rule-based compliance checks</Text>
+              <Text style={styles.pricingListItem}>• Fast analysis mode</Text>
+              <Text style={styles.pricingListItem}>• Basic recommendations</Text>
             </View>
-            <TouchableOpacity style={[styles.button, styles.outlineButton]}> 
+            <TouchableOpacity style={[styles.planButton, styles.outlineButton]}> 
               <Text style={styles.outlineButtonText}>Get Started Free</Text>
             </TouchableOpacity>
           </View>
@@ -185,11 +194,13 @@ export default function LandingScreen() {
             <Text style={styles.pricingPricePro}>$29</Text>
             <Text style={styles.pricingDesc}>per month</Text>
             <View style={styles.pricingList}>
-              <Text>• Everything in Free</Text>
-              <Text>• AI-powered deep analysis</Text>
-              <Text>• Comprehensive reporting</Text>
+              <Text style={styles.pricingListItem}>• Everything in Free</Text>
+              <Text style={styles.pricingListItem}>• AI-powered deep analysis</Text>
+              <Text style={styles.pricingListItem}>• Comprehensive reporting</Text>
+              <Text style={styles.pricingListItem}>• Policy generation & revision</Text>
+              <Text style={styles.pricingListItem}>• Priority support</Text>
             </View>
-            <TouchableOpacity style={[styles.button, styles.primaryButton]}>
+            <TouchableOpacity style={[styles.planButton, styles.primaryButton]}>
               <Text style={styles.buttonText}>Upgrade to Pro</Text>
             </TouchableOpacity>
           </View>
@@ -202,7 +213,7 @@ export default function LandingScreen() {
           <Text style={styles.ctaTitle}>Ready to Ensure GDPR Compliance?</Text>
           <Text style={styles.ctaLead}>Join thousands of organizations using PoliverAI to maintain privacy compliance</Text>
           <TouchableOpacity style={[styles.button, styles.ctaButton]} onPress={() => navigation?.navigate?.('Signup' as never)}>
-            <Text style={styles.buttonText}>Start Your Free Analysis Today</Text>
+            <Text style={styles.ctaButtonText}>Start Your Free Analysis Today</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -222,22 +233,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
   },
+  introText: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '45%',
+  },
   title: {
-    fontSize: 36,
+    fontSize: 45,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#2563eb',
   },
   subtitle: {
-    fontSize: 18,
-    color: '#2563eb',
-    marginTop: 6,
+    fontSize: 45,
+    color: '#0f172a',
     fontWeight: '700',
   },
   lead: {
     textAlign: 'center',
     marginTop: 12,
     color: '#475569',
-    fontSize: 16,
+    fontSize: 20,
     maxWidth: 720,
   },
   heroButtons: {
@@ -246,18 +261,32 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   button: {
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    paddingVertical: 13,
+    paddingHorizontal: 28,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 6,
+    marginTop: 12,
+  },
+  planButton: {
+    paddingVertical: 13,
+    width: '100%',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 6,
+    marginTop: 10,
   },
   primaryButton: {
     backgroundColor: '#2563eb',
   },
   buttonText: {
     color: '#fff',
+    fontWeight: '700',
+  },
+  ctaButtonText: {
+    color: '#000',
     fontWeight: '700',
   },
   outlineButton: {
@@ -270,11 +299,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   section: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 26,
     paddingVertical: 24,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 32,
     fontWeight: '800',
     textAlign: 'center',
     color: '#0f172a',
@@ -282,20 +311,28 @@ const styles = StyleSheet.create({
   sectionLead: {
     textAlign: 'center',
     color: '#64748b',
-    marginTop: 8,
+    marginTop: 20,
     marginBottom: 16,
+    fontSize: 20,
   },
   subHeading: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: '700',
     marginTop: 12,
     marginBottom: 8,
+  },
+  subHeadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '36%',
+    marginTop: 20,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
     justifyContent: 'center',
+    marginTop: 5,
   },
   card: {
     minWidth: CARD_MIN_WIDTH,
@@ -351,6 +388,11 @@ const styles = StyleSheet.create({
   howItWorks: {
     backgroundColor: '#f1f5f9',
   },
+  howItWorksWrapped: {
+    width: '55%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
   stepsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -372,8 +414,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   stepNumberText: { color: '#fff', fontWeight: '800' },
-  stepTitle: { fontWeight: '700', marginBottom: 4 },
-  stepDesc: { color: '#64748b', textAlign: 'center' },
+  stepTitle: { fontWeight: '700', marginBottom: 4, fontSize: 20 },
+  stepDesc: { color: '#64748b', textAlign: 'center', fontSize: 16 },
   pricingRow: {
     flexDirection: 'row',
     gap: 12,
@@ -381,12 +423,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pricingCard: {
-    width: Math.min(360, width - 48),
-    padding: 16,
+    width: Math.min(420, width - 48),
+    padding: 30,
     backgroundColor: '#fff',
     borderRadius: 8,
     alignItems: 'center',
-    margin: 8,
+    margin: 20,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
   },
   pricingPro: {
     backgroundColor: '#eff6ff',
@@ -401,13 +445,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontWeight: '800',
   },
-  pricingTitle: { fontSize: 18, fontWeight: '800' },
-  pricingPrice: { fontSize: 28, fontWeight: '900', color: '#16a34a', marginVertical: 8 },
-  pricingPricePro: { fontSize: 28, fontWeight: '900', color: '#2563eb', marginVertical: 8 },
+  pricingTitle: { fontSize: 21, fontWeight: '800' },
+  pricingPrice: { fontSize: 37, fontWeight: '900', color: '#16a34a', marginVertical: 8 },
+  pricingPricePro: { fontSize: 37, fontWeight: '900', color: '#2563eb', marginVertical: 8 },
   pricingDesc: { color: '#64748b' },
-  pricingList: { marginTop: 12, marginBottom: 12 },
-  cta: { backgroundColor: '#2563eb', paddingVertical: 24, paddingHorizontal: 16, alignItems: 'center', marginTop: 16 },
-  ctaTitle: { fontSize: 20, fontWeight: '800', color: '#fff' },
-  ctaLead: { color: '#dbeafe', marginTop: 8, marginBottom: 12, textAlign: 'center' },
-  ctaButton: { backgroundColor: '#0b63d6' },
+  pricingList: { marginTop: 20, marginBottom: 12, justifyContent: 'flex-start', flexDirection: 'column', },
+  pricingListItem: { fontSize: 16, marginTop: 12, alignSelf: 'flex-start', justifyContent: 'flex-start' },
+  cta: { backgroundColor: '#2563eb', paddingVertical: 60, paddingHorizontal: 16, alignItems: 'center', marginTop: 16 },
+  ctaTitle: { fontSize: 28, fontWeight: '800', color: '#fff' },
+  ctaLead: { color: '#dbeafe', marginBottom: 12, textAlign: 'center', fontSize: 19, marginTop: 20 },
+  ctaButton: { 
+    paddingVertical: 13,
+    paddingHorizontal: 28,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center', 
+    backgroundColor: '#FFFFFF', marginTop: 20},
 });
