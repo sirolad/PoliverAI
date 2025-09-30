@@ -47,8 +47,8 @@ export const Button: React.FC<ButtonProps> = ({
       },
       outline: {
         backgroundColor: 'transparent',
-        borderWidth: 1,
-        borderColor: disabled ? '#D1D5DB' : '#3B82F6',
+        // borderWidth: 1,
+        // borderColor: disabled ? '#D1D5DB' : '#3B82F6',
       },
     };
 

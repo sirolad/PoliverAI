@@ -83,7 +83,7 @@ export default function LandingScreen() {
       <View style={styles.hero}>
         <View style={styles.introText}>
           <Text style={styles.title}>PoliverAI</Text>
-          <Text style={styles.subtitle}>- Your AI-Powered GDPR Compliance Assistant</Text>
+          <Text style={styles.subtitle}> - Your AI-Powered GDPR Compliance Assistant</Text>
         </View>
         <Text style={styles.lead}>
           Automatically analyze privacy policies for GDPR compliance, detect violations,

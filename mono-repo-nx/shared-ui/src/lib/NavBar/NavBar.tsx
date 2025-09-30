@@ -138,7 +138,14 @@ export const NavBar: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  nav: { borderBottomWidth: 1, borderBottomColor: '#e5e7eb', backgroundColor: 'rgba(255,255,255,0.95)' },
+  nav: { 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#e5e7eb', 
+    backgroundColor: 'rgba(255,255,255,0.95)', 
+    width: '75%', 
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
   container: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   logoRow: { flexDirection: 'row', alignItems: 'center' },
   logoText: { fontWeight: '800', fontSize: 18, marginLeft: 8 },
