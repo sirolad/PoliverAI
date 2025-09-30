@@ -1,1 +1,0 @@
-../../../../../../../../../node_modules/react-native/ReactCommon/react/renderer/components/switch/iosswitch/react/renderer/components/switch/AppleSwitchShadowNode.h

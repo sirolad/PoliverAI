@@ -1,0 +1,26 @@
+Daemon process terminated and closed the connection
+
+Messages from the log:
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.646Z - Closed a connection. Number of open connections: 1
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:02.648Z - [REQUEST]: Client Request for Project Graph Received
+Time for 'plugin worker 53367 code loading' 13.710666000843048
+Time for 'plugin worker 53368 code loading' 15.089201003313065
+Time for 'plugin worker 53369 code loading' 15.751508980989456
+Time for 'plugin worker 53370 code loading' 15.485462993383408
+Time for 'plugin worker 53371 code loading' 15.68724700808525
+Time for 'plugin worker 53372 code loading' 15.757277011871338
+Time for 'plugin worker 53373 code loading' 14.097543984651566
+Time for 'plugin worker 53374 code loading' 13.287692993879318
+Time for 'plugin worker 53375 code loading' 13.609768003225327
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:03.249Z - Time taken for 'Load Nx Plugin: /Users/gabrieldagadu/PoliverAI/node_modules/nx/src/plugins/project-json/build-nodes/project-json' 590.3739069998264ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:03.267Z - Time taken for 'Load Nx Plugin: /Users/gabrieldagadu/PoliverAI/node_modules/nx/src/plugins/package-json' 609.5166449844837ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:03.300Z - Time taken for 'loadDefaultNxPlugins' 643.6706140041351ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.660Z - Time taken for 'Load Nx Plugin: @nx/js/typescript' 2010.3404519855976ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.663Z - Time taken for 'Load Nx Plugin: @nx/jest/plugin' 2009.6938340067863ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.677Z - Time taken for 'Load Nx Plugin: @nx/eslint/plugin' 2024.7166579961777ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.678Z - Time taken for 'Load Nx Plugin: @nx/react-native/plugin' 2026.5248499810696ms
+[NX v21.5.3 Daemon Server] - 2025-09-30T00:43:04.740Z - [WATCHER]: .gitignore was modified
+
+
+
+More information: /Users/gabrieldagadu/PoliverAI/.nx/workspace-data/d/daemon.log

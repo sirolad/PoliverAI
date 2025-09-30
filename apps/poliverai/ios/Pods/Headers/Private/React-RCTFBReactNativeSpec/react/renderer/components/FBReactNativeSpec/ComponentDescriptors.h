@@ -1,1 +1,0 @@
-../../../../../../../../../node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h
