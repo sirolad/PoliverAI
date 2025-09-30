@@ -1,0 +1,6 @@
+import { Configuration, WebpackOptionsNormalized } from 'webpack';
+import { SvgrOptions } from '../../with-react';
+export declare function applyReactConfig(options: {
+    svgr?: boolean | SvgrOptions;
+}, config?: Partial<WebpackOptionsNormalized | Configuration>): void;
+//# sourceMappingURL=apply-react-config.d.ts.map

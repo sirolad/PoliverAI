@@ -1,0 +1,11 @@
+export declare const isPathString: (test: string) => boolean;
+export declare const isRelativePath: (test: string) => boolean;
+export declare const normalizeOutputPath: (s: string) => string;
+export declare const normalizeToPosixPath: (p: string | undefined) => string;
+export declare const getTemplatePath: (prefix?: string) => string;
+export declare function getRealTemporaryDirectory(): string | null;
+export declare function splitPathString(str: string): string[];
+export declare const removeLeadingSlash: (s: string) => string;
+export declare const removeTailSlash: (s: string) => string;
+export declare const removeSlash: (s: string) => string;
+export declare function formatImportPath(str: string): string;

@@ -1,16 +1,16 @@
 import { useSelector } from 'react-redux';
 import type { RootState } from './store';
-import enCA from './locales/en-CA.json';
+import enCA from './locales/en-US.json';
 
 type Messages = Record<string, unknown>;
 
 const locales: Record<string, Messages> = {
-  'en-CA': enCA as unknown as Messages,
+  'en-US': enCA as unknown as Messages,
 };
 
 export const useTranslation = () => {
-  const locale = useSelector((s: RootState) => ((s as unknown) as { locale?: { locale?: string } })?.locale?.locale || 'en-CA');
-  const messages = locales[locale] ?? locales['en-CA'];
+  const locale = useSelector((s: RootState) => ((s as unknown) as { locale?: { locale?: string } })?.locale?.locale || 'en-US');
+  const messages = locales[locale] ?? locales['en-US'];
 
   const t = (path: string, fallback?: string) => {
     const parts = path.split('.');

@@ -216,6 +216,18 @@
       "apps/poliverai/package.json",
       "nx/core/package-json"
     ],
+    "metadata.targetGroups.NPM Scripts": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.0": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.1": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
     "metadata.js": [
       "apps/poliverai/package.json",
       "nx/core/package-json"
@@ -225,6 +237,62 @@
       "nx/core/package-json"
     ],
     "metadata.js.isInPackageManagerWorkspaces": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.metadata.runCommand": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.metadata.runCommand": [
       "apps/poliverai/package.json",
       "nx/core/package-json"
     ],
@@ -608,6 +676,272 @@
     ],
     "metadata.js.isInPackageManagerWorkspaces": [
       "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ]
+  },
+  "apps/website": {
+    "root": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.dependsOn": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.cache": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.inputs": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.outputs": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.syncGenerators": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.executor": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options.cwd": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options.command": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.technologies": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.technologies.0": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.description": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help.command": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help.example": [
+      "apps/website/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.lint": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.cache": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.inputs": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.outputs": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.executor": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.cwd": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.command": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies.0": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.description": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.command": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.example": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "name": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "tags": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.0": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.1": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.2": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.executor": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.options": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.options.script": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata.scriptContent": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata.runCommand": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.build": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.build.executor": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.build.options": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.build.metadata": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.build.options.script": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.build.metadata.scriptContent": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.build.metadata.runCommand": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.executor": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.options": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.metadata": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.options.script": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.metadata.scriptContent": [
+      "apps/website/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.metadata.runCommand": [
+      "apps/website/package.json",
       "nx/core/package-json"
     ]
   },

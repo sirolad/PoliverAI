@@ -1,0 +1,8 @@
+/**
+ * ensure absolute file path.
+ * @param base - Base path to resolve relative from.
+ * @param filePath - Absolute or relative file path.
+ * @returns Resolved absolute file path.
+ */
+export declare const ensureAbsolutePath: (base: string, filePath: string) => string;
+export declare const ensureArray: <T>(params: T | T[]) => T[];

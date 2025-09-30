@@ -12,8 +12,10 @@ To test:
 # from repo root
 yarn
 cd apps/poliverai
-# run web
-npx expo start --web
-# or run on macOS (after prebuild) - macOS only
-# npx expo run:macos
+# run web (if using a web bundler / Vite)
+# start Metro for web/native development
+npx react-native start
+# run on iOS or Android using React Native CLI
+npx react-native run-ios
+npx react-native run-android
 ```

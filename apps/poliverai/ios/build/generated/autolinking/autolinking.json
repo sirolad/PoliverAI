@@ -1,20 +1,20 @@
 {
-  "root": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai",
-  "reactNativePath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native",
+  "root": "/Users/gabrieldagadu/PoliverAI/apps/poliverai",
+  "reactNativePath": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native",
   "reactNativeVersion": "0.81",
   "dependencies": {
     "react-native-svg": {
-      "root": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg",
+      "root": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg",
       "name": "react-native-svg",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg/RNSVG.podspec",
+          "podspecPath": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg/RNSVG.podspec",
           "version": "15.13.0",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg/android",
+          "sourceDir": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg/android",
           "packageImportPath": "import com.horcrux.svg.SvgPackage;",
           "packageInstance": "new SvgPackage()",
           "buildTypes": [],
@@ -50,7 +50,7 @@
             "RNSVGTSpanComponentDescriptor",
             "RNSVGUseComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
+          "cmakeListsPath": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -221,7 +221,7 @@
         {
           "name": "--path <path>",
           "description": "Path to the React Native project root.",
-          "default": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/ios"
+          "default": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/ios"
         },
         {
           "name": "--platform <string>",
@@ -513,7 +513,7 @@
   "assets": [],
   "project": {
     "ios": {
-      "sourceDir": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/ios",
+      "sourceDir": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/ios",
       "xcodeProject": {
         "name": "PoliverAI.xcworkspace",
         "path": ".",
@@ -522,10 +522,10 @@
       "assets": []
     },
     "android": {
-      "sourceDir": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/android",
+      "sourceDir": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/android",
       "appName": "app",
-      "packageName": "ca.poliverai.crm.app",
-      "applicationId": "ca.poliverai.crm.app",
+      "packageName": "com.poliverai.app",
+      "applicationId": "com.poliverai.app",
       "mainActivity": ".MainActivity",
       "assets": []
     }

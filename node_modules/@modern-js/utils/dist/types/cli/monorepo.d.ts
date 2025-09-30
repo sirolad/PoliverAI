@@ -1,0 +1,9 @@
+export declare const isLerna: (root: string) => boolean;
+export declare const isYarnWorkspaces: (root: string) => boolean;
+export declare const isPnpmWorkspaces: (root: string) => boolean;
+export declare const isMonorepo: (root: string) => boolean;
+export declare const findMonorepoRoot: (appDirectory: string, maxDepth?: number) => string | undefined;
+export declare const getMonorepoPackages: (root: string) => {
+    name: string;
+    path: string;
+}[];

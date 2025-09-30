@@ -8633,7 +8633,6 @@
 		2676BCA60AFDD7A6C3CAAF70FEE0CABF /* React-jsitooling */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-jsitooling"; path = "libReact-jsitooling.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		269BE773C9482484B70949A40F4EA525 /* React-RCTSettings */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-RCTSettings"; path = "libReact-RCTSettings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		31EE265B422EF829FDE6DBCF58350EE5 /* React-jsinspectornetwork */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-jsinspectornetwork"; path = "libReact-jsinspectornetwork.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		33CA202926ECE189E20FDBE1533CE13A /* Pods-PoliverAI */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-PoliverAI"; path = "libPods-PoliverAI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		33EEBF1D210254B5452CE560F81C9D38 /* RCTDeprecation */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = RCTDeprecation; path = libRCTDeprecation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		352F9F936BFB55B5F0044EEC7E7D0B6F /* React-performancetimeline */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-performancetimeline"; path = "libReact-performancetimeline.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		35C3D0A253BFD77715619C419AC17056 /* React-RCTFBReactNativeSpec */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-RCTFBReactNativeSpec"; path = "libReact-RCTFBReactNativeSpec.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -12701,6 +12700,7 @@
 		6BF9B7CB106BE14548245FD0550627ED /* React-runtimeexecutor */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-runtimeexecutor"; path = "libReact-runtimeexecutor.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6ED2C07E6AE77BBD9A6856E523EF6A06 /* React-debug */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-debug"; path = "libReact-debug.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FFB7B2992BB53405E6B771A5BA1E97D /* DoubleConversion */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = DoubleConversion; path = libDoubleConversion.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7201A363AC25B645F5977B3921FB9B17 /* Pods-PoliverAI */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-PoliverAI"; path = "libPods-PoliverAI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F71D8750C4958911C903FB23321273E /* React-featureflagsnativemodule */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-featureflagsnativemodule"; path = "libReact-featureflagsnativemodule.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		802121F5B756ACBFDD6D08C36246DADD /* React-RCTLinking */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "React-RCTLinking"; path = "libReact-RCTLinking.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85A01882ED06DFEA2E0CE78BCDB204A7 /* SocketRocket */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = SocketRocket; path = libSocketRocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -13258,7 +13258,7 @@
 				F4BDA69E3BCB0166D49FB679ABADCA00 /* fmt */,
 				3CA7A9404CCDD6BA22C97F8348CE3209 /* glog */,
 				FFDAD994FE728F76EC459CC05E0CCDFB /* glog-glog_privacy */,
-				33CA202926ECE189E20FDBE1533CE13A /* Pods-PoliverAI */,
+				7201A363AC25B645F5977B3921FB9B17 /* Pods-PoliverAI */,
 				1936453FF2A7E3A13063C4917C4D5598 /* RCT-Folly */,
 				BA6198501C8FE4824D863DC9EF32C614 /* RCT-Folly-RCT-Folly_privacy */,
 				33EEBF1D210254B5452CE560F81C9D38 /* RCTDeprecation */,
@@ -23392,96 +23392,6 @@
 			productReference = 0CEF74A24ECE8AEEF7B1E27B305D2DDC /* ReactCodegen */;
 			productType = "com.apple.product-type.library.static";
 		};
-		3BCD43C744DA068F213C3399B5D17885 /* Pods-PoliverAI */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 46EB2E0001D190 /* Build configuration list for PBXNativeTarget "Pods-PoliverAI" */;
-			buildPhases = (
-				46EB2E0001D1D0 /* Headers */,
-				46EB2E0001D1E0 /* Sources */,
-				46EB2E0001D1F0 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				46EB2E0001D2E0 /* PBXTargetDependency */,
-				46EB2E0001D300 /* PBXTargetDependency */,
-				46EB2E0001D320 /* PBXTargetDependency */,
-				46EB2E0001D340 /* PBXTargetDependency */,
-				46EB2E0001D360 /* PBXTargetDependency */,
-				46EB2E0001D380 /* PBXTargetDependency */,
-				46EB2E0001D3A0 /* PBXTargetDependency */,
-				46EB2E0001D3C0 /* PBXTargetDependency */,
-				46EB2E0001D3E0 /* PBXTargetDependency */,
-				46EB2E0001D400 /* PBXTargetDependency */,
-				46EB2E0001D420 /* PBXTargetDependency */,
-				46EB2E0001D440 /* PBXTargetDependency */,
-				46EB2E0001D460 /* PBXTargetDependency */,
-				46EB2E0001D480 /* PBXTargetDependency */,
-				46EB2E0001D4A0 /* PBXTargetDependency */,
-				46EB2E0001D4C0 /* PBXTargetDependency */,
-				46EB2E0001D4E0 /* PBXTargetDependency */,
-				46EB2E0001D500 /* PBXTargetDependency */,
-				46EB2E0001D520 /* PBXTargetDependency */,
-				46EB2E0001D540 /* PBXTargetDependency */,
-				46EB2E0001D560 /* PBXTargetDependency */,
-				46EB2E0001D580 /* PBXTargetDependency */,
-				46EB2E0001D5A0 /* PBXTargetDependency */,
-				46EB2E0001D5C0 /* PBXTargetDependency */,
-				46EB2E0001D5E0 /* PBXTargetDependency */,
-				46EB2E0001D600 /* PBXTargetDependency */,
-				46EB2E0001D620 /* PBXTargetDependency */,
-				46EB2E0001D640 /* PBXTargetDependency */,
-				46EB2E0001D660 /* PBXTargetDependency */,
-				46EB2E0001D680 /* PBXTargetDependency */,
-				46EB2E0001D6A0 /* PBXTargetDependency */,
-				46EB2E0001D6C0 /* PBXTargetDependency */,
-				46EB2E0001D6E0 /* PBXTargetDependency */,
-				46EB2E0001D700 /* PBXTargetDependency */,
-				46EB2E0001D720 /* PBXTargetDependency */,
-				46EB2E0001D740 /* PBXTargetDependency */,
-				46EB2E0001D760 /* PBXTargetDependency */,
-				46EB2E0001D780 /* PBXTargetDependency */,
-				46EB2E0001D7A0 /* PBXTargetDependency */,
-				46EB2E0001D7C0 /* PBXTargetDependency */,
-				46EB2E0001D7E0 /* PBXTargetDependency */,
-				46EB2E0001D800 /* PBXTargetDependency */,
-				46EB2E0001D820 /* PBXTargetDependency */,
-				46EB2E0001D840 /* PBXTargetDependency */,
-				46EB2E0001D860 /* PBXTargetDependency */,
-				46EB2E0001D880 /* PBXTargetDependency */,
-				46EB2E0001D8A0 /* PBXTargetDependency */,
-				46EB2E0001D8C0 /* PBXTargetDependency */,
-				46EB2E0001D8E0 /* PBXTargetDependency */,
-				46EB2E0001D900 /* PBXTargetDependency */,
-				46EB2E0001D920 /* PBXTargetDependency */,
-				46EB2E0001D940 /* PBXTargetDependency */,
-				46EB2E0001D960 /* PBXTargetDependency */,
-				46EB2E0001D980 /* PBXTargetDependency */,
-				46EB2E0001D9A0 /* PBXTargetDependency */,
-				46EB2E0001D9C0 /* PBXTargetDependency */,
-				46EB2E0001D9E0 /* PBXTargetDependency */,
-				46EB2E0001DA00 /* PBXTargetDependency */,
-				46EB2E0001DA20 /* PBXTargetDependency */,
-				46EB2E0001DA40 /* PBXTargetDependency */,
-				46EB2E0001DA60 /* PBXTargetDependency */,
-				46EB2E0001DA80 /* PBXTargetDependency */,
-				46EB2E0001DAA0 /* PBXTargetDependency */,
-				46EB2E0001DAC0 /* PBXTargetDependency */,
-				46EB2E0001DAE0 /* PBXTargetDependency */,
-				46EB2E0001DB00 /* PBXTargetDependency */,
-				46EB2E0001DB20 /* PBXTargetDependency */,
-				46EB2E0001DB40 /* PBXTargetDependency */,
-				46EB2E0001DB60 /* PBXTargetDependency */,
-				46EB2E0001DB80 /* PBXTargetDependency */,
-				46EB2E0001DBA0 /* PBXTargetDependency */,
-				46EB2E0001DBC0 /* PBXTargetDependency */,
-				46EB2E0001DBE0 /* PBXTargetDependency */,
-			);
-			name = "Pods-PoliverAI";
-			productName = "Pods-PoliverAI";
-			productReference = 33CA202926ECE189E20FDBE1533CE13A /* Pods-PoliverAI */;
-			productType = "com.apple.product-type.library.static";
-		};
 		3C2DDF9A6E6ADA1EE923BDC927B3DF21 /* React-RCTRuntime */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 46EB2E00017D60 /* Build configuration list for PBXNativeTarget "React-RCTRuntime" */;
@@ -24302,6 +24212,96 @@
 			productReference = F71EBF73F354B475D465FF6DE9A66707 /* React-RCTBlob */;
 			productType = "com.apple.product-type.library.static";
 		};
+		9BF32FC9091693E5EE01D5F30A94C0B5 /* Pods-PoliverAI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 46EB2E0001D190 /* Build configuration list for PBXNativeTarget "Pods-PoliverAI" */;
+			buildPhases = (
+				46EB2E0001D1D0 /* Headers */,
+				46EB2E0001D1E0 /* Sources */,
+				46EB2E0001D1F0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				46EB2E0001D2E0 /* PBXTargetDependency */,
+				46EB2E0001D300 /* PBXTargetDependency */,
+				46EB2E0001D320 /* PBXTargetDependency */,
+				46EB2E0001D340 /* PBXTargetDependency */,
+				46EB2E0001D360 /* PBXTargetDependency */,
+				46EB2E0001D380 /* PBXTargetDependency */,
+				46EB2E0001D3A0 /* PBXTargetDependency */,
+				46EB2E0001D3C0 /* PBXTargetDependency */,
+				46EB2E0001D3E0 /* PBXTargetDependency */,
+				46EB2E0001D400 /* PBXTargetDependency */,
+				46EB2E0001D420 /* PBXTargetDependency */,
+				46EB2E0001D440 /* PBXTargetDependency */,
+				46EB2E0001D460 /* PBXTargetDependency */,
+				46EB2E0001D480 /* PBXTargetDependency */,
+				46EB2E0001D4A0 /* PBXTargetDependency */,
+				46EB2E0001D4C0 /* PBXTargetDependency */,
+				46EB2E0001D4E0 /* PBXTargetDependency */,
+				46EB2E0001D500 /* PBXTargetDependency */,
+				46EB2E0001D520 /* PBXTargetDependency */,
+				46EB2E0001D540 /* PBXTargetDependency */,
+				46EB2E0001D560 /* PBXTargetDependency */,
+				46EB2E0001D580 /* PBXTargetDependency */,
+				46EB2E0001D5A0 /* PBXTargetDependency */,
+				46EB2E0001D5C0 /* PBXTargetDependency */,
+				46EB2E0001D5E0 /* PBXTargetDependency */,
+				46EB2E0001D600 /* PBXTargetDependency */,
+				46EB2E0001D620 /* PBXTargetDependency */,
+				46EB2E0001D640 /* PBXTargetDependency */,
+				46EB2E0001D660 /* PBXTargetDependency */,
+				46EB2E0001D680 /* PBXTargetDependency */,
+				46EB2E0001D6A0 /* PBXTargetDependency */,
+				46EB2E0001D6C0 /* PBXTargetDependency */,
+				46EB2E0001D6E0 /* PBXTargetDependency */,
+				46EB2E0001D700 /* PBXTargetDependency */,
+				46EB2E0001D720 /* PBXTargetDependency */,
+				46EB2E0001D740 /* PBXTargetDependency */,
+				46EB2E0001D760 /* PBXTargetDependency */,
+				46EB2E0001D780 /* PBXTargetDependency */,
+				46EB2E0001D7A0 /* PBXTargetDependency */,
+				46EB2E0001D7C0 /* PBXTargetDependency */,
+				46EB2E0001D7E0 /* PBXTargetDependency */,
+				46EB2E0001D800 /* PBXTargetDependency */,
+				46EB2E0001D820 /* PBXTargetDependency */,
+				46EB2E0001D840 /* PBXTargetDependency */,
+				46EB2E0001D860 /* PBXTargetDependency */,
+				46EB2E0001D880 /* PBXTargetDependency */,
+				46EB2E0001D8A0 /* PBXTargetDependency */,
+				46EB2E0001D8C0 /* PBXTargetDependency */,
+				46EB2E0001D8E0 /* PBXTargetDependency */,
+				46EB2E0001D900 /* PBXTargetDependency */,
+				46EB2E0001D920 /* PBXTargetDependency */,
+				46EB2E0001D940 /* PBXTargetDependency */,
+				46EB2E0001D960 /* PBXTargetDependency */,
+				46EB2E0001D980 /* PBXTargetDependency */,
+				46EB2E0001D9A0 /* PBXTargetDependency */,
+				46EB2E0001D9C0 /* PBXTargetDependency */,
+				46EB2E0001D9E0 /* PBXTargetDependency */,
+				46EB2E0001DA00 /* PBXTargetDependency */,
+				46EB2E0001DA20 /* PBXTargetDependency */,
+				46EB2E0001DA40 /* PBXTargetDependency */,
+				46EB2E0001DA60 /* PBXTargetDependency */,
+				46EB2E0001DA80 /* PBXTargetDependency */,
+				46EB2E0001DAA0 /* PBXTargetDependency */,
+				46EB2E0001DAC0 /* PBXTargetDependency */,
+				46EB2E0001DAE0 /* PBXTargetDependency */,
+				46EB2E0001DB00 /* PBXTargetDependency */,
+				46EB2E0001DB20 /* PBXTargetDependency */,
+				46EB2E0001DB40 /* PBXTargetDependency */,
+				46EB2E0001DB60 /* PBXTargetDependency */,
+				46EB2E0001DB80 /* PBXTargetDependency */,
+				46EB2E0001DBA0 /* PBXTargetDependency */,
+				46EB2E0001DBC0 /* PBXTargetDependency */,
+				46EB2E0001DBE0 /* PBXTargetDependency */,
+			);
+			name = "Pods-PoliverAI";
+			productName = "Pods-PoliverAI";
+			productReference = 7201A363AC25B645F5977B3921FB9B17 /* Pods-PoliverAI */;
+			productType = "com.apple.product-type.library.static";
+		};
 		9E6B7857CC223C0629E4C37E6386FC96 /* glog-glog_privacy */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 46EB2E0001CF30 /* Build configuration list for PBXNativeTarget "glog-glog_privacy" */;
@@ -24948,7 +24948,7 @@
 				D0EFEFB685D97280256C559792236873 /* glog */,
 				9E6B7857CC223C0629E4C37E6386FC96 /* glog-glog_privacy */,
 				985FEA01F314F3C00F0C1E1181E6C4A5 /* hermes-engine */,
-				3BCD43C744DA068F213C3399B5D17885 /* Pods-PoliverAI */,
+				9BF32FC9091693E5EE01D5F30A94C0B5 /* Pods-PoliverAI */,
 				EC55D52694092A9D0E6A78EB01207EB5 /* RCT-Folly */,
 				331AFAADB024F73370A9DC6FBD7A5A22 /* RCT-Folly-RCT-Folly_privacy */,
 				5211B5AB7B81060AA8E78614DD75D3AB /* RCTDeprecation */,

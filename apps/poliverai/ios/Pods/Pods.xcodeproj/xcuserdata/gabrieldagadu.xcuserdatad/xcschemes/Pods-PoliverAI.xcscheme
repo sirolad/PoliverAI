@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3BCD43C744DA068F213C3399B5D17885"
+               BlueprintIdentifier = "9BF32FC9091693E5EE01D5F30A94C0B5"
                BuildableName = "libPods-PoliverAI.a"
                BlueprintName = "Pods-PoliverAI"
                ReferencedContainer = "container:Pods.xcodeproj">

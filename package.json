@@ -11,23 +11,27 @@
     "typecheck": "npx tsc -b --noEmit",
 
     "start:web": "cd apps/poliverai && npx vite",
-    "start:expo": "cd apps/poliverai && npx expo start",
-    "start:android": "cd apps/poliverai && npx expo start --android",
-    "start:ios": "cd apps/poliverai && npx expo start --ios",
+    "website:dev": "cd apps/website && yarn dev",
+    "website:build": "cd apps/website && yarn build",
+    "website:preview": "cd apps/website && yarn preview",
 
-    "run:android": "cd apps/poliverai && npx expo run:android",
-    "run:ios": "cd apps/poliverai && npx expo run:ios",
-    "run:macos": "cd apps/poliverai && npx expo run:macos",
-    "run:windows": "cd apps/poliverai && npx expo run:windows",
+    "start:metro": "cd apps/poliverai && npx react-native start",
+    "start:android": "cd apps/poliverai && npx react-native run-android",
+    "start:ios": "cd apps/poliverai && npx react-native run-ios",
 
-    "expo:prebuild:macos": "cd apps/poliverai && npx expo prebuild --platform macos",
-    "expo:prebuild:windows": "cd apps/poliverai && npx expo prebuild --platform windows",
+    "run:android": "cd apps/poliverai && npx react-native run-android",
+    "run:ios": "cd apps/poliverai && npx react-native run-ios",
+    "run:macos": "cd apps/poliverai && npx react-native run-macos",
+    "run:windows": "cd apps/poliverai && npx react-native run-windows",
 
+    "start:macos": "cd apps/poliverai && npx react-native run-macos",
+    "start:windows": "cd apps/poliverai && npx react-native run-windows",
+    
     "build:web:dev": "cd apps/poliverai && NODE_ENV=development npx vite build --outDir ../../dist/apps/poliverai/web-dev",
     "build:web:release": "cd apps/poliverai && NODE_ENV=production npx vite build --outDir ../../dist/apps/poliverai/web",
 
-    "build:android:dev": "cd apps/poliverai && npx expo prebuild --platform android && npx expo run:android",
-    "build:ios:dev": "cd apps/poliverai && npx expo prebuild --platform ios && npx expo run:ios",
+    "build:android:dev": "cd apps/poliverai && npx react-native run-android",
+    "build:ios:dev": "cd apps/poliverai && npx react-native run-ios",
 
     "build:android:release": "cd apps/poliverai && echo \"Release builds require EAS or native toolchain (see README).\" && exit 1",
     "build:ios:release": "cd apps/poliverai && echo \"Release builds require EAS or native toolchain (see README).\" && exit 1"
@@ -109,7 +113,8 @@
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0",
     "vite": "^7.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "lottie-web": "^5.10.2"
   },
   "optionalDependencies": {
     "react-native-macos": "^0.69.0",

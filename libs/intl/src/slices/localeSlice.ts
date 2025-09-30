@@ -5,7 +5,7 @@ export type LocaleState = {
 };
 
 const initialState: LocaleState = {
-  locale: 'en-CA',
+  locale: 'en-US',
 };
 
 const slice = createSlice({

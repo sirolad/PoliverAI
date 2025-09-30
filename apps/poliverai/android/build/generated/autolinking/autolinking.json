@@ -1,38 +1,20 @@
 {
-  "root": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai",
-  "reactNativePath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native",
+  "root": "/Users/gabrieldagadu/PoliverAI/apps/poliverai",
+  "reactNativePath": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native",
   "reactNativeVersion": "0.81",
   "dependencies": {
-    "expo": {
-      "root": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/expo",
-      "name": "expo",
-      "platforms": {
-        "ios": {
-          "podspecPath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/expo/Expo.podspec",
-          "configurations": [],
-          "scriptPhases": []
-        },
-        "android": {
-          "sourceDir": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/expo/android",
-          "packageImportPath": "import expo.modules.ExpoModulesPackage;",
-          "packageInstance": "new ExpoModulesPackage()",
-          "buildTypes": [],
-          "componentDescriptors": [],
-          "cmakeListsPath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"
-        }
-      }
-    },
     "react-native-svg": {
-      "root": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg",
+      "root": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg",
       "name": "react-native-svg",
       "platforms": {
         "ios": {
-          "podspecPath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg/RNSVG.podspec",
+          "podspecPath": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg/RNSVG.podspec",
+          "version": "15.13.0",
           "configurations": [],
           "scriptPhases": []
         },
         "android": {
-          "sourceDir": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg/android",
+          "sourceDir": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg/android",
           "packageImportPath": "import com.horcrux.svg.SvgPackage;",
           "packageInstance": "new SvgPackage()",
           "buildTypes": [],
@@ -68,7 +50,11 @@
             "RNSVGTSpanComponentDescriptor",
             "RNSVGUseComponentDescriptor"
           ],
-          "cmakeListsPath": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt"
+          "cmakeListsPath": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt",
+          "cxxModuleCMakeListsModuleName": null,
+          "cxxModuleCMakeListsPath": null,
+          "cxxModuleHeaderName": null,
+          "isPureCxxDependency": false
         }
       }
     }
@@ -235,7 +221,7 @@
         {
           "name": "--path <path>",
           "description": "Path to the React Native project root.",
-          "default": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai"
+          "default": "/Users/gabrieldagadu/PoliverAI/apps/poliverai"
         },
         {
           "name": "--platform <string>",
@@ -258,7 +244,7 @@
       "description": "starts iOS device syslog tail",
       "options": [
         {
-          "name": "--interactive",
+          "name": "-i --interactive",
           "description": "Explicitly select simulator to tail logs from. By default it will tail logs from the first booted and available simulator."
         }
       ]
@@ -269,49 +255,21 @@
       "examples": [
         {
           "desc": "Run on a different simulator, e.g. iPhone SE (2nd generation)",
-          "cmd": "react-native run-ios --simulator \"iPhone SE (2nd generation)\""
+          "cmd": "npx react-native run-ios --simulator \"iPhone SE (2nd generation)\""
         },
         {
           "desc": "Run on a connected device, e.g. Max's iPhone",
-          "cmd": "react-native run-ios --device \"Max's iPhone\""
+          "cmd": "npx react-native run-ios --device \"Max's iPhone\""
         },
         {
           "desc": "Run on the AppleTV simulator",
-          "cmd": "react-native run-ios --simulator \"Apple TV\"  --scheme \"helloworld-tvOS\""
+          "cmd": "npx react-native run-ios --simulator \"Apple TV\"  --scheme \"helloworld-tvOS\""
         }
       ],
       "options": [
         {
-          "name": "--simulator <string>",
-          "description": "Explicitly set simulator to use. Optionally include iOS version between parenthesis at the end to match an exact version: \"iPhone 6 (10.0)\""
-        },
-        {
-          "name": "--mode <string>",
-          "description": "Explicitly set the scheme configuration to use. This option is case sensitive."
-        },
-        {
-          "name": "--configuration <string>",
-          "description": "[Deprecated] Explicitly set the scheme configuration to use"
-        },
-        {
-          "name": "--scheme <string>",
-          "description": "Explicitly set Xcode scheme to use"
-        },
-        {
-          "name": "--device [string]",
-          "description": "Explicitly set device to use by name.  The value is not required if you have a single device connected."
-        },
-        {
-          "name": "--destination <string>",
-          "description": "Explicitly extend distination e.g. \"arch=x86_64\""
-        },
-        {
-          "name": "--udid <string>",
-          "description": "Explicitly set device to use by udid"
-        },
-        {
-          "name": "--verbose",
-          "description": "Do not use xcbeautify or xcpretty even if installed"
+          "name": "--no-packager",
+          "description": "Do not launch packager while running the app"
         },
         {
           "name": "--port <number>",
@@ -320,22 +278,6 @@
         {
           "name": "--terminal <string>",
           "description": "Launches the Metro Bundler in a new window using the specified terminal path."
-        },
-        {
-          "name": "--xcconfig [string]",
-          "description": "Explicitly set xcconfig to use"
-        },
-        {
-          "name": "--buildFolder <string>",
-          "description": "Location for iOS build artifacts. Corresponds to Xcode's \"-derivedDataPath\"."
-        },
-        {
-          "name": "--extra-params <string>",
-          "description": "Custom params that will be passed to xcodebuild command."
-        },
-        {
-          "name": "--no-packager",
-          "description": "Do not launch packager while building"
         },
         {
           "name": "--binary-path <string>",
@@ -346,68 +288,28 @@
           "description": "List all available iOS devices and simulators and let you choose one to run the app. "
         },
         {
-          "name": "--interactive",
-          "description": "Explicitly select which scheme and configuration to use before running a build and select device to run the application."
-        }
-      ]
-    },
-    {
-      "name": "build-ios",
-      "description": "builds your app on iOS simulator",
-      "examples": [
-        {
-          "desc": "Build the app for the IOS simulator",
-          "cmd": "react-native build-ios"
+          "name": "--udid <string>",
+          "description": "Explicitly set the device to use by UDID"
         },
-        {
-          "desc": "Build the app for all IOS devices",
-          "cmd": "react-native build-ios --mode \"Release\""
-        },
-        {
-          "desc": "Build the app for a specific IOS device",
-          "cmd": "react-native build-ios --simulator \"IPhone 11\""
-        }
-      ],
-      "options": [
         {
           "name": "--simulator <string>",
-          "description": "Explicitly set simulator to use. Optionally include iOS version between parenthesis at the end to match an exact version: \"iPhone 6 (10.0)\""
+          "description": "Explicitly set the simulator to use. Optionally set the iOS version between parentheses at the end to match an exact version: \"iPhone 15 (17.0)\""
         },
         {
           "name": "--mode <string>",
           "description": "Explicitly set the scheme configuration to use. This option is case sensitive."
         },
         {
-          "name": "--configuration <string>",
-          "description": "[Deprecated] Explicitly set the scheme configuration to use"
-        },
-        {
           "name": "--scheme <string>",
           "description": "Explicitly set Xcode scheme to use"
         },
         {
-          "name": "--device [string]",
-          "description": "Explicitly set device to use by name.  The value is not required if you have a single device connected."
-        },
-        {
           "name": "--destination <string>",
-          "description": "Explicitly extend distination e.g. \"arch=x86_64\""
-        },
-        {
-          "name": "--udid <string>",
-          "description": "Explicitly set device to use by udid"
+          "description": "Explicitly extend destination e.g. \"arch=x86_64\""
         },
         {
           "name": "--verbose",
           "description": "Do not use xcbeautify or xcpretty even if installed"
-        },
-        {
-          "name": "--port <number>",
-          "default": 8081
-        },
-        {
-          "name": "--terminal <string>",
-          "description": "Launches the Metro Bundler in a new window using the specified terminal path."
         },
         {
           "name": "--xcconfig [string]",
@@ -422,8 +324,76 @@
           "description": "Custom params that will be passed to xcodebuild command."
         },
         {
-          "name": "--interactive",
+          "name": "--target <string>",
+          "description": "Explicitly set Xcode target to use."
+        },
+        {
+          "name": "-i --interactive",
           "description": "Explicitly select which scheme and configuration to use before running a build"
+        },
+        {
+          "name": "--force-pods",
+          "description": "Force CocoaPods installation"
+        },
+        {
+          "name": "--device [string]",
+          "description": "Explicitly set the device to use by name or by unique device identifier . If the value is not provided,the app will run on the first available physical device."
+        }
+      ]
+    },
+    {
+      "name": "build-ios",
+      "description": "builds your app for iOS platform",
+      "examples": [
+        {
+          "desc": "Build the app for all iOS devices in Release mode",
+          "cmd": "npx react-native build-ios --mode \"Release\""
+        }
+      ],
+      "options": [
+        {
+          "name": "--mode <string>",
+          "description": "Explicitly set the scheme configuration to use. This option is case sensitive."
+        },
+        {
+          "name": "--scheme <string>",
+          "description": "Explicitly set Xcode scheme to use"
+        },
+        {
+          "name": "--destination <string>",
+          "description": "Explicitly extend destination e.g. \"arch=x86_64\""
+        },
+        {
+          "name": "--verbose",
+          "description": "Do not use xcbeautify or xcpretty even if installed"
+        },
+        {
+          "name": "--xcconfig [string]",
+          "description": "Explicitly set xcconfig to use"
+        },
+        {
+          "name": "--buildFolder <string>",
+          "description": "Location for iOS build artifacts. Corresponds to Xcode's \"-derivedDataPath\"."
+        },
+        {
+          "name": "--extra-params <string>",
+          "description": "Custom params that will be passed to xcodebuild command."
+        },
+        {
+          "name": "--target <string>",
+          "description": "Explicitly set Xcode target to use."
+        },
+        {
+          "name": "-i --interactive",
+          "description": "Explicitly select which scheme and configuration to use before running a build"
+        },
+        {
+          "name": "--force-pods",
+          "description": "Force CocoaPods installation"
+        },
+        {
+          "name": "--device [string]",
+          "description": "Explicitly set the device to use by name or by unique device identifier . If the value is not provided,the app will run on the first available physical device."
         }
       ]
     },
@@ -440,22 +410,6 @@
           "description": "Specify your app's build variant"
         },
         {
-          "name": "--variant <string>",
-          "description": "Specify your app's build variant. Deprecated! Use 'mode' instead"
-        },
-        {
-          "name": "--no-packager",
-          "description": "Do not launch packager while building"
-        },
-        {
-          "name": "--port <number>",
-          "default": 8081
-        },
-        {
-          "name": "--terminal <string>",
-          "description": "Launches the Metro Bundler in a new window using the specified terminal path."
-        },
-        {
           "name": "--tasks <list>",
           "description": "Run custom Gradle tasks. By default it's \"assembleDebug\". Will override passed mode and variant arguments."
         },
@@ -469,8 +423,20 @@
           "description": "Custom params passed to gradle build command"
         },
         {
-          "name": "--interactive",
+          "name": "-i --interactive",
           "description": "Explicitly select build type and flavour to use before running a build"
+        },
+        {
+          "name": "--no-packager",
+          "description": "Do not launch packager while running the app"
+        },
+        {
+          "name": "--port <number>",
+          "default": 8081
+        },
+        {
+          "name": "--terminal <string>",
+          "description": "Launches the Metro Bundler in a new window using the specified terminal path."
         },
         {
           "name": "--appId <string>",
@@ -484,12 +450,15 @@
         },
         {
           "name": "--main-activity <string>",
-          "description": "Name of the activity to start",
-          "default": "MainActivity"
+          "description": "Name of the activity to start"
+        },
+        {
+          "name": "--device <string>",
+          "description": "Explicitly set the device to use by name. The value is not required if you have a single device connected."
         },
         {
           "name": "--deviceId <string>",
-          "description": "builds your app and starts it on a specific device/simulator with the given device id (listed by running \"adb devices\" on the command line)."
+          "description": "**DEPRECATED** Builds your app and starts it on a specific device/simulator with the given device id (listed by running \"adb devices\" on the command line)."
         },
         {
           "name": "--list-devices",
@@ -515,22 +484,6 @@
           "description": "Specify your app's build variant"
         },
         {
-          "name": "--variant <string>",
-          "description": "Specify your app's build variant. Deprecated! Use 'mode' instead"
-        },
-        {
-          "name": "--no-packager",
-          "description": "Do not launch packager while building"
-        },
-        {
-          "name": "--port <number>",
-          "default": 8081
-        },
-        {
-          "name": "--terminal <string>",
-          "description": "Launches the Metro Bundler in a new window using the specified terminal path."
-        },
-        {
           "name": "--tasks <list>",
           "description": "Run custom Gradle tasks. By default it's \"assembleDebug\". Will override passed mode and variant arguments."
         },
@@ -544,7 +497,7 @@
           "description": "Custom params passed to gradle build command"
         },
         {
-          "name": "--interactive",
+          "name": "-i --interactive",
           "description": "Explicitly select build type and flavour to use before running a build"
         }
       ]
@@ -558,16 +511,21 @@
   "assets": [],
   "project": {
     "ios": {
-      "sourceDir": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/ios",
+      "sourceDir": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/ios",
       "xcodeProject": {
         "name": "PoliverAI.xcworkspace",
+        "path": ".",
         "isWorkspace": true
-      }
+      },
+      "assets": []
     },
     "android": {
-      "sourceDir": "/Users/gabrieldagadu/Documents/poliverai-mono-repo/apps/poliverai/android",
+      "sourceDir": "/Users/gabrieldagadu/PoliverAI/apps/poliverai/android",
       "appName": "app",
-      "packageName": "ca.poliverai.crm.app"
+      "packageName": "com.poliverai.app",
+      "applicationId": "com.poliverai.app",
+      "mainActivity": ".MainActivity",
+      "assets": []
     }
   }
 }
