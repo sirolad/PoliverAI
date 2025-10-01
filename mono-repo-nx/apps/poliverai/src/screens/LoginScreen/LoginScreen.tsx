@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '@poliverai/shared-ui';
 import { Button } from '@poliverai/shared-ui';
 import { Card } from '@poliverai/shared-ui';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@poliverai/intl';
+import brandAssets from '../../../assets/brand';
 
 type SafeNavigation = { navigate?: (...args: unknown[]) => void; replace?: (...args: unknown[]) => void } | undefined;
 
@@ -72,6 +73,7 @@ export const LoginScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.header}>
+          <Image source={brandAssets.poliveraiIcon} style={styles.logoImage} resizeMode="contain" />
           <Text style={styles.headerTitle}>Welcome back to PoliverAI</Text>
           <Text style={styles.headerSubtitle}>Sign in to access your GDPR compliance dashboard</Text>
         </View>
@@ -116,6 +118,11 @@ const styles = StyleSheet.create({
   },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { marginBottom: 20, alignItems: 'center', marginTop: '10%' },
+  logoImage: { 
+    width: 72, 
+    height: 72, 
+    marginBottom: 20 
+  },
   headerTitle: { fontSize: 24, fontWeight: '800', color: '#0f172a' },
   headerSubtitle: { color: '#6b7280', marginTop: 6, textAlign: 'center' },
   errorBox: { padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, marginBottom: 12 },
