@@ -1,0 +1,3 @@
+> sh -lc "if (grep -q '"react-native-macos"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native run-macos; else echo 'react-native run-macos not configured: add react-native-macos and initialize the macos/ native project (see https://microsoft.github.io/react-native-macos/).'; fi"
+
+react-native run-macos not configured: add react-native-macos and initialize the macos/ native project (see https://microsoft.github.io/react-native-macos/).

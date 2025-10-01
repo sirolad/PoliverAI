@@ -38,8 +38,12 @@
         "podInstallTargetName": "pod-install",
         "runIosTargetName": "run-ios",
         "runAndroidTargetName": "run-android",
+        "runMacosTargetName": "run-macos",
+        "runWindowsTargetName": "run-windows",
         "buildIosTargetName": "build-ios",
         "buildAndroidTargetName": "build-android",
+        "buildMacosTargetName": "build-macos",
+        "buildWindowsTargetName": "build-windows",
         "syncDepsTargetName": "sync-deps"
       }
     },

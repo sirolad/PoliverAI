@@ -1,18 +1,18 @@
 {
   "run": {
-    "command": "nx lint @poliverai/poliverai --verbose",
-    "startTime": "2025-09-30T10:04:50.255Z",
-    "endTime": "2025-09-30T10:04:55.741Z",
+    "command": "nx run @poliverai/poliverai:run-macos",
+    "startTime": "2025-10-01T02:39:11.168Z",
+    "endTime": "2025-10-01T02:39:11.777Z",
     "inner": false
   },
   "tasks": [
     {
-      "taskId": "@poliverai/poliverai:lint",
-      "target": "lint",
+      "taskId": "@poliverai/poliverai:run-macos",
+      "target": "run-macos",
       "projectName": "@poliverai/poliverai",
-      "hash": "2256413306386042691",
-      "startTime": "2025-09-30T10:04:50.526Z",
-      "endTime": "2025-09-30T10:04:55.737Z",
+      "hash": "9155424066658945844",
+      "startTime": "2025-10-01T02:39:11.619Z",
+      "endTime": "2025-10-01T02:39:11.772Z",
       "params": "",
       "cacheStatus": "cache-miss",
       "status": 0
