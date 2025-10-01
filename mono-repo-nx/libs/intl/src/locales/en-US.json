@@ -1,38 +1,199 @@
 {
-  "authScreen": {
-    "header": {
-      "title": "Welcome Back",
-      "subtitle": "Sign in to continue managing your leads and growing your business."
-    },
-    "toggle": {
-      "signIn": "Sign In",
-      "createAccount": "Create Account"
-    },
-    "form": {
-      "signIn": "Sign In",
-      "createAccount": "Create Account",
-      "emailLabel": "Email Address",
-      "emailPlaceholder": "Enter your email address",
-      "passwordLabel": "Password",
-      "passwordPlaceholder": "Enter your password",
-      "fullNameLabel": "Full Name",
-      "fullNamePlaceholder": "Your name",
-      "forgotPassword": "Forgot your password?",
-      "fillRequired": "Please fill in all required fields",
-      "invalidCredentials": "Invalid credentials",
-      "genericError": "Something went wrong"
-    },
-    "offers": {
-      "seeOffers": "See Plans & Offers",
-      "plansTitle": "Plans",
-      "featureText": "Feature bullets…",
-      "plans": ["Starter", "Pro", "Enterprise"]
-    }
-  }
-  ,
   "platformGreeting": {
     "default": "Welcome to PoliverAI",
     "macos": "Welcome to PoliverAI (macOS)",
     "windows": "Welcome to PoliverAI (Windows)"
+  }
+  ,
+  "screens": {
+    "login": {
+      "header": {
+        "title": "Welcome back to PoliverAI",
+        "subtitle": "Sign in to access your GDPR compliance dashboard"
+      },
+      "form": {
+        "title": "Sign In",
+        "subtitle": "Enter your email and password to access your account",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "submit": "Sign In",
+        "submitting": "Signing in..."
+      },
+      "errors": {
+        "invalidEmail": "Invalid email address",
+        "passwordShort": "Password must be at least 6 characters",
+        "loginFailed": "Login failed"
+      },
+      "footer": {
+        "noAccount": "Don't have an account? Sign up for free"
+      }
+    }
+    ,
+    "dashboard": {
+      "header": {
+        "welcome": "Welcome back, {{name}}!",
+        "subtitle": "Manage your GDPR compliance analysis and reports from your dashboard."
+      },
+      "account": {
+        "title": "Account Status",
+        "status": "You are currently on the {{plan}} plan",
+        "planLabel": {
+          "pro": "PRO PLAN",
+          "free": "FREE PLAN"
+        },
+        "upgrade": "Upgrade to Pro"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "analyze": { "title": "Analyze New Policy", "desc": "Upload a privacy policy for GDPR compliance analysis" },
+        "reports": { "title": "View Reports", "desc": "Access your detailed compliance reports and history" }
+      },
+      "features": {
+        "title": "Your Features",
+        "freeHeading": "Free Plan Features",
+        "proHeading": "Pro Plan Features",
+        "free": [
+          {"emoji":"✅","title":"Policy Verification","description":"Upload and analyze privacy policies with basic GDPR compliance checks"},
+          {"emoji":"⏱️","title":"Fast Analysis","description":"Quick rule-based compliance screening"},
+          {"emoji":"🛡️","title":"Basic Recommendations","description":"Get essential compliance improvement suggestions"}
+        ],
+        "pro": [
+          {"emoji":"⚡","title":"AI-Powered Analysis","description":"Advanced AI analysis with nuanced violation detection"},
+          {"emoji":"📊","title":"Comprehensive Reports","description":"Detailed PDF reports with confidence scores and evidence"},
+          {"emoji":"📝","title":"Policy Generation","description":"Automatically generate revised compliant policies"}
+        ]
+      },
+      "gettingStarted": {
+        "title": "Getting Started",
+        "lead": "New to PoliverAI? Here's how to get the most out of your account",
+        "steps": [
+          {"n":1,"title":"Upload Your First Policy","desc":"Start by uploading a privacy policy document to analyze for GDPR compliance"},
+          {"n":2,"title":"Review Analysis Results","desc":"Examine compliance scores, violations, and recommendations for improvement"},
+          {"n":3,"title":"Generate Reports or Upgrade","desc":"Create detailed compliance reports and generate revised policies or upgrade to Pro for advanced features"}
+        ]
+      }
+    ,
+    "register": {
+      "header": {
+        "title": "Join PoliverAI",
+        "subtitle": "Create your account and start ensuring GDPR compliance"
+      },
+      "form": {
+        "title": "Create Account",
+        "subtitle": "Get started with your free PoliverAI account",
+        "fullNameLabel": "Full Name",
+        "fullNamePlaceholder": "Enter your full name",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Enter your email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Create a password",
+        "confirmPasswordLabel": "Confirm Password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "submit": "Create Account",
+        "submitting": "Creating account..."
+      },
+      "errors": {
+        "nameShort": "Name must be at least 2 characters",
+        "invalidEmail": "Invalid email address",
+        "passwordShort": "Password must be at least 6 characters",
+        "passwordsMismatch": "Passwords don't match",
+        "registrationFailed": "Registration failed"
+      },
+      "footer": {
+        "haveAccount": "Already have an account? Sign in"
+      }
+    }
+    }
+    ,
+    "components": {
+      "navBar": {
+        "logoAlt": "PoliverAI logo",
+        "links": {
+          "dashboard": "Dashboard",
+          "analyze": "Analyze Policy",
+          "reports": "Reports"
+        },
+        "tier": {
+          "pro": "PRO",
+          "free": "FREE"
+        },
+        "buttons": {
+          "upgrade": "Upgrade to Pro",
+          "logout": "Logout",
+          "login": "Login",
+          "signup": "Sign Up"
+        }
+      }
+    ,
+      "featureCard": {
+        "proBadge": "PRO",
+        "defaultEmoji": "•",
+        "iconAlt": "Feature icon"
+      }
+    }
+  }
+  ,
+  "landing": {
+    "hero": {
+      "brand": "PoliverAI",
+      "tagline": "Your AI-Powered GDPR Compliance Assistant",
+      "lead": "Automatically analyze privacy policies for GDPR compliance, detect violations, and generate comprehensive reports with AI-powered insights.",
+      "buttons": {
+        "startFree": "Start Free Analysis",
+        "upgradePro": "Upgrade to Pro",
+        "goToDashboard": "Go to Dashboard"
+      }
+    },
+    "features": {
+      "title": "Powerful Features for Every Need",
+      "lead": "From basic compliance checks to advanced AI-powered analysis",
+      "freeLabel": "Free Tier Features",
+      "proLabel": "Pro Tier Features",
+      "free": [
+        {"emoji":"📄","title":"Basic Policy Verification","description":"Upload and analyze privacy policies for basic GDPR compliance checks using rule-based detection."},
+        {"emoji":"🛡️","title":"Essential Compliance Checks","description":"Detect fundamental GDPR violations and get basic recommendations for improvement."},
+        {"emoji":"⚡","title":"Fast Analysis","description":"Quick compliance screening using our optimized rule-based analysis engine."}
+      ],
+      "pro": [
+        {"emoji":"🤖","title":"AI-Powered Deep Analysis","description":"Advanced AI analysis that detects nuanced privacy violations and complex compliance issues.","isPro":true},
+        {"emoji":"📊","title":"Comprehensive Reporting","description":"Detailed compliance reports with confidence scores, evidence, and actionable recommendations.","isPro":true},
+        {"emoji":"✍️","title":"Policy Generation & Revision","description":"Generate revised policies automatically based on detected compliance gaps.","isPro":true}
+      ]
+    },
+    "how": {
+      "title": "How PoliverAI Works",
+      "lead": "Simple, powerful, and intelligent GDPR compliance analysis",
+      "steps": [
+        {"n":1,"title":"Upload Your Policy","desc":"Upload privacy policies in multiple formats (PDF, DOCX, TXT, HTML)"},
+        {"n":2,"title":"AI Analysis","desc":"Our AI analyzes your policy against GDPR requirements with multiple analysis modes"},
+        {"n":3,"title":"Get Results","desc":"Receive detailed reports with compliance scores, violations, and actionable recommendations"}
+      ]
+    },
+    "pricing": {
+      "title": "Choose Your Plan",
+      "lead": "Start with our free tier or upgrade for advanced AI features",
+      "free": {
+        "title": "Free Tier",
+        "price": "$0",
+        "desc": "Perfect for getting started",
+        "features": ["Basic policy verification","Rule-based compliance checks","Fast analysis mode","Basic recommendations"],
+        "button": "Get Started Free"
+      },
+      "pro": {
+        "popular": "POPULAR",
+        "title": "Pro Tier",
+        "price": "$29",
+        "per": "per month",
+        "features": ["Everything in Free","AI-powered deep analysis","Comprehensive reporting","Policy generation & revision","Priority support"],
+        "button": "Upgrade to Pro"
+      }
+    },
+    "cta": {
+      "title": "Ready to Ensure GDPR Compliance?",
+      "lead": "Join thousands of organizations using PoliverAI to maintain privacy compliance",
+      "button": "Start Your Free Analysis Today"
+    }
   }
 }
