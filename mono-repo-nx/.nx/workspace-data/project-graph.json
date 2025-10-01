@@ -394,75 +394,22 @@
             ]
           },
           "build": {
+            "executor": "@nx/vite:build",
             "options": {
-              "cwd": "apps/poliverai",
-              "command": "vite build"
+              "config": "apps/poliverai/vite.config.ts"
             },
-            "cache": true,
-            "dependsOn": [
-              "^build"
-            ],
-            "inputs": [
-              "production",
-              "^production",
-              {
-                "externalDependencies": [
-                  "vite"
-                ]
-              }
-            ],
-            "outputs": [
-              "{workspaceRoot}/dist/apps/poliverai/web"
-            ],
-            "metadata": {
-              "technologies": [
-                "vite"
-              ],
-              "description": "Run Vite build",
-              "help": {
-                "command": "yarn vite build --help",
-                "example": {
-                  "options": {
-                    "sourcemap": true,
-                    "manifest": "manifest.json"
-                  }
-                }
-              }
-            },
-            "syncGenerators": [
-              "@nx/js:typescript-sync"
-            ],
-            "executor": "nx:run-commands",
             "configurations": {},
             "parallelism": true
           },
           "serve": {
-            "continuous": true,
+            "executor": "@nx/vite:dev-server",
             "options": {
-              "cwd": "apps/poliverai",
-              "command": "vite"
+              "config": "apps/poliverai/vite.config.ts",
+              "buildTarget": "@poliverai/poliverai:build"
             },
-            "metadata": {
-              "technologies": [
-                "vite"
-              ],
-              "description": "Starts Vite dev server",
-              "help": {
-                "command": "yarn vite --help",
-                "example": {
-                  "options": {
-                    "port": 3000
-                  }
-                }
-              },
-              "deprecated": "Use devTargetName instead. This option will be removed in Nx 22."
-            },
-            "syncGenerators": [
-              "@nx/js:typescript-sync"
-            ],
-            "executor": "nx:run-commands",
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "continuous": true
           },
           "dev": {
             "continuous": true,
@@ -492,31 +439,13 @@
             "parallelism": true
           },
           "preview": {
-            "continuous": true,
-            "dependsOn": [
-              "build"
-            ],
+            "executor": "@nx/vite:preview-server",
             "options": {
-              "cwd": "apps/poliverai",
-              "command": "vite preview"
+              "config": "apps/poliverai/vite.config.ts"
             },
-            "metadata": {
-              "technologies": [
-                "vite"
-              ],
-              "description": "Locally preview Vite production build",
-              "help": {
-                "command": "yarn vite preview --help",
-                "example": {
-                  "options": {
-                    "port": 3000
-                  }
-                }
-              }
-            },
-            "executor": "nx:run-commands",
             "configurations": {},
-            "parallelism": true
+            "parallelism": true,
+            "continuous": true
           },
           "serve-static": {
             "continuous": true,
@@ -575,6 +504,135 @@
             },
             "configurations": {},
             "parallelism": true
+          },
+          "start": {
+            "executor": "@nx/react-native:start",
+            "options": {},
+            "configurations": {},
+            "parallelism": true,
+            "continuous": true
+          },
+          "run-android": {
+            "executor": "@nx/react-native:run-android",
+            "options": {},
+            "configurations": {},
+            "parallelism": true,
+            "continuous": true
+          },
+          "run-ios": {
+            "executor": "@nx/react-native:run-ios",
+            "options": {},
+            "configurations": {},
+            "parallelism": true,
+            "continuous": true
+          },
+          "build-android": {
+            "executor": "@nx/react-native:build-android",
+            "options": {},
+            "configurations": {},
+            "parallelism": true
+          },
+          "build-ios": {
+            "executor": "@nx/react-native:build-ios",
+            "options": {},
+            "configurations": {},
+            "parallelism": true
+          },
+          "run-macos": {
+            "executor": "nx:run-commands",
+            "options": {
+              "commands": [
+                {
+                  "command": "sh -lc \"if (grep -q '\"react-native-macos\"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native run-macos; else echo 'react-native run-macos not configured: add react-native-macos and initialize the macos/ native project (see https://microsoft.github.io/react-native-macos/).'; fi\""
+                }
+              ],
+              "cwd": "apps/poliverai",
+              "parallel": false
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "run-windows": {
+            "executor": "nx:run-commands",
+            "options": {
+              "commands": [
+                {
+                  "command": "sh -lc \"if (grep -q '\"react-native-windows\"' package.json 2>/dev/null || [ -d node_modules/react-native-windows ] || [ -d ../node_modules/react-native-windows ]) && [ -d windows ]; then npx react-native run-windows; else echo 'react-native run-windows not configured: add react-native-windows and initialize the windows/ native project (see https://microsoft.github.io/react-native-windows/).'; fi\""
+                }
+              ],
+              "cwd": "apps/poliverai",
+              "parallel": false
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "build-macos": {
+            "executor": "nx:run-commands",
+            "options": {
+              "commands": [
+                {
+                  "command": "sh -lc \"if (grep -q '\"react-native-macos\"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native build-macos; else echo 'react-native build-macos not configured: add react-native-macos and initialize the macos/ native project.'; fi\""
+                }
+              ],
+              "cwd": "apps/poliverai",
+              "parallel": false
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "build-windows": {
+            "executor": "nx:run-commands",
+            "options": {
+              "commands": [
+                {
+                  "command": "sh -lc \"if (grep -q '\"react-native-windows\"' package.json 2>/dev/null || [ -d node_modules/react-native-windows ] || [ -d ../node_modules/react-native-windows ]) && [ -d windows ]; then npx react-native build-windows; else echo 'react-native build-windows not configured: add react-native-windows and initialize the windows/ native project.'; fi\""
+                }
+              ],
+              "cwd": "apps/poliverai",
+              "parallel": false
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "enable-macos": {
+            "executor": "nx:run-commands",
+            "options": {
+              "commands": [
+                {
+                  "command": "echo 'Installing react-native-macos into @poliverai/poliverai (this will modify package.json). Run this locally:'"
+                },
+                {
+                  "command": "echo '  cd apps/poliverai && yarn add react-native-macos@latest'"
+                },
+                {
+                  "command": "echo 'After install run native setup instructions: https://microsoft.github.io/react-native-macos/'"
+                }
+              ],
+              "cwd": "apps/poliverai",
+              "parallel": false
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "enable-windows": {
+            "executor": "nx:run-commands",
+            "options": {
+              "commands": [
+                {
+                  "command": "echo 'Installing react-native-windows into @poliverai/poliverai (this will modify package.json). Run this locally:'"
+                },
+                {
+                  "command": "echo '  cd apps/poliverai && yarn add react-native-windows@latest'"
+                },
+                {
+                  "command": "echo 'After install run native setup instructions: https://microsoft.github.io/react-native-windows/'"
+                }
+              ],
+              "cwd": "apps/poliverai",
+              "parallel": false
+            },
+            "configurations": {},
+            "parallelism": true
           }
         },
         "projectType": "application",
@@ -594,6 +652,7 @@
         "tags": [
           "npm:private"
         ],
+        "sourceRoot": "apps/poliverai/src",
         "implicitDependencies": []
       }
     },
@@ -6181,18 +6240,18 @@
       "type": "npm",
       "name": "npm:@types/react-dom",
       "data": {
-        "version": "19.0.6",
+        "version": "19.1.9",
         "packageName": "@types/react-dom",
-        "hash": "sha512-lo6MuY+rFr8kIiFnr+7TzO+Av0wUPcEcepiPV4epGP0eTQpkDfp9czudg73isV8UxKauCUNlL1N8fXhcnx4iBw=="
+        "hash": "sha512-qXRuZaOsAdXKFyOhRBg6Lqqc0yay13vN7KrIg4L7N4aaHN68ma9OK3NE1BoDFgFOTfM7zg+3/8+2n8rLUH3OKQ=="
       }
     },
     "npm:@types/react": {
       "type": "npm",
       "name": "npm:@types/react",
       "data": {
-        "version": "19.0.14",
+        "version": "19.1.16",
         "packageName": "@types/react",
-        "hash": "sha512-ixLZ7zG7j1fM0DijL9hDArwhwcCb4vqmePgwtV0GfnkHRSCUEv4LvzarcTdhoqgyMznUx/EhoTUv31CKZzkQlw=="
+        "hash": "sha512-WBM/nDbEZmDUORKnh5i1bTnAz6vTohUf9b8esSMu+b24+srbaxa04UbJgWx78CVfNXA20sNu0odEIluZDFdCog=="
       }
     },
     "npm:@types/resolve": {
@@ -8146,6 +8205,15 @@
         "version": "4.2.2",
         "packageName": "cls-hooked",
         "hash": "sha512-J4Xj5f5wq/4jAvcdgoGsL3G103BtWpZrMo8NEinRltN+xpTZdI+M38pyQqhuFU/P792xkMFvnKSf+Lm81U1bxw=="
+      }
+    },
+    "npm:clsx": {
+      "type": "npm",
+      "name": "npm:clsx",
+      "data": {
+        "version": "1.2.1",
+        "packageName": "clsx",
+        "hash": "sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg=="
       }
     },
     "npm:co": {
@@ -15289,15 +15357,6 @@
       "type": "npm",
       "name": "npm:react-dom",
       "data": {
-        "version": "19.0.0",
-        "packageName": "react-dom",
-        "hash": "sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ=="
-      }
-    },
-    "npm:react-dom@19.1.1": {
-      "type": "npm",
-      "name": "npm:react-dom@19.1.1",
-      "data": {
         "version": "19.1.1",
         "packageName": "react-dom",
         "hash": "sha512-Dlq/5LAZgF0Gaz6yiqZCf6VCcZs1ghAJyrsu84Q/GT0gV+mCxbfmKNoGRKBYMJ8IEdGPqu49YWXD02GCknEDkw=="
@@ -15555,22 +15614,13 @@
         "hash": "sha512-oX5u9rOQlHzqrE/64CNr0HB0uWxkCQmZNSfozlYvwE71TLVgeZxVf0IjouGEr1v7r1kcDifdAJBeOhdhxsG/DA=="
       }
     },
-    "npm:react@19.1.1": {
-      "type": "npm",
-      "name": "npm:react@19.1.1",
-      "data": {
-        "version": "19.1.1",
-        "packageName": "react",
-        "hash": "sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ=="
-      }
-    },
     "npm:react": {
       "type": "npm",
       "name": "npm:react",
       "data": {
-        "version": "19.0.0",
+        "version": "19.1.1",
         "packageName": "react",
-        "hash": "sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ=="
+        "hash": "sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ=="
       }
     },
     "npm:read-cache": {
@@ -17031,6 +17081,15 @@
         "hash": "sha512-MeQTA1r0litLUf0Rp/iisCaL8761lKAZHaimlbGK4j0HysC4PLfqygQj9srcs0m2RdtDYnF8UuYyKpbjHYp7Jw=="
       }
     },
+    "npm:tailwind-merge": {
+      "type": "npm",
+      "name": "npm:tailwind-merge",
+      "data": {
+        "version": "1.14.0",
+        "packageName": "tailwind-merge",
+        "hash": "sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ=="
+      }
+    },
     "npm:tailwindcss": {
       "type": "npm",
       "name": "npm:tailwindcss",
@@ -18413,7 +18472,7 @@
     "@poliverai/poliverai": [
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:@nx/eslint-plugin",
+        "target": "npm:react-native@0.81.4",
         "type": "static"
       },
       {
@@ -18423,7 +18482,7 @@
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:react-native@0.81.4",
+        "target": "npm:@nx/eslint-plugin",
         "type": "static"
       },
       {
@@ -18458,12 +18517,12 @@
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:react-native-screens",
+        "target": "npm:react-native-safe-area-context",
         "type": "static"
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:react-native-safe-area-context",
+        "target": "npm:react-native-screens",
         "type": "static"
       },
       {
@@ -18478,7 +18537,12 @@
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:react@19.1.1",
+        "target": "npm:react",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
+        "target": "npm:react-native-macos",
         "type": "static"
       },
       {
@@ -18493,22 +18557,22 @@
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "@poliverai/intl",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
-        "target": "npm:react-dom",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
         "target": "@poliverai/shared-ui",
         "type": "static"
       },
       {
         "source": "@poliverai/poliverai",
+        "target": "@poliverai/intl",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
         "target": "npm:node-fetch",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
+        "target": "npm:react-dom",
         "type": "static"
       },
       {
@@ -18565,12 +18629,12 @@
       },
       {
         "source": "@poliverai/website",
-        "target": "npm:react@19.1.1",
+        "target": "npm:react",
         "type": "static"
       },
       {
         "source": "@poliverai/website",
-        "target": "npm:react-dom@19.1.1",
+        "target": "npm:react-dom",
         "type": "static"
       },
       {
@@ -18582,22 +18646,32 @@
     "@poliverai/intl": [
       {
         "source": "@poliverai/intl",
-        "target": "npm:react-redux",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/intl",
         "target": "npm:react",
         "type": "static"
       },
       {
         "source": "@poliverai/intl",
-        "target": "npm:redux-persist",
+        "target": "npm:axios",
         "type": "static"
       },
       {
         "source": "@poliverai/intl",
         "target": "npm:react-native",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/intl",
+        "target": "npm:@react-native-async-storage/async-storage",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/intl",
+        "target": "npm:react-redux",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/intl",
+        "target": "npm:redux-persist",
         "type": "static"
       },
       {
@@ -18612,7 +18686,12 @@
       },
       {
         "source": "@poliverai/intl",
-        "target": "npm:@react-native-async-storage/async-storage",
+        "target": "npm:clsx",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/intl",
+        "target": "npm:tailwind-merge",
         "type": "static"
       }
     ],
@@ -18629,7 +18708,7 @@
       },
       {
         "source": "@poliverai/shared-ui",
-        "target": "npm:@react-native-async-storage/async-storage",
+        "target": "npm:@react-navigation/native",
         "type": "static"
       },
       {
@@ -39430,13 +39509,6 @@
     "npm:react-dom": [
       {
         "source": "npm:react-dom",
-        "target": "npm:scheduler",
-        "type": "static"
-      }
-    ],
-    "npm:react-dom@19.1.1": [
-      {
-        "source": "npm:react-dom@19.1.1",
         "target": "npm:scheduler@0.26.0",
         "type": "static"
       }
@@ -43755,5 +43827,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1759226690058
+  "computedAt": 1759288271552
 }

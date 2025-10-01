@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from '../Button/Button';
 import { useAuth } from '@poliverai/intl';
+import type { ImageSourcePropType } from 'react-native';
 
-export const NavBar: React.FC = () => {
+export type NavBarProps = {
+  logo?: ImageSourcePropType;
+};
+
+export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
   const navigation = (() => {
     try {
       return useNavigation();
@@ -88,8 +93,7 @@ export const NavBar: React.FC = () => {
     <View style={styles.nav}>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => safeNavigate('WebLanding', '/')} style={styles.logoRow} accessibilityRole="link" accessible accessibilityLabel="PoliverAI logo">
-          <Text style={styles.logoEmoji}>🔰</Text>
-          <Text style={styles.logoText}>PoliverAI</Text>
+          <Image source={logo} style={styles.logoImage} resizeMode="contain" />
         </TouchableOpacity>
 
         <View style={styles.linksRow}>
@@ -148,8 +152,9 @@ const styles = StyleSheet.create({
   },
   container: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   logoRow: { flexDirection: 'row', alignItems: 'center' },
-  logoText: { fontWeight: '800', fontSize: 18, marginLeft: 8 },
-  logoEmoji: { fontSize: 18 },
+  logoImage: { 
+    height: 40,
+  },
   linksRow: { flexDirection: 'row', alignItems: 'center' },
   link: { fontSize: 14, fontWeight: '600', color: '#0f172a', marginHorizontal: 6 },
   userRow: { flexDirection: 'row', alignItems: 'center' },
