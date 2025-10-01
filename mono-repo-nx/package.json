@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "show:projects": "NX_DAEMON=false npx nx show projects",
     "test": "NX_DAEMON=false nx run-many --target=test --all",
     "test:watch": "NX_DAEMON=false nx test --watch",
     "test:app": "NX_DAEMON=false nx run @poliverai/poliverai:test",
     "lint": "NX_DAEMON=false nx run-many --target=lint --all",
     "typecheck": "NX_DAEMON=false nx run-many --target=typecheck --all",
-  "start:web": "NX_DAEMON=false nx run @poliverai/poliverai:serve",
+    "start:web": "NX_DAEMON=false nx run @poliverai/poliverai:serve",
     "start:metro": "NX_DAEMON=false nx run @poliverai/poliverai:start",
     "start:android": "NX_DAEMON=false nx run @poliverai/poliverai:run-android",
     "start:ios": "NX_DAEMON=false nx run @poliverai/poliverai:run-ios",
@@ -23,7 +24,12 @@
     "build:android:dev": "NX_DAEMON=false nx run @poliverai/poliverai:run-android",
     "build:ios:dev": "NX_DAEMON=false nx run @poliverai/poliverai:run-ios",
     "build:android:release": "NX_DAEMON=false nx run @poliverai/poliverai:build-android --configuration=release",
-    "build:ios:release": "NX_DAEMON=false nx run @poliverai/poliverai:build-ios --configuration=release"
+    "build:ios:release": "NX_DAEMON=false nx run @poliverai/poliverai:build-ios --configuration=release",
+    "backend:bootstrap": "NX_DAEMON=false nx run backend:bootstrap",
+    "backend:serve": "NX_DAEMON=false nx run backend:serve",
+    "backend:test": "NX_DAEMON=false nx run backend:test",
+    "backend:lint": "NX_DAEMON=false nx run backend:lint",
+    "backend:typecheck": "NX_DAEMON=false nx run backend:typecheck"
   },
   "private": true,
   "dependencies": {
