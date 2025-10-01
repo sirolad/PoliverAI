@@ -5,11 +5,12 @@ import { Input } from '@poliverai/shared-ui';
 import { Button } from '@poliverai/shared-ui';
 import { Card } from '@poliverai/shared-ui';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '@poliverai/intl';
+import { useAuth, useTranslation } from '@poliverai/intl';
 import brandAssets from '../../../assets/brand';
 
 export const RegisterScreen: React.FC = () => {
   const { register: registerUser, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const navigation = useNavigation();
 
   const [name, setName] = useState('');
@@ -28,11 +29,11 @@ export const RegisterScreen: React.FC = () => {
   }, [isAuthenticated, navigation]);
 
   const validate = () => {
-    if (name.trim().length < 2) return 'Name must be at least 2 characters';
+    if (name.trim().length < 2) return t('screens.register.errors.nameShort');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Invalid email address';
-    if (password.length < 6) return 'Password must be at least 6 characters';
-    if (password !== confirmPassword) return "Passwords don't match";
+    if (!emailRegex.test(email)) return t('screens.register.errors.invalidEmail');
+    if (password.length < 6) return t('screens.register.errors.passwordShort');
+    if (password !== confirmPassword) return t('screens.register.errors.passwordsMismatch');
     return '';
   };
 
@@ -51,7 +52,7 @@ export const RegisterScreen: React.FC = () => {
       // @ts-expect-error: navigation typing may vary at runtime
       navigation?.navigate?.('Dashboard');
     } catch (e: unknown) {
-      const message = (e as { message?: string })?.message || 'Registration failed';
+  const message = (e as { message?: string })?.message || t('screens.register.errors.registrationFailed');
       setError(message);
     } finally {
       setIsSubmitting(false);
@@ -71,14 +72,14 @@ export const RegisterScreen: React.FC = () => {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Image source={brandAssets.poliveraiIcon} style={styles.logoImage} resizeMode="contain" />
-          <Text style={styles.headerTitle}>Join PoliverAI</Text>
-          <Text style={styles.headerSubtitle}>Create your account and start ensuring GDPR compliance</Text>
+          <Text style={styles.headerTitle}>{t('screens.register.header.title')}</Text>
+          <Text style={styles.headerSubtitle}>{t('screens.register.header.subtitle')}</Text>
         </View>
 
         <Card style={styles.cardStyle}>
           <View style={{ padding: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>Create Account</Text>
-            <Text style={{ color: '#6b7280', marginBottom: 12 }}>Get started with your free PoliverAI account</Text>
+            <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>{t('screens.register.form.title')}</Text>
+            <Text style={{ color: '#6b7280', marginBottom: 12 }}>{t('screens.register.form.subtitle')}</Text>
 
             {error ? (
               <View style={styles.errorBox}>
@@ -86,15 +87,15 @@ export const RegisterScreen: React.FC = () => {
               </View>
             ) : null}
 
-            <Input label="Full Name" placeholder="Enter your full name" value={name} onChangeText={setName} error={undefined} />
-            <Input label="Email address" placeholder="Enter your email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={undefined} />
-            <Input label="Password" placeholder="Create a password" value={password} onChangeText={setPassword} secureTextEntry error={undefined} />
-            <Input label="Confirm Password" placeholder="Confirm your password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry error={undefined} />
+            <Input label={t('screens.register.form.fullNameLabel')} placeholder={t('screens.register.form.fullNamePlaceholder')} value={name} onChangeText={setName} error={undefined} />
+            <Input label={t('screens.register.form.emailLabel')} placeholder={t('screens.register.form.emailPlaceholder')} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={undefined} />
+            <Input label={t('screens.register.form.passwordLabel')} placeholder={t('screens.register.form.passwordPlaceholder')} value={password} onChangeText={setPassword} secureTextEntry error={undefined} />
+            <Input label={t('screens.register.form.confirmPasswordLabel')} placeholder={t('screens.register.form.confirmPasswordPlaceholder')} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry error={undefined} />
 
-            <Button title={isSubmitting ? 'Creating account...' : 'Create Account'} onPress={onSubmit} loading={isSubmitting} disabled={isSubmitting} />
+            <Button title={isSubmitting ? t('screens.register.form.submitting') : t('screens.register.form.submit')} onPress={onSubmit} loading={isSubmitting} disabled={isSubmitting} />
 
             <View style={styles.footerText}>
-              <Text style={styles.smallText}>Already have an account? Sign in</Text>
+              <Text style={styles.smallText}>{t('screens.register.footer.haveAccount')}</Text>
             </View>
           </View>
         </Card>

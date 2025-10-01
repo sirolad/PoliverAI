@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '@poliverai/intl';
+import { useAuth, useTranslation } from '@poliverai/intl';
 import { FeatureCard } from '@poliverai/shared-ui';
 
 const { width } = Dimensions.get('window');
@@ -32,63 +32,33 @@ function useSafeNavigation(): SafeNavigation {
 
 export default function LandingScreen() {
   const { isAuthenticated } = useAuth();
+  const { t, get } = useTranslation();
   const navigation = useSafeNavigation();
 
-  const freeFeatures: Feature[] = [
-    {
-      emoji: '📄',
-      title: 'Basic Policy Verification',
-      description:
-        'Upload and analyze privacy policies for basic GDPR compliance checks using rule-based detection.',
-    },
-    {
-      emoji: '🛡️',
-      title: 'Essential Compliance Checks',
-      description:
-        'Detect fundamental GDPR violations and get basic recommendations for improvement.',
-    },
-    {
-      emoji: '⚡',
-      title: 'Fast Analysis',
-      description: 'Quick compliance screening using our optimized rule-based analysis engine.',
-    },
-  ];
+  // Load feature lists from locales; fall back to inline defaults if missing
+  const freeFeatures: Feature[] = (get('landing.features.free') as unknown as Feature[])
+    ?? [
+      { emoji: '📄', title: t('landing.features.free.0.title', 'Basic Policy Verification'), description: t('landing.features.free.0.description', 'Upload and analyze privacy policies for basic GDPR compliance checks using rule-based detection.') },
+      { emoji: '🛡️', title: t('landing.features.free.1.title', 'Essential Compliance Checks'), description: t('landing.features.free.1.description', 'Detect fundamental GDPR violations and get basic recommendations for improvement.') },
+      { emoji: '⚡', title: t('landing.features.free.2.title', 'Fast Analysis'), description: t('landing.features.free.2.description', 'Quick compliance screening using our optimized rule-based analysis engine.') },
+    ];
 
-  const proFeatures: Feature[] = [
-    {
-      emoji: '🤖',
-      title: 'AI-Powered Deep Analysis',
-      description:
-        'Advanced AI analysis that detects nuanced privacy violations and complex compliance issues.',
-      isPro: true,
-    },
-    {
-      emoji: '📊',
-      title: 'Comprehensive Reporting',
-      description:
-        'Detailed compliance reports with confidence scores, evidence, and actionable recommendations.',
-      isPro: true,
-    },
-    {
-      emoji: '✍️',
-      title: 'Policy Generation & Revision',
-      description: 'Generate revised policies automatically based on detected compliance gaps.',
-      isPro: true,
-    },
-  ];
+  const proFeatures: Feature[] = (get('landing.features.pro') as unknown as Feature[])
+    ?? [
+      { emoji: '🤖', title: t('landing.features.pro.0.title', 'AI-Powered Deep Analysis'), description: t('landing.features.pro.0.description', 'Advanced AI analysis that detects nuanced privacy violations and complex compliance issues.'), isPro: true },
+      { emoji: '📊', title: t('landing.features.pro.1.title', 'Comprehensive Reporting'), description: t('landing.features.pro.1.description', 'Detailed compliance reports with confidence scores, evidence, and actionable recommendations.'), isPro: true },
+      { emoji: '✍️', title: t('landing.features.pro.2.title', 'Policy Generation & Revision'), description: t('landing.features.pro.2.description', 'Generate revised policies automatically based on detected compliance gaps.'), isPro: true },
+    ];
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Hero */}
       <View style={styles.hero}>
         <View style={styles.introText}>
-          <Text style={styles.title}>PoliverAI</Text>
-          <Text style={styles.subtitle}> - Your AI-Powered GDPR Compliance Assistant</Text>
+          <Text style={styles.title}>{t('landing.hero.brand', 'PoliverAI')}</Text>
+          <Text style={styles.subtitle}> - {t('landing.hero.tagline', 'Your AI-Powered GDPR Compliance Assistant')}</Text>
         </View>
-        <Text style={styles.lead}>
-          Automatically analyze privacy policies for GDPR compliance, detect violations,
-          and generate comprehensive reports with AI-powered insights.
-        </Text>
+        <Text style={styles.lead}>{t('landing.hero.lead', 'Automatically analyze privacy policies for GDPR compliance, detect violations, and generate comprehensive reports with AI-powered insights.')}</Text>
 
         <View style={styles.heroButtons}>
           {!isAuthenticated ? (
@@ -97,19 +67,19 @@ export default function LandingScreen() {
                 style={[styles.button, styles.primaryButton]}
                 onPress={() => navigation?.navigate?.('Signup' as never)}
               >
-                <Text style={styles.buttonText}>Start Free Analysis</Text>
+                <Text style={styles.buttonText}>{t('landing.hero.buttons.startFree', 'Start Free Analysis')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.button, styles.outlineButton]}
                 onPress={() => navigation?.navigate?.('Signup' as never)}
               >
-                <Text style={styles.outlineButtonText}>Upgrade to Pro</Text>
+                <Text style={styles.outlineButtonText}>{t('landing.hero.buttons.upgradePro', 'Upgrade to Pro')}</Text>
               </TouchableOpacity>
             </>
           ) : (
             <TouchableOpacity style={[styles.button, styles.primaryButton]} onPress={() => navigation?.navigate?.('Dashboard' as never)}>
-              <Text style={styles.buttonText}>Go to Dashboard</Text>
+              <Text style={styles.buttonText}>{t('landing.hero.buttons.goToDashboard', 'Go to Dashboard')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -117,11 +87,11 @@ export default function LandingScreen() {
 
       {/* Features */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Powerful Features for Every Need</Text>
-        <Text style={styles.sectionLead}>From basic compliance checks to advanced AI-powered analysis</Text>
+  <Text style={styles.sectionTitle}>{t('landing.features.title', 'Powerful Features for Every Need')}</Text>
+  <Text style={styles.sectionLead}>{t('landing.features.lead', 'From basic compliance checks to advanced AI-powered analysis')}</Text>
 
         <View style={styles.subHeadingContainer}>
-          <Text style={styles.subHeading}>Free Tier Features</Text>
+          <Text style={styles.subHeading}>{t('landing.features.freeLabel', 'Free Tier Features')}</Text>
         </View>
         <View style={styles.grid}>
           {freeFeatures.map((f, i) => (
@@ -130,7 +100,7 @@ export default function LandingScreen() {
         </View>
 
         <View style={styles.subHeadingContainer}>
-          <Text style={styles.subHeading}>Pro Tier Features</Text>
+          <Text style={styles.subHeading}>{t('landing.features.proLabel', 'Pro Tier Features')}</Text>
         </View>
         <View style={styles.grid}>
           {proFeatures.map((f, i) => (
@@ -142,26 +112,26 @@ export default function LandingScreen() {
       {/* How it works */}
       <View style={[styles.section, styles.howItWorks]}>
         <View style={styles.howItWorksWrapped}>
-          <Text style={styles.sectionTitle}>How PoliverAI Works</Text>
-          <Text style={styles.sectionLead}>Simple, powerful, and intelligent GDPR compliance analysis</Text>
+          <Text style={styles.sectionTitle}>{t('landing.how.title', 'How PoliverAI Works')}</Text>
+          <Text style={styles.sectionLead}>{t('landing.how.lead', 'Simple, powerful, and intelligent GDPR compliance analysis')}</Text>
 
           <View style={styles.stepsRow}>
             <View style={styles.step}>
               <View style={styles.stepNumber}><Text style={styles.stepNumberText}>1</Text></View>
-              <Text style={styles.stepTitle}>Upload Your Policy</Text>
-              <Text style={styles.stepDesc}>Upload privacy policies in multiple formats (PDF, DOCX, TXT, HTML)</Text>
+              <Text style={styles.stepTitle}>{t('landing.how.steps.0.title', 'Upload Your Policy')}</Text>
+              <Text style={styles.stepDesc}>{t('landing.how.steps.0.desc', 'Upload privacy policies in multiple formats (PDF, DOCX, TXT, HTML)')}</Text>
             </View>
 
             <View style={styles.step}>
               <View style={styles.stepNumber}><Text style={styles.stepNumberText}>2</Text></View>
-              <Text style={styles.stepTitle}>AI Analysis</Text>
-              <Text style={styles.stepDesc}>Our AI analyzes your policy against GDPR requirements with multiple analysis modes</Text>
+              <Text style={styles.stepTitle}>{t('landing.how.steps.1.title', 'AI Analysis')}</Text>
+              <Text style={styles.stepDesc}>{t('landing.how.steps.1.desc', 'Our AI analyzes your policy against GDPR requirements with multiple analysis modes')}</Text>
             </View>
 
             <View style={styles.step}>
               <View style={styles.stepNumber}><Text style={styles.stepNumberText}>3</Text></View>
-              <Text style={styles.stepTitle}>Get Results</Text>
-              <Text style={styles.stepDesc}>Receive detailed reports with compliance scores, violations, and actionable recommendations</Text>
+              <Text style={styles.stepTitle}>{t('landing.how.steps.2.title', 'Get Results')}</Text>
+              <Text style={styles.stepDesc}>{t('landing.how.steps.2.desc', 'Receive detailed reports with compliance scores, violations, and actionable recommendations')}</Text>
             </View>
           </View>
         </View>
@@ -169,19 +139,18 @@ export default function LandingScreen() {
 
       {/* Pricing */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Choose Your Plan</Text>
-        <Text style={styles.sectionLead}>Start with our free tier or upgrade for advanced AI features</Text>
+  <Text style={styles.sectionTitle}>{t('landing.pricing.title', 'Choose Your Plan')}</Text>
+  <Text style={styles.sectionLead}>{t('landing.pricing.lead', 'Start with our free tier or upgrade for advanced AI features')}</Text>
 
         <View style={styles.pricingRow}>
           <View style={styles.pricingCard}>
-            <Text style={styles.pricingTitle}>Free Tier</Text>
-            <Text style={styles.pricingPrice}>$0</Text>
-            <Text style={styles.pricingDesc}>Perfect for getting started</Text>
+            <Text style={styles.pricingTitle}>{t('landing.pricing.free.title', 'Free Tier')}</Text>
+            <Text style={styles.pricingPrice}>{t('landing.pricing.free.price', '$0')}</Text>
+            <Text style={styles.pricingDesc}>{t('landing.pricing.free.desc', 'Perfect for getting started')}</Text>
             <View style={styles.pricingList}>
-              <Text style={styles.pricingListItem}>• Basic policy verification</Text>
-              <Text style={styles.pricingListItem}>• Rule-based compliance checks</Text>
-              <Text style={styles.pricingListItem}>• Fast analysis mode</Text>
-              <Text style={styles.pricingListItem}>• Basic recommendations</Text>
+              {(get('landing.pricing.free.features') as string[] ?? []).map((f, i) => (
+                <Text key={i} style={styles.pricingListItem}>{`• ${f}`}</Text>
+              ))}
             </View>
             <TouchableOpacity style={[styles.planButton, styles.outlineButton]}> 
               <Text style={styles.outlineButtonText}>Get Started Free</Text>
@@ -189,19 +158,17 @@ export default function LandingScreen() {
           </View>
 
           <View style={[styles.pricingCard, styles.pricingPro]}>
-            <Text style={styles.popularBadge}>POPULAR</Text>
-            <Text style={styles.pricingTitle}>Pro Tier</Text>
-            <Text style={styles.pricingPricePro}>$29</Text>
-            <Text style={styles.pricingDesc}>per month</Text>
+            <Text style={styles.popularBadge}>{t('landing.pricing.pro.popular', 'POPULAR')}</Text>
+            <Text style={styles.pricingTitle}>{t('landing.pricing.pro.title', 'Pro Tier')}</Text>
+            <Text style={styles.pricingPricePro}>{t('landing.pricing.pro.price', '$29')}</Text>
+            <Text style={styles.pricingDesc}>{t('landing.pricing.pro.per', 'per month')}</Text>
             <View style={styles.pricingList}>
-              <Text style={styles.pricingListItem}>• Everything in Free</Text>
-              <Text style={styles.pricingListItem}>• AI-powered deep analysis</Text>
-              <Text style={styles.pricingListItem}>• Comprehensive reporting</Text>
-              <Text style={styles.pricingListItem}>• Policy generation & revision</Text>
-              <Text style={styles.pricingListItem}>• Priority support</Text>
+              {(get('landing.pricing.pro.features') as string[] ?? []).map((f, i) => (
+                <Text key={i} style={styles.pricingListItem}>{`• ${f}`}</Text>
+              ))}
             </View>
             <TouchableOpacity style={[styles.planButton, styles.primaryButton]}>
-              <Text style={styles.buttonText}>Upgrade to Pro</Text>
+              <Text style={styles.buttonText}>{t('landing.pricing.pro.button', 'Upgrade to Pro')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -210,10 +177,10 @@ export default function LandingScreen() {
       {/* CTA */}
       {!isAuthenticated && (
         <View style={styles.cta}>
-          <Text style={styles.ctaTitle}>Ready to Ensure GDPR Compliance?</Text>
-          <Text style={styles.ctaLead}>Join thousands of organizations using PoliverAI to maintain privacy compliance</Text>
+          <Text style={styles.ctaTitle}>{t('landing.cta.title', 'Ready to Ensure GDPR Compliance?')}</Text>
+          <Text style={styles.ctaLead}>{t('landing.cta.lead', 'Join thousands of organizations using PoliverAI to maintain privacy compliance')}</Text>
           <TouchableOpacity style={[styles.button, styles.ctaButton]} onPress={() => navigation?.navigate?.('Signup' as never)}>
-            <Text style={styles.ctaButtonText}>Start Your Free Analysis Today</Text>
+            <Text style={styles.ctaButtonText}>{t('landing.cta.button', 'Start Your Free Analysis Today')}</Text>
           </TouchableOpacity>
         </View>
       )}

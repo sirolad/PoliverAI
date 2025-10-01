@@ -5,7 +5,7 @@ import { Input } from '@poliverai/shared-ui';
 import { Button } from '@poliverai/shared-ui';
 import { Card } from '@poliverai/shared-ui';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '@poliverai/intl';
+import { useAuth, useTranslation } from '@poliverai/intl';
 import brandAssets from '../../../assets/brand';
 
 type SafeNavigation = { navigate?: (...args: unknown[]) => void; replace?: (...args: unknown[]) => void } | undefined;
@@ -20,6 +20,7 @@ function useSafeNavigation(): SafeNavigation {
 
 export const LoginScreen: React.FC = () => {
   const { login, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const navigation = useSafeNavigation();
 
   const [email, setEmail] = useState('');
@@ -35,8 +36,8 @@ export const LoginScreen: React.FC = () => {
 
   const validate = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Invalid email address';
-    if (password.length < 6) return 'Password must be at least 6 characters';
+    if (!emailRegex.test(email)) return t('screens.login.errors.invalidEmail', 'Invalid email address');
+    if (password.length < 6) return t('screens.login.errors.passwordShort', 'Password must be at least 6 characters');
     return '';
   };
 
@@ -54,7 +55,7 @@ export const LoginScreen: React.FC = () => {
       await login(email, password);
       navigation?.navigate?.('Dashboard');
     } catch (e: unknown) {
-      const message = (e as { message?: string })?.message || 'Login failed';
+      const message = (e as { message?: string })?.message || t('screens.login.errors.loginFailed', 'Login failed');
       setError(message);
     } finally {
       setIsSubmitting(false);
@@ -74,14 +75,14 @@ export const LoginScreen: React.FC = () => {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Image source={brandAssets.poliveraiIcon} style={styles.logoImage} resizeMode="contain" />
-          <Text style={styles.headerTitle}>Welcome back to PoliverAI</Text>
-          <Text style={styles.headerSubtitle}>Sign in to access your GDPR compliance dashboard</Text>
+          <Text style={styles.headerTitle}>{t('screens.login.header.title', 'Welcome back to PoliverAI')}</Text>
+          <Text style={styles.headerSubtitle}>{t('screens.login.header.subtitle', 'Sign in to access your GDPR compliance dashboard')}</Text>
         </View>
 
         <Card style={styles.cardStyle}>
           <View style={{ padding: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>Sign In</Text>
-            <Text style={{ color: '#6b7280', marginBottom: 12 }}>Enter your email and password to access your account</Text>
+            <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>{t('screens.login.form.title', 'Sign In')}</Text>
+            <Text style={{ color: '#6b7280', marginBottom: 12 }}>{t('screens.login.form.subtitle', 'Enter your email and password to access your account')}</Text>
 
             {error ? (
               <View style={styles.errorBox}>
@@ -89,13 +90,13 @@ export const LoginScreen: React.FC = () => {
               </View>
             ) : null}
 
-            <Input label="Email address" placeholder="Enter your email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={undefined} />
-            <Input label="Password" placeholder="Enter your password" value={password} onChangeText={setPassword} secureTextEntry error={undefined} />
+            <Input label={t('screens.login.form.emailLabel', 'Email address')} placeholder={t('screens.login.form.emailPlaceholder', 'Enter your email')} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={undefined} />
+            <Input label={t('screens.login.form.passwordLabel', 'Password')} placeholder={t('screens.login.form.passwordPlaceholder', 'Enter your password')} value={password} onChangeText={setPassword} secureTextEntry error={undefined} />
 
-            <Button title={isSubmitting ? 'Signing in...' : 'Sign In'} onPress={onSubmit} loading={isSubmitting} disabled={isSubmitting} />
+            <Button title={isSubmitting ? t('screens.login.form.submitting', 'Signing in...') : t('screens.login.form.submit', 'Sign In')} onPress={onSubmit} loading={isSubmitting} disabled={isSubmitting} />
 
             <View style={styles.footerText}>
-              <Text style={styles.smallText}>Don't have an account? Sign up for free</Text>
+        <Text style={styles.smallText}>{t('screens.login.footer.noAccount', "Don't have an account? Sign up for free")}</Text>
             </View>
           </View>
         </Card>
