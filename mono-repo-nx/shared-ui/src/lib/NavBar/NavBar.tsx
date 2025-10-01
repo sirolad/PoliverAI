@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from '../Button/Button';
-import { useAuth } from '@poliverai/intl';
+import { useAuth, useTranslation } from '@poliverai/intl';
 import type { ImageSourcePropType } from 'react-native';
 
 export type NavBarProps = {
@@ -19,6 +19,7 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
   })();
 
   const { user, logout, isAuthenticated, isPro } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     await logout();
@@ -92,7 +93,7 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
   return (
     <View style={styles.nav}>
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => safeNavigate('WebLanding', '/')} style={styles.logoRow} accessibilityRole="link" accessible accessibilityLabel="PoliverAI logo">
+        <TouchableOpacity onPress={() => safeNavigate('WebLanding', '/')} style={styles.logoRow} accessibilityRole="link" accessible accessibilityLabel={t('components.navBar.logoAlt', 'PoliverAI logo')}>
           <Image source={logo} style={styles.logoImage} resizeMode="contain" />
         </TouchableOpacity>
 
@@ -100,14 +101,14 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
           {isAuthenticated && (
             <>
               <TouchableOpacity onPress={() => safeNavigate('Dashboard', '/dashboard')}>
-                <Text style={styles.link}>Dashboard</Text>
+                <Text style={styles.link}>{t('components.navBar.links.dashboard', 'Dashboard')}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => safeNavigate('Analyze', '/analyze')}>
-                <Text style={styles.link}>Analyze Policy</Text>
+                <Text style={styles.link}>{t('components.navBar.links.analyze', 'Analyze Policy')}</Text>
               </TouchableOpacity>
               {isPro && (
                 <TouchableOpacity onPress={() => safeNavigate('Reports', '/reports')}>
-                  <Text style={styles.link}>Reports</Text>
+                  <Text style={styles.link}>{t('components.navBar.links.reports', 'Reports')}</Text>
                 </TouchableOpacity>
               )}
             </>
@@ -121,18 +122,18 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
                 <Text style={styles.userIcon}>👤</Text>
                 <Text style={styles.userName}>{user?.name}</Text>
                 <View style={[styles.tierPill, isPro ? styles.proPill : styles.freePill]}>
-                  <Text style={styles.tierText}>{isPro ? 'PRO' : 'FREE'}</Text>
+                  <Text style={styles.tierText}>{isPro ? t('components.navBar.tier.pro', 'PRO') : t('components.navBar.tier.free', 'FREE')}</Text>
                 </View>
               </View>
 
-              {!isPro && <Button title="Upgrade to Pro" size="sm" style={styles.upgradeBtn} onPress={() => safeNavigate('Pricing', '/pricing')} />}
+              {!isPro && <Button title={t('components.navBar.buttons.upgrade', 'Upgrade to Pro')} size="sm" style={styles.upgradeBtn} onPress={() => safeNavigate('Pricing', '/pricing')} />}
 
-              <Button title="Logout" size="sm" variant="outline" onPress={handleLogout} style={styles.logoutBtn} />
+              <Button title={t('components.navBar.buttons.logout', 'Logout')} size="sm" variant="outline" onPress={handleLogout} style={styles.logoutBtn} />
             </View>
           ) : (
             <View style={styles.authLinks}>
-              <Button title="Login" size="sm" variant="outline" onPress={() => safeNavigate('Login', '/login')} />
-              <Button title="Sign Up" size="sm" onPress={() => safeNavigate('Register', '/register')} />
+              <Button title={t('components.navBar.buttons.login', 'Login')} size="sm" variant="outline" onPress={() => safeNavigate('Login', '/login')} />
+              <Button title={t('components.navBar.buttons.signup', 'Sign Up')} size="sm" onPress={() => safeNavigate('Register', '/register')} />
             </View>
           )}
         </View>

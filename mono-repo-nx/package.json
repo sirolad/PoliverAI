@@ -8,10 +8,7 @@
     "test:app": "NX_DAEMON=false nx run @poliverai/poliverai:test",
     "lint": "NX_DAEMON=false nx run-many --target=lint --all",
     "typecheck": "NX_DAEMON=false nx run-many --target=typecheck --all",
-    "start:web": "NX_DAEMON=false nx run @poliverai/poliverai:serve",
-    "website:dev": "NX_DAEMON=false nx run website:dev",
-    "website:build": "NX_DAEMON=false nx run website:build",
-    "website:preview": "NX_DAEMON=false nx run website:preview",
+  "start:web": "NX_DAEMON=false nx run @poliverai/poliverai:serve",
     "start:metro": "NX_DAEMON=false nx run @poliverai/poliverai:start",
     "start:android": "NX_DAEMON=false nx run @poliverai/poliverai:run-android",
     "start:ios": "NX_DAEMON=false nx run @poliverai/poliverai:run-ios",
@@ -48,7 +45,9 @@
     "react-redux": "^8.1.2",
     "redux-persist": "^6.0.0",
     "tailwind-merge": "^1.14.0",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "react-native-macos": "^0.79.0-0",
+    "react-native-windows": "^0.79.4"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",
@@ -65,9 +64,9 @@
     "@nx/web": "21.5.3",
     "@nx/workspace": "21.5.3",
     "@playwright/test": "^1.36.0",
-    "@react-native-community/cli": "~18.0.0",
-    "@react-native-community/cli-platform-android": "~18.0.0",
-    "@react-native-community/cli-platform-ios": "~18.0.0",
+    "@react-native-community/cli": "20.0.0",
+    "@react-native-community/cli-platform-android": "20.0.0",
+    "@react-native-community/cli-platform-ios": "20.0.0",
     "@react-native/babel-preset": "~0.79.3",
     "@react-native/metro-config": "~0.79.3",
     "@swc-node/register": "~1.9.1",
@@ -109,12 +108,9 @@
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0",
     "vite": "^7.0.0",
-    "vitest": "^3.0.0",
-    "react-native-macos": "0.78.0",
-    "react-native-windows": "^0.72.0"
+    "vitest": "^3.0.0"
   },
   "recommended": {
-    "expo-splash-screen": "^0.20.3",
     "lottie-react-native": "~6.1.1"
   },
   "workspaces": [

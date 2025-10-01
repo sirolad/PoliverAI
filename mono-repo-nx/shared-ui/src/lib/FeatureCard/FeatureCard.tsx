@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { useTranslation } from '@poliverai/intl';
 
 const { width } = Dimensions.get('window');
 
@@ -12,6 +13,7 @@ type FeatureProps = {
 };
 
 export function FeatureCard({ title, description, emoji, icon, isPro }: FeatureProps) {
+  const { t } = useTranslation();
   const Icon = icon as any;
 
   const renderIcon = () => {
@@ -31,7 +33,7 @@ export function FeatureCard({ title, description, emoji, icon, isPro }: FeatureP
 
     return (
       <Text style={[styles.cardIcon, isPro ? styles.iconPro : styles.iconFree]}>
-        {emoji || '•'}
+        {emoji || t('components.featureCard.defaultEmoji', '•')}
       </Text>
     );
   };
@@ -39,8 +41,8 @@ export function FeatureCard({ title, description, emoji, icon, isPro }: FeatureP
   return (
     <View style={[styles.card, isPro ? styles.cardPro : null]}>
       <View style={styles.cardHeader}>
-        {renderIcon()}
-        <Text style={styles.cardTitle}>{title}{isPro && <Text style={styles.proBadge}>PRO</Text>}</Text>
+  {renderIcon()}
+  <Text style={styles.cardTitle}>{title}{isPro && <Text style={styles.proBadge}>{t('components.featureCard.proBadge', 'PRO')}</Text>}</Text>
         
       </View>
       <Text style={styles.cardDescription}>{description}</Text>

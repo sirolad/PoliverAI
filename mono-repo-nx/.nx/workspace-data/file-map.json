@@ -82,286 +82,223 @@
     }
   ],
   "fileMap": {
-    "nonProjectFiles": [
-      {
-        "file": ".nx/workspace-data/project-graph.json",
-        "hash": "3297797326899039480"
-      },
-      {
-        "file": ".nx/workspace-data/tsconfig-files.hash",
-        "hash": "18835352654383678"
-      },
-      {
-        "file": ".gitignore copy",
-        "hash": "9736255068491139274"
-      },
-      {
-        "file": ".editorconfig",
-        "hash": "5443105041930014821"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/11415631708397534589",
-        "hash": "18082422026009768442"
-      },
-      {
-        "file": ".nx/workspace-data/vite-9347777721732807074.hash",
-        "hash": "15138461270767380062"
-      },
-      {
-        "file": "ENVIRONMENT.md",
-        "hash": "8374640234455093288"
-      },
-      {
-        "file": "package-lock.json",
-        "hash": "6775522436816083730"
-      },
-      {
-        "file": "README.md",
-        "hash": "3524593427753909703"
-      },
-      {
-        "file": ".nx/workspace-data/nx_files.nxt",
-        "hash": "248773833199943272"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/14814584027021407679",
-        "hash": "13306331926730413543"
-      },
-      {
-        "file": "types/nativewind.d.ts",
-        "hash": "4448500845488111636"
-      },
-      {
-        "file": ".nx/workspace-data/react-native-13680130287481568117.hash",
-        "hash": "11717136473836525348"
-      },
-      {
-        "file": "package.json",
-        "hash": "5202790274311283519"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/1213858975373763130",
-        "hash": "1525595767501351605"
-      },
-      {
-        "file": ".nx/workspace-data/8E49F1FE-706E-5B59-9D2C-9CD55207B162.db-wal",
-        "hash": "3174671360900322197"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/9155424066658945844",
-        "hash": "13306331926730413543"
-      },
-      {
-        "file": "types/node-fetch.d.ts",
-        "hash": "876621060885250262"
-      },
-      {
-        "file": ".nx/workspace-data/file-map.json",
-        "hash": "11391086317288364763"
-      },
-      {
-        "file": ".prettierrc",
-        "hash": "16267754514737964994"
-      },
-      {
-        "file": "eslint.config.mjs",
-        "hash": "4618192569345483032"
-      },
-      {
-        "file": ".nx/cache/run.json",
-        "hash": "12354584313436334226"
-      },
-      {
-        "file": "yarn.lock",
-        "hash": "8497039147176115460"
-      },
-      {
-        "file": ".nx/workspace-data/playwright-5186013267177752385.hash",
-        "hash": "4373214797901561094"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "9686451369022131490"
-      },
-      {
-        "file": "types/jest-native-extend.d.ts",
-        "hash": "11757943400814617203"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/6185190026496081166",
-        "hash": "11753789002510577139"
-      },
-      {
-        "file": ".nx/workspace-data/jest-7930610538513362720.hash",
-        "hash": "3085677872345916848"
-      },
-      {
-        "file": ".prettierignore",
-        "hash": "14688272390704683536"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/15922040268778407651",
-        "hash": "16001146394680400469"
-      },
-      {
-        "file": "nx.json",
-        "hash": "17258001290880629289"
-      },
-      {
-        "file": "tsconfig.json",
-        "hash": "2580455245821620110"
-      },
-      {
-        "file": "PLATFORMS.md",
-        "hash": "3799838126728952651"
-      },
-      {
-        "file": ".nx/workspace-data/parsed-lock-file.json",
-        "hash": "11183589221094921161"
-      },
-      {
-        "file": "jest.config.ts",
-        "hash": "6870352021923392442"
-      },
-      {
-        "file": ".nx/workspace-data/eslint-2654242865465226088.hash",
-        "hash": "15846949616514463716"
-      },
-      {
-        "file": "types/lottie-react-native.d.ts",
-        "hash": "9289027587607148121"
-      },
-      {
-        "file": ".nx/workspace-data/source-maps.json",
-        "hash": "5023519502218902114"
-      },
-      {
-        "file": ".nx/workspace-data/lockfile.hash",
-        "hash": "462136653412382880"
-      },
-      {
-        "file": ".nx/workspace-data/tsc-2568428459166798129.hash",
-        "hash": "5091534706461741653"
-      },
-      {
-        "file": "types/assets.d.ts",
-        "hash": "6810434267168738989"
-      },
-      {
-        "file": "jest.preset.js",
-        "hash": "9430166341120122740"
-      },
-      {
-        "file": "DOCUMENTATION.md",
-        "hash": "327771526839274673"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/2369138764453981672",
-        "hash": "1525595767501351605"
-      },
-      {
-        "file": "types/poliverai-intl.d.ts",
-        "hash": "8522270170485839445"
-      },
-      {
-        "file": "types/poliverai-intl-global.d.ts",
-        "hash": "1874695732665944825"
-      },
-      {
-        "file": "tailwind.config.js",
-        "hash": "5928114095821167674"
-      },
-      {
-        "file": ".env copy.example",
-        "hash": "7792112218045104884"
-      }
-    ],
     "projectFileMap": {
-      "@poliverai/website": [
+      "@poliverai/shared-ui": [
         {
-          "file": "apps/website/index.html",
-          "hash": "6741162324811851595"
+          "file": "shared-ui/.babelrc.js",
+          "hash": "6945456693927865222"
         },
         {
-          "file": "apps/website/package.json",
-          "hash": "2509427450858076130",
-          "deps": [
-            "npm:@vitejs/plugin-react",
-            "npm:vite@5.4.20",
-            "npm:tailwindcss",
-            "npm:react",
-            "npm:react-dom"
-          ]
+          "file": "shared-ui/README.md",
+          "hash": "13339143099163553231"
         },
         {
-          "file": "apps/website/src/Landing.tsx",
-          "hash": "13696394550430239407",
-          "deps": [
-            "npm:react"
-          ]
-        },
-        {
-          "file": "apps/website/src/assets/brand/index.ts",
-          "hash": "18408568289020725176"
-        },
-        {
-          "file": "apps/website/src/assets/brand/poliverai-logo.svg",
-          "hash": "15225054589985489595"
-        },
-        {
-          "file": "apps/website/src/assets/index.ts",
-          "hash": "10234558614963642894"
-        },
-        {
-          "file": "apps/website/src/assets/lottie-animations/global.d.ts",
-          "hash": "2601393778367413629"
-        },
-        {
-          "file": "apps/website/src/assets/lottie-animations/index.ts",
-          "hash": "4471283515403973274"
-        },
-        {
-          "file": "apps/website/src/assets/lottie-animations/poliverai-splash.json",
-          "hash": "7591846821692335935"
-        },
-        {
-          "file": "apps/website/src/components/Splash.tsx",
-          "hash": "2722763389335808679",
+          "file": "shared-ui/package.json",
+          "hash": "16659910248713338527",
           "deps": [
             "npm:react",
-            "npm:lottie-web"
+            "npm:react-native"
           ]
         },
         {
-          "file": "apps/website/src/global.d.ts",
-          "hash": "16159727015601631903"
+          "file": "shared-ui/src/index.ts",
+          "hash": "16738048591951323407"
         },
         {
-          "file": "apps/website/src/i18n/strings.ts",
-          "hash": "13172219262206544233"
-        },
-        {
-          "file": "apps/website/src/index.css",
-          "hash": "501535261075013374"
-        },
-        {
-          "file": "apps/website/src/main.tsx",
-          "hash": "7315683587035842977",
+          "file": "shared-ui/src/lib/Button/Button.tsx",
+          "hash": "5883418151219064387",
           "deps": [
             "npm:react",
-            "npm:react-dom"
+            "npm:react-native"
           ]
         },
         {
-          "file": "apps/website/tsconfig.json",
-          "hash": "14259938721330343535"
+          "file": "shared-ui/src/lib/Card/Card.tsx",
+          "hash": "15053030416036695386",
+          "deps": [
+            "npm:react",
+            "npm:react-native"
+          ]
         },
         {
-          "file": "apps/website/vite.config.ts",
-          "hash": "15071673983933545040",
+          "file": "shared-ui/src/lib/FeatureCard/FeatureCard.tsx",
+          "hash": "18445694846558695415",
           "deps": [
-            "npm:vite@5.4.20",
-            "npm:@vitejs/plugin-react"
+            "npm:react-native"
+          ]
+        },
+        {
+          "file": "shared-ui/src/lib/Input/Input.tsx",
+          "hash": "15616560191018529952",
+          "deps": [
+            "npm:react",
+            "npm:react-native"
+          ]
+        },
+        {
+          "file": "shared-ui/src/lib/NavBar/NavBar.tsx",
+          "hash": "3759246116995003339",
+          "deps": [
+            "npm:react",
+            "npm:react-native",
+            "npm:@react-navigation/native",
+            "@poliverai/intl"
+          ]
+        },
+        {
+          "file": "shared-ui/src/lib/NavBar/index.ts",
+          "hash": "3389426378154067236"
+        },
+        {
+          "file": "shared-ui/src/lib/PlatformGreeting/PlatformGreeting.macos.tsx",
+          "hash": "6989548978641856419",
+          "deps": [
+            "npm:react-native",
+            "@poliverai/intl"
+          ]
+        },
+        {
+          "file": "shared-ui/src/lib/PlatformGreeting/PlatformGreeting.tsx",
+          "hash": "3760492823585161132",
+          "deps": [
+            "npm:react-native",
+            "@poliverai/intl"
+          ]
+        },
+        {
+          "file": "shared-ui/src/lib/PlatformGreeting/PlatformGreeting.windows.tsx",
+          "hash": "7298257377225503673",
+          "deps": [
+            "npm:react-native",
+            "@poliverai/intl"
+          ]
+        },
+        {
+          "file": "shared-ui/src/lib/Splash/Splash.tsx",
+          "hash": "4355477916659972613",
+          "deps": [
+            "npm:react",
+            "npm:react-native"
+          ]
+        },
+        {
+          "file": "shared-ui/tsconfig.json",
+          "hash": "6774177574860209080"
+        },
+        {
+          "file": "shared-ui/tsconfig.lib.json",
+          "hash": "15858824687312491460"
+        },
+        {
+          "file": "shared-ui/types/poliverai-intl/index.d.ts",
+          "hash": "12062670755262846032"
+        }
+      ],
+      "@poliverai/poliverai-e2e": [
+        {
+          "file": "apps/poliverai-e2e/eslint.config.mjs",
+          "hash": "1172734138943286526",
+          "deps": [
+            "npm:eslint-plugin-playwright"
+          ]
+        },
+        {
+          "file": "apps/poliverai-e2e/package.json",
+          "hash": "1314024798413686166"
+        },
+        {
+          "file": "apps/poliverai-e2e/playwright.config.ts",
+          "hash": "1851517654716273094",
+          "deps": [
+            "npm:@playwright/test",
+            "npm:@nx/playwright",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "apps/poliverai-e2e/src/example.spec.ts",
+          "hash": "16019101014373124625",
+          "deps": [
+            "npm:@playwright/test"
+          ]
+        },
+        {
+          "file": "apps/poliverai-e2e/tsconfig.json",
+          "hash": "15001458170383955177"
+        }
+      ],
+      "@poliverai/intl": [
+        {
+          "file": "libs/intl/package.json",
+          "hash": "18081475502638237688"
+        },
+        {
+          "file": "libs/intl/src/hooks/useAuth.tsx",
+          "hash": "9192101200630763493",
+          "deps": [
+            "npm:react",
+            "npm:axios",
+            "npm:react-native",
+            "npm:@react-native-async-storage/async-storage",
+            "npm:react-redux"
+          ]
+        },
+        {
+          "file": "libs/intl/src/i18n.ts",
+          "hash": "3343752786328715505",
+          "deps": [
+            "npm:react-redux"
+          ]
+        },
+        {
+          "file": "libs/intl/src/index.ts",
+          "hash": "2983357144274875387"
+        },
+        {
+          "file": "libs/intl/src/locales/en-US.json",
+          "hash": "2599682408935487821"
+        },
+        {
+          "file": "libs/intl/src/provider.tsx",
+          "hash": "5784255659666271652",
+          "deps": [
+            "npm:react",
+            "npm:react-redux",
+            "npm:redux-persist",
+            "npm:react-native"
+          ]
+        },
+        {
+          "file": "libs/intl/src/slices/authSlice.ts",
+          "hash": "4127731598481922695",
+          "deps": [
+            "npm:@reduxjs/toolkit"
+          ]
+        },
+        {
+          "file": "libs/intl/src/slices/localeSlice.ts",
+          "hash": "1820278012315914749",
+          "deps": [
+            "npm:@reduxjs/toolkit"
+          ]
+        },
+        {
+          "file": "libs/intl/src/store.ts",
+          "hash": "3973423530967195178",
+          "deps": [
+            "npm:@reduxjs/toolkit",
+            "npm:redux",
+            "npm:redux-persist",
+            "npm:@react-native-async-storage/async-storage",
+            "npm:react-native"
+          ]
+        },
+        {
+          "file": "libs/intl/src/utils/cn.ts",
+          "hash": "15516058123845190687",
+          "deps": [
+            "npm:clsx",
+            "npm:tailwind-merge"
           ]
         }
       ],
@@ -400,7 +337,7 @@
         },
         {
           "file": "apps/poliverai/android/app/src/main/AndroidManifest.xml",
-          "hash": "8439592262627536205"
+          "hash": "5805347991994052416"
         },
         {
           "file": "apps/poliverai/android/app/src/main/java/com/poliverai/app/MainActivity.kt",
@@ -522,7 +459,7 @@
         },
         {
           "file": "apps/poliverai/ios/Podfile.lock",
-          "hash": "11480682727341607943"
+          "hash": "10327082411732282238"
         },
         {
           "file": "apps/poliverai/ios/PoliverAI.xcodeproj/project.pbxproj",
@@ -719,8 +656,52 @@
           ]
         },
         {
-          "file": "apps/poliverai/macos/package.json",
-          "hash": "3760695637480723911"
+          "file": "apps/poliverai/macos/.gitignore",
+          "hash": "1240289823967132261"
+        },
+        {
+          "file": "apps/poliverai/macos/Podfile",
+          "hash": "18041934326025635998"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/AppDelegate.h",
+          "hash": "15988884509377304416"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/AppDelegate.mm",
+          "hash": "12868952988955903000"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/Assets.xcassets/AppIcon.appiconset/Contents.json",
+          "hash": "18278433102342524081"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/Assets.xcassets/Contents.json",
+          "hash": "6988882422559056195"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/Base.lproj/Main.storyboard",
+          "hash": "2445803016961295491"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/Info.plist",
+          "hash": "5578866195837206535"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/main.m",
+          "hash": "6567027000931336079"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai-macOS/poliverai.entitlements",
+          "hash": "15995465109636026699"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai.xcodeproj/project.pbxproj",
+          "hash": "1420189765936236514"
+        },
+        {
+          "file": "apps/poliverai/macos/poliverai.xcodeproj/xcshareddata/xcschemes/poliverai-macOS.xcscheme",
+          "hash": "3172516495448978079"
         },
         {
           "file": "apps/poliverai/metro.config.js",
@@ -733,21 +714,26 @@
         },
         {
           "file": "apps/poliverai/package.json",
-          "hash": "8355342282020928495",
+          "hash": "9338431064823625770",
           "deps": [
             "npm:@react-navigation/drawer",
             "npm:react-native-gesture-handler",
+            "npm:react-native-macos-init",
             "npm:react-native-reanimated",
             "npm:react-native-safe-area-context",
             "npm:react-native-screens",
+            "npm:@react-native-community/cli",
+            "npm:@react-native-community/cli-platform-android",
+            "npm:@react-native-community/cli-platform-ios",
             "npm:@react-native/metro-config@0.81.1",
             "npm:@testing-library/react-native@13.3.3",
             "npm:metro-config@0.83.2",
             "npm:react",
             "npm:react-native@0.81.4",
-            "npm:react-native-macos",
             "npm:react-native-svg@15.13.0",
-            "npm:react-test-renderer@19.1.1"
+            "npm:react-test-renderer@19.1.1",
+            "npm:react-native-macos",
+            "npm:react-native-windows"
           ]
         },
         {
@@ -968,228 +954,359 @@
             "npm:@nx/vite",
             "npm:esbuild"
           ]
+        },
+        {
+          "file": "apps/poliverai/windows/.gitignore",
+          "hash": "8414700353817298319"
+        },
+        {
+          "file": "apps/poliverai/windows/ExperimentalFeatures.props",
+          "hash": "16336103767715714033"
+        },
+        {
+          "file": "apps/poliverai/windows/NuGet.Config",
+          "hash": "18100724281219252865"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai.sln",
+          "hash": "17895049732799846322"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/.gitignore",
+          "hash": "5649329812834499618"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/App.cpp",
+          "hash": "14814966874253901643"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/App.h",
+          "hash": "10294036295572243261"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/App.idl",
+          "hash": "10332868874635908657"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/App.xaml",
+          "hash": "6845875571736105688"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Assets/LockScreenLogo.scale-200.png",
+          "hash": "17764574666692753993"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Assets/SplashScreen.scale-200.png",
+          "hash": "5513078994029317213"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Assets/Square150x150Logo.scale-200.png",
+          "hash": "17053945256405541351"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Assets/Square44x44Logo.scale-200.png",
+          "hash": "7532582237347079331"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Assets/Square44x44Logo.targetsize-24_altform-unplated.png",
+          "hash": "7611698532681998063"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Assets/StoreLogo.png",
+          "hash": "13700283728802170871"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Assets/Wide310x150Logo.scale-200.png",
+          "hash": "4651252032540376311"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/AutolinkedNativeModules.g.cpp",
+          "hash": "10344113063064415847"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/AutolinkedNativeModules.g.h",
+          "hash": "14594005500263894968"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/AutolinkedNativeModules.g.props",
+          "hash": "13207894248764602948"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/AutolinkedNativeModules.g.targets",
+          "hash": "2379924667229404718"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/MainPage.cpp",
+          "hash": "18399409958076157305"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/MainPage.h",
+          "hash": "3848748301520560486"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/MainPage.idl",
+          "hash": "13076360268296576737"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/MainPage.xaml",
+          "hash": "14937252952196656289"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/Package.appxmanifest",
+          "hash": "11494611761119390717"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/PropertySheet.props",
+          "hash": "15028856556307039973"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/ReactPackageProvider.cpp",
+          "hash": "14761873066374860808"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/ReactPackageProvider.h",
+          "hash": "17114416655089999683"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/pch.cpp",
+          "hash": "263885375360330098"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/pch.h",
+          "hash": "6516027183960118847"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/poliverai.vcxproj",
+          "hash": "127827890175391674"
+        },
+        {
+          "file": "apps/poliverai/windows/poliverai/poliverai.vcxproj.filters",
+          "hash": "3013222065611708352"
         }
       ],
-      "@poliverai/intl": [
+      "@poliverai/website": [
         {
-          "file": "libs/intl/package.json",
-          "hash": "18081475502638237688"
+          "file": "apps/website/index.html",
+          "hash": "6741162324811851595"
         },
         {
-          "file": "libs/intl/src/hooks/useAuth.tsx",
-          "hash": "9192101200630763493",
+          "file": "apps/website/package.json",
+          "hash": "2509427450858076130",
+          "deps": [
+            "npm:@vitejs/plugin-react",
+            "npm:vite@5.4.20",
+            "npm:tailwindcss",
+            "npm:react",
+            "npm:react-dom"
+          ]
+        },
+        {
+          "file": "apps/website/src/Landing.tsx",
+          "hash": "13696394550430239407",
+          "deps": [
+            "npm:react"
+          ]
+        },
+        {
+          "file": "apps/website/src/assets/brand/index.ts",
+          "hash": "18408568289020725176"
+        },
+        {
+          "file": "apps/website/src/assets/brand/poliverai-logo.svg",
+          "hash": "15225054589985489595"
+        },
+        {
+          "file": "apps/website/src/assets/index.ts",
+          "hash": "10234558614963642894"
+        },
+        {
+          "file": "apps/website/src/assets/lottie-animations/global.d.ts",
+          "hash": "2601393778367413629"
+        },
+        {
+          "file": "apps/website/src/assets/lottie-animations/index.ts",
+          "hash": "4471283515403973274"
+        },
+        {
+          "file": "apps/website/src/assets/lottie-animations/poliverai-splash.json",
+          "hash": "7591846821692335935"
+        },
+        {
+          "file": "apps/website/src/components/Splash.tsx",
+          "hash": "2722763389335808679",
           "deps": [
             "npm:react",
-            "npm:axios",
-            "npm:react-native",
-            "npm:@react-native-async-storage/async-storage",
-            "npm:react-redux"
+            "npm:lottie-web"
           ]
         },
         {
-          "file": "libs/intl/src/i18n.ts",
-          "hash": "3343752786328715505",
-          "deps": [
-            "npm:react-redux"
-          ]
+          "file": "apps/website/src/global.d.ts",
+          "hash": "16159727015601631903"
         },
         {
-          "file": "libs/intl/src/index.ts",
-          "hash": "2983357144274875387"
+          "file": "apps/website/src/i18n/strings.ts",
+          "hash": "13172219262206544233"
         },
         {
-          "file": "libs/intl/src/locales/en-US.json",
-          "hash": "2599682408935487821"
+          "file": "apps/website/src/index.css",
+          "hash": "501535261075013374"
         },
         {
-          "file": "libs/intl/src/provider.tsx",
-          "hash": "5784255659666271652",
+          "file": "apps/website/src/main.tsx",
+          "hash": "7315683587035842977",
           "deps": [
             "npm:react",
-            "npm:react-redux",
-            "npm:redux-persist",
-            "npm:react-native"
+            "npm:react-dom"
           ]
         },
         {
-          "file": "libs/intl/src/slices/authSlice.ts",
-          "hash": "4127731598481922695",
+          "file": "apps/website/tsconfig.json",
+          "hash": "14259938721330343535"
+        },
+        {
+          "file": "apps/website/vite.config.ts",
+          "hash": "15071673983933545040",
           "deps": [
-            "npm:@reduxjs/toolkit"
+            "npm:vite@5.4.20",
+            "npm:@vitejs/plugin-react"
           ]
-        },
-        {
-          "file": "libs/intl/src/slices/localeSlice.ts",
-          "hash": "1820278012315914749",
-          "deps": [
-            "npm:@reduxjs/toolkit"
-          ]
-        },
-        {
-          "file": "libs/intl/src/store.ts",
-          "hash": "3973423530967195178",
-          "deps": [
-            "npm:@reduxjs/toolkit",
-            "npm:redux",
-            "npm:redux-persist",
-            "npm:@react-native-async-storage/async-storage",
-            "npm:react-native"
-          ]
-        },
-        {
-          "file": "libs/intl/src/utils/cn.ts",
-          "hash": "15516058123845190687",
-          "deps": [
-            "npm:clsx",
-            "npm:tailwind-merge"
-          ]
-        }
-      ],
-      "@poliverai/shared-ui": [
-        {
-          "file": "shared-ui/.babelrc.js",
-          "hash": "6945456693927865222"
-        },
-        {
-          "file": "shared-ui/README.md",
-          "hash": "13339143099163553231"
-        },
-        {
-          "file": "shared-ui/package.json",
-          "hash": "16659910248713338527",
-          "deps": [
-            "npm:react",
-            "npm:react-native"
-          ]
-        },
-        {
-          "file": "shared-ui/src/index.ts",
-          "hash": "16738048591951323407"
-        },
-        {
-          "file": "shared-ui/src/lib/Button/Button.tsx",
-          "hash": "5883418151219064387",
-          "deps": [
-            "npm:react",
-            "npm:react-native"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/Card/Card.tsx",
-          "hash": "15053030416036695386",
-          "deps": [
-            "npm:react",
-            "npm:react-native"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/FeatureCard/FeatureCard.tsx",
-          "hash": "18445694846558695415",
-          "deps": [
-            "npm:react-native"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/Input/Input.tsx",
-          "hash": "15616560191018529952",
-          "deps": [
-            "npm:react",
-            "npm:react-native"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/NavBar/NavBar.tsx",
-          "hash": "3759246116995003339",
-          "deps": [
-            "npm:react",
-            "npm:react-native",
-            "npm:@react-navigation/native",
-            "@poliverai/intl"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/NavBar/index.ts",
-          "hash": "3389426378154067236"
-        },
-        {
-          "file": "shared-ui/src/lib/PlatformGreeting/PlatformGreeting.macos.tsx",
-          "hash": "6989548978641856419",
-          "deps": [
-            "npm:react-native",
-            "@poliverai/intl"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/PlatformGreeting/PlatformGreeting.tsx",
-          "hash": "3760492823585161132",
-          "deps": [
-            "npm:react-native",
-            "@poliverai/intl"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/PlatformGreeting/PlatformGreeting.windows.tsx",
-          "hash": "7298257377225503673",
-          "deps": [
-            "npm:react-native",
-            "@poliverai/intl"
-          ]
-        },
-        {
-          "file": "shared-ui/src/lib/Splash/Splash.tsx",
-          "hash": "4355477916659972613",
-          "deps": [
-            "npm:react",
-            "npm:react-native"
-          ]
-        },
-        {
-          "file": "shared-ui/tsconfig.json",
-          "hash": "6774177574860209080"
-        },
-        {
-          "file": "shared-ui/tsconfig.lib.json",
-          "hash": "15858824687312491460"
-        },
-        {
-          "file": "shared-ui/types/poliverai-intl/index.d.ts",
-          "hash": "12062670755262846032"
-        }
-      ],
-      "@poliverai/poliverai-e2e": [
-        {
-          "file": "apps/poliverai-e2e/eslint.config.mjs",
-          "hash": "1172734138943286526",
-          "deps": [
-            "npm:eslint-plugin-playwright"
-          ]
-        },
-        {
-          "file": "apps/poliverai-e2e/package.json",
-          "hash": "1314024798413686166"
-        },
-        {
-          "file": "apps/poliverai-e2e/playwright.config.ts",
-          "hash": "1851517654716273094",
-          "deps": [
-            "npm:@playwright/test",
-            "npm:@nx/playwright",
-            "npm:@nx/devkit"
-          ]
-        },
-        {
-          "file": "apps/poliverai-e2e/src/example.spec.ts",
-          "hash": "16019101014373124625",
-          "deps": [
-            "npm:@playwright/test"
-          ]
-        },
-        {
-          "file": "apps/poliverai-e2e/tsconfig.json",
-          "hash": "15001458170383955177"
         }
       ]
-    }
+    },
+    "nonProjectFiles": [
+      {
+        "file": ".editorconfig",
+        "hash": "5443105041930014821"
+      },
+      {
+        "file": ".env copy.example",
+        "hash": "7792112218045104884"
+      },
+      {
+        "file": ".gitignore copy",
+        "hash": "9736255068491139274"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "14688272390704683536"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "16267754514737964994"
+      },
+      {
+        "file": "DOCUMENTATION.md",
+        "hash": "327771526839274673"
+      },
+      {
+        "file": "ENVIRONMENT.md",
+        "hash": "8374640234455093288"
+      },
+      {
+        "file": "PLATFORMS.md",
+        "hash": "3799838126728952651"
+      },
+      {
+        "file": "README.md",
+        "hash": "3524593427753909703"
+      },
+      {
+        "file": "eslint.config.mjs",
+        "hash": "4618192569345483032"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "6870352021923392442"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
+      },
+      {
+        "file": "macos/.gitignore",
+        "hash": "1240289823967132261"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/AppDelegate.h",
+        "hash": "15988884509377304416"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/AppDelegate.mm",
+        "hash": "9295954077090917073"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/Assets.xcassets/AppIcon.appiconset/Contents.json",
+        "hash": "18278433102342524081"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/Assets.xcassets/Contents.json",
+        "hash": "6988882422559056195"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/Base.lproj/Main.storyboard",
+        "hash": "412443821636900346"
+      },
+      {
+        "file": "macos/Podfile",
+        "hash": "10335352019813828187"
+      },
+      {
+        "file": "nx.json",
+        "hash": "17258001290880629289"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "6775522436816083730"
+      },
+      {
+        "file": "package.json",
+        "hash": "17779452301497294716"
+      },
+      {
+        "file": "tailwind.config.js",
+        "hash": "5928114095821167674"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "9686451369022131490"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "2580455245821620110"
+      },
+      {
+        "file": "types/assets.d.ts",
+        "hash": "6810434267168738989"
+      },
+      {
+        "file": "types/jest-native-extend.d.ts",
+        "hash": "11757943400814617203"
+      },
+      {
+        "file": "types/lottie-react-native.d.ts",
+        "hash": "9289027587607148121"
+      },
+      {
+        "file": "types/nativewind.d.ts",
+        "hash": "4448500845488111636"
+      },
+      {
+        "file": "types/node-fetch.d.ts",
+        "hash": "876621060885250262"
+      },
+      {
+        "file": "types/poliverai-intl-global.d.ts",
+        "hash": "1874695732665944825"
+      },
+      {
+        "file": "types/poliverai-intl.d.ts",
+        "hash": "8522270170485839445"
+      },
+      {
+        "file": "yarn.lock",
+        "hash": "15206985858140241238"
+      }
+    ]
   },
-  "externalNodesHash": "524977401864026904"
+  "externalNodesHash": "11684651389414746947"
 }
