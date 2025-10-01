@@ -84,180 +84,180 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "README.md",
-        "hash": "3524593427753909703"
-      },
-      {
-        "file": "PLATFORMS.md",
-        "hash": "3799838126728952651"
-      },
-      {
-        "file": "macos/.gitignore",
-        "hash": "1240289823967132261"
-      },
-      {
-        "file": ".nx/workspace-data/playwright-5186013267177752385.hash",
-        "hash": "15452696955762092367"
-      },
-      {
-        "file": "eslint.config.mjs",
-        "hash": "4618192569345483032"
-      },
-      {
-        "file": ".nx/workspace-data/eslint-2654242865465226088.hash",
-        "hash": "6586741935506675066"
-      },
-      {
-        "file": "types/jest-native-extend.d.ts",
-        "hash": "11757943400814617203"
-      },
-      {
-        "file": "macos/@poliverai/source-macOS/Assets.xcassets/AppIcon.appiconset/Contents.json",
-        "hash": "18278433102342524081"
-      },
-      {
-        "file": "macos/Podfile",
-        "hash": "10335352019813828187"
-      },
-      {
-        "file": "macos/@poliverai/source-macOS/Base.lproj/Main.storyboard",
-        "hash": "412443821636900346"
-      },
-      {
-        "file": "macos/@poliverai/source-macOS/AppDelegate.h",
-        "hash": "15988884509377304416"
-      },
-      {
-        "file": "types/lottie-react-native.d.ts",
-        "hash": "9289027587607148121"
-      },
-      {
-        "file": ".gitignore copy",
-        "hash": "9736255068491139274"
-      },
-      {
-        "file": "types/nativewind.d.ts",
-        "hash": "4448500845488111636"
-      },
-      {
-        "file": "DOCUMENTATION.md",
-        "hash": "327771526839274673"
-      },
-      {
-        "file": "types/poliverai-intl.d.ts",
-        "hash": "8522270170485839445"
-      },
-      {
-        "file": ".nx/workspace-data/tsc-2568428459166798129.hash",
-        "hash": "10546328029353770238"
-      },
-      {
-        "file": "nx.json",
-        "hash": "17258001290880629289"
-      },
-      {
-        "file": "tsconfig.json",
-        "hash": "2580455245821620110"
-      },
-      {
-        "file": ".nx/workspace-data/source-maps.json",
-        "hash": "17996908605108814940"
-      },
-      {
-        "file": "types/assets.d.ts",
-        "hash": "6810434267168738989"
-      },
-      {
-        "file": "macos/@poliverai/source-macOS/AppDelegate.mm",
-        "hash": "9295954077090917073"
-      },
-      {
-        "file": "tailwind.config.js",
-        "hash": "5928114095821167674"
-      },
-      {
-        "file": ".prettierignore",
-        "hash": "14688272390704683536"
-      },
-      {
-        "file": ".nx/workspace-data/vite-9347777721732807074.hash",
-        "hash": "12253448623159298306"
-      },
-      {
-        "file": ".env copy.example",
-        "hash": "7792112218045104884"
-      },
-      {
-        "file": "jest.preset.js",
-        "hash": "9430166341120122740"
-      },
-      {
-        "file": ".nx/workspace-data/nx_files.nxt",
-        "hash": "14176099654897268928"
+        "file": ".nx/workspace-data/project-graph.json",
+        "hash": "1664962369791748467"
       },
       {
         "file": "macos/@poliverai/source-macOS/Assets.xcassets/Contents.json",
         "hash": "6988882422559056195"
       },
       {
-        "file": "types/poliverai-intl-global.d.ts",
-        "hash": "1874695732665944825"
+        "file": "package-lock.json",
+        "hash": "6775522436816083730"
       },
       {
-        "file": ".nx/workspace-data/file-map.json",
-        "hash": "16142226274626131903"
-      },
-      {
-        "file": "package.json",
-        "hash": "10209022090078966813"
+        "file": ".nx/workspace-data/tsc-2568428459166798129.hash",
+        "hash": "10546328029353770238"
       },
       {
         "file": ".prettierrc",
         "hash": "16267754514737964994"
       },
       {
-        "file": ".nx/workspace-data/tsconfig-files.hash",
-        "hash": "18835352654383678"
+        "file": "macos/@poliverai/source-macOS/AppDelegate.h",
+        "hash": "15988884509377304416"
       },
       {
-        "file": "jest.config.ts",
-        "hash": "6870352021923392442"
+        "file": "PLATFORMS.md",
+        "hash": "3799838126728952651"
       },
       {
-        "file": ".nx/workspace-data/jest-7930610538513362720.hash",
-        "hash": "16441206756913754116"
+        "file": "types/lottie-react-native.d.ts",
+        "hash": "9289027587607148121"
       },
       {
-        "file": "package-lock.json",
-        "hash": "6775522436816083730"
-      },
-      {
-        "file": "yarn.lock",
-        "hash": "4151866169456799058"
+        "file": "macos/Podfile",
+        "hash": "10335352019813828187"
       },
       {
         "file": "types/node-fetch.d.ts",
         "hash": "876621060885250262"
       },
       {
-        "file": "tsconfig.base.json",
-        "hash": "9686451369022131490"
+        "file": "DOCUMENTATION.md",
+        "hash": "327771526839274673"
+      },
+      {
+        "file": "types/poliverai-intl-global.d.ts",
+        "hash": "1874695732665944825"
+      },
+      {
+        "file": ".nx/workspace-data/eslint-2654242865465226088.hash",
+        "hash": "15807062992211412091"
+      },
+      {
+        "file": ".nx/workspace-data/playwright-5186013267177752385.hash",
+        "hash": "15452696955762092367"
+      },
+      {
+        "file": "tailwind.config.js",
+        "hash": "5928114095821167674"
+      },
+      {
+        "file": "yarn.lock",
+        "hash": "4151866169456799058"
+      },
+      {
+        "file": ".nx/workspace-data/source-maps.json",
+        "hash": "17996908605108814940"
+      },
+      {
+        "file": "package.json",
+        "hash": "10209022090078966813"
+      },
+      {
+        "file": "eslint.config.mjs",
+        "hash": "4618192569345483032"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/Assets.xcassets/AppIcon.appiconset/Contents.json",
+        "hash": "18278433102342524081"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "2580455245821620110"
+      },
+      {
+        "file": ".gitignore copy",
+        "hash": "9736255068491139274"
+      },
+      {
+        "file": "README.md",
+        "hash": "3524593427753909703"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/Base.lproj/Main.storyboard",
+        "hash": "412443821636900346"
+      },
+      {
+        "file": "macos/.gitignore",
+        "hash": "1240289823967132261"
+      },
+      {
+        "file": ".nx/workspace-data/nx_files.nxt",
+        "hash": "14176099654897268928"
+      },
+      {
+        "file": "types/poliverai-intl.d.ts",
+        "hash": "8522270170485839445"
+      },
+      {
+        "file": "types/assets.d.ts",
+        "hash": "6810434267168738989"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "6870352021923392442"
       },
       {
         "file": ".editorconfig",
         "hash": "5443105041930014821"
       },
       {
+        "file": "tsconfig.base.json",
+        "hash": "9686451369022131490"
+      },
+      {
+        "file": "types/nativewind.d.ts",
+        "hash": "4448500845488111636"
+      },
+      {
+        "file": ".nx/workspace-data/tsconfig-files.hash",
+        "hash": "18835352654383678"
+      },
+      {
+        "file": ".env copy.example",
+        "hash": "7792112218045104884"
+      },
+      {
+        "file": ".nx/workspace-data/react-native-13680130287481568117.hash",
+        "hash": "6569548095683094383"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "14688272390704683536"
+      },
+      {
         "file": "ENVIRONMENT.md",
         "hash": "8374640234455093288"
       },
       {
-        "file": ".nx/workspace-data/react-native-13680130287481568117.hash",
-        "hash": "1662104802287974308"
+        "file": "nx.json",
+        "hash": "17258001290880629289"
       },
       {
-        "file": ".nx/workspace-data/project-graph.json",
-        "hash": "15031569667896132093"
+        "file": ".nx/workspace-data/file-map.json",
+        "hash": "2731636334087902784"
+      },
+      {
+        "file": "macos/@poliverai/source-macOS/AppDelegate.mm",
+        "hash": "9295954077090917073"
+      },
+      {
+        "file": "types/jest-native-extend.d.ts",
+        "hash": "11757943400814617203"
+      },
+      {
+        "file": ".nx/workspace-data/jest-7930610538513362720.hash",
+        "hash": "16441206756913754116"
+      },
+      {
+        "file": ".nx/workspace-data/vite-9347777721732807074.hash",
+        "hash": "12253448623159298306"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "9430166341120122740"
       }
     ],
     "projectFileMap": {
