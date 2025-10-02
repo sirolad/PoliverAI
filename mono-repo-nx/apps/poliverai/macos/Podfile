@@ -1,17 +1,47 @@
-require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require 'pathname'
+
+# When running `pod install` in a hoisted monorepo we need to disable React
+# codegen early — before the React Native CocoaPods helper is required — so
+# that its cleanup step does not delete any hand-written stub podspecs we
+# create under `build/generated/ios` while iterating on codegen fixes.
+ENV['DISABLE_CODEGEN'] = '1'
+ENV['RCT_SKIP_CODEGEN'] = '1'
+
+# Resolve react_native_pods.rb from the hoisted react-native package (supports workspace hoisting)
+require Pod::Executable.execute_command('node', ['-p', 'require.resolve("react-native/scripts/react_native_pods.rb", {paths: [process.argv[1]]})', __dir__]).strip
+
+# Resolve react_native_pods.rb for react-native-macos as well (macOS specific pods)
+require Pod::Executable.execute_command('node', ['-p', 'require.resolve("react-native-macos/scripts/react_native_pods.rb", {paths: [process.argv[1]]})', __dir__]).strip
+# require_relative '../../../node_modules/react-native-macos/scripts/react_native_pods'
+# require_relative '../../../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 prepare_react_native_project!
 
 target 'poliverai-macOS' do
   platform :macos, '11.0'
+
+  # Autolink native modules (this will use the CLI to produce a JSON autolinking file)
   use_native_modules!
 
   # Flags change depending on the env values.
   flags = get_default_flags()
 
+  # Resolve the react-native-macos package root (supports hoisted node_modules).
+  mac_react_native_pkg = Pod::Executable.execute_command('node', ['-p', 'require.resolve("react-native-macos/package.json", {paths: [process.argv[1]]})', __dir__]).strip
+  mac_react_native_path = File.dirname(mac_react_native_pkg)
+  mac_react_native_path = Pathname.new(mac_react_native_path).relative_path_from(Pod::Config.instance.installation_root).to_s
+
+  # Temporary: disable codegen run during pod install to avoid parser errors
+  # (e.g. UnsupportedGenericParserError) while we iterate on spec types.
+  ENV['DISABLE_CODEGEN'] = '1'
+  # Also set RCT_SKIP_CODEGEN so react-native's codegen cleanup step does not remove
+  # the `build/generated/ios` folder when codegen is intentionally disabled.
+  ENV['RCT_SKIP_CODEGEN'] = '1'
+  # Ensure New Architecture is enabled for pods that validate it (Reanimated requires this)
+  ENV['RCT_NEW_ARCH_ENABLED'] = '1' unless ENV.key?('RCT_NEW_ARCH_ENABLED')
+
   use_react_native!(
-    :path => '../node_modules/react-native-macos',
+    :path => mac_react_native_path,
     :hermes_enabled => false,
     :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
     # An absolute path to your application root.
@@ -19,6 +49,6 @@ target 'poliverai-macOS' do
   )
 
   post_install do |installer|
-    react_native_post_install(installer)
+    react_native_post_install(installer, mac_react_native_path)
   end
 end
