@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import json
 import os
 from typing import Any
 
 import gradio as gr
 import requests
+
+# Check for Gradio bypass authentication flag
+GRADIO_BYPASS_AUTH = os.getenv("GRADIO_BYPASS_AUTH", "false").lower() == "true"
+
 
 # Constants
 ARTICLE_LENGTH_LIMIT = 80
@@ -39,6 +44,50 @@ def _post_files(path: str, files: list[tuple], data: dict = None) -> dict:
         return {"error": str(e)}
 
 
+def _post_files_streaming(
+    path: str, files: list[tuple], data: dict = None, progress_callback=None
+) -> dict:
+    """Post files with streaming response support for progress updates."""
+    try:
+        with requests.post(path, files=files, data=data, stream=True, timeout=300) as r:
+            r.raise_for_status()
+
+            # Handle streaming response
+            result = None
+            for line in r.iter_lines():
+                if line:
+                    line_str = line.decode("utf-8")
+                    if line_str.startswith("data: "):
+                        try:
+                            data_content = json.loads(line_str[6:])  # Remove 'data: ' prefix
+
+                            # Call progress callback if provided
+                            if progress_callback and "progress" in data_content:
+                                progress_callback(
+                                    data_content.get("progress", 0), data_content.get("message", "")
+                                )
+
+                            # Check if this is the final result
+                            if (
+                                data_content.get("status") == "completed"
+                                and "result" in data_content
+                            ):
+                                result = data_content["result"]
+                                break
+                            elif data_content.get("status") == "error":
+                                return {
+                                    "error": data_content.get("message", "Unknown error occurred")
+                                }
+
+                        except json.JSONDecodeError:
+                            continue  # Skip malformed JSON lines
+
+            return result if result else {"error": "No result received from streaming endpoint"}
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def _create_ask_tab():
     """Create the Ask tab for the UI."""
     q = gr.Textbox(
@@ -61,7 +110,7 @@ def _create_ask_tab():
     return q, ask_btn, ans, src
 
 
-def _create_verify_tab():
+def _create_verify_tab():  # noqa: PLR0915
     """Create the Verify tab for the UI."""
     with gr.Row():
         with gr.Column(scale=3):
@@ -69,40 +118,82 @@ def _create_verify_tab():
                 label="Upload policy document to verify (.txt, .md, .pdf, .docx, .html)"
             )
         with gr.Column(scale=1):
-            analysis_mode = gr.Radio(
-                choices=[
-                    ("🚀 Fast - Quick basic checks (< 1s)", "fast"),
-                    ("⚖️ Balanced - Smart analysis (recommended, ~30-60s)", "balanced"),
-                    ("🔬 Detailed - Deep analysis (~30-60s)", "detailed"),
-                ],
-                label="Analysis Mode",
-                value="balanced",
-                info="Choose analysis depth vs. speed trade-off",
-            )
+            if GRADIO_BYPASS_AUTH:
+                # Full access mode - all features available
+                analysis_mode = gr.Radio(
+                    choices=[
+                        ("🚀 Fast - Quick basic checks (< 1s)", "fast"),
+                        ("⚖️ Balanced - Smart analysis (recommended, ~30-60s)", "balanced"),
+                        ("🔬 Detailed - Deep analysis (~30-60s)", "detailed"),
+                    ],
+                    label="Analysis Mode",
+                    value="balanced",
+                    info="Choose analysis depth vs. speed trade-off. All modes available.",
+                )
+            else:
+                # Restricted mode - only fast mode available
+                analysis_mode = gr.Radio(
+                    choices=[
+                        ("🚀 Fast - Quick basic checks (< 1s)", "fast"),
+                        ("⚖️ Balanced - Smart analysis (Pro required, ~30-60s)", "balanced"),
+                        ("🔬 Detailed - Deep analysis (Pro required, ~30-60s)", "detailed"),
+                    ],
+                    label="Analysis Mode",
+                    value="fast",
+                    info="Fast mode is free. Balanced/Detailed require Pro subscription.",
+                )
 
     with gr.Accordion("Analysis Mode Guide", open=False):
-        gr.Markdown("""
-        **🚀 Fast Mode:**
-        - Lightning fast analysis using rule-based checks
-        - Detects common GDPR violations quickly
-        - Best for: Initial screening, bulk processing
+        if GRADIO_BYPASS_AUTH:
+            gr.Markdown("""
+            **🚀 Fast Mode:**
+            - Lightning fast analysis using rule-based checks
+            - Detects common GDPR violations quickly
+            - Best for: Initial screening, bulk processing
 
-        **⚖️ Balanced Mode (Recommended):**
-        - Smart AI analysis on sensitive clauses only
-        - Detects nuanced violations like automatic data collection
-        - Best for: Production verification, thorough compliance checks
+            **⚖️ Balanced Mode (Recommended):**
+            - Smart AI analysis on sensitive clauses only
+            - Detects nuanced violations like automatic data collection
+            - Best for: Production verification, thorough compliance checks
 
-        **🔬 Detailed Mode:**
-        - Full AI analysis on all substantial clauses
-        - Maximum accuracy and comprehensive analysis
-        - Best for: Legal review, research, maximum thoroughness
-        """)
+            **🔬 Detailed Mode:**
+            - Full AI analysis on all substantial clauses
+            - Maximum accuracy and comprehensive analysis
+            - Best for: Legal review, research, maximum thoroughness
+
+            **📝 Developer Mode:** All analysis modes are available in this Gradio interface.
+            """)
+        else:
+            gr.Markdown("""
+            **🚀 Fast Mode (Free):**
+            - Lightning fast analysis using rule-based checks
+            - Detects common GDPR violations quickly
+            - Available to all users without authentication
+            - Best for: Initial screening, bulk processing
+
+            **⚖️ Balanced Mode (Pro Required):**
+            - Smart AI analysis on sensitive clauses only
+            - Detects nuanced violations like automatic data collection
+            - Requires Pro subscription and authentication
+            - Best for: Production verification, thorough compliance checks
+
+            **🔬 Detailed Mode (Pro Required):**
+            - Full AI analysis on all substantial clauses
+            - Maximum accuracy and comprehensive analysis
+            - Requires Pro subscription and authentication
+            - Best for: Legal review, research, maximum thoroughness
+
+            **Note:** To use Balanced or Detailed modes, sign up for a Pro account
+            and use the React frontend at `/dashboard` for full authentication support.
+            """)
 
     verify_btn = gr.Button("Verify Compliance", variant="primary")
 
     # Progress and status indicators
     with gr.Row():
         analysis_status = gr.Markdown("Ready to analyze")
+
+    # Progress tracking is handled internally by the streaming endpoint
 
     with gr.Accordion("Summary & Key Violations", open=True):
         summary_display = gr.Markdown("Analysis results will appear here")
@@ -165,7 +256,7 @@ def _create_verify_tab():
             "",
         )
 
-    def _generate_summary_content(
+    def _generate_summary_content(  # noqa: PLR0912, PLR0915
         data: dict, selected_mode: str, emoji: str, verdict_text: str, score_value: int
     ):
         """Generate the comprehensive analysis summary content."""
@@ -371,10 +462,40 @@ def _create_verify_tab():
 
             # Include analysis mode in the request
             form_data = {"analysis_mode": selected_mode}
-            data = _post_files(f"{API_BASE}/verify", files, form_data)
+
+            # Create a progress callback for Gradio
+            def update_progress(progress_val, message):
+                # Update the analysis status with progress
+                progress_status = (
+                    f"**{status_title}** ({progress_val}%)\n\n{message}\n\nPlease wait..."
+                )
+                return progress_status
+
+            # Try streaming endpoint first for better user experience
+            data = _post_files_streaming(
+                f"{API_BASE}/verify-stream", files, form_data, progress_callback=update_progress
+            )
+
+            # Fallback to regular endpoint if streaming fails
+            if "error" in data and (
+                "not found" in data["error"].lower()
+                or "method not allowed" in data["error"].lower()
+            ):
+                data = _post_files(f"{API_BASE}/verify", files, form_data)
 
             if "error" in data:
-                return _get_error_result(data["error"])
+                error_msg = data["error"]
+                # Check if it's a Pro subscription error
+                if "Pro subscription" in error_msg or "Advanced analysis modes" in error_msg:
+                    enhanced_error = (
+                        f"{error_msg}\n\n"
+                        "💡 **Solution:** Use Fast mode (free) or upgrade to Pro:\n\n"
+                        "1. Select 'Fast' analysis mode above, or\n"
+                        "2. Visit `/dashboard` to sign up for Pro and access advanced features\n\n"
+                        "Fast mode still provides comprehensive GDPR compliance checking!"
+                    )
+                    return _get_error_result(enhanced_error)
+                return _get_error_result(error_msg)
 
             # Success status with mode-specific messaging
             verdict_emoji = {"compliant": "✅", "partially_compliant": "⚠️", "non_compliant": "❌"}
@@ -547,42 +668,42 @@ Analysis completed successfully. Review the detailed findings below."""
         # Get the original verification results
         result = verify_fn(uploaded_file, selected_mode)
 
-        # If successful, store the analysis data for export
+        # If successful and not an error, extract analysis data from the result
         minimum_result_length = 8
         if (
             uploaded_file
             and len(result) >= minimum_result_length
             and result[1] != "No file selected"
+            and not result[0].startswith("❌")
         ):
             try:
-                # Re-call the API to get the full data for export
+                # Read the file content for export (only if needed for revision)
                 with open(uploaded_file.name, "rb") as f:
                     file_content = f.read()
 
-                files = [
-                    (
-                        "file",
-                        (
-                            os.path.basename(uploaded_file.name),
-                            file_content,
-                            "application/octet-stream",
+                # Create analysis data dict from the result for export
+                # The verify_fn already contains all the data we need
+                analysis_data_dict = {
+                    "verdict": result[1].lower().replace(" ", "_"),
+                    "score": result[2],
+                    "confidence": result[3],
+                    "evidence": result[4],
+                    "findings": result[5],
+                    "recommendations": result[6],
+                    "analysis_mode": selected_mode,
+                    "document_name": os.path.basename(uploaded_file.name),
+                    "original_document": file_content.decode("utf-8", errors="ignore"),
+                    "metrics": {
+                        "total_violations": len(result[5]),
+                        "total_fulfills": len(
+                            [e for e in result[4] if "fulfills" in str(e).lower()]
                         ),
-                    )
-                ]
-
-                form_data = {"analysis_mode": selected_mode}
-                data = _post_files(f"{API_BASE}/verify", files, form_data)
-
-                if "error" not in data:
-                    # Store the analysis data with document name and original document
-                    analysis_data_dict = dict(data)
-                    analysis_data_dict["analysis_mode"] = selected_mode
-                    analysis_data_dict["document_name"] = os.path.basename(uploaded_file.name)
-                    # Store the original document content for revision
-                    analysis_data_dict["original_document"] = file_content.decode(
-                        "utf-8", errors="ignore"
-                    )
-                    return result + (analysis_data_dict,)
+                        "critical_violations": len(
+                            [f for f in result[5] if f.get("severity") == "high"]
+                        ),
+                    },
+                }
+                return result + (analysis_data_dict,)
             except Exception as e:
                 # Log the error but don't prevent verification from completing
                 print(f"Warning: Failed to store analysis data for export: {e}")
@@ -636,6 +757,28 @@ def build_gradio_ui():
     """Build the main Gradio UI with all tabs."""
     with gr.Blocks(title="PoliverAI") as demo:
         gr.Markdown("# PoliverAI — GDPR Compliance Assistant")
+        if GRADIO_BYPASS_AUTH:
+            gr.Markdown("""
+            **👋 Welcome to the Full-Feature Gradio Interface!**
+
+            **🛠️ Developer Mode Enabled:** All analysis modes are available.
+            This bypasses authentication restrictions for development and demo purposes.
+
+            **Current Interface:** Full-Feature Gradio UI |
+            **Production Interface:** [React Dashboard](/dashboard)
+            """)
+        else:
+            gr.Markdown("""
+            **👋 Welcome to the Gradio Interface!**
+            This provides basic access to PoliverAI's features.
+
+            **For full features including Pro subscription and advanced analysis modes,**
+            visit our [React Frontend Dashboard](/dashboard) with account creation,
+            authentication, and subscription management.
+
+            **Current Interface:** Basic Gradio UI (Fast mode only) |
+            **Full Interface:** [React Dashboard](/dashboard) (All features)
+            """)
 
         with gr.Tab("Ask"):
             _create_ask_tab()

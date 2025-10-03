@@ -1,25 +1,47 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuth } from '@/contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Shield, Zap, Clock, FileCheck, BarChart } from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import {
+  CheckCircle2,
+  Shield,
+  Zap,
+  Clock,
+  FileCheck,
+  BarChart,
+} from "lucide-react";
 
 interface FeatureCardProps {
-  icon: React.ElementType
-  title: string
-  description: string
-  isPro?: boolean
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  isPro?: boolean;
 }
 
-function FeatureCard({ icon: Icon, title, description, isPro = false }: FeatureCardProps) {
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+  isPro = false,
+}: FeatureCardProps) {
   return (
-    <Card className={`h-full ${isPro ? 'border-blue-200 bg-blue-50/50' : ''}`}>
+    <Card className={`h-full ${isPro ? "border-blue-200 bg-blue-50/50" : ""}`}>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Icon className={`h-6 w-6 ${isPro ? 'text-blue-600' : 'text-green-600'}`} />
+          <Icon
+            className={`h-6 w-6 ${isPro ? "text-blue-600" : "text-green-600"}`}
+          />
           <CardTitle className="text-lg">{title}</CardTitle>
           {isPro && (
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">PRO</span>
+            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              PRO
+            </span>
           )}
         </div>
       </CardHeader>
@@ -27,51 +49,57 @@ function FeatureCard({ icon: Icon, title, description, isPro = false }: FeatureC
         <CardDescription className="text-base">{description}</CardDescription>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export default function LandingPage() {
-  const { isAuthenticated } = useAuth()
-  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const freeFeatures = [
     {
       icon: FileCheck,
-      title: 'Basic Policy Verification',
-      description: 'Upload and analyze privacy policies for basic GDPR compliance checks using rule-based detection.'
+      title: "Basic Policy Verification",
+      description:
+        "Upload and analyze privacy policies for basic GDPR compliance checks using rule-based detection.",
     },
     {
       icon: Shield,
-      title: 'Essential Compliance Checks',
-      description: 'Detect fundamental GDPR violations and get basic recommendations for improvement.'
+      title: "Essential Compliance Checks",
+      description:
+        "Detect fundamental GDPR violations and get basic recommendations for improvement.",
     },
     {
       icon: Clock,
-      title: 'Fast Analysis',
-      description: 'Quick compliance screening using our optimized rule-based analysis engine.'
-    }
-  ]
+      title: "Fast Analysis",
+      description:
+        "Quick compliance screening using our optimized rule-based analysis engine.",
+    },
+  ];
 
   const proFeatures = [
     {
       icon: Zap,
-      title: 'AI-Powered Deep Analysis',
-      description: 'Advanced AI analysis that detects nuanced privacy violations and complex compliance issues.',
-      isPro: true
+      title: "AI-Powered Deep Analysis",
+      description:
+        "Advanced AI analysis that detects nuanced privacy violations and complex compliance issues.",
+      isPro: true,
     },
     {
       icon: BarChart,
-      title: 'Comprehensive Reporting',
-      description: 'Detailed compliance reports with confidence scores, evidence, and actionable recommendations.',
-      isPro: true
+      title: "Comprehensive Reporting",
+      description:
+        "Detailed compliance reports with confidence scores, evidence, and actionable recommendations.",
+      isPro: true,
     },
     {
       icon: FileCheck,
-      title: 'Policy Generation & Revision',
-      description: 'Generate revised policies automatically based on detected compliance gaps.',
-      isPro: true
-    }
-  ]
+      title: "Policy Generation & Revision",
+      description:
+        "Generate revised policies automatically based on detected compliance gaps.",
+      isPro: true,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -79,17 +107,19 @@ export default function LandingPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            <span className="text-blue-600">PoliverAI</span> - Your AI-Powered GDPR Compliance Assistant
+            <span className="text-blue-600">PoliverAI</span> - Your AI-Powered
+            GDPR Compliance Assistant
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Automatically analyze privacy policies for GDPR compliance, detect violations,
-            and generate comprehensive reports with AI-powered insights.
+            Automatically analyze privacy policies for GDPR compliance, detect
+            violations, and generate comprehensive reports with AI-powered
+            insights.
           </p>
           <div className="flex gap-4 justify-center">
             {!isAuthenticated ? (
               <>
                 <Button
-                  onClick={() => navigate('/signup')}
+                  onClick={() => navigate("/signup")}
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700"
                 >
@@ -98,13 +128,17 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={() => navigate('/signup')}
+                  onClick={() => navigate("/signup")}
                 >
                   Upgrade to Pro
                 </Button>
               </>
             ) : (
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <Button
+                onClick={() => navigate("/dashboard")}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 Go to Dashboard
               </Button>
             )}
@@ -168,7 +202,10 @@ export default function LandingPage() {
                 1
               </div>
               <h3 className="text-xl font-semibold mb-2">Upload Your Policy</h3>
-              <p className="text-gray-600">Upload privacy policies in multiple formats (PDF, DOCX, TXT, HTML)</p>
+              <p className="text-gray-600">
+                Upload privacy policies in multiple formats (PDF, DOCX, TXT,
+                HTML)
+              </p>
             </div>
 
             <div className="text-center">
@@ -176,7 +213,10 @@ export default function LandingPage() {
                 2
               </div>
               <h3 className="text-xl font-semibold mb-2">AI Analysis</h3>
-              <p className="text-gray-600">Our AI analyzes your policy against GDPR requirements with multiple analysis modes</p>
+              <p className="text-gray-600">
+                Our AI analyzes your policy against GDPR requirements with
+                multiple analysis modes
+              </p>
             </div>
 
             <div className="text-center">
@@ -184,7 +224,10 @@ export default function LandingPage() {
                 3
               </div>
               <h3 className="text-xl font-semibold mb-2">Get Results</h3>
-              <p className="text-gray-600">Receive detailed reports with compliance scores, violations, and actionable recommendations</p>
+              <p className="text-gray-600">
+                Receive detailed reports with compliance scores, violations, and
+                actionable recommendations
+              </p>
             </div>
           </div>
         </div>
@@ -228,7 +271,11 @@ export default function LandingPage() {
                   <span className="text-sm">Basic recommendations</span>
                 </li>
               </ul>
-              <Button className="w-full mt-6" variant="outline">
+              <Button
+                onClick={() => navigate("/signup")}
+                className="w-full mt-6"
+                variant="outline"
+              >
                 Get Started Free
               </Button>
             </CardContent>
@@ -267,7 +314,10 @@ export default function LandingPage() {
                   <span className="text-sm">Priority support</span>
                 </li>
               </ul>
-              <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700">
+              <Button
+                onClick={() => navigate("/signup")}
+                className="w-full mt-6 bg-blue-600 hover:bg-blue-700"
+              >
                 Upgrade to Pro
               </Button>
             </CardContent>
@@ -277,18 +327,25 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       {!isAuthenticated && (
-      <div className="bg-blue-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Ensure GDPR Compliance?</h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Join thousands of organizations using PoliverAI to maintain privacy compliance
-          </p>
-          <Button size="lg" variant="secondary">
-            Start Your Free Analysis Today
-          </Button>
+        <div className="bg-blue-600 text-white py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-4">
+              Ready to Ensure GDPR Compliance?
+            </h2>
+            <p className="text-xl mb-8 text-blue-100">
+              Join thousands of organizations using PoliverAI to maintain
+              privacy compliance
+            </p>
+            <Button
+              onClick={() => navigate("/signup")}
+              size="lg"
+              variant="secondary"
+            >
+              Start Your Free Analysis Today
+            </Button>
+          </div>
         </div>
-      </div>
       )}
     </div>
-  )
+  );
 }

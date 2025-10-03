@@ -22,7 +22,7 @@ LARGE_DISTANCE_VALUE = 1e9
 
 # Performance optimization constants
 MAX_LLM_CLAUSES = 5  # Limit expensive LLM processing to most important clauses
-LLM_TIMEOUT_SECONDS = 10  # Timeout for LLM calls
+LLM_TIMEOUT_SECONDS = 20  # Timeout for LLM calls
 FAST_MODE_SCORE_THRESHOLD = 60  # Skip expensive processing if rule-based score is already good
 
 # Additional constants
@@ -150,25 +150,23 @@ def _heuristic_judge_clause(
     return out
 
 
-def _rule_based_compliance_check(text: str) -> dict[str, Any]:
-    """Apply deterministic rule-based compliance checks for common GDPR requirements."""
-    text_lower = text.lower()
-
-    violations = []
-    fulfills = []
-
-    # Article 6 - Lawful basis
+def _check_lawful_basis_violations(text_lower: str) -> list[dict[str, Any]]:
+    """Check for Article 6 lawful basis violations."""
     lawful_basis_terms = ["lawful basis", "consent", "contract", "legal obligation"]
     if not any(term in text_lower for term in lawful_basis_terms):
-        violations.append(
+        return [
             {
                 "article": "Article 6(1)",
                 "reason": "No clear lawful basis for processing stated",
                 "severity": "high",
             }
-        )
+        ]
+    return []
 
-    # Article 13 - Information to be provided
+
+def _check_information_violations(text_lower: str) -> list[dict[str, Any]]:
+    """Check for Article 13 information provision violations."""
+    violations = []
     required_info = ["purpose", "data controller", "contact"]
     missing_info = [info for info in required_info if info not in text_lower]
     if missing_info:
@@ -179,30 +177,39 @@ def _rule_based_compliance_check(text: str) -> dict[str, Any]:
                 "severity": "medium",
             }
         )
+    return violations
 
-    # Article 17 - Right to erasure
+
+def _check_erasure_violations(text_lower: str) -> list[dict[str, Any]]:
+    """Check for Article 17 right to erasure violations."""
     erasure_terms = ["delete", "erasure", "remove data", "right to be forgotten"]
     if not any(term in text_lower for term in erasure_terms):
-        violations.append(
+        return [
             {
                 "article": "Article 17",
                 "reason": "No mention of data deletion or right to erasure",
                 "severity": "medium",
             }
-        )
+        ]
+    return []
 
-    # Article 5(1)(e) - Storage limitation
+
+def _check_storage_violations(text_lower: str) -> list[dict[str, Any]]:
+    """Check for Article 5(1)(e) storage limitation violations."""
     retention_terms = ["retention", "how long", "storage period", "delete after"]
     if not any(term in text_lower for term in retention_terms):
-        violations.append(
+        return [
             {
                 "article": "Article 5(1)(e)",
                 "reason": "No data retention period specified",
                 "severity": "medium",
             }
-        )
+        ]
+    return []
 
-    # Enhanced detection for automatic data collection (Article 13/14 - Information requirements)
+
+def _check_automatic_collection_violations(text_lower: str) -> list[dict[str, Any]]:
+    """Check for automatic data collection disclosure violations."""
     auto_collect_terms = [
         "automatically collect",
         "automatic collection",
@@ -212,7 +219,6 @@ def _rule_based_compliance_check(text: str) -> dict[str, Any]:
         "automatic information",
     ]
     if any(term in text_lower for term in auto_collect_terms):
-        # Check if there's proper notice about automatic collection
         disclosure_terms = [
             "automatically collected information includes",
             "types of information automatically collected",
@@ -220,7 +226,7 @@ def _rule_based_compliance_check(text: str) -> dict[str, Any]:
             "information collected automatically",
         ]
         if not any(term in text_lower for term in disclosure_terms):
-            violations.append(
+            return [
                 {
                     "article": "Article 13(1)(c)",
                     "reason": (
@@ -229,36 +235,46 @@ def _rule_based_compliance_check(text: str) -> dict[str, Any]:
                     ),
                     "severity": "high",
                 }
-            )
+            ]
+    return []
 
-    # Enhanced detection for data sharing without proper basis
+
+def _check_data_sharing_violations(text_lower: str) -> list[dict[str, Any]]:
+    """Check for data sharing without proper lawful basis."""
     sharing_terms = ["share", "sharing", "disclose", "third party", "third-party"]
     if any(term in text_lower for term in sharing_terms):
-        # Check for proper lawful basis for sharing
         basis_terms = ["lawful basis", "consent", "legitimate interest", "legal obligation"]
         if not any(term in text_lower for term in basis_terms):
-            violations.append(
+            return [
                 {
                     "article": "Article 6(1)",
                     "reason": "Data sharing mentioned without clear lawful basis",
                     "severity": "high",
                 }
-            )
+            ]
+    return []
 
-    # Enhanced positive checks
+
+def _check_compliance_fulfillments(text_lower: str) -> list[dict[str, Any]]:
+    """Check for positive compliance indicators."""
+    fulfills = []
+
+    # General GDPR acknowledgment
     if "gdpr" in text_lower or "data protection regulation" in text_lower:
         fulfills.append({"article": "General Compliance", "reason": "Acknowledges GDPR compliance"})
 
-    # Check for specific article fulfillments
+    # Article 6 fulfillments
     if any(term in text_lower for term in ["consent", "lawful basis", "article 6"]):
         fulfills.append({"article": "Article 6(1)", "reason": "Mentions lawful basis or consent"})
 
+    # Article 13 fulfillments
     if any(term in text_lower for term in ["data controller", "controller"]):
         fulfills.append({"article": "Article 13", "reason": "Identifies data controller"})
 
     if any(term in text_lower for term in ["contact", "email", "phone"]):
         fulfills.append({"article": "Article 13", "reason": "Provides contact information"})
 
+    # Article 5 and 17 fulfillments
     if any(term in text_lower for term in ["retention", "delete", "deletion", "remove"]):
         fulfills.append(
             {"article": "Article 5(1)(e)", "reason": "Addresses data retention/deletion"}
@@ -266,6 +282,25 @@ def _rule_based_compliance_check(text: str) -> dict[str, Any]:
 
     if "erasure" in text_lower or "right to be forgotten" in text_lower:
         fulfills.append({"article": "Article 17", "reason": "Mentions right to erasure"})
+
+    return fulfills
+
+
+def _rule_based_compliance_check(text: str) -> dict[str, Any]:
+    """Apply deterministic rule-based compliance checks for common GDPR requirements."""
+    text_lower = text.lower()
+
+    violations = []
+    # Collect all violations using helper functions
+    violations.extend(_check_lawful_basis_violations(text_lower))
+    violations.extend(_check_information_violations(text_lower))
+    violations.extend(_check_erasure_violations(text_lower))
+    violations.extend(_check_storage_violations(text_lower))
+    violations.extend(_check_automatic_collection_violations(text_lower))
+    violations.extend(_check_data_sharing_violations(text_lower))
+
+    # Collect all positive compliance indicators
+    fulfills = _check_compliance_fulfillments(text_lower)
 
     return {"violations": violations, "fulfills": fulfills}
 
@@ -741,6 +776,169 @@ def _calculate_score_and_verdict(
         verdict = "non_compliant"
 
     return score, verdict
+
+
+def analyze_policy_streaming(text: str, analysis_mode: str = "fast", progress_callback=None):  # noqa: PLR0912, PLR0915
+    """Streaming version of analyze_policy that yields progress updates.
+
+    Args:
+        text: Policy text to analyze
+        analysis_mode: Analysis depth - 'fast', 'balanced', or 'detailed'
+        progress_callback: Optional callback function for progress updates
+
+    Yields:
+        dict: Progress updates and final result
+    """
+    if progress_callback:
+        progress_callback(5, "Initializing analysis...")
+
+    s = get_settings()
+    clauses = [c.text for c in split_into_paragraphs(text)]
+    clauses = [c for c in clauses if len(c.split()) >= MIN_MEANINGFUL_WORDS][
+        :MAX_CLAUSES_TO_PROCESS
+    ]
+
+    if progress_callback:
+        progress_callback(15, f"Processing {len(clauses)} policy clauses...")
+
+    # First apply rule-based checks for deterministic baseline
+    rule_based = _rule_based_compliance_check(text)
+
+    if progress_callback:
+        progress_callback(30, "Completed rule-based compliance checks")
+
+    all_evidence: list[dict[str, Any]] = []
+    article_violations: dict[str, int] = {}
+    article_fulfills: dict[str, int] = {}
+
+    # Add rule-based evidence and preserve severity mapping
+    article_severity_map = _add_rule_based_evidence(
+        rule_based, all_evidence, article_violations, article_fulfills
+    )
+
+    # PERFORMANCE OPTIMIZATION: Check if rule-based analysis is already sufficient
+    rule_based_score, _ = _calculate_score_and_verdict(article_violations, article_fulfills)
+
+    if progress_callback:
+        progress_callback(
+            40, f"Rule-based analysis complete (preliminary score: {rule_based_score})"
+        )
+
+    # Process clauses with smart optimization
+    have_key = bool(s.openai_api_key)
+    collections = {
+        "all_evidence": all_evidence,
+        "article_violations": article_violations,
+        "article_fulfills": article_fulfills,
+    }
+
+    # Analysis mode-based processing strategy
+    if analysis_mode == "fast":
+        skip_expensive_processing = True  # Pure heuristic processing
+    elif analysis_mode == "detailed":
+        skip_expensive_processing = False  # Full LLM processing on all substantial clauses
+    elif analysis_mode == "balanced":
+        # Intelligent selective processing based on content sensitivity
+        skip_expensive_processing = _should_skip_expensive_processing_balanced(
+            clauses, rule_based_score, have_key
+        )
+    else:
+        # Default to fast mode for unknown modes
+        skip_expensive_processing = True
+
+    if not skip_expensive_processing:
+        if progress_callback:
+            progress_callback(50, f"Starting {analysis_mode} AI analysis...")
+
+        if analysis_mode == "balanced":
+            _process_clauses_balanced(clauses, have_key, s, collections)
+        else:
+            _process_clauses(clauses, have_key, s, collections)
+
+        if progress_callback:
+            progress_callback(75, f"Completed {analysis_mode} AI analysis")
+    else:
+        if progress_callback:
+            progress_callback(60, "Using fast heuristic processing...")
+
+        # Use fast heuristic-only processing
+        for clause in clauses[:10]:  # Limit to top 10 clauses for speed
+            judgments = _heuristic_judge_clause(clause, [])
+            for j in judgments:
+                art = j.get("article", "")
+                verdict = j.get("verdict", "unclear")
+                conf = float(j.get("confidence", 0.5))
+                excerpt = j.get("policy_excerpt") or clause[:200]
+
+                all_evidence.append(
+                    {
+                        "article": art,
+                        "policy_excerpt": excerpt,
+                        "score": round(max(0.0, min(1.0, conf)), 2),
+                        "verdict": verdict,
+                        "rationale": j.get("rationale", ""),
+                    }
+                )
+                if verdict == "violates":
+                    article_violations[art] = article_violations.get(art, 0) + 1
+                elif verdict == "fulfills":
+                    article_fulfills[art] = article_fulfills.get(art, 0) + 1
+
+    if progress_callback:
+        progress_callback(85, "Generating findings and recommendations...")
+
+    # Generate findings and recommendations with preserved severity
+    findings, recommendations = _generate_findings_and_recommendations(
+        article_violations, article_severity_map
+    )
+
+    # Calculate score and verdict
+    score, verdict = _calculate_score_and_verdict(article_violations, article_fulfills)
+
+    # Calculate additional metrics for analysis
+    total_violations = sum(article_violations.values())
+    total_fulfills = sum(article_fulfills.values())
+    critical_articles = ["Article 6(1)", "Article 13", "Article 5(1)(e)"]
+    critical_violations = sum(1 for art in critical_articles if art in article_violations)
+
+    # Generate compliance summary
+    compliance_summary = _get_compliance_summary(
+        verdict, score, critical_violations, total_violations
+    )
+
+    # Collapse evidence to top 10 for brevity
+    evidence_sorted = sorted(
+        all_evidence,
+        key=lambda e: (1 if e.get("verdict") == "fulfills" else 0, e.get("score", 0.0)),
+        reverse=True,
+    )
+    top_evidence = [
+        {k: v for k, v in e.items() if k in {"article", "policy_excerpt", "score"}}
+        for e in evidence_sorted[:10]
+    ]
+
+    # Calculate dynamic confidence score based on analysis quality
+    confidence = _calculate_analysis_confidence(
+        analysis_mode, have_key, all_evidence, clauses, skip_expensive_processing
+    )
+
+    if progress_callback:
+        progress_callback(100, "Analysis completed!")
+
+    return {
+        "verdict": verdict,
+        "score": score,
+        "confidence": confidence,
+        "evidence": top_evidence,
+        "findings": findings,
+        "recommendations": recommendations,
+        "summary": compliance_summary,
+        "metrics": {
+            "total_violations": total_violations,
+            "total_fulfills": total_fulfills,
+            "critical_violations": critical_violations,
+        },
+    }
 
 
 def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
