@@ -13,6 +13,8 @@ from ....ingestion.readers.docx_reader import read_docx_text
 from ....ingestion.readers.html_reader import read_html_text
 from ....ingestion.readers.pdf_reader import read_pdf_text
 from ....rag.verification import analyze_policy
+from ....rag.verification import analyze_policy_stream
+from ....app.socketio_app import sio, emit_progress
 
 
 class ClauseMatch(BaseModel):
@@ -202,3 +204,42 @@ async def verify(
         summary=result.get("summary", "Policy analysis completed."),
         metrics=metrics_model,
     )
+
+
+
+@router.post("/verify_stream")
+async def verify_stream(
+    file: UploadFile,
+    socket_sid: str | None = Form(None),
+    analysis_mode: str | None = Form("fast"),
+    current_user: User | None = CURRENT_USER_OPTIONAL_DEPENDENCY,
+) -> dict:
+    """Start a background streaming verification and immediately return.
+
+    The client must provide a Socket.IO session id (socket_sid). Progress events are
+    emitted to that sid with event names: started, rule_based, progress, completed.
+    """
+    raw = await file.read()
+    filename = file.filename or "upload.txt"
+    try:
+        text = raw.decode("utf-8", errors="ignore")
+    except Exception:
+        text = ""
+
+    if not socket_sid:
+        raise HTTPException(status_code=400, detail="socket_sid is required for streaming")
+
+    # Define progress callback that emits to the socket
+    async def progress_cb(event_name: str, payload: dict):
+        try:
+            await sio.emit(event_name, payload, to=socket_sid)
+        except Exception as e:
+            # Log and ignore emit failures
+            logging.warning("Failed to emit progress to %s: %s", socket_sid, e)
+
+    # Kick off background task
+    import asyncio
+
+    asyncio.create_task(analyze_policy_stream(text, analysis_mode or "fast", progress_cb))
+
+    return {"status": "started", "socket_sid": socket_sid}

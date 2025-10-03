@@ -875,3 +875,83 @@ def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
             "critical_violations": critical_violations,
         },
     }
+
+
+async def analyze_policy_stream(text: str, analysis_mode: str = "fast", progress_cb=None) -> dict[str, Any]:
+    """Async streaming variant of analyze_policy. Calls progress_cb(step_name, payload) during processing.
+
+    progress_cb should be an async callable accepting (event_name: str, data: dict).
+    """
+    s = get_settings()
+    clauses = [c.text for c in split_into_paragraphs(text)]
+    clauses = [c for c in clauses if len(c.split()) >= MIN_MEANINGFUL_WORDS][:MAX_CLAUSES_TO_PROCESS]
+
+    # Initial progress
+    if progress_cb:
+        await progress_cb("started", {"clauses": len(clauses), "mode": analysis_mode})
+
+    # Rule-based baseline
+    rule_based = _rule_based_compliance_check(text)
+    if progress_cb:
+        await progress_cb("rule_based", {"violations": len(rule_based.get("violations", []))})
+
+    all_evidence: list[dict[str, Any]] = []
+    article_violations: dict[str, int] = {}
+    article_fulfills: dict[str, int] = {}
+
+    article_severity_map = _add_rule_based_evidence(
+        rule_based, all_evidence, article_violations, article_fulfills
+    )
+
+    have_key = bool(s.openai_api_key)
+
+    # Process clauses one by one and stream progress
+    processed = 0
+    for clause in clauses:
+        # lightweight heuristic first
+        judgments = _heuristic_judge_clause(clause, [])
+        _add_judgments_to_collections(judgments, clause, {"all_evidence": all_evidence, "article_violations": article_violations, "article_fulfills": article_fulfills})
+
+        # Optionally run LLM for important clauses
+        if have_key and len(clause.split()) > MIN_WORDS_FOR_LLM_PROCESSING:
+            try:
+                ctx = retrieve(clause, k=s.top_k)
+                if ctx:
+                    judgments = _llm_judge_clause(clause, ctx)
+                    _add_judgments_to_collections(judgments, clause, {"all_evidence": all_evidence, "article_violations": article_violations, "article_fulfills": article_fulfills})
+            except Exception as e:
+                logging.warning("LLM clause processing failed in stream: %s", e)
+
+        processed += 1
+        if progress_cb:
+            await progress_cb("progress", {"processed": processed, "total": len(clauses)})
+
+    # Finalize as in analyze_policy
+    findings, recommendations = _generate_findings_and_recommendations(article_violations, article_severity_map)
+    score, verdict = _calculate_score_and_verdict(article_violations, article_fulfills)
+    total_violations = sum(article_violations.values())
+    total_fulfills = sum(article_fulfills.values())
+    critical_articles = ["Article 6(1)", "Article 13", "Article 5(1)(e)"]
+    critical_violations = sum(1 for art in critical_articles if art in article_violations)
+    compliance_summary = _get_compliance_summary(verdict, score, critical_violations, total_violations)
+
+    evidence_sorted = sorted(all_evidence, key=lambda e: (1 if e.get("verdict") == "fulfills" else 0, e.get("score", 0.0)), reverse=True)
+    top_evidence = [{k: v for k, v in e.items() if k in {"article", "policy_excerpt", "score"}} for e in evidence_sorted[:10]]
+
+    confidence = _calculate_analysis_confidence(analysis_mode, have_key, all_evidence, clauses, False)
+
+    result = {
+        "verdict": verdict,
+        "score": score,
+        "confidence": confidence,
+        "evidence": top_evidence,
+        "findings": findings,
+        "recommendations": recommendations,
+        "summary": compliance_summary,
+        "metrics": {"total_violations": total_violations, "total_fulfills": total_fulfills, "critical_violations": critical_violations},
+    }
+
+    if progress_cb:
+        await progress_cb("completed", result)
+
+    return result

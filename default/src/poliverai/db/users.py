@@ -86,17 +86,31 @@ class UserDatabase:
         return False
 
 
-# Global user database instance
-user_db = UserDatabase()
+import os
 
-# Add some demo users for development
-try:
-    user_db.create_user("John Doe", "john@example.com", "password123")
-    user_db.create_user("Jane Pro", "jane@example.com", "password123")
-    # Make Jane a pro user
-    jane = user_db.get_user_by_email("jane@example.com")
-    if jane:
-        user_db.update_user_tier(jane.id, UserTier.PRO)
-except ValueError:
-    # Users already exist
-    pass
+# If a MONGO_URI environment variable is provided, use Mongo backend
+MONGO_URI = os.getenv("MONGO_URI")
+
+if MONGO_URI:
+    try:
+        from .mongo import MongoUserDB
+
+        user_db = MongoUserDB(MONGO_URI)
+    except Exception:
+        # Fall back to in-memory if Mongo fails to initialize
+        user_db = UserDatabase()
+else:
+    # Global user database instance (in-memory for development)
+    user_db = UserDatabase()
+
+    # Add some demo users for development
+    try:
+        user_db.create_user("John Doe", "john@example.com", "password123")
+        user_db.create_user("Jane Pro", "jane@example.com", "password123")
+        # Make Jane a pro user
+        jane = user_db.get_user_by_email("jane@example.com")
+        if jane:
+            user_db.update_user_tier(jane.id, UserTier.PRO)
+    except ValueError:
+        # Users already exist
+        pass

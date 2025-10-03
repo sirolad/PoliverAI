@@ -5,7 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from ....core.auth import create_access_token, credentials_exception, verify_token
 from ....db.users import user_db
-from ....domain.auth import Token, User, UserCreate, UserLogin
+from ....domain.auth import Token, User, UserCreate, UserLogin, UserTier
 
 router = APIRouter(tags=["auth"])
 security = HTTPBearer()
@@ -93,7 +93,8 @@ async def upgrade_to_pro(current_user: User = CURRENT_USER_DEPENDENCY):
     # In a real implementation, this would integrate with Stripe or similar
     # For now, just upgrade the user directly
 
-    success = user_db.update_user_tier(current_user.id, "pro")
+    # Use the UserTier enum to avoid passing raw strings
+    success = user_db.update_user_tier(current_user.id, UserTier.PRO)
 
     if not success:
         raise HTTPException(

@@ -50,3 +50,31 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+# Mount Socket.IO application at /ws
+try:
+    from .socketio_app import app as socketio_app  # type: ignore
+
+    # Mount the Socket.IO ASGI app under /ws
+    app.mount("/ws", socketio_app)
+except Exception as e:
+    logging.warning("Failed to mount Socket.IO app: %s", e)
+
+
+# Register shutdown hook to persist Chroma store to GCS if configured
+@app.on_event("shutdown")
+def upload_chroma_on_shutdown() -> None:
+    try:
+        import os
+
+        gcs_bucket = os.getenv("POLIVERAI_CHROMA_GCS_BUCKET")
+        gcs_object = os.getenv("POLIVERAI_CHROMA_GCS_OBJECT")
+        if gcs_bucket:
+            # Import the helper lazily to avoid forcing google-cloud-storage at import time
+            from ..rag.service import _gcs_upload_persist, get_settings
+
+            if not gcs_object:
+                gcs_object = f"{get_settings().chroma_collection}.tar.gz"
+            _gcs_upload_persist(gcs_bucket, gcs_object, get_settings().chroma_persist_dir)
+    except Exception as e:
+        logging.warning("Failed to upload chroma persist on shutdown: %s", e)

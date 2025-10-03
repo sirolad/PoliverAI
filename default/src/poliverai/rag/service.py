@@ -7,11 +7,22 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+import tempfile
+import tarfile
+import shutil
+from typing import Optional
 
 import chromadb
 import tiktoken
 from chromadb.api.models.Collection import Collection
 from openai import OpenAI
+import os
+
+# Optional GCS support (only used when POLIVERAI_CHROMA_GCS_BUCKET is set)
+try:
+    from google.cloud import storage
+except Exception:  # pragma: no cover - optional dependency
+    storage = None
 
 from ..core.config import get_settings
 from ..ingestion.readers.docx_reader import read_docx_text
@@ -52,8 +63,25 @@ def _init() -> RAGInit:
 
     settings = get_settings()
 
-    # Chroma persistent client and collection
+    # Chroma persistent client and collection.
+    # If a GCS bucket is configured, try to pull a persisted archive into the folder first.
     _ensure_dirs(settings.chroma_persist_dir)
+
+    # GCS-backed sync: bucket name and object name may be provided via env vars.
+    gcs_bucket: Optional[str] = os.getenv("POLIVERAI_CHROMA_GCS_BUCKET")
+    gcs_object: Optional[str] = os.getenv("POLIVERAI_CHROMA_GCS_OBJECT")
+    if gcs_bucket and not gcs_object:
+        # default object name per collection
+        gcs_object = f"{settings.chroma_collection}.tar.gz"
+
+    if gcs_bucket and storage is not None:
+        try:
+            _gcs_download_persist(gcs_bucket, gcs_object, settings.chroma_persist_dir)
+        except Exception as e:
+            logger.warning("Failed to download chroma persist from GCS: %s", e)
+    elif gcs_bucket and storage is None:
+        logger.warning("POLIVERAI_CHROMA_GCS_BUCKET set but google-cloud-storage not installed")
+
     client = chromadb.PersistentClient(path=settings.chroma_persist_dir)
     collection = client.get_or_create_collection(name=settings.chroma_collection)
 
@@ -244,11 +272,85 @@ def ingest_paths(paths: list[str]) -> dict[str, Any]:
             skipped.append((p, f"error: {e}"))
             continue
 
-    return {
+    result = {
         "files": files_ingested,
         "chunks": chunks_ingested,
         "skipped": [{"path": p, "reason": r} for p, r in skipped],
     }
+
+    # If GCS is configured, attempt to upload the updated persist dir.
+    gcs_bucket: Optional[str] = os.getenv("POLIVERAI_CHROMA_GCS_BUCKET")
+    gcs_object: Optional[str] = os.getenv("POLIVERAI_CHROMA_GCS_OBJECT")
+    if gcs_bucket:
+        try:
+            if not gcs_object:
+                gcs_object = f"{get_settings().chroma_collection}.tar.gz"
+            _gcs_upload_persist(gcs_bucket, gcs_object, get_settings().chroma_persist_dir)
+        except Exception as e:
+            logger.warning("Failed to upload chroma persist to GCS after ingest: %s", e)
+
+    return result
+
+def _gcs_download_persist(bucket_name: str, object_name: str | None, dest_dir: str) -> bool:
+    """Download a tar.gz from GCS and extract into dest_dir. Returns True if downloaded."""
+    if storage is None:
+        raise RuntimeError("google-cloud-storage is not available")
+    if not object_name:
+        raise ValueError("object_name is required to download persist")
+
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(object_name)
+    if not blob.exists():
+        return False
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz")
+    tmp.close()
+    try:
+        blob.download_to_filename(tmp.name)
+        # Clear dest_dir then extract
+        if os.path.exists(dest_dir):
+            shutil.rmtree(dest_dir)
+        os.makedirs(dest_dir, exist_ok=True)
+        with tarfile.open(tmp.name, "r:gz") as tar:
+            tar.extractall(path=dest_dir)
+        logger.info("Downloaded and extracted chroma persistence from gs://%s/%s", bucket_name, object_name)
+        return True
+    finally:
+        try:
+            os.remove(tmp.name)
+        except Exception:
+            pass
+
+
+def _gcs_upload_persist(bucket_name: str, object_name: str | None, src_dir: str) -> bool:
+    """Create a tar.gz of src_dir and upload to GCS. Returns True on success."""
+    if storage is None:
+        raise RuntimeError("google-cloud-storage is not available")
+    if not object_name:
+        raise ValueError("object_name is required to upload persist")
+    if not os.path.exists(src_dir):
+        raise ValueError("src_dir does not exist: %s" % src_dir)
+
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(object_name)
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".tar.gz")
+    tmp.close()
+    try:
+        with tarfile.open(tmp.name, "w:gz") as tar:
+            # Add content of src_dir into tar root
+            tar.add(src_dir, arcname=".")
+        blob.upload_from_filename(tmp.name)
+        logger.info("Uploaded chroma persistence to gs://%s/%s", bucket_name, object_name)
+        return True
+    finally:
+        try:
+            os.remove(tmp.name)
+        except Exception:
+            pass
+
 
 
 def _embed_texts(texts: list[str]) -> list[list[float]]:

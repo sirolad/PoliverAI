@@ -23,14 +23,17 @@ dependencies = [
   "pdfplumber>=0.11",
   "python-docx>=1.1",
   "beautifulsoup4>=4.12",
+  "google-cloud-storage>=2.12",
+  "python-socketio>=5.8",
 ]
 
 [project.optional-dependencies]
 rag = [
-  "sentence-transformers>=3.0",
-  "faiss-cpu>=1.8",
-  "numpy>=1.26",
-  "scikit-learn>=1.5",
+  "numpy>=1.26,<2.0",
+  "scikit-learn>=1.5,<2.0",
+  "sentence-transformers>=3.0,<4.0",
+  "faiss-cpu>=1.8,<2.0",
+  "google-cloud-storage>=2.12",
 ]
 dev = [
   "pytest>=8.3",
