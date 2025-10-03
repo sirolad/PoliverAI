@@ -1,8 +1,13 @@
+import asyncio
+import json
 import logging
+import os
 import tempfile
+from collections.abc import AsyncGenerator
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
+from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
@@ -14,7 +19,6 @@ from ....ingestion.readers.html_reader import read_html_text
 from ....ingestion.readers.pdf_reader import read_pdf_text
 from ....rag.verification import analyze_policy
 from ....rag.verification import analyze_policy_stream
-from ....app.socketio_app import sio, emit_progress
 
 
 class ClauseMatch(BaseModel):
@@ -207,39 +211,106 @@ async def verify(
 
 
 
-@router.post("/verify_stream")
+@router.post("/verify-stream")
 async def verify_stream(
     file: UploadFile,
-    socket_sid: str | None = Form(None),
-    analysis_mode: str | None = Form("fast"),
+    analysis_mode: str | None = Form(
+        "fast", description="Analysis mode: 'fast', 'balanced', or 'detailed'"
+    ),
     current_user: User | None = CURRENT_USER_OPTIONAL_DEPENDENCY,
-) -> dict:
-    """Start a background streaming verification and immediately return.
-
-    The client must provide a Socket.IO session id (socket_sid). Progress events are
-    emitted to that sid with event names: started, rule_based, progress, completed.
-    """
-    raw = await file.read()
-    filename = file.filename or "upload.txt"
+) -> StreamingResponse:
+    """Stream policy verification with real-time progress updates."""
+    # CRITICAL: Extract text BEFORE creating the async generator to avoid file access issues
     try:
-        text = raw.decode("utf-8", errors="ignore")
-    except Exception:
-        text = ""
-
-    if not socket_sid:
-        raise HTTPException(status_code=400, detail="socket_sid is required for streaming")
-
-    # Define progress callback that emits to the socket
-    async def progress_cb(event_name: str, payload: dict):
+        # Handle different file types properly
+        raw = await file.read()
+        # Determine file extension
+        filename = file.filename or "upload.txt"
+        file_ext = Path(filename).suffix.lower()
+        # Create temporary file with proper extension
+        tmpdir = Path(tempfile.mkdtemp(prefix="poliverai_verify_temp_"))
+        temp_file = tmpdir / f"upload{file_ext}"
+        temp_file.write_bytes(raw)
         try:
-            await sio.emit(event_name, payload, to=socket_sid)
+            # Extract text based on file type
+            if file_ext == ".pdf":
+                text = read_pdf_text(str(temp_file))
+            elif file_ext == ".docx":
+                text = read_docx_text(str(temp_file))
+            elif file_ext in {".html", ".htm"}:
+                text = read_html_text(str(temp_file))
+            else:
+                # Default to text file (txt, md, etc.)
+                try:
+                    text = raw.decode("utf-8", errors="ignore")
+                except Exception:
+                    text = ""
+        finally:
+            # Clean up temp file immediately after text extraction
+            try:
+                temp_file.unlink(missing_ok=True)
+                tmpdir.rmdir()
+            except Exception as e:
+                logging.warning(f"Failed to cleanup temp file: {e}")
+        # Validate we have extracted text
+        if not text or not text.strip():
+            async def error_stream():
+                error_msg = json.dumps(
+                    {
+                        "status": "error",
+                        "progress": 0,
+                        "message": "No text could be extracted from the uploaded file",
+                    }
+                )
+                yield f"data: {error_msg}\n\n"
+            return StreamingResponse(error_stream(), media_type="text/plain")
+        # Check user tier and restrict analysis modes for free users
+        effective_mode = analysis_mode or "fast"
+        # Check for Gradio bypass flag (for development/demo purposes)
+        gradio_bypass_auth = os.getenv("GRADIO_BYPASS_AUTH", "false").lower() == "true"
+        if not gradio_bypass_auth and (current_user is None or current_user.tier == UserTier.FREE):
+            # Free users can only use fast mode (unless bypass is enabled)
+            if effective_mode in ["balanced", "detailed"]:
+                async def auth_error_stream():
+                    error_msg = json.dumps(
+                        {
+                            "status": "error",
+                            "progress": 0,
+                            "message": "Advanced analysis modes require a Pro subscription",
+                        }
+                    )
+                    yield f"data: {error_msg}\n\n"
+                return StreamingResponse(auth_error_stream(), media_type="text/plain")
+            effective_mode = "fast"
+    except Exception as e_outer:
+        error_message = f"File processing failed: {str(e_outer)}"
+        async def file_error_stream():
+            error_msg = json.dumps(
+                {
+                    "status": "error",
+                    "progress": 0,
+                    "message": error_message,
+                }
+            )
+            yield f"data: {error_msg}\n\n"
+        return StreamingResponse(file_error_stream(), media_type="text/plain")
+    # Now create the streaming response with extracted text (no file operations in async context)
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        try:
+            # Stream the analysis process using the pre-extracted text
+            async for chunk in analyze_policy_stream(text, analysis_mode=effective_mode):
+                yield chunk
         except Exception as e:
-            # Log and ignore emit failures
-            logging.warning("Failed to emit progress to %s: %s", socket_sid, e)
-
-    # Kick off background task
-    import asyncio
-
-    asyncio.create_task(analyze_policy_stream(text, analysis_mode or "fast", progress_cb))
-
-    return {"status": "started", "socket_sid": socket_sid}
+            error_msg = json.dumps(
+                {"status": "error", "progress": 0, "message": f"Analysis failed: {str(e)}"}
+            )
+            yield f"data: {error_msg}\n\n"
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/plain",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "text/event-stream",
+        },
+    )

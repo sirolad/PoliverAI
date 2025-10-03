@@ -17,7 +17,11 @@ def create_app() -> FastAPI:
     # Add CORS middleware for React frontend
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://localhost:3000"],  # React dev servers
+        allow_origins=[
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://localhost:3000",
+        ],  # React dev servers
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -51,14 +55,7 @@ def create_app() -> FastAPI:
 
 app = create_app()
 
-# Mount Socket.IO application at /ws
-try:
-    from .socketio_app import app as socketio_app  # type: ignore
-
-    # Mount the Socket.IO ASGI app under /ws
-    app.mount("/ws", socketio_app)
-except Exception as e:
-    logging.warning("Failed to mount Socket.IO app: %s", e)
+# Note: local Socket.IO app removed in favor of HTTP/SSE streaming endpoints
 
 
 # Register shutdown hook to persist Chroma store to GCS if configured
