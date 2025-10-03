@@ -36,7 +36,8 @@ Thumbs.db
 .github/instructions/nx.instructions.md
 
 # React Native / Xcode / macOS
-build/
+mono-repo-nx/apps/poliverai/macos/build
+mono-repo-nx/apps/poliverai/ios/build
 DerivedData/
 *.pbxuser
 *.mode1v3
@@ -73,8 +74,9 @@ yarn-error.log
 *.jsbundle
 
 # Ruby / CocoaPods
-**/Pods/
-**/vendor/bundle/
+mono-repo-nx/apps/poliverai/macos/Pods
+mono-repo-nx/apps/poliverai/ios/Pods
+# **/vendor/bundle/
 
 # Metro
 .metro-health-check*
