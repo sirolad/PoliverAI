@@ -1,0 +1,55 @@
+{
+  "name": "backend",
+  "root": "apps/backend",
+  "sourceRoot": "../default/src",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "@nx/workspace:run-commands",
+      "options": {
+        "commands": [
+          "bash ./scripts/run_server.sh"
+        ],
+        "cwd": "../default",
+        "parallel": false
+      }
+    },
+    "bootstrap": {
+      "executor": "@nx/workspace:run-commands",
+      "options": {
+        "commands": [
+          "bash ./scripts/dev/bootstrap.sh"
+        ],
+        "cwd": "../default"
+      }
+    },
+    "test": {
+      "executor": "@nx/workspace:run-commands",
+      "options": {
+        "commands": [
+          "pytest"
+        ],
+        "cwd": "../default"
+      }
+    },
+    "lint": {
+      "executor": "@nx/workspace:run-commands",
+      "options": {
+        "commands": [
+          "ruff check src/ tests/ || true"
+        ],
+        "cwd": "../default"
+      }
+    },
+    "typecheck": {
+      "executor": "@nx/workspace:run-commands",
+      "options": {
+        "commands": [
+          "mypy src/ || true"
+        ],
+        "cwd": "../default"
+      }
+    }
+  },
+  "tags": ["python", "backend"]
+}

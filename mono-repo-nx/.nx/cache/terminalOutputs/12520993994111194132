@@ -1,0 +1,58 @@
+Starting JS server...
+[36m[1minfo[22m[39m [0mDetected architectures arm64-v8a[0m
+[36m[1minfo[22m[39m [0mInstalling the app...[0m
+[34m
+Welcome to React Native v0.81[39m
+Starting dev server on http://localhost:8081
+
+[34m[39m
+[34m                        ▒▒▓▓▓▓▒▒[39m
+[34m                     ▒▓▓▓▒▒░░▒▒▓▓▓▒[39m
+[34m                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒[39m
+[34m                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓[39m
+[34m                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓[39m
+[34m                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓[39m
+[34m                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒[39m
+[34m                     ▒▓▓▓▒░░░░▒▓▓▓▒[39m
+[34m                        ▒▒▓▓▓▓▒��[39m
+[34m[39m
+[34m[39m
+[34m[1m                Welcome to Metro [37mv0.83.2[39m[34m[22m[39m
+[34m[1m[22m[39m[2m              Fast - Scalable - Integrated[22m
+[2m[22m
+[2m[22m
+[36m[7m[1m INFO [22m[27m[39m Dev server ready. [2mPress Ctrl+C to exit.[22m
+[36m[7m[1m INFO [22m[27m[39m Key commands available:
+
+  [1m[7m r [27m[22m - reload app(s)
+  [1m[7m d [27m[22m - open Dev Menu
+  [1m[7m j [27m[22m - open DevTools
+
+
+[1A[1m<[0;1m-------------> 0% INITIALIZING [100ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [207ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [310ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [395ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [495ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [599ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [695ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [799ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [899ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [999ms][m[39D[1B
+[2A[1m<[0;1m-------------> 0% INITIALIZING [1s][m[0K[36D[1B[1m> Evaluating settings[m[21D[1B[1A[1m> Evaluating settings > Evaluating settings[m[43D[1B[1A[1m> Evaluating settings > Evaluating settings > Resolve dependencies of detachedConfiguration1[m[92D[1B[1A[1m> Evaluating settings > Evaluating settings > Resolve files of configuration 'classpath'[m[0K[88D[1B[1A[1m> Evaluating settings > Evaluating settings[m[0K[43D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > :gradle-plugin[m[38D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [2s][m[36D[1B[1m> Evaluating settings > :gradle-plugin > Resolve dependencies of detachedConfiguration1[m[87D[1B[1A[1m> Evaluating settings > :gradle-plugin > Resolve files of configuration 'classpath'[m[0K[83D[1B[1A[1m> Evaluating settings > :gradle-plugin[m[0K[38D[1B[1A[1m> Evaluating settings > :gradle-plugin:react-native-gradle-plugin[m[65D[1B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin[m[0K[54D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [3s][m[36D[2B[1A[1m> Evaluating settings > :gradle-plugin:shared[m[0K[45D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared-testutil[m[54D[1B[1A[1m> Evaluating settings > Discovering toolchains > Detecting local java toolchains[m[80D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin[m[0K[59D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin > Resolve dependencies of :gradle-plugin:shared:kot[m[111D[1B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin:compileKotlin > Resolve dependencies of :gradle-plugin:s[m[111D[1B[1A[1m> Evaluating settings > Resolve files of configuration 'classpath' > Resolve files of configuration 'classpath'[m[111D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [3s][m[0K[35D[1B[1m> root project > Resolve dependencies of classpath[m[50D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [4s][m[35D[2B[1A[1m> root project > :gradle-plugin:react-native-gradle-plugin:compileKotlin > Resolve files of configuration ':gra[m[111D[1B[1A[1m> root project > Resolve files of configuration 'classpath'[m[0K[59D[1B[1A[1m> root project > :app[m[0K[21D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [5s][m[35D[2B[2A[1m<[0;32;1m=====[0;39;1m--------> 40% CONFIGURING [5s][m[36D[1B[1m> :react-native-gesture-handler > Resolve files of configuration 'classpath'[m[76D[1B[1A[1m> :react-native-gesture-handler[m[0K[31D[1B[2A[1m<[0;32;1m=======[0;39;1m------> 60% CONFIGURING [5s][m[36D[1B[1m> :react-native-safe-area-context > Resolve dependencies of classpath[m[69D[1B[2A[1m<[0;32;1m=======[0;39;1m------> 60% CONFIGURING [6s][m[36D[1B[1m> :react-native-safe-area-context > Resolve files of configuration 'classpath' > Resolve files of configuration[m[111D[1B[2A[1m<[0;32;1m==========[0;39;1m---> 80% CONFIGURING [6s][m[36D[1B> IDLE[0K[6D[1B[1A[1m> :react-native-svg[m[19D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [6s][m[37D[1B> IDLE[0K[6D[1B[1A[1m> Resolve dependencies of :app:debugCompileClasspath > Resolve dependencies of :app:debugRuntimeClasspath[m[105D[1B[1A[1m> Resolve dependencies of :app:debugCompileClasspath[m[0K[52D[1B[1A> IDLE[0K[6D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [7s][m[37D[2B[1A[1m> Resolve dependencies of :react-native-safe-area-context:detachedConfiguration6[m[80D[1B[2A[1m<[0;1m-------------> 5% EXECUTING [7s][m[0K[33D[1B[1m> :react-native-gesture-handler:generateCodegenArtifactsFromSchema[m[0K[66D[1B[2A[1m<[0;32;1m==[0;39;1m-----------> 21% EXECUTING [7s][m[34D[1B[1m> :react-native-svg:packageDebugResources[m[0K[41D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 41% EXECUTING [7s][m[34D[1B[1m> :react-native-svg:compileDebugJavaWithJavac[m[45D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% EXECUTING [7s][m[34D[1B[1m> :react-native-gesture-handler:compileDebugKotlin[m[50D[1B[2A[1m<[0;32;1m======[0;39;1m-------> 49% EXECUTING [7s][m[34D[1B[1m> :app:compileDebugKotlin[m[0K[25D[1B[2A[1m<[0;32;1m=========[0;39;1m----> 71% EXECUTING [8s][m[34D[1B[1m> :app:mergeDebugGlobalSynthetics > Resolve files of configuration ':app:debugRuntimeClasspath'[m[95D[1B[2A[1m<[0;32;1m===========[0;39;1m--> 85% EXECUTING [8s][m[34D[1B[1m> :app:configureCMakeDebug[arm64-v8a][m[0K[37D[1B[2A[1m<[0;32;1m===========[0;39;1m--> 85% EXECUTING [9s][m[34D[2B[2A[1m<[0;32;1m===========[0;39;1m--> 85% EXECUTING [10s][m[35D[2B[2A[1m<[0;32;1m===========[0;39;1m--> 86% EXECUTING [10s][m[35D[1B[1m> :app:buildCMakeDebug[arm64-v8a][m[0K[33D[1B[2A[1m<[0;32;1m===========[0;39;1m--> 87% EXECUTING [10s][m[35D[1B[1m> :react-native-gesture-handler:configureCMakeDebug[arm64-v8a][m[62D[1B[2A[1m<[0;32;1m===========[0;39;1m--> 88% EXECUTING [11s][m[35D[1B[1m> :react-native-gesture-handler:buildCMakeDebug[arm64-v8a][m[0K[58D[1B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [11s][m[35D[1B[1m> :app:installDebug[m[0K[19D[1B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [12s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [13s][m[35D[2B[2A[0K
+[1m> Task :app:installDebug[m
+Installing APK 'app-debug.apk' on 'SM-A055F - 14' for :app:debug
+[0K
+[0K
+[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [13s][m[35D[1B[1m> :app:installDebug[m[19D[1B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [14s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [15s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [16s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [17s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [18s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [19s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [20s][m[35D[2B[2AInstalled on 1 device.[0K
+[0K
+[Incubating] Problems report is available at: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+[32;1mBUILD SUCCESSFUL[0;39m in 22s
+122 actionable tasks: 5 executed, 117 up-to-date
+[0K
+[0K
+[2A[1m<[0;32;1m=============[0;39;1m> 100% EXECUTING [20s][m[36D[1B> IDLE[6D[1B[2A[1m<[0;1m-------------> 0% WAITING[m[0K[26D[2B[2A[2K[1B[2K[1A[0m[?12l[?25h[36m[1minfo[22m[39m [0mConnecting to the development server...[0m
+[36m[1minfo[22m[39m [0mStarting the app on "R9WWC00WNDY"...[0m
+Starting: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] cmp=com.poliverai.app/.MainActivity }
+^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^[[B^C

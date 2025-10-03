@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PoliverAI Lottie Preview</title>
+  <style>
+    html,body{height:100%;margin:0;background:#111;color:#eee;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+    #player{width:900px;height:450px;background:transparent;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 30px rgba(0,0,0,0.6);}
+    .controls{display:flex;gap:8px;align-items:center}
+    button{background:#1f2937;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    .notice{font-size:13px;color:#9ca3af}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2 style="margin:0">PoliverAI — Lottie Preview</h2>
+    <div id="player"></div>
+
+    <div class="controls">
+      <button id="play">Play</button>
+      <button id="pause">Pause</button>
+      <button id="stop">Stop</button>
+      <label style="margin-left:12px" class="notice">If shapes look filled incorrectly, let me know and I will re-run the converter with stricter containment sampling or remove debug noise.</label>
+    </div>
+
+    <div class="notice">JSON loaded from <code>/poliverai-splash.json</code> in the workspace root. Open this file via a local static server (recommended) to avoid file:// CORS issues.</div>
+  </div>
+
+  <script src="https://unpkg.com/lottie-web/build/player/lottie.min.js"></script>
+  <script>
+    // Try to load the generated JSON from the workspace root.
+    // If you open this file directly with file:// some browsers block fetch; recommended: serve with a local static server.
+    const jsonPath = './poliverai-splash.json';
+    let anim = null;
+
+    async function load() {
+      try {
+        const res = await fetch(jsonPath);
+        if (!res.ok) throw new Error('Fetch failed: ' + res.status + ' ' + res.statusText);
+        const data = await res.json();
+
+        anim = lottie.loadAnimation({
+          container: document.getElementById('player'),
+          renderer: 'svg',
+          loop: false,
+          autoplay: true,
+          animationData: data
+        });
+
+      } catch (err) {
+        document.getElementById('player').innerHTML = '<pre style="color:#f87171">Error loading JSON:\n' + err.message + '</pre>';
+        console.error(err);
+      }
+    }
+
+    document.getElementById('play').onclick = () => anim && anim.play();
+    document.getElementById('pause').onclick = () => anim && anim.pause();
+    document.getElementById('stop').onclick = () => anim && (anim.stop(), anim.goToAndStop(0, true));
+
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+dependencies: \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/Libraries/NativeAnimation/Drivers/RCTFrameAnimation.mm \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Target\ Support\ Files/React-RCTAnimation/React-RCTAnimation-prefix.pch \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTFrameAnimation.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTAnimationDriver.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTBridgeModule.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTUIKit.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTAssert.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTDefines.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTInspectorDevServerHelper.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTPackagerConnection.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTComponent.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTJSThread.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/RCTDeprecation/RCTDeprecation.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTBundleManager.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTConvert.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTAnimationType.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTBorderCurve.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTBorderStyle.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTCursor.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTLog.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTUtils.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTPointerEvents.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTTextDecorationLineType.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/Yoga.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGConfig.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGEnums.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGMacros.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGNode.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGNodeLayout.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGNodeStyle.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGValue.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/Yoga/yoga/YGPixelGrid.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTAnimationUtils.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTValueAnimatedNode.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTAnimatedNode.h

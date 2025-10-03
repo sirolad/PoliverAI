@@ -1,0 +1,38 @@
+dependencies: \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTModuleData.mm \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Target\ Support\ Files/React-Core/React-Core-prefix.pch \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTModuleData.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTInvalidating.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-perflogger/reactperflogger/BridgeNativeModulePerfLogger.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-perflogger/reactperflogger/NativeModulePerfLogger.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTBridge+Private.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTBridge.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTUIKit.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTAssert.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTDefines.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTInspectorDevServerHelper.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTPackagerConnection.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTComponent.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTBridgeDelegate.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTJavaScriptLoader.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTBridgeModule.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTJSThread.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/RCTDeprecation/RCTDeprecation.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTBundleManager.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTBridgeModuleDecorator.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTFrameUpdate.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTPlatformDisplayLink.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTBridgeConstants.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTConstants.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTBridge.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTBridgeModuleDecorator.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTCallInvokerModule.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTConstants.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTInitializing.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTLog.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTUtils.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTModuleMethod.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTBridgeMethod.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-Core/React/RCTNullability.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Profiler/RCTProfile.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Base/RCTUtils.h

@@ -1,0 +1,27 @@
+dependencies: \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/ReactCommon/react/renderer/runtimescheduler/Task.cpp \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Target\ Support\ Files/React-runtimescheduler/React-runtimescheduler-prefix.pch \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/ReactCommon/react/renderer/runtimescheduler/RuntimeScheduler.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-runtimeexecutor/ReactCommon/RuntimeExecutor.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-jsi/jsi/jsi.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-jsi/jsi/jsi-inl.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-performancetimeline/react/performance/timeline/PerformanceEntryReporter.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-performancetimeline/react/performance/timeline/PerformanceEntryCircularBuffer.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-performancetimeline/react/performance/timeline/CircularBuffer.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-performancetimeline/react/performance/timeline/PerformanceEntry.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-timing/react/timing/primitives.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-performancetimeline/react/performance/timeline/PerformanceEntryBuffer.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-performancetimeline/react/performance/timeline/PerformanceEntryKeyedBuffer.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-performancetimeline/react/performance/timeline/PerformanceObserverRegistry.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-jsinspectortracing/jsinspector-modern/tracing/CdpTracing.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-rendererconsistency/react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-runtimescheduler/react/renderer/runtimescheduler/RuntimeSchedulerClock.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-runtimescheduler/react/renderer/runtimescheduler/SchedulerPriorityUtils.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-callinvoker/ReactCommon/SchedulerPriority.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-debug/react/debug/react_native_assert.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-debug/react/debug/flags.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/glog/glog/logging.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/glog/glog/log_severity.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/glog/glog/vlog_is_on.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-runtimescheduler/react/renderer/runtimescheduler/Task.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerEventTimingDelegate.h
