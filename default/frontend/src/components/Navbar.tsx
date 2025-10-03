@@ -37,6 +37,22 @@ export function Navbar() {
       if (detail) showResult(detail.success, detail.title, detail.message)
     }
     window.addEventListener('payment:result', handler as EventListener)
+
+    // On mount also check for a persisted result (used when the app navigates/reloads after Stripe)
+    try {
+      const raw = localStorage.getItem('poliverai:payment_result')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed) {
+          showResult(parsed.success, parsed.title, parsed.message)
+          // clear so it doesn't show repeatedly
+          localStorage.removeItem('poliverai:payment_result')
+        }
+      }
+    } catch {
+      // ignore parse errors
+    }
+
     return () => window.removeEventListener('payment:result', handler as EventListener)
   }, [])
 
@@ -49,7 +65,8 @@ export function Navbar() {
         onConfirm={async (amount_usd: number) => {
           try {
             await PaymentsService.purchaseCredits(amount_usd)
-            showResult(true, 'Credits Added', `You purchased $${amount_usd} worth of credits`)
+            // Do not show success here — the app will finalize the checkout on return
+            // and the global payment:result event will trigger the modal.
             setCreditsModalOpen(false)
           } catch (err: unknown) {
             console.error(err)
@@ -94,7 +111,7 @@ export function Navbar() {
                 to="/credits"
                 className="text-sm font-medium hover:text-blue-600 transition-colors"
               >
-                Credits
+                Purchased Credits
               </Link>
             </>
           )}
@@ -129,8 +146,8 @@ export function Navbar() {
                     onClick={async () => {
                       try {
                         await PaymentsService.purchaseUpgrade(29)
-                        showResult(true, 'Payment Successful', 'Your account is now PRO')
-                        window.location.reload()
+                        // Don't show success or reload here — finalization will occur when
+                        // the user returns from Stripe and the app will show the result then.
                       } catch (err: unknown) {
                         console.error(err)
                         const msg = err instanceof Error ? err.message : String(err)

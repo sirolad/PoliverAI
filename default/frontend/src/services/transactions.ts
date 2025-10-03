@@ -7,6 +7,7 @@ export type Transaction = {
   amount_usd?: number
   credits?: number
   description?: string
+  session_id?: string
   timestamp?: string
 }
 
@@ -15,4 +16,9 @@ const listTransactions = async (): Promise<{transactions: Transaction[]; balance
   return res as {transactions: Transaction[]; balance: number}
 }
 
-export default { listTransactions }
+const getTransaction = async (session_or_id: string): Promise<{transaction: Transaction}> => {
+  const res = await api.get<{transaction: Transaction}>(`/api/v1/transactions/${encodeURIComponent(session_or_id)}`)
+  return res as {transaction: Transaction}
+}
+
+export default { listTransactions, getTransaction }

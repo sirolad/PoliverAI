@@ -86,6 +86,14 @@ class MongoUserDB:
         except Exception:
             self.transactions = None
 
+        # A lightweight metadata collection we can use to mark that the app
+        # has completed initial seeding/initialization so we don't repeatedly
+        # attempt to insert demo users on every import/startup.
+        try:
+            self._metadata: Collection = self.db.get_collection("metadata")
+        except Exception:
+            self._metadata = None
+
     def create_user(self, name: str, email: str, password: str) -> UserInDB:
         if self.users.find_one({"email": email}):
             raise ValueError("Email already registered")
@@ -210,9 +218,21 @@ class MongoUserDB:
     def update_user_credits(self, user_id: str, delta: int) -> bool:
         """Atomically increment user's credits by delta (can be negative)."""
         from bson import ObjectId
+        try:
+            # Read current credits for logging
+            user = self.get_user_by_id(user_id)
+            prev = user.credits if user else None
+        except Exception:
+            prev = None
 
         result = self.users.update_one({"_id": ObjectId(user_id)}, {"$inc": {"credits": int(delta)}})
         success = result.modified_count > 0
+        if success:
+            try:
+                user_after = self.get_user_by_id(user_id)
+                logger.info('Mongo credits updated for user_id=%s email=%s: %s -> %s', user_id, user_after.email if user_after else None, prev, user_after.credits if user_after else None)
+            except Exception:
+                logger.exception('Failed to log updated credits for user_id=%s', user_id)
         # Record a transaction for credit change
         try:
             if success and self.transactions is not None:
@@ -229,3 +249,30 @@ class MongoUserDB:
         except Exception:
             pass
         return success
+
+    # --- helper methods for idempotent startup seeding ---
+    def has_seed_marker(self) -> bool:
+        """Return True if a one-time seed marker exists in the metadata collection."""
+        if not self._metadata:
+            return False
+        try:
+            return self._metadata.find_one({"key": "app_initialized"}) is not None
+        except Exception:
+            return False
+
+    def set_seed_marker(self) -> None:
+        """Create a seed marker documenting that initial seeding ran."""
+        if not self._metadata:
+            return
+        try:
+            self._metadata.insert_one({"key": "app_initialized", "timestamp": datetime.utcnow()})
+        except Exception:
+            # Non-fatal if metadata collection cannot be written
+            pass
+
+    def get_user_count(self) -> int:
+        """Return the number of user documents present (0 if unknown)."""
+        try:
+            return int(self.users.count_documents({}))
+        except Exception:
+            return 0

@@ -37,11 +37,10 @@ export default function Credits() {
     <div className="min-h-screen p-8">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Purchased Credits</h1>
-        <div className="text-sm">Balance: <span className="font-semibold">{user?.credits ?? 0} credits</span></div>
-      <div className="mb-4 flex items-center gap-4">
-        <div>Balance: <span className="font-semibold">{user?.credits ?? 0} credits</span></div>
-        <button className="text-sm text-blue-600 underline" onClick={() => setShowModal(true)}>Buy Credits</button>
-      </div>
+
+        <div className="mb-4 flex items-center gap-4">
+            <div>Balance: <span className="font-semibold">{user?.credits ?? 0} credits</span></div>
+        </div>
       </div>
       <EnterCreditsModal
         open={showModal}
@@ -73,6 +72,32 @@ export default function Credits() {
               <div className="text-right">
                 <div className="font-semibold">{t.credits ?? 0} credits</div>
                 <div className="text-sm text-gray-500">${t.amount_usd?.toFixed(2) ?? '0.00'}</div>
+                {t.session_id && (
+                  <div className="mt-2">
+                    <button
+                      className="text-sm text-blue-600 underline"
+                      onClick={async () => {
+                        try {
+                          const sid = t.session_id
+                          if (!sid) {
+                            paymentResult.show(false, 'Check Failed', 'Missing session id')
+                            return
+                          }
+                          const resp = await transactionsService.getTransaction(sid)
+                          const tx = resp.transaction
+                          paymentResult.show(true, 'Transaction Status', `Found transaction: ${tx.event_type} - ${tx.amount_usd ?? 0}$`)
+                          // refresh list to pick up any changes
+                          await fetchTx()
+                        } catch (err: unknown) {
+                          const msg = err instanceof Error ? err.message : String(err)
+                          paymentResult.show(false, 'Check Failed', msg)
+                        }
+                      }}
+                    >
+                      Check status
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

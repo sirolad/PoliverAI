@@ -135,7 +135,109 @@ async def create_checkout_session(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Failed to create checkout session: {e}') from e
 
-    return JSONResponse({'url': session.url})
+    return JSONResponse({'url': session.url, 'id': getattr(session, 'id', None) or session.get('id') if isinstance(session, dict) else None})
+
+
+
+@router.post('/checkout/complete')
+async def complete_checkout_session(request: Request):
+    """Finalize a Checkout Session by session_id. Useful for local dev when webhooks are not configured.
+
+    Expects JSON: {session_id: str}
+    """
+    if stripe is None:
+        raise HTTPException(status_code=500, detail='Stripe not configured')
+
+    data = await request.json()
+    session_id = data.get('session_id')
+    if not session_id:
+        raise HTTPException(status_code=400, detail='Missing session_id')
+
+    try:
+        sess = stripe.checkout.Session.retrieve(session_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Failed to retrieve session: {e}') from e
+
+    # Ensure payment was successful
+    payment_status = getattr(sess, 'payment_status', None) or (sess.get('payment_status') if isinstance(sess, dict) else None)
+    if payment_status != 'paid':
+        raise HTTPException(status_code=400, detail=f'Session payment_status={payment_status}')
+
+    # Extract metadata and amount
+    metadata = (sess.get('metadata') or {}) if isinstance(sess, dict) else (sess.metadata or {})
+    user_email = metadata.get('user_email') if isinstance(metadata, dict) else None
+    amount_cents = getattr(sess, 'amount_total', None) or sess.get('amount_total') if isinstance(sess, dict) else None
+    description = getattr(sess, 'description', None) or sess.get('description') if isinstance(sess, dict) else None
+
+    # Avoid duplicate processing: check if transactions already contain this session_id
+    try:
+        existing = None
+        try:
+            # If transactions is backed by Mongo it may have find
+            if hasattr(transactions, 'list_for_user'):
+                # In-memory fallback: scan items
+                all_tx = []
+                try:
+                    # try to access internal items for in-memory store
+                    if hasattr(transactions, 'items'):
+                        all_tx = list(getattr(transactions, 'items'))
+                except Exception:
+                    all_tx = []
+                for t in all_tx:
+                    if t.get('session_id') == session_id:
+                        existing = t
+                        break
+        except Exception:
+            existing = None
+        if existing:
+            return JSONResponse({'status': 'already_processed'})
+    except Exception:
+        pass
+
+    # Apply server-side changes based on metadata
+    if user_email:
+        user = user_db.get_user_by_email(user_email)
+        if user:
+            try:
+                usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
+                credits = int(round(usd * 10))
+                logger.info('Finalizing checkout for session=%s user=%s amount_usd=%s credits=%s', session_id, user_email, usd, credits)
+                # Defensive: ensure credits is an int and reasonably small to avoid accidental deletion
+                if not isinstance(credits, int):
+                    logger.error('Computed credits is not int: %s', credits)
+                else:
+                    user_db.update_user_credits(user.id, credits)
+            except Exception:
+                pass
+
+    # Persist transaction record
+    try:
+        amt = (float(amount_cents) / 100.0) if amount_cents else 0.0
+        tx = {
+            'user_email': user_email,
+            'event_type': 'checkout_session_completed',
+            'amount_usd': amt,
+            'credits': int(round(amt * 10)),
+            'description': description or 'Checkout purchase',
+            'session_id': session_id,
+        }
+        transactions.add(tx)
+    except Exception:
+        pass
+
+    # Clear any duplicate pending handling is done client-side; return status
+    resp = {'status': 'completed'}
+    try:
+        if user_email:
+            u = user_db.get_user_by_email(user_email)
+            if u:
+                resp['user'] = {'email': u.email, 'credits': u.credits, 'tier': getattr(u, 'tier', None)}
+            else:
+                logger.warning('User not found after checkout finalization for email=%s', user_email)
+    except Exception:
+        logger.exception('Failed to include updated user info in checkout response for %s', user_email)
+
+    return JSONResponse(resp)
 
 
 @router.post("/webhook")
@@ -257,6 +359,41 @@ async def list_transactions(request: Request):
         logger.error('Failed to list transactions for email=%s: %s', email, e)
         logger.debug(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f'Failed to list transactions: {e}') from e
+
+
+
+@router.get('/transactions/{session_or_id}')
+async def get_transaction(request: Request, session_or_id: str):
+    """Fetch a single transaction by session_id or transaction id for the authenticated user.
+
+    Returns 404 if not found or 401 if not authorized.
+    """
+    auth_header = request.headers.get('authorization')
+    if not auth_header or not auth_header.lower().startswith('bearer '):
+        raise HTTPException(status_code=401, detail='Missing Authorization')
+
+    token = auth_header.split(' ', 1)[1]
+    email = verify_token(token)
+    if not email:
+        raise HTTPException(status_code=401, detail='Invalid token')
+
+    try:
+        # Try to find a transaction matching session_id or id
+        items = transactions.list_for_user(email) or []
+        found = None
+        for t in items:
+            if str(t.get('session_id')) == session_or_id or str(t.get('id')) == session_or_id:
+                found = t
+                break
+        if not found:
+            raise HTTPException(status_code=404, detail='Transaction not found')
+        return JSONResponse({'transaction': found})
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error('Failed to fetch transaction %s for %s: %s', session_or_id, email, e)
+        logger.debug(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f'Failed to fetch transaction: {e}') from e
 
 
 @router.post('/credit')

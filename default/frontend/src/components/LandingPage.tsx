@@ -105,9 +105,8 @@ export default function LandingPage() {
                   onClick={async () => {
                     setIsProcessing(true)
                     try {
-                      await PaymentsService.purchaseUpgrade(29)
-                      window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' } }))
-                      // Do not reload immediately; let the modal show and user decide next steps
+                        await PaymentsService.purchaseUpgrade(29)
+                        // Redirecting to Stripe; finalization will trigger the success modal after return
                     } catch (err: unknown) {
                       console.error(err)
                       const msg = err instanceof Error ? err.message : String(err)
@@ -249,7 +248,7 @@ export default function LandingPage() {
                   <span className="text-sm">Basic recommendations</span>
                 </li>
               </ul>
-              <Button className="w-full mt-6" variant="outline">
+              <Button className="w-full mt-6" variant="outline" onClick={() => navigate('/signup')}>
                 Get Started Free
               </Button>
             </CardContent>
@@ -288,7 +287,21 @@ export default function LandingPage() {
                   <span className="text-sm">Priority support</span>
                 </li>
               </ul>
-              <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700">
+              <Button 
+                className="w-full mt-6 bg-blue-600 hover:bg-blue-700" 
+                onClick={async () => {
+                  setIsProcessing(true)
+                  try {
+                      await PaymentsService.purchaseUpgrade(29)
+                      // Redirecting to Stripe; finalization will trigger the success modal after return
+                  } catch (err: unknown) {
+                    console.error(err)
+                    const msg = err instanceof Error ? err.message : String(err)
+                    window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
+                  } finally {
+                    setIsProcessing(false)
+                  }
+              }}>
                 Upgrade to Pro
               </Button>
             </CardContent>

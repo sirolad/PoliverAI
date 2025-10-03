@@ -30,11 +30,21 @@ class InMemoryTransactions:
 
 if MONGO_URI:
     try:
+        import logging
         from pymongo import MongoClient
         from pymongo.collection import Collection
 
+        logger = logging.getLogger(__name__)
+
         client = MongoClient(MONGO_URI)
-        db = client.get_database()
+        # Try to get the database specified in the URI; if none is present,
+        # fall back to the same default used elsewhere in the app ('poliverai').
+        try:
+            db = client.get_database()
+        except Exception:
+            logger.debug("No default DB found in URI; falling back to 'poliverai'")
+            db = client.get_database("poliverai")
+
         transactions_coll: Collection = db.get_collection("transactions")
 
 
@@ -57,8 +67,28 @@ if MONGO_URI:
 
 
         transactions = MongoTransactions()
+        # Ensure the transactions collection has at least one dummy document so it
+        # becomes visible in MongoDB UI tools. This is a benign dev-time seed.
+        try:
+            count = transactions_coll.count_documents({})
+            if count == 0:
+                sample = {
+                    'user_email': 'system@local',
+                    'event_type': 'seed',
+                    'amount_usd': 0.0,
+                    'credits': 0,
+                    'description': 'Initial seed document',
+                    'timestamp': datetime.utcnow(),
+                }
+                transactions_coll.insert_one(sample)
+        except Exception:
+            # Non-fatal: if counting/inserting fails, continue without blocking startup
+            logger.exception('Failed to seed transactions collection; continuing with in-memory fallback')
     except Exception:
-        # If Mongo fails, fall back to in-memory
+        # If Mongo fails, fall back to in-memory and log the error so it's visible
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.exception('MongoTransactions initialization failed, using in-memory transactions')
         transactions = InMemoryTransactions()
 else:
     transactions = InMemoryTransactions()

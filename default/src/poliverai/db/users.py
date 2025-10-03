@@ -137,7 +137,14 @@ class UserDatabase:
     def update_user_credits(self, user_id: str, delta: int) -> bool:
         """Increment (or decrement) credits for a user."""
         if user_id in self.users:
-            self.users[user_id].credits = int(self.users[user_id].credits or 0) + int(delta)
+            prev = int(self.users[user_id].credits or 0)
+            try:
+                new_val = int(prev) + int(delta)
+            except Exception:
+                logger.exception('Invalid delta provided to update_user_credits: %s', delta)
+                return False
+            self.users[user_id].credits = new_val
+            logger.info('Updated credits for user_id=%s email=%s: %s -> %s', user_id, self.users[user_id].email, prev, new_val)
             # Record a transaction for credit change (best-effort)
             try:
                 if transactions is not None:
@@ -163,26 +170,54 @@ MONGO_URI = os.getenv("MONGO_URI")
 if MONGO_URI:
     try:
         from .mongo import MongoUserDB
-        user_db = MongoUserDB(MONGO_URI)
+        try:
+            user_db = MongoUserDB(MONGO_URI)
+            logger.info('Using MongoUserDB (MONGO_URI provided)')
+        except Exception as e:
+            # If MongoUserDB initialization fails, log details and fall back
+            logger.exception('MongoUserDB initialization failed; falling back to in-memory DB: %s', e)
+            user_db = UserDatabase()
         # If using Mongo backend in development, ensure demo users are present
         try:
-            # Only attempt to seed if users are missing
-            if not user_db.get_user_by_email('john@example.com'):
+            # Only seed demo users once. Use a metadata seed marker when
+            # available to avoid re-inserting demo data on every process
+            # startup. This prevents accidental overwrites of a populated
+            # users collection.
+            should_seed = False
+            try:
+                # If there are zero users, we should seed. If the metadata
+                # marker is present then seeding already ran.
+                count = user_db.get_user_count()
+                if count == 0 and not user_db.has_seed_marker():
+                    should_seed = True
+            except Exception:
+                # Fallback: if we can't determine the count, only seed when
+                # the specific demo emails aren't present (best-effort).
+                should_seed = not (user_db.get_user_by_email('john@example.com') or user_db.get_user_by_email('jane@example.com'))
+
+            if should_seed:
                 user_db.create_user('John Doe', 'john@example.com', 'password123')
-            if not user_db.get_user_by_email('jane@example.com'):
                 user_db.create_user('Jane Pro', 'jane@example.com', 'password123')
                 jane = user_db.get_user_by_email('jane@example.com')
                 if jane:
                     user_db.update_user_tier(jane.id, UserTier.PRO)
+                # Record that initial seeding ran so subsequent starts won't
+                # attempt to re-seed.
+                try:
+                    user_db.set_seed_marker()
+                except Exception:
+                    pass
         except Exception:
             # Non-fatal: if seeding fails, continue without blocking startup
             pass
     except Exception:
-        # Fall back to in-memory if Mongo fails to initialize
+        # Fall back to in-memory if the import itself fails; log for visibility
+        logger.exception('Failed to import MongoUserDB; using in-memory database instead')
         user_db = UserDatabase()
 else:
     # Global user database instance (in-memory for development)
     user_db = UserDatabase()
+    logger.info('Using in-memory UserDatabase (no MONGO_URI provided)')
 
     # Add some demo users for development
     try:

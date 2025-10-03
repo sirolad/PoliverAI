@@ -70,6 +70,15 @@ const PaymentsService = {
     const headers = token ? { Authorization: `Bearer ${token}` } : undefined
     const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd }, { headers })
     if (res?.url) {
+      // Cache pending session so we can finalize/check it when user returns
+      try {
+        const typed = res as unknown as { id?: string; sessionId?: string }
+        const sid = typed.id || typed.sessionId || null
+        const pending = { session_id: sid, type: 'upgrade', amount_usd }
+        localStorage.setItem('poliverai:pending_checkout', JSON.stringify(pending))
+      } catch (err) {
+        console.warn('Failed to cache pending checkout', err)
+      }
       // Redirect browser to Stripe Checkout
       window.location.href = res.url
     }
@@ -82,10 +91,26 @@ const PaymentsService = {
     const headers = token ? { Authorization: `Bearer ${token}` } : undefined
     const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd, description: 'Buy credits' }, { headers })
     if (res?.url) {
+      try {
+        const typed = res as unknown as { id?: string; sessionId?: string }
+        const sid = typed.id || typed.sessionId || null
+        const pending = { session_id: sid, type: 'credits', amount_usd }
+        localStorage.setItem('poliverai:pending_checkout', JSON.stringify(pending))
+      } catch (err) {
+        console.warn('Failed to cache pending checkout', err)
+      }
       window.location.href = res.url
     }
     return res
   },
+
+  clearPending() {
+    try {
+      localStorage.removeItem('poliverai:pending_checkout')
+    } catch (err) {
+      console.warn('Failed to clear pending checkout', err)
+    }
+  }
 }
 
 export default PaymentsService
