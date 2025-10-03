@@ -3,6 +3,7 @@ python-dotenv==1.0.1
 fastapi==0.111.0
 uvicorn==0.30.1
 streamlit==1.37.1
+pymongo==4.5.1
 
 
 # LLM & NLP
