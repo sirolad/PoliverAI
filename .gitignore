@@ -80,8 +80,8 @@ yarn-error.log
 # Ruby / CocoaPods
 mono-repo-nx/apps/poliverai/macos/Pods
 mono-repo-nx/apps/poliverai/ios/Pods
-mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/*/Objects-normal/arm64/Binary
-mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/*/Objects-normal/arm64/x86_64
+mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/**/Objects-normal/arm64/Binary
+mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/**/Objects-normal/arm64/x86_64
 # **/vendor/bundle/
 
 # Metro
