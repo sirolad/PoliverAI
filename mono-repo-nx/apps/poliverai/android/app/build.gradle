@@ -25,7 +25,10 @@ react {
 
     /* Bundling */
     //   A list containing the node command and its flags. Default is just 'node'.
-    // nodeExecutableAndArgs = ["node"]
+    // If Android Studio / Gradle cannot find `node` (common with nvm),
+    // set the full path to the Node executable used by your shell.
+    // Replace the path below if your `which node` points elsewhere.
+    nodeExecutableAndArgs = ["/Users/gabrieldagadu/.nvm/versions/node/v20.19.4/bin/node"]
     //
     //   The command to run when bundling. By default is 'bundle'
     // bundleCommand = "ram-bundle"

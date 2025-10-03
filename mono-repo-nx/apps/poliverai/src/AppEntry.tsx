@@ -18,7 +18,7 @@ function WebApp() {
 
   return (
     <View style={styles.root}>
-  <NavBar logo={brandAssets.poliveraiLogo} />
+  <NavBar logo={brandAssets.poliveraiIconTransparent} />
       <AppNavigator initialPlatform="web" isAuthenticated={isAuthenticated} isLoading={loading} />
     </View>
   );

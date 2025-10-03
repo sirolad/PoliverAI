@@ -1,0 +1,33 @@
+dependencies: \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Fabric/Utils/RCTBoxShadow.mm \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Target\ Support\ Files/React-RCTFabric/React-RCTFabric-prefix.pch \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-macos/React/Fabric/Utils/RCTBoxShadow.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTBorderDrawing.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTUIKit.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTAssert.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTDefines.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTInspectorDevServerHelper.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTPackagerConnection.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTComponent.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Core/React/RCTBorderStyle.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/BoxShadow.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/Color.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/ColorComponents.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/HostPlatformColor.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-utils/react/utils/hash_combine.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/Float.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Private/React-RCTFabric/React/RCTConversions.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Fabric/react/renderer/components/view/AccessibilityPrimitives.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Fabric/react/renderer/components/view/primitives.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/RectangleCorners.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/RectangleEdges.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/Rect.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/Point.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/Size.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/ValueUnit.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-Fabric/react/renderer/core/LayoutPrimitives.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/RCTPlatformColorUtils.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/Transform.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-rendererdebug/react/renderer/debug/flags.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-debug/react/debug/flags.h \
+  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/Pods/Headers/Public/React-graphics/react/renderer/graphics/Vector.h

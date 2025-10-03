@@ -505,6 +505,30 @@
             "configurations": {},
             "parallelism": true
           },
+          "macos": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "macos"
+            },
+            "metadata": {
+              "scriptContent": "npx react-native run-macos",
+              "runCommand": "yarn macos"
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "postinstall": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "postinstall"
+            },
+            "metadata": {
+              "scriptContent": "node ./scripts/restore-codegen-stubs.js && node ./scripts/patch-react-native-worklets.js && node ../../scripts/apply-react-native-worklets-patch.js",
+              "runCommand": "yarn postinstall"
+            },
+            "configurations": {},
+            "parallelism": true
+          },
           "start": {
             "executor": "@nx/react-native:start",
             "options": {},
@@ -640,7 +664,9 @@
           "targetGroups": {
             "NPM Scripts": [
               "android",
-              "ios"
+              "ios",
+              "macos",
+              "postinstall"
             ]
           },
           "js": {
@@ -14525,15 +14551,6 @@
         "hash": "sha512-J0HHZISoi0OQYirB1xU4fp0noLgUDTZDuM1gIuZYt7E//EE85yT9mnCVL2RYgRUlfenNISS3SSv5RzIQiYurXg=="
       }
     },
-    "npm:react-native-reanimated": {
-      "type": "npm",
-      "name": "npm:react-native-reanimated",
-      "data": {
-        "version": "4.1.2",
-        "packageName": "react-native-reanimated",
-        "hash": "sha512-qzmQiFrvjm62pRBcj97QI9Xckc3EjgHQoY1F2yjktd0kpjhoyePeuTEXjYRCAVIy7IV/1cfeSup34+zFThFoHQ=="
-      }
-    },
     "npm:react-native-safe-area-context": {
       "type": "npm",
       "name": "npm:react-native-safe-area-context",
@@ -14604,6 +14621,15 @@
         "version": "0.79.4",
         "packageName": "react-native-windows",
         "hash": "sha512-vfyEP0ittwrygqVApug4jw/Se04xFYGg2eE5AnfPqzdo9EFo4j/2DY9Em6BaU7j6FKNQlv7ShvX3F8fRXuy+kw=="
+      }
+    },
+    "npm:react-native-worklets": {
+      "type": "npm",
+      "name": "npm:react-native-worklets",
+      "data": {
+        "version": "0.4.2",
+        "packageName": "react-native-worklets",
+        "hash": "sha512-02IMmU2rOL6vrF7uA6cLAeN4haXOMTBh7opmVYQbjYG8mNAb0cnhmkvkdQupmpFjBpWZRJnBGYJJa471a/9IPg=="
       }
     },
     "npm:react-native@0.81.4": {
@@ -15218,15 +15244,6 @@
         "hash": "sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A=="
       }
     },
-    "npm:semver": {
-      "type": "npm",
-      "name": "npm:semver",
-      "data": {
-        "version": "7.7.2",
-        "packageName": "semver",
-        "hash": "sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA=="
-      }
-    },
     "npm:semver@5.7.2": {
       "type": "npm",
       "name": "npm:semver@5.7.2",
@@ -15243,6 +15260,15 @@
         "version": "6.3.1",
         "packageName": "semver",
         "hash": "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="
+      }
+    },
+    "npm:semver": {
+      "type": "npm",
+      "name": "npm:semver",
+      "data": {
+        "version": "7.7.2",
+        "packageName": "semver",
+        "hash": "sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA=="
       }
     },
     "npm:send": {
@@ -17476,6 +17502,21 @@
       },
       {
         "source": "@poliverai/poliverai",
+        "target": "npm:@react-native-community/cli",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
+        "target": "npm:@react-native-community/cli-platform-android",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
+        "target": "npm:@react-native-community/cli-platform-ios",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
         "target": "npm:@react-navigation/drawer",
         "type": "static"
       },
@@ -17491,32 +17532,17 @@
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:react-native-reanimated",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
         "target": "npm:react-native-safe-area-context",
         "type": "static"
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:react-native-screens",
+        "target": "npm:react-native-windows",
         "type": "static"
       },
       {
         "source": "@poliverai/poliverai",
-        "target": "npm:@react-native-community/cli",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
-        "target": "npm:@react-native-community/cli-platform-android",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
-        "target": "npm:@react-native-community/cli-platform-ios",
+        "target": "npm:react-native-worklets",
         "type": "static"
       },
       {
@@ -17536,22 +17562,17 @@
       },
       {
         "source": "@poliverai/poliverai",
+        "target": "npm:react-native-macos",
+        "type": "static"
+      },
+      {
+        "source": "@poliverai/poliverai",
         "target": "npm:react-native-svg@15.13.0",
         "type": "static"
       },
       {
         "source": "@poliverai/poliverai",
         "target": "npm:react-test-renderer@19.1.1",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
-        "target": "npm:react-native-macos",
-        "type": "static"
-      },
-      {
-        "source": "@poliverai/poliverai",
-        "target": "npm:react-native-windows",
         "type": "static"
       },
       {
@@ -37265,18 +37286,6 @@
         "type": "static"
       }
     ],
-    "npm:react-native-reanimated": [
-      {
-        "source": "npm:react-native-reanimated",
-        "target": "npm:react-native-is-edge-to-edge",
-        "type": "static"
-      },
-      {
-        "source": "npm:react-native-reanimated",
-        "target": "npm:semver",
-        "type": "static"
-      }
-    ],
     "npm:react-native-screens": [
       {
         "source": "npm:react-native-screens",
@@ -37611,6 +37620,58 @@
       {
         "source": "npm:react-native-windows",
         "target": "npm:yargs",
+        "type": "static"
+      }
+    ],
+    "npm:react-native-worklets": [
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-arrow-functions",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-class-properties",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-classes",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-nullish-coalescing-operator",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-optional-chaining",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-shorthand-properties",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-template-literals",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/plugin-transform-unicode-regex",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:@babel/preset-typescript",
+        "type": "static"
+      },
+      {
+        "source": "npm:react-native-worklets",
+        "target": "npm:convert-source-map",
         "type": "static"
       }
     ],
@@ -41247,5 +41308,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1759327431521
+  "computedAt": 1759448381256
 }

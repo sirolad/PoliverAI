@@ -1,0 +1,11 @@
+> sh -lc "if (grep -q '"react-native-macos"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native run-macos; else echo 'react-native run-macos not configured: add react-native-macos and initialize the macos/ native project (see https://microsoft.github.io/react-native-macos/).'; fi"
+
+[33m[1mwarn[22m[39m [0mArgument --configuration has been deprecated and will be removed in a future release, please use --mode instead.[0m
+[36m[1minfo[22m[39m [0mFound Xcode workspace "[1mpoliverai.xcworkspace[22m"[0m
+[36m[1minfo[22m[39m [0mBuilding [2m(using "xcodebuild -workspace /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/macos/poliverai.xcworkspace -configuration Debug -scheme poliverai-macOS")[22m[0m
+.............................................................................................................................................................................................................................................................................
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:x86_64, id:8E49F1FE-706E-5B59-9D2C-9CD55207B162, name:My Mac }
+{ platform:macOS, name:Any Mac }
+[36m[1minfo[22m[39m [0mLaunching app "[1morg.reactjs.native.poliverai[22m" from "[1m/Users/gabrieldagadu/Library/Developer/Xcode/DerivedData/poliverai-bxqwnqatkoajjkczhwtnwziecupi/Build/Products/Debug/poliverai.app[22m"[0m
+[32m[1msuccess[22m[39m [0mSuccessfully launched the app[0m

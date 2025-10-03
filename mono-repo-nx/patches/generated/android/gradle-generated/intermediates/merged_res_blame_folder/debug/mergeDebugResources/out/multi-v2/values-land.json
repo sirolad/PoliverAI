@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.poliverai.app-mergeDebugResources-27:/values-land/values-land.xml",
+            "map": [
+                {
+                    "source": "/Users/gabrieldagadu/.gradle/caches/8.13/transforms/3de85972d3619b5106aec0e731e93a3b/transformed/appcompat-1.7.0/res/values-land/values-land.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,125,196",
+                        "endColumns": "69,70,67",
+                        "endOffsets": "120,191,259"
+                    }
+                }
+            ]
+        }
+    ]
+}

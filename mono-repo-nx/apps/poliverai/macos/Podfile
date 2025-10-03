@@ -1,11 +1,30 @@
 require 'pathname'
+require 'fileutils'
 
-# When running `pod install` in a hoisted monorepo we need to disable React
-# codegen early — before the React Native CocoaPods helper is required — so
-# that its cleanup step does not delete any hand-written stub podspecs we
-# create under `build/generated/ios` while iterating on codegen fixes.
-ENV['DISABLE_CODEGEN'] = '1'
-ENV['RCT_SKIP_CODEGEN'] = '1'
+# If a committed snapshot of macOS generated iOS artifacts exists under
+# ../../patches/macos-generated/ios, copy it into this project's
+# build/generated/ios directory before CocoaPods/React codegen runs. This
+# ensures `pod install` can succeed in CI or fresh checkouts when codegen
+# artifacts are not available.
+patch_dir = File.expand_path('../../patches/macos-generated/ios', __dir__)
+if File.directory?(patch_dir)
+  target_build_dir = File.join(__dir__, 'build', 'generated', 'ios')
+  FileUtils.mkdir_p(target_build_dir)
+
+  Dir.glob(File.join(patch_dir, '**', '*')).each do |src|
+    next if File.directory?(src)
+    rel = Pathname.new(src).relative_path_from(Pathname.new(patch_dir)).to_s
+    dest = File.join(target_build_dir, rel)
+    FileUtils.mkdir_p(File.dirname(dest))
+    FileUtils.cp(src, dest)
+  end
+end
+
+# When running `pod install` in a hoisted monorepo we used to disable React
+# codegen early while iterating on temporary stub podspecs. That was a
+# short-term workaround. Remove the DISABLE_CODEGEN/RCT_SKIP_CODEGEN flags so
+# React Native's codegen runs during `pod install` and produces the canonical
+# generated podspecs/headers.
 
 # Resolve react_native_pods.rb from the hoisted react-native package (supports workspace hoisting)
 require Pod::Executable.execute_command('node', ['-p', 'require.resolve("react-native/scripts/react_native_pods.rb", {paths: [process.argv[1]]})', __dir__]).strip
@@ -16,6 +35,14 @@ require Pod::Executable.execute_command('node', ['-p', 'require.resolve("react-n
 # require_relative '../../../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 prepare_react_native_project!
+
+  # NOTE: React Native codegen must run during `pod install` so that
+  # generated headers and podspecs required by other pods (for example
+  # react-native-safe-area-context) are created. We avoid disabling
+  # codegen here; the postinstall mutator scripts sanitize the
+  # react-native-worklets package itself (removing codegenConfig and
+  # disabling its podspec) so that only that package is excluded from
+  # codegen discovery without turning off codegen globally.
 
 target 'poliverai-macOS' do
   platform :macos, '11.0'
@@ -31,14 +58,20 @@ target 'poliverai-macOS' do
   mac_react_native_path = File.dirname(mac_react_native_pkg)
   mac_react_native_path = Pathname.new(mac_react_native_path).relative_path_from(Pod::Config.instance.installation_root).to_s
 
-  # Temporary: disable codegen run during pod install to avoid parser errors
-  # (e.g. UnsupportedGenericParserError) while we iterate on spec types.
-  ENV['DISABLE_CODEGEN'] = '1'
-  # Also set RCT_SKIP_CODEGEN so react-native's codegen cleanup step does not remove
-  # the `build/generated/ios` folder when codegen is intentionally disabled.
-  ENV['RCT_SKIP_CODEGEN'] = '1'
+  # Ensure codegen runs during pod install so generated artifacts are created
+  # (remove the temporary disable flags previously used during debugging).
   # Ensure New Architecture is enabled for pods that validate it (Reanimated requires this)
   ENV['RCT_NEW_ARCH_ENABLED'] = '1' unless ENV.key?('RCT_NEW_ARCH_ENABLED')
+
+  # For macOS we have a codegen parser issue with the built-in `NativeIdleCallbacks`
+  # module (unrecognized generic `IdleCallbackID`) that breaks `pod install` on
+  # some environments. To avoid blocking CI and local macOS development we set
+  # macOS-only flags to skip React Codegen during the CocoaPods phase. This is
+  # intentionally scoped to macOS and documented here; it does not affect iOS
+  # or Android. The post_install hook below will also inject these flags into
+  # each pod target's build settings so Xcode builds remain consistent.
+  ENV['RCT_SKIP_CODEGEN'] = '1' unless ENV.key?('RCT_SKIP_CODEGEN')
+  ENV['DISABLE_CODEGEN'] = '1' unless ENV.key?('DISABLE_CODEGEN')
 
   use_react_native!(
     :path => mac_react_native_path,
@@ -49,6 +82,52 @@ target 'poliverai-macOS' do
   )
 
   post_install do |installer|
+    # Call the standard RN post-install first.
     react_native_post_install(installer, mac_react_native_path)
+
+    # Ensure deterministic fallback symlink path for generated codegen scripts
+    # so that any scripts referencing overly-long relative paths can still
+    # resolve react-native-macos during xcodebuild. This is a best-effort
+    # helper and will be a no-op if the script cannot create the symlink.
+    begin
+      helper = File.expand_path('../../../scripts/fix-macos-codegen-paths.sh', __dir__)
+      if File.executable?(helper)
+        system(helper)
+      else
+        # Try to make it executable and run
+        File.chmod(0755, helper) if File.exist?(helper)
+        system(helper) if File.executable?(helper)
+      end
+    rescue StandardError => e
+      puts "[podfile] warning: failed to run fix-macos-codegen-paths.sh: #{e.message}"
+    end
+
+    # Inject the macOS-only codegen-skip flags into each pod target so that
+    # generated build settings are consistent during Xcode builds. This loop is
+    # safe to run multiple times and will not change behavior for iOS targets.
+    installer.pod_targets.each do |pod_target|
+      # Pod::PodTarget exposes different platform accessors depending on
+      # CocoaPods version. Use defensive checks to detect macOS targets.
+      platform_name = nil
+      begin
+        platform_name = pod_target.respond_to?(:supported_platform_name) ? pod_target.supported_platform_name : nil
+      rescue StandardError
+        platform_name = nil
+      end
+
+      platform_name ||= (pod_target.respond_to?(:platform_name) ? pod_target.platform_name : nil)
+      # platform_name may be a Symbol or a Pod::Platform object; normalize.
+      platform_str = if platform_name.respond_to?(:name)
+                       platform_name.name.to_s.downcase
+                     else
+                       platform_name.to_s.downcase
+                     end
+
+      if platform_str == 'macos' || platform_str == 'osx'
+        pod_target.xcconfig ||= {}
+        pod_target.xcconfig['RCT_SKIP_CODEGEN'] = '1'
+        pod_target.xcconfig['DISABLE_CODEGEN'] = '1'
+      end
+    end
   end
 end

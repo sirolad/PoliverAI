@@ -21,6 +21,7 @@ function loadAsset(path: string): ImageSourcePropType {
 export const brandAssets = {
   poliveraiLogo: loadAsset('./poliverai-logo.svg'),
   poliveraiIcon: loadAsset('./poliverai-icon.svg'),
+  poliveraiIconTransparent: loadAsset('./poliverai-icon-transparent.svg'),
 };
 
 export default brandAssets;

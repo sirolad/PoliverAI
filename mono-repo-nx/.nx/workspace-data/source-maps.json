@@ -316,6 +316,14 @@
       "apps/poliverai/package.json",
       "nx/core/package-json"
     ],
+    "metadata.targetGroups.NPM Scripts.2": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.3": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
     "metadata.js": [
       "apps/poliverai/package.json",
       "nx/core/package-json"
@@ -381,6 +389,62 @@
       "nx/core/package-json"
     ],
     "targets.ios.metadata.runCommand": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.metadata.runCommand": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.metadata.runCommand": [
       "apps/poliverai/package.json",
       "nx/core/package-json"
     ],

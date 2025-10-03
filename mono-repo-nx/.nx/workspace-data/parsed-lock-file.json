@@ -13608,15 +13608,6 @@
         "hash": "sha512-J0HHZISoi0OQYirB1xU4fp0noLgUDTZDuM1gIuZYt7E//EE85yT9mnCVL2RYgRUlfenNISS3SSv5RzIQiYurXg=="
       }
     },
-    "npm:react-native-reanimated": {
-      "type": "npm",
-      "name": "npm:react-native-reanimated",
-      "data": {
-        "version": "4.1.2",
-        "packageName": "react-native-reanimated",
-        "hash": "sha512-qzmQiFrvjm62pRBcj97QI9Xckc3EjgHQoY1F2yjktd0kpjhoyePeuTEXjYRCAVIy7IV/1cfeSup34+zFThFoHQ=="
-      }
-    },
     "npm:react-native-safe-area-context": {
       "type": "npm",
       "name": "npm:react-native-safe-area-context",
@@ -13687,6 +13678,15 @@
         "version": "0.79.4",
         "packageName": "react-native-windows",
         "hash": "sha512-vfyEP0ittwrygqVApug4jw/Se04xFYGg2eE5AnfPqzdo9EFo4j/2DY9Em6BaU7j6FKNQlv7ShvX3F8fRXuy+kw=="
+      }
+    },
+    "npm:react-native-worklets": {
+      "type": "npm",
+      "name": "npm:react-native-worklets",
+      "data": {
+        "version": "0.4.2",
+        "packageName": "react-native-worklets",
+        "hash": "sha512-02IMmU2rOL6vrF7uA6cLAeN4haXOMTBh7opmVYQbjYG8mNAb0cnhmkvkdQupmpFjBpWZRJnBGYJJa471a/9IPg=="
       }
     },
     "npm:react-native@0.81.4": {
@@ -14301,15 +14301,6 @@
         "hash": "sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A=="
       }
     },
-    "npm:semver": {
-      "type": "npm",
-      "name": "npm:semver",
-      "data": {
-        "version": "7.7.2",
-        "packageName": "semver",
-        "hash": "sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA=="
-      }
-    },
     "npm:semver@5.7.2": {
       "type": "npm",
       "name": "npm:semver@5.7.2",
@@ -14326,6 +14317,15 @@
         "version": "6.3.1",
         "packageName": "semver",
         "hash": "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="
+      }
+    },
+    "npm:semver": {
+      "type": "npm",
+      "name": "npm:semver",
+      "data": {
+        "version": "7.7.2",
+        "packageName": "semver",
+        "hash": "sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA=="
       }
     },
     "npm:send": {
@@ -17910,6 +17910,11 @@
       "type": "static"
     },
     {
+      "source": "npm:@babel/plugin-transform-arrow-functions",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
       "source": "npm:@babel/plugin-transform-async-generator-functions",
       "target": "npm:@babel/helper-plugin-utils",
       "type": "static"
@@ -18015,6 +18020,16 @@
       "type": "static"
     },
     {
+      "source": "npm:@babel/plugin-transform-class-properties",
+      "target": "npm:@babel/helper-create-class-features-plugin",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-class-properties",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
       "source": "npm:@babel/plugin-transform-class-static-block",
       "target": "npm:@babel/helper-create-class-features-plugin",
       "type": "static"
@@ -18022,6 +18037,36 @@
     {
       "source": "npm:@babel/plugin-transform-class-static-block",
       "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-classes",
+      "target": "npm:@babel/helper-annotate-as-pure",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-classes",
+      "target": "npm:@babel/helper-compilation-targets",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-classes",
+      "target": "npm:@babel/helper-globals",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-classes",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-classes",
+      "target": "npm:@babel/helper-replace-supers",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-classes",
+      "target": "npm:@babel/traverse",
       "type": "static"
     },
     {
@@ -18360,6 +18405,11 @@
       "type": "static"
     },
     {
+      "source": "npm:@babel/plugin-transform-nullish-coalescing-operator",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
       "source": "npm:@babel/plugin-transform-numeric-separator",
       "target": "npm:@babel/helper-plugin-utils",
       "type": "static"
@@ -18437,6 +18487,16 @@
     {
       "source": "npm:@babel/plugin-transform-optional-catch-binding",
       "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-optional-chaining",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-optional-chaining",
+      "target": "npm:@babel/helper-skip-transparent-expression-wrappers",
       "type": "static"
     },
     {
@@ -18720,6 +18780,11 @@
       "type": "static"
     },
     {
+      "source": "npm:@babel/plugin-transform-shorthand-properties",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
       "source": "npm:@babel/plugin-transform-spread",
       "target": "npm:@babel/helper-plugin-utils",
       "type": "static"
@@ -18746,6 +18811,11 @@
     },
     {
       "source": "npm:@babel/plugin-transform-sticky-regex",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-template-literals",
       "target": "npm:@babel/helper-plugin-utils",
       "type": "static"
     },
@@ -18821,6 +18891,16 @@
     },
     {
       "source": "npm:@babel/plugin-transform-unicode-property-regex",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-unicode-regex",
+      "target": "npm:@babel/helper-create-regexp-features-plugin",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/plugin-transform-unicode-regex",
       "target": "npm:@babel/helper-plugin-utils",
       "type": "static"
     },
@@ -19627,6 +19707,31 @@
     {
       "source": "npm:@babel/preset-react",
       "target": "npm:@babel/plugin-transform-react-pure-annotations",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/preset-typescript",
+      "target": "npm:@babel/helper-plugin-utils",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/preset-typescript",
+      "target": "npm:@babel/helper-validator-option",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/preset-typescript",
+      "target": "npm:@babel/plugin-syntax-jsx",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/preset-typescript",
+      "target": "npm:@babel/plugin-transform-modules-commonjs",
+      "type": "static"
+    },
+    {
+      "source": "npm:@babel/preset-typescript",
+      "target": "npm:@babel/plugin-transform-typescript",
       "type": "static"
     },
     {
@@ -41905,16 +42010,6 @@
       "type": "static"
     },
     {
-      "source": "npm:react-native-reanimated",
-      "target": "npm:react-native-is-edge-to-edge",
-      "type": "static"
-    },
-    {
-      "source": "npm:react-native-reanimated",
-      "target": "npm:semver",
-      "type": "static"
-    },
-    {
       "source": "npm:react-native-screens",
       "target": "npm:react-freeze",
       "type": "static"
@@ -42457,6 +42552,106 @@
     {
       "source": "npm:react-native-windows",
       "target": "npm:yargs",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-arrow-functions",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-class-properties",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-classes",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-nullish-coalescing-operator",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-optional-chaining",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-shorthand-properties",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-template-literals",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-unicode-regex",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/preset-typescript",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:convert-source-map",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-arrow-functions",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-class-properties",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-classes",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-nullish-coalescing-operator",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-optional-chaining",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-shorthand-properties",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-template-literals",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/plugin-transform-unicode-regex",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:@babel/preset-typescript",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-native-worklets",
+      "target": "npm:convert-source-map",
       "type": "static"
     },
     {
