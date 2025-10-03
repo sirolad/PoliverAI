@@ -15,3 +15,11 @@ verification:
 
 reports:
   output_dir: reports
+
+# Optional Google Cloud Storage settings
+gcs:
+  # Default bucket used by various helpers
+  bucket: "your-gcs-bucket-name"
+  # Specific buckets can override the default for chroma persistence and reports
+  chroma_bucket: "your-chroma-bucket"
+  reports_bucket: "your-reports-bucket"

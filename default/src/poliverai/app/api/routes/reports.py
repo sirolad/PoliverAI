@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+import os
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
@@ -9,6 +10,14 @@ from pydantic import BaseModel
 from ....core.config import get_settings
 from ....rag.service import _init
 from ....reporting.exporter import export_report
+from ....storage.gcs_reports import upload_report_if_changed, compute_sha256_for_file
+from ....db.mongo import MongoUserDB
+from fastapi import Header, Request, Depends
+from .auth import CURRENT_USER_DEPENDENCY
+from .verification import CURRENT_USER_OPTIONAL_DEPENDENCY
+from ....domain.auth import User
+import os
+import stat
 
 # Constants
 MAX_EXCERPT_LENGTH = 150
@@ -474,7 +483,10 @@ async def generate_report(req: ReportRequest) -> ReportResponse:
 
 
 @router.post("/verification-report", response_model=ReportResponse)
-async def generate_verification_report(req: VerificationReportRequest) -> ReportResponse:
+async def generate_verification_report(
+    req: VerificationReportRequest,
+    current_user: User | None = CURRENT_USER_OPTIONAL_DEPENDENCY,
+) -> ReportResponse:
     """Generate a comprehensive verification report."""
     try:
         reports_dir = Path("reports")
@@ -489,8 +501,53 @@ async def generate_verification_report(req: VerificationReportRequest) -> Report
         filepath = export_report(content, str(reports_dir))
         filename = Path(filepath).name
 
+        # If GCS is configured, upload under user folder if we have a user id
+        settings = get_settings()
+        gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_REPORTS_GCS_BUCKET")
+        user_id = None
+        if current_user is not None:
+            user_id = current_user.id
+        else:
+            # fallback to environment variable for backward compatibility
+            user_id = os.getenv("POLIVERAI_DEFAULT_USER_ID")
+
+        gcs_url = None
+        try:
+            if gcs_bucket and user_id:
+                object_path = f"{user_id}/{filename}"
+                uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, filepath)
+        except Exception:
+            gcs_url = None
+
+        # Insert a record into Mongo 'reports' collection if available
+        try:
+            mongo_uri = os.getenv("MONGO_URI")
+            if mongo_uri:
+                mdb = MongoUserDB(mongo_uri)
+                # collect additional metadata
+                file_size = None
+                try:
+                    file_size = Path(filepath).stat().st_size
+                except Exception:
+                    file_size = None
+
+                report_doc = {
+                    "filename": filename,
+                    "path": str(filepath),
+                    "gcs_url": gcs_url,
+                    "user_id": user_id,
+                    "document_name": req.document_name,
+                    "analysis_mode": req.analysis_mode,
+                    "file_size": file_size,
+                    "created_at": datetime.utcnow(),
+                }
+                mdb.db.get_collection("reports").insert_one(report_doc)
+        except Exception:
+            # Do not hard-fail report creation if DB logging fails
+            pass
+
         return ReportResponse(
-            filename=filename, path=filepath, download_url=f"/api/v1/reports/download/{filename}"
+            filename=filename, path=filepath, download_url=gcs_url or f"/api/v1/reports/download/{filename}"
         )
     except Exception as e:
         raise HTTPException(
@@ -559,3 +616,34 @@ async def download_report(filename: str):
     media_type = "application/pdf" if filename.endswith(".pdf") else "text/plain"
 
     return FileResponse(path=str(filepath), filename=filename, media_type=media_type)
+
+
+@router.get("/user-reports")
+async def list_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
+    """List reports for the authenticated user."""
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri:
+        raise HTTPException(status_code=500, detail="MongoDB not configured")
+
+    try:
+        mdb = MongoUserDB(mongo_uri)
+        cursor = mdb.db.get_collection("reports").find({"user_id": current_user.id}).sort(
+            "created_at", -1
+        )
+        out = []
+        for doc in cursor:
+            out.append(
+                {
+                    "filename": doc.get("filename"),
+                    "title": doc.get("document_name"),
+                    "created_at": doc.get("created_at").isoformat()
+                    if isinstance(doc.get("created_at"), datetime)
+                    else str(doc.get("created_at")),
+                    "file_size": doc.get("file_size"),
+                    "gcs_url": doc.get("gcs_url"),
+                    "path": doc.get("path"),
+                }
+            )
+        return out
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list reports: {e}") from e

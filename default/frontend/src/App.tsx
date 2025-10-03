@@ -5,6 +5,7 @@ import { Navbar } from './components/Navbar'
 import { Dashboard } from './components/Dashboard'
 import PolicyAnalysis from './components/PolicyAnalysis'
 import Reports from './components/Reports'
+import Credits from './components/Credits'
 import { Login } from './components/auth/Login'
 import { Register } from './components/auth/Register'
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/analyze" element={<PolicyAnalysis />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/credits" element={<Credits />} />
           </Routes>
         </div>
       </Router>

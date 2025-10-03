@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
+import useAuth from '@/contexts/useAuth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import {
@@ -12,9 +12,11 @@ import {
   Star,
   Lock
 } from 'lucide-react'
+import PaymentsService from '@/services/payments'
 
 export function Dashboard() {
   const { user, isAuthenticated, isPro, loading } = useAuth()
+  const hasCredits = (user?.credits ?? 0) > 0
   const navigate = useNavigate()
 
   if (loading) {
@@ -55,19 +57,20 @@ export function Dashboard() {
       icon: Zap,
       title: 'AI-Powered Analysis',
       description: 'Advanced AI analysis with nuanced violation detection',
-      available: isPro,
+      // Available if user is PRO or has credits
+      available: isPro || hasCredits,
     },
     {
       icon: BarChart,
       title: 'Comprehensive Reports',
       description: 'Detailed PDF reports with confidence scores and evidence',
-      available: isPro,
+      available: isPro || hasCredits,
     },
     {
       icon: FileCheck,
       title: 'Policy Generation',
       description: 'Automatically generate revised compliant policies',
-      available: isPro,
+      available: isPro || hasCredits,
     },
   ]
 
@@ -108,7 +111,20 @@ export function Dashboard() {
                   {isPro ? 'PRO PLAN' : 'FREE PLAN'}
                 </span>
                 {!isPro && (
-                  <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={async () => {
+                      try {
+                        await PaymentsService.purchaseUpgrade(29)
+                        window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' } }))
+                        window.location.reload()
+                      } catch (err: unknown) {
+                        console.error(err)
+                        const msg = err instanceof Error ? err.message : String(err)
+                        window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
+                      }
+                    }}
+                  >
                     Upgrade to Pro
                   </Button>
                 )}
@@ -123,7 +139,21 @@ export function Dashboard() {
                   Get AI-powered deep analysis, comprehensive reporting, and policy generation
                   with our Pro plan starting at $29/month.
                 </p>
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Button
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={async () => {
+                    try {
+                      await PaymentsService.purchaseUpgrade(29)
+                      window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' } }))
+                      window.location.reload()
+                    } catch (err: unknown) {
+                      console.error(err)
+                      const msg = err instanceof Error ? err.message : String(err)
+                      window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
+                    }
+                  }}
+                >
                   Learn More
                 </Button>
               </div>
@@ -179,7 +209,7 @@ export function Dashboard() {
           <div className="mb-6">
             <h3 className="text-lg font-medium text-gray-800 mb-3 flex items-center gap-2">
               <Shield className="h-5 w-5 text-green-600" />
-              Free Plan Features
+              Free Tier Features
             </h3>
             <div className="grid md:grid-cols-3 gap-4">
               {freeFeatures.map((feature, index) => (

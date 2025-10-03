@@ -1,0 +1,309 @@
+"""Stripe payment endpoints for one-time payments and webhooks."""
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
+import logging
+import traceback
+import os
+try:
+    # In development, load .env so STRIPE_* vars are available when running uvicorn from the project root
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    # dotenv is optional; if it's not installed or fails, fall back to environment variables
+    pass
+from ....db.users import user_db
+from ....db.transactions import transactions
+from ....domain.auth import User, UserTier
+from ....core.auth import verify_token
+
+router = APIRouter(tags=["payments"])
+
+logger = logging.getLogger(__name__)
+
+# Load stripe keys from env
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+try:
+    import stripe
+    stripe.api_key = STRIPE_SECRET_KEY
+except Exception:
+    stripe = None
+
+# If stripe is imported but no API key is configured, treat as not configured
+if stripe is not None and not STRIPE_SECRET_KEY:
+    logger.warning('Stripe library loaded but STRIPE_SECRET_KEY is not set in environment')
+    stripe = None
+
+
+@router.post("/create-payment-intent")
+async def create_payment_intent(request: Request):
+    """Create a Stripe PaymentIntent for a one-time payment.
+
+    Expects JSON: {"amount_usd": float, "description": str}
+    Returns client_secret and publishable key for client-side confirmation.
+    """
+    if stripe is None:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+
+    data = await request.json()
+    amount_usd = data.get("amount_usd")
+    description = data.get("description", "PoliverAI credits")
+
+    if not amount_usd or amount_usd <= 0:
+        raise HTTPException(status_code=400, detail="Invalid amount")
+
+    # convert USD to cents
+    amount_cents = int(round(float(amount_usd) * 100))
+
+    # Try to capture Authorization header to attach user metadata (optional)
+    auth_header = request.headers.get('authorization')
+    metadata = {}
+    if auth_header and auth_header.lower().startswith('bearer '):
+        token = auth_header.split(' ', 1)[1]
+        email = verify_token(token)
+        if email:
+            metadata['user_email'] = email
+
+    try:
+        intent = stripe.PaymentIntent.create(
+            amount=amount_cents,
+            currency="usd",
+            payment_method_types=["card"],
+            description=description,
+            metadata=metadata or None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Stripe error creating PaymentIntent: {e}") from e
+
+    return JSONResponse({
+        "client_secret": intent.client_secret,
+        "publishable_key": STRIPE_PUBLISHABLE_KEY,
+    })
+
+
+@router.post('/create-checkout-session')
+async def create_checkout_session(request: Request):
+    """Create a Stripe Checkout session and return the URL to redirect the user to.
+
+    Expects JSON: {amount_usd: float, description?: str, success_url?: str, cancel_url?: str}
+    Returns: {url: str}
+    """
+    if stripe is None:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+
+    data = await request.json()
+    amount_usd = data.get('amount_usd')
+    description = data.get('description', 'PoliverAI credits')
+    success_url = data.get('success_url') or 'http://localhost:5173'
+    cancel_url = data.get('cancel_url') or success_url
+
+    if not amount_usd or amount_usd <= 0:
+        raise HTTPException(status_code=400, detail='Invalid amount')
+
+    amount_cents = int(round(float(amount_usd) * 100))
+
+    # capture optional auth header to attach user metadata
+    auth_header = request.headers.get('authorization')
+    metadata = {}
+    if auth_header and auth_header.lower().startswith('bearer '):
+        token = auth_header.split(' ', 1)[1]
+        email = verify_token(token)
+        if email:
+            metadata['user_email'] = email
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {'name': description},
+                        'unit_amount': amount_cents,
+                    },
+                    'quantity': 1,
+                }
+            ],
+            mode='payment',
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata=metadata or None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Failed to create checkout session: {e}') from e
+
+    return JSONResponse({'url': session.url})
+
+
+@router.post("/webhook")
+async def stripe_webhook(request: Request):
+    """Basic webhook endpoint to handle payment succeeded events.
+
+    NOTE: This is minimal and in a production app you'd verify signatures.
+    """
+    if stripe is None:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+
+    # Read raw body for signature verification if possible
+    payload = await request.body()
+
+    # If we have a webhook secret configured, verify signature
+    event = None
+    if STRIPE_WEBHOOK_SECRET:
+        sig_header = request.headers.get('stripe-signature')
+        try:
+            event = stripe.Webhook.construct_event(payload=payload, sig_header=sig_header, secret=STRIPE_WEBHOOK_SECRET)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Webhook signature verification failed: {e}")
+    else:
+        try:
+            event = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid webhook payload")
+
+    # Handle specific event types
+    evt_type = event.get('type') if isinstance(event, dict) else getattr(event, 'type', None)
+    if event and (evt_type == 'payment_intent.succeeded' or evt_type == 'checkout.session.completed'):
+        # event may be a dict (when webhook secret not used) or a Stripe.Event
+        obj = None
+        if isinstance(event, dict):
+            obj = event.get('data', {}).get('object', {})
+        else:
+            obj = event.data.object
+
+        # For PaymentIntent the object is the intent, for Checkout it's the session
+        metadata = (obj.get('metadata') or {}) if isinstance(obj, dict) else (obj.metadata or {})
+        user_email = metadata.get('user_email') if isinstance(metadata, dict) else None
+
+        # Determine amount and description depending on object type
+        amount_cents = None
+        description = ''
+        if isinstance(obj, dict):
+            # PaymentIntent
+            amount_cents = obj.get('amount')
+            description = obj.get('description', '')
+            # For Checkout session, amount_total may be present
+            if not amount_cents and obj.get('amount_total'):
+                amount_cents = obj.get('amount_total')
+        else:
+            amount_cents = getattr(obj, 'amount', None) or getattr(obj, 'amount_total', None)
+            description = getattr(obj, 'description', '')
+
+        # Apply server-side changes based on metadata and description
+        if user_email:
+            user = user_db.get_user_by_email(user_email)
+            if user:
+                try:
+                    if isinstance(description, str) and 'upgrade' in description.lower():
+                        user_db.update_user_tier(user.id, UserTier.PRO)
+                        from datetime import datetime, timedelta
+
+                        user.subscription_expires = datetime.utcnow() + timedelta(days=30)
+                    else:
+                        usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
+                        credits = int(round(usd * 10))
+                        user_db.update_user_credits(user.id, credits)
+                except Exception:
+                    pass
+
+        # Persist a transaction record for the user (best-effort)
+        try:
+            amt = (float(amount_cents) / 100.0) if amount_cents else 0.0
+            tx = {
+                'user_email': user_email,
+                'event_type': evt_type,
+                'amount_usd': amt,
+                'credits': int(round(amt * 10)),
+                'description': description,
+            }
+            transactions.add(tx)
+        except Exception:
+            # Non-fatal: don't fail webhook because transactions storage failed
+            pass
+
+        return JSONResponse({"status": "handled"})
+
+    return JSONResponse({"status": "ignored"})
+
+
+
+
+@router.get('/transactions')
+async def list_transactions(request: Request):
+    """List transactions for the current authenticated user.
+
+    Returns list of transaction records and a balance (sum of credits).
+    """
+    auth_header = request.headers.get('authorization')
+    if not auth_header or not auth_header.lower().startswith('bearer '):
+        raise HTTPException(status_code=401, detail='Missing Authorization')
+
+    token = auth_header.split(' ', 1)[1]
+    email = verify_token(token)
+    if not email:
+        raise HTTPException(status_code=401, detail='Invalid token')
+
+    try:
+        items = transactions.list_for_user(email)
+        if items is None:
+            items = []
+        total_credits = sum(int(i.get('credits', 0) or 0) for i in items)
+        return JSONResponse({'transactions': items, 'balance': total_credits})
+    except Exception as e:
+        # Log full traceback for debugging in dev
+        logger.error('Failed to list transactions for email=%s: %s', email, e)
+        logger.debug(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f'Failed to list transactions: {e}') from e
+
+
+@router.post('/credit')
+async def credit_user(request: Request):
+    """Apply credits to authenticated user. Expects {amount_usd: float} in body.
+
+    Converts USD to credits (1 USD -> 10 credits) and updates user in DB.
+    """
+    auth_header = request.headers.get('authorization')
+    if not auth_header or not auth_header.lower().startswith('bearer '):
+        raise HTTPException(status_code=401, detail='Missing Authorization')
+
+    token = auth_header.split(' ', 1)[1]
+    email = verify_token(token)
+    if not email:
+        raise HTTPException(status_code=401, detail='Invalid token')
+
+    user_in_db = user_db.get_user_by_email(email)
+    if not user_in_db:
+        raise HTTPException(status_code=404, detail='User not found')
+
+    data = await request.json()
+    amount_usd = float(data.get('amount_usd', 0))
+    if amount_usd <= 0:
+        raise HTTPException(status_code=400, detail='Invalid amount')
+
+    # conversion rate
+    credits = int(round(amount_usd * 10))
+
+    success = user_db.update_user_credits(user_in_db.id, credits)
+    if not success:
+        raise HTTPException(status_code=500, detail='Failed to add credits')
+
+    updated = user_db.get_user_by_id(user_in_db.id)
+    # Persist a transaction record for this credit operation (best-effort)
+    try:
+        tx = {
+            'user_email': email,
+            'event_type': 'manual_credit',
+            'amount_usd': float(amount_usd),
+            'credits': credits,
+            'description': 'Manual credit purchase via /credit',
+        }
+        transactions.add(tx)
+    except Exception:
+        pass
+    return JSONResponse({
+        'credits': updated.credits if updated else None,
+        'tier': updated.tier if updated else None,
+    })

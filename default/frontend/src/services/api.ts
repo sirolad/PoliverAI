@@ -2,7 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 export interface ApiError {
   message: string
   status: number
-  details?: any
+  details?: unknown
 }
 class ApiService {
   private baseUrl: string
@@ -51,7 +51,7 @@ class ApiService {
     })
     return this.handleResponse<T>(response)
   }
-  async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async post<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
     const isFormData = data instanceof FormData
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
@@ -60,12 +60,12 @@ class ApiService {
         ...this.getAuthHeaders(),
         ...options?.headers,
       },
-      body: isFormData ? data : JSON.stringify(data),
+      body: isFormData ? (data as BodyInit) : JSON.stringify(data as unknown),
       ...options,
     })
     return this.handleResponse<T>(response)
   }
-  async put<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async put<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PUT',
       headers: {
@@ -73,7 +73,7 @@ class ApiService {
         ...this.getAuthHeaders(),
         ...options?.headers,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data as unknown),
       ...options,
     })
     return this.handleResponse<T>(response)
@@ -115,10 +115,11 @@ class ApiService {
       xhr.addEventListener('load', async () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
-            const result = JSON.parse(xhr.responseText)
+            const result = JSON.parse(xhr.responseText) as T
             resolve(result)
           } catch (error) {
-            reject(new Error('Failed to parse response'))
+            const e = error as unknown
+            reject(new Error('Failed to parse response', { cause: e }))
           }
         } else {
           let errorMessage = `HTTP error! status: ${xhr.status}`

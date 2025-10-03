@@ -1,8 +1,10 @@
+import type { ComplianceResult } from '@/types/api'
+
 export interface StreamingUpdate {
   status: 'starting' | 'processing' | 'completed' | 'error'
   progress: number
   message: string
-  result?: any
+  result?: ComplianceResult
 }
 export type StreamingCallback = (update: StreamingUpdate) => void
 class StreamingService {
@@ -10,7 +12,7 @@ class StreamingService {
     file: File,
     analysisMode: 'fast' | 'balanced' | 'detailed' = 'fast',
     onUpdate: StreamingCallback
-  ): Promise<any> {
+  ): Promise<ComplianceResult> {
     return new Promise((resolve, reject) => {
       // Create FormData for file upload
       const formData = new FormData()
@@ -55,7 +57,7 @@ class StreamingService {
                   onUpdate(data)
                   // If completed, resolve with result
                   if (data.status === 'completed' && data.result) {
-                    resolve(data.result)
+                    resolve(data.result as ComplianceResult)
                     return
                   }
                   // If error, reject
@@ -87,7 +89,7 @@ class StreamingService {
     file: File,
     analysisMode: 'fast' | 'balanced' | 'detailed' = 'fast',
     onUpdate: StreamingCallback
-  ): Promise<any> {
+  ): Promise<ComplianceResult> {
     return new Promise((resolve, reject) => {
       // For EventSource, we need a different approach since it only supports GET requests
       // We'll use the fetch-based streaming approach above

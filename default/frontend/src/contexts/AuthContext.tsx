@@ -1,20 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import authService from '../services/authService'
 import type { ApiError } from '../services/api'
-import type { User } from '../types/api'
-
-interface AuthContextType {
-  user: User | null
-  login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string) => Promise<void>
-  logout: () => void
-  loading: boolean
-  isAuthenticated: boolean
-  isPro: boolean
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+import type { User } from '@/types/api'
+import { AuthContext } from './auth-context'
+import type { AuthContextType } from './auth-context'
 
 // Configure axios defaults
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
@@ -26,7 +16,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Check for existing token on mount
   useEffect(() => {
-    if (authService.isTokenStored()) {
+    const token = authService.getStoredToken()
+    if (token) {
+      // Ensure axios sends the Authorization header for subsequent requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       fetchUser()
     } else {
       setLoading(false)
@@ -49,9 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await authService.login({ email, password } as any)
-      setUser(await authService.getCurrentUser())
+      const response = await authService.login({ email, password })
+      // Set the axios Authorization header before fetching the current user
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
+      setUser(await authService.getCurrentUser())
     } catch (error) {
       const apiError = error as ApiError
       throw new Error(apiError.message || 'Login failed')
@@ -60,9 +54,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      const response = await authService.register({ name, email, password } as any)
-      setUser(await authService.getCurrentUser())
+      const response = await authService.register({ name, email, password })
+      // Ensure header is set before fetching user info
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
+      setUser(await authService.getCurrentUser())
     } catch (error) {
       const apiError = error as ApiError
       throw new Error(apiError.message || 'Registration failed')
@@ -89,10 +84,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
-}
+// Note: `useAuth` is exported from a separate file to avoid hot-reload warnings

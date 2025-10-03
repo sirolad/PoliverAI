@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import policyService from '@/services/policyService'
-import { useAuth } from '@/contexts/AuthContext'
+import useAuth from '@/contexts/useAuth'
+import type { ComplianceResult } from '@/types/api'
 
 export default function PolicyAnalysis() {
   const { isAuthenticated, loading } = useAuth()
-  const navigate = useNavigate()
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState<number>(0)
   const [message, setMessage] = useState<string>('')
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<ComplianceResult | null>(null)
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
   if (!isAuthenticated) return <div className="min-h-screen flex items-center justify-center">Please login to analyze policies.</div>
@@ -23,14 +22,16 @@ export default function PolicyAnalysis() {
     setProgress(0)
     setMessage('Starting...')
     try {
-      const res = await policyService.analyzePolicyStreaming(file, 'balanced', (update) => {
-        setProgress(update.progress)
-        setMessage(update.message)
+      const res = await policyService.analyzePolicyStreaming(file, 'balanced', (progressVal, msg) => {
+        setProgress(progressVal ?? 0)
+        setMessage(msg ?? '')
       })
       setResult(res)
       setMessage('Completed')
-    } catch (e: any) {
-      setMessage(e?.message || 'Analysis failed')
+    } catch (err: unknown) {
+      if (err instanceof Error) setMessage(err.message)
+      else if (typeof err === 'string') setMessage(err)
+      else setMessage('Analysis failed')
     }
   }
 

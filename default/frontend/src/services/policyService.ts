@@ -1,6 +1,6 @@
 import apiService from './api'
-import streamingService, { type StreamingCallback } from './streamingService'
-import type { ComplianceResult, AnalysisResultForUI } from '../types/api'
+import streamingService from './streamingService'
+import type { ComplianceResult, AnalysisResultForUI } from '@/types/api'
 export type AnalysisMode = 'fast' | 'balanced' | 'detailed'
 class PolicyService {
   async analyzePolicy(
@@ -117,40 +117,27 @@ class PolicyService {
   getAnalysisModeFromType(analysisType: 'basic' | 'ai'): AnalysisMode {
     return analysisType === 'basic' ? 'fast' : 'balanced'
   }
-  // Mock method for listing user reports - would be replaced with real API endpoint
-  async getUserReports(): Promise<any[]> {
-    // This would be a real API call in production:
-    // return apiService.get<ReportMetadata[]>('/api/v1/user-reports')
-    // For now, return mock data
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    return [
-      {
-        filename: 'gdpr-verification-20241228-143025.pdf',
-        title: 'GDPR Compliance Verification Report',
-        type: 'verification',
-        created_at: new Date('2024-12-28T14:30:25Z').toISOString(),
-        file_size: 2456789,
-        document_name: 'Privacy Policy v2.1',
-        analysis_mode: 'balanced'
-      },
-      {
-        filename: 'gdpr-verification-20241227-091234.pdf',
-        title: 'GDPR Compliance Verification Report',
-        type: 'verification',
-        created_at: new Date('2024-12-27T09:12:34Z').toISOString(),
-        file_size: 1987654,
-        document_name: 'Terms of Service',
-        analysis_mode: 'detailed'
-      },
-      {
-        filename: 'revised-privacy-policy-20241226-165543.txt',
-        title: 'Revised Privacy Policy',
-        type: 'revision',
-        created_at: new Date('2024-12-26T16:55:43Z').toISOString(),
-        file_size: 45623,
-        document_name: 'Privacy Policy v2.0'
+  // List user reports from backend
+  async getUserReports(): Promise<import('@/types/api').ReportMetadata[]> {
+    // Backend route is mounted at /api/v1 and defines GET /user-reports
+    return apiService.get<import('@/types/api').ReportMetadata[]>('/api/v1/user-reports')
+  }
+
+  // Open report in new tab: prefer GCS signed URL if available, otherwise hit download endpoint
+  async openReport(report: import('@/types/api').ReportMetadata): Promise<void> {
+    try {
+      if (report.gcs_url) {
+        window.open(report.gcs_url, '_blank')
+        return
       }
-    ]
+      // fallback to download endpoint
+      const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(report.filename)}`
+      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${downloadUrl}`
+      window.open(url, '_blank')
+    } catch (e) {
+      console.error('Failed to open report', e)
+      throw e
+    }
   }
 }
 export const policyService = new PolicyService()

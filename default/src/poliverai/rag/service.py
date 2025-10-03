@@ -6,7 +6,18 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
+import tiktoken
+
+# chromadb is optional at runtime; lazy-importing reduces build-time deps for dev
+try:
+    import chromadb
+    from chromadb.api.models.Collection import Collection
+except Exception:  # pragma: no cover - optional dependency
+    chromadb = None
+    Collection = None
+    
+import tiktoken
 import tempfile
 import tarfile
 import shutil
@@ -40,7 +51,7 @@ MAX_LINES_TO_CHECK_FOR_TITLE = 5
 
 @dataclass
 class RAGInit:
-    collection: Collection
+    collection: Optional[Collection]
     client: OpenAI
     enc_name: str
 
@@ -67,8 +78,8 @@ def _init() -> RAGInit:
     # If a GCS bucket is configured, try to pull a persisted archive into the folder first.
     _ensure_dirs(settings.chroma_persist_dir)
 
-    # GCS-backed sync: bucket name and object name may be provided via env vars.
-    gcs_bucket: Optional[str] = os.getenv("POLIVERAI_CHROMA_GCS_BUCKET")
+    # GCS-backed sync: bucket name and object name may be provided via settings.
+    gcs_bucket: Optional[str] = settings.chroma_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_CHROMA_GCS_BUCKET")
     gcs_object: Optional[str] = os.getenv("POLIVERAI_CHROMA_GCS_OBJECT")
     if gcs_bucket and not gcs_object:
         # default object name per collection
@@ -356,13 +367,14 @@ def _gcs_upload_persist(bucket_name: str, object_name: str | None, src_dir: str)
 def _embed_texts(texts: list[str]) -> list[list[float]]:
     s = get_settings()
     init = _init()
-    if not s.openai_api_key:
-        raise RuntimeError(
-            "OpenAI API key not set. Please export POLIVERAI_OPENAI_API_KEY or set it in .env."
-        )
     model = s.openai_embedding_model
+
+    # Preprocess to respect maximum tokens per model (best-effort)
     processed: list[str] = []
-    max_tokens = _max_embedding_tokens(model)
+    try:
+        max_tokens = _max_embedding_tokens(model)
+    except Exception:
+        max_tokens = 8192
     limit = max(1, max_tokens - 32)  # safety margin
     for original_text in texts:
         tokens = _encode(original_text)
@@ -380,6 +392,38 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
         else:
             processed_text = original_text
         processed.append(processed_text)
+
+    # If the configured model is a local sentence-transformers model (prefix)
+    if isinstance(model, str) and model.startswith("sentence-transformers/"):
+        # Lazy import to avoid requiring sentence-transformers unless used
+        try:
+            from sentence_transformers import SentenceTransformer
+        except Exception as e:  # pragma: no cover - optional dependency
+            raise RuntimeError(
+                "sentence-transformers is not installed. Install with `pip install sentence-transformers`"
+            ) from e
+
+        # Simple cache to avoid reloading the model repeatedly
+        if not hasattr(_embed_texts, "_local_cache"):
+            setattr(_embed_texts, "_local_cache", {})
+        cache = getattr(_embed_texts, "_local_cache")
+        model_key = model
+        if model_key not in cache:
+            # model string: 'sentence-transformers/all-MiniLM-L6-v2' -> use 'all-MiniLM-L6-v2'
+            _, local_name = model.split("/", 1)
+            cache[model_key] = SentenceTransformer(local_name)
+
+        embedder = cache[model_key]
+        # sentence-transformers returns numpy arrays by default; convert to lists
+        emb = embedder.encode(processed, show_progress_bar=False)
+        return [list(map(float, e)) for e in emb]
+
+    # Otherwise, fall back to OpenAI embeddings via the OpenAI client
+    if not s.openai_api_key:
+        raise RuntimeError(
+            "OpenAI API key not set. Please export POLIVERAI_OPENAI_API_KEY or set it in .env."
+        )
+
     resp = init.client.embeddings.create(model=model, input=processed)
     return [d.embedding for d in resp.data]
 

@@ -80,6 +80,11 @@ class MongoUserDB:
 
         self.db = self.client[db_name]
         self.users: Collection = self.db.get_collection("users")
+        # Ensure a transactions collection exists for recording payment events
+        try:
+            self.transactions: Collection = self.db.get_collection("transactions")
+        except Exception:
+            self.transactions = None
 
     def create_user(self, name: str, email: str, password: str) -> UserInDB:
         if self.users.find_one({"email": email}):
@@ -114,7 +119,14 @@ class MongoUserDB:
     def get_user_by_email(self, email: str) -> Optional[UserInDB]:
         doc = self.users.find_one({"email": email})
         if not doc:
+            logger.info("No user found in Mongo for email=%s", email)
             return None
+        # Masked hash prefix for debugging
+        try:
+            hp = (doc.get('hashed_password') or '')[:8]
+        except Exception:
+            hp = 'unknown'
+        logger.info("Found user in Mongo email=%s hashed_prefix=%s", email, hp)
         return UserInDB(
             id=str(doc.get("_id")),
             name=doc.get("name"),
@@ -149,11 +161,26 @@ class MongoUserDB:
         user = self.get_user_by_email(email)
         if not user:
             return None
-
-        from ..core.auth import verify_password
-
-        if not verify_password(password, user.hashed_password):
-            return None
+        from ..core.auth import verify_password, get_password_hash
+        try:
+            if verify_password(password, user.hashed_password):
+                logger.info("Argon2 verification passed for email=%s", email)
+                pass
+            else:
+                logger.info("Argon2 verification failed for email=%s; trying plaintext fallback", email)
+                raise ValueError("verify_failed")
+        except Exception:
+            try:
+                if user.hashed_password == password:
+                    logger.info("Plaintext password matched for email=%s; re-hashing and storing in Mongo", email)
+                    # update the stored hash
+                    self.users.update_one({"_id": user.id}, {"$set": {"hashed_password": get_password_hash(password)}})
+                else:
+                    logger.info("Plaintext fallback did not match for email=%s", email)
+                    return None
+            except Exception as e:
+                logger.error("Error updating Mongo password hash for email=%s: %s", email, e)
+                return None
 
         # return public User (without hashed_password) by using UserInDB fields mapped elsewhere
         return user
@@ -161,5 +188,44 @@ class MongoUserDB:
     def update_user_tier(self, user_id: str, tier: UserTier) -> bool:
         from bson import ObjectId
 
-        result = self.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"tier": tier}})
-        return result.modified_count > 0
+        # Store the tier as its string value
+        result = self.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"tier": tier.value}})
+        success = result.modified_count > 0
+        # Record transaction for tier update (best-effort)
+        try:
+            if success and self.transactions is not None:
+                tx = {
+                    'user_email': self.get_user_by_id(user_id).email if self.get_user_by_id(user_id) else None,
+                    'event_type': 'tier_update',
+                    'amount_usd': 0.0,
+                    'credits': 0,
+                    'description': f'Tier changed to {tier.value}',
+                    'timestamp': datetime.utcnow(),
+                }
+                self.transactions.insert_one(tx)
+        except Exception:
+            pass
+        return success
+
+    def update_user_credits(self, user_id: str, delta: int) -> bool:
+        """Atomically increment user's credits by delta (can be negative)."""
+        from bson import ObjectId
+
+        result = self.users.update_one({"_id": ObjectId(user_id)}, {"$inc": {"credits": int(delta)}})
+        success = result.modified_count > 0
+        # Record a transaction for credit change
+        try:
+            if success and self.transactions is not None:
+                user = self.get_user_by_id(user_id)
+                tx = {
+                    'user_email': user.email if user else None,
+                    'event_type': 'credit_change',
+                    'amount_usd': None,
+                    'credits': int(delta),
+                    'description': f'Credits adjusted by {delta}',
+                    'timestamp': datetime.utcnow(),
+                }
+                self.transactions.insert_one(tx)
+        except Exception:
+            pass
+        return success

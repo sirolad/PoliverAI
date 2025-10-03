@@ -81,3 +81,15 @@ export interface AnalysisResultForUI extends Omit<ComplianceResult, 'findings'> 
     confidence?: number
   }>
 }
+
+export interface ReportMetadata {
+  filename: string
+  title: string
+  type: 'verification' | 'revision' | 'other'
+  created_at: string
+  file_size: number
+  document_name: string
+  analysis_mode?: 'fast' | 'balanced' | 'detailed'
+  gcs_url?: string
+  path?: string
+}

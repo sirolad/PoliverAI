@@ -22,6 +22,13 @@ class Settings(BaseSettings):
     chunk_overlap_tokens: int = 80
     top_k: int = 5
 
+    # GCS configuration (optional)
+    gcs_bucket: str | None = None
+    chroma_gcs_bucket: str | None = None
+    reports_gcs_bucket: str | None = None
+    # Optional path to service account JSON contents (or path on disk)
+    gcs_credentials_json: str | None = None
+
     # Hybrid retrieval weights
     retrieval_vector_weight: float = 1.0
     retrieval_lexical_weight: float = 0.3

@@ -1,5 +1,5 @@
 import apiService from './api'
-import type { User, UserLogin, UserCreate, Token } from '../types/api'
+import type { User, UserLogin, UserCreate, Token } from '@/types/api'
 class AuthService {
   async login(credentials: UserLogin): Promise<Token> {
     const response = await apiService.post<Token>('/auth/login', credentials)

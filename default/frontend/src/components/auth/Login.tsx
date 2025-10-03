@@ -5,8 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Input } from '@/components/ui/Input'
-import { useAuth } from '@/contexts/AuthContext'
+import Input from '@/components/ui/Input'
+import useAuth from '@/contexts/useAuth'
 import { Shield, Mail, Lock, AlertCircle } from 'lucide-react'
 
 const loginSchema = z.object({
@@ -41,8 +41,14 @@ export function Login() {
       setError('')
       await login(data.email, data.password)
       navigate('/dashboard')
-    } catch (error: any) {
-      setError(error.message)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else if (typeof err === 'string') {
+        setError(err)
+      } else {
+        setError('Login failed')
+      }
     } finally {
       setIsSubmitting(false)
     }

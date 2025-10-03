@@ -9,6 +9,7 @@ from .api.routes.ingest import router as ingest_router
 from .api.routes.query import router as query_router
 from .api.routes.reports import router as reports_router
 from .api.routes.verification import router as verification_router
+from .api.routes.payments import router as payments_router
 
 
 def create_app() -> FastAPI:
@@ -33,6 +34,7 @@ def create_app() -> FastAPI:
     app.include_router(comparison_router, prefix="/api/v1")
     app.include_router(reports_router, prefix="/api/v1")
     app.include_router(ingest_router, prefix="/api/v1")
+    app.include_router(payments_router, prefix="/api/v1")
 
     @app.get("/health")
     def health() -> dict[str, str]:
@@ -64,14 +66,17 @@ def upload_chroma_on_shutdown() -> None:
     try:
         import os
 
-        gcs_bucket = os.getenv("POLIVERAI_CHROMA_GCS_BUCKET")
+        from ..core.config import get_settings
+
+        settings = get_settings()
+        gcs_bucket = settings.chroma_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_CHROMA_GCS_BUCKET")
         gcs_object = os.getenv("POLIVERAI_CHROMA_GCS_OBJECT")
         if gcs_bucket:
             # Import the helper lazily to avoid forcing google-cloud-storage at import time
-            from ..rag.service import _gcs_upload_persist, get_settings
+            from ..rag.service import _gcs_upload_persist
 
             if not gcs_object:
-                gcs_object = f"{get_settings().chroma_collection}.tar.gz"
-            _gcs_upload_persist(gcs_bucket, gcs_object, get_settings().chroma_persist_dir)
+                gcs_object = f"{settings.chroma_collection}.tar.gz"
+            _gcs_upload_persist(gcs_bucket, gcs_object, settings.chroma_persist_dir)
     except Exception as e:
         logging.warning("Failed to upload chroma persist on shutdown: %s", e)

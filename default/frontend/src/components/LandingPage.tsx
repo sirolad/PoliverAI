@@ -1,8 +1,10 @@
-import { Button } from '@/components/ui/Button'
+import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
-import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/Button'
+import useAuth from '@/contexts/useAuth'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2, Shield, Zap, Clock, FileCheck, BarChart } from 'lucide-react'
+import PaymentsService from '@/services/payments'
 
 interface FeatureCardProps {
   icon: React.ElementType
@@ -33,6 +35,7 @@ function FeatureCard({ icon: Icon, title, description, isPro = false }: FeatureC
 export default function LandingPage() {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
+  const [isProcessing, setIsProcessing] = React.useState(false)
 
   const freeFeatures = [
     {
@@ -78,8 +81,9 @@ export default function LandingPage() {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">
+          <img src="/poliverai-logo.svg" alt="PoliverAI" className="mx-auto" />
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            <span className="text-blue-600">PoliverAI</span> - Your AI-Powered GDPR Compliance Assistant
+            Your <span className="text-blue-600">AI-Powered</span> GDPR Compliance Assistant
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             Automatically analyze privacy policies for GDPR compliance, detect violations,
@@ -98,13 +102,30 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={() => navigate('/signup')}
+                  onClick={async () => {
+                    setIsProcessing(true)
+                    try {
+                      await PaymentsService.purchaseUpgrade(29)
+                      window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' } }))
+                      // Do not reload immediately; let the modal show and user decide next steps
+                    } catch (err: unknown) {
+                      console.error(err)
+                      const msg = err instanceof Error ? err.message : String(err)
+                      window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
+                    } finally {
+                      setIsProcessing(false)
+                    }
+                  }}
                 >
-                  Upgrade to Pro
+                  {isProcessing ? 'Processing...' : 'Upgrade to Pro'}
                 </Button>
               </>
             ) : (
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <Button
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700"
+                onClick={() => navigate('/dashboard')}
+              >
                 Go to Dashboard
               </Button>
             )}
@@ -283,7 +304,7 @@ export default function LandingPage() {
           <p className="text-xl mb-8 text-blue-100">
             Join thousands of organizations using PoliverAI to maintain privacy compliance
           </p>
-          <Button size="lg" variant="secondary">
+          <Button size="lg" variant="secondary" onClick={() => navigate('/signup')}>
             Start Your Free Analysis Today
           </Button>
         </div>

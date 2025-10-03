@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: poliverai-backend
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: poliverai-frontend
+    env_file:
+      - ./.env
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+# Example usage:
+# docker-compose up --build

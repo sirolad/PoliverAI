@@ -6,6 +6,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from ....core.auth import create_access_token, credentials_exception, verify_token
 from ....db.users import user_db
 from ....domain.auth import Token, User, UserCreate, UserLogin, UserTier
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["auth"])
 security = HTTPBearer()
@@ -66,14 +69,18 @@ async def register(user_data: UserCreate):
 @router.post("/login", response_model=Token)
 async def login(user_data: UserLogin):
     """Login user."""
+    logger.info("Authentication attempt for email=%s", user_data.email)
     user = user_db.authenticate_user(user_data.email, user_data.password)
 
     if not user:
+        logger.warning("Authentication failed for email=%s", user_data.email)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    else:
+        logger.info("Authentication succeeded for email=%s, user_id=%s", user.email, user.id)
 
     # Create access token
     access_token = create_access_token(data={"sub": user.email})
@@ -87,14 +94,70 @@ async def read_users_me(current_user: User = CURRENT_USER_DEPENDENCY):
     return current_user
 
 
+# Dev-only: list users for debugging when DEV_DEBUG_USERS=1
+import os
+if os.getenv('DEV_DEBUG_USERS') == '1':
+    @router.get('/admin/users')
+    async def list_users():
+        out = []
+        try:
+            udb = user_db
+            # In-memory user_db exposes .users dict
+            if hasattr(udb, 'users') and isinstance(getattr(udb, 'users'), dict):
+                for uid, u in udb.users.items():
+                    out.append({
+                        'id': getattr(u, 'id', str(uid)),
+                        'email': getattr(u, 'email', None),
+                        'tier': getattr(u, 'tier', None),
+                        'credits': getattr(u, 'credits', None),
+                        'hashed_prefix': (getattr(u, 'hashed_password', '') or '')[:8],
+                    })
+            else:
+                # Try Mongo-style collection
+                try:
+                    coll = getattr(udb, 'users', None)
+                    if coll is not None:
+                        docs = coll.find().limit(100)
+                        for d in docs:
+                            out.append({
+                                'id': str(d.get('_id')),
+                                'email': d.get('email'),
+                                'tier': d.get('tier'),
+                                'credits': d.get('credits'),
+                                'hashed_prefix': (d.get('hashed_password') or '')[:8],
+                            })
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return {'users': out}
+
+
 @router.post("/upgrade")
-async def upgrade_to_pro(current_user: User = CURRENT_USER_DEPENDENCY):
+async def upgrade_to_pro(current_user: User = CURRENT_USER_DEPENDENCY, credits: int | None = None):
     """Upgrade user to pro tier (placeholder for payment integration)."""
     # In a real implementation, this would integrate with Stripe or similar
     # For now, just upgrade the user directly
 
     # Use the UserTier enum to avoid passing raw strings
+    # set PRO tier and optionally add base credits
     success = user_db.update_user_tier(current_user.id, UserTier.PRO)
+    if success and credits and credits > 0:
+        try:
+            user_db.update_user_credits(current_user.id, int(credits))
+        except Exception:
+            # Non-fatal; continue
+            pass
+
+    # Set subscription_expires to 30 days from now if we upgraded
+    from datetime import datetime, timedelta
+    if success:
+        u = user_db.get_user_by_id(current_user.id)
+        if u:
+            try:
+                u.subscription_expires = datetime.utcnow() + timedelta(days=30)
+            except Exception:
+                pass
 
     if not success:
         raise HTTPException(

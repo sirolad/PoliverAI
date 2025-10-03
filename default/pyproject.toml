@@ -25,6 +25,8 @@ dependencies = [
   "beautifulsoup4>=4.12",
   "google-cloud-storage>=2.12",
   "python-socketio>=5.8",
+  "sentence-transformers>=3.0,<4.0",
+  "transformers>=4.44,<5.0",
 ]
 
 [project.optional-dependencies]
