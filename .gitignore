@@ -37,4 +37,6 @@ reports/
 logs/
 *.log
 .history/
-data/chroma/
+data/
+
+docs/
