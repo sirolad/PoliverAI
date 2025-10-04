@@ -143,4 +143,6 @@ testem.log
 /connect.lock
 /typings
 
+key.json
+
 # Ensure sensitive or user-specific files are not committed
