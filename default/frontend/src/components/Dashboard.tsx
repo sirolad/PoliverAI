@@ -59,20 +59,30 @@ export function Dashboard() {
       description: 'Advanced AI analysis with nuanced violation detection',
       // Available if user is PRO or has credits
       available: isPro || hasCredits,
+        key: 'analysis'
     },
     {
       icon: BarChart,
       title: 'Comprehensive Reports',
       description: 'Detailed PDF reports with confidence scores and evidence',
       available: isPro || hasCredits,
+        key: 'report'
     },
     {
       icon: FileCheck,
       title: 'Policy Generation',
       description: 'Automatically generate revised compliant policies',
       available: isPro || hasCredits,
+        key: 'ingest'
     },
   ]
+
+    // Pricing (server must enforce; this view is only for display)
+    const COSTS: Record<string, { credits: number; usd: number }> = {
+      analysis: { credits: 5, usd: 0.5 },
+      report: { credits: 10, usd: 1.0 },
+      ingest: { credits: 2, usd: 0.2 },
+    }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -257,6 +267,15 @@ export function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <CardDescription>{feature.description}</CardDescription>
+                      <div className="mt-2">
+                        {(() => {
+                          const k = (feature as unknown as { key?: string }).key
+                          const c = k ? COSTS[k] : undefined
+                          return (
+                            <div className="text-sm text-gray-700">Cost: <span className="font-semibold">{c ? `$${c.usd.toFixed(2)} / ${c.credits} credits` : '—'}</span></div>
+                          )
+                        })()}
+                      </div>
                     {!feature.available && (
                       <div className="mt-2">
                         <Button size="sm" variant="outline" disabled>

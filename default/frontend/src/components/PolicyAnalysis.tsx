@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import policyService from '@/services/policyService'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
 
 export default function PolicyAnalysis() {
-  const { isAuthenticated, loading } = useAuth()
+  const { isAuthenticated, loading, refreshUser } = useAuth()
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState<number>(0)
   const [message, setMessage] = useState<string>('')
   const [result, setResult] = useState<ComplianceResult | null>(null)
   const [showBar, setShowBar] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   // If progress hits 100 (for any reason) ensure we hide the bar after a short delay
   useEffect(() => {
@@ -41,6 +42,21 @@ export default function PolicyAnalysis() {
       setMessage('Completed')
       // ensure the bar fills to 100% on completion and then hide shortly after
       setProgress(100)
+      // Refresh user so navbar and credits update
+      try {
+        await refreshUser()
+      } catch (e) {
+        console.warn('Failed to refresh user after analysis', e)
+      }
+      // Notify other parts of the app (transactions, navbar) to refresh
+      try {
+        if (typeof window !== 'undefined' && window.dispatchEvent) {
+          window.dispatchEvent(new CustomEvent('payment:refresh-user'))
+          window.dispatchEvent(new CustomEvent('transactions:refresh'))
+        }
+      } catch (e) {
+        console.warn('Failed to dispatch refresh events', e)
+      }
       setTimeout(() => setShowBar(false), 700)
     } catch (err: unknown) {
       if (err instanceof Error) setMessage(err.message)
@@ -53,43 +69,113 @@ export default function PolicyAnalysis() {
 
 
   return (
-    <div className="h-screen p-8 flex flex-col">
-      <div className="flex items-center justify-between mb-4">
+    <div className="h-screen p-8">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Policy Analysis</h1>
-        <div className="mb-4">
-          <input type="file" onChange={handleFileChange} />
-        </div>
-        
-        <div className="mb-4 flex items-center gap-4">
-          <button onClick={handleAnalyze} className="bg-blue-600 text-white px-4 py-2 rounded">Analyze</button>
-        </div>
       </div>
-      
-      {/* Top full-width progress bar (fixed) */}
-      {showBar && (
-        <div className="fixed top-0 left-0 w-full z-50 pointer-events-none">
-          <div className="h-1 w-full bg-transparent">
-            <div
-              className="h-1 rounded-r-full shadow-lg bg-gradient-to-r from-blue-500 to-blue-700 transition-[width] duration-500 ease-out"
-              style={{ width: `${Math.max(2, progress)}%` }}
-              aria-hidden
-            />
-          </div>
-          {/* Optional percentage pill beneath the bar */}
-          <div className="w-full flex justify-center mt-1 pointer-events-none">
-            <div className="text-xs bg-white/90 text-blue-700 px-2 py-0.5 rounded-md shadow-sm">
-              {progress}%
-            </div>
-          </div>
-        </div>
-      )}
 
-      <div className="mb-4">
-        <div className="text-sm font-medium">Progress: {progress}%</div>
-        <div className="text-sm text-gray-600">Message: {message}</div>
-      </div>
-      <div>
-        <pre className="bg-gray-100 p-4 rounded">{JSON.stringify(result, null, 2)}</pre>
+      {/* Two-column layout: controls (filters) on left, main result on right */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Left: Main controls / filters */}
+        <aside className="md:col-span-1 bg-white p-4 rounded shadow">
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Upload policy</label>
+
+            {/* Drag & drop area */}
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault()
+                const f = e.dataTransfer?.files?.[0]
+                if (f) setFile(f)
+              }}
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-2 h-48 w-full rounded-lg border-2 border-dashed border-blue-200 bg-gradient-to-b from-white/50 to-blue-50 flex flex-col items-center justify-center text-center px-4 cursor-pointer hover:shadow-md transition-shadow"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                onChange={handleFileChange}
+                className="hidden"
+                accept=".pdf,.docx,.html,.htm,.txt"
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16v-4a4 4 0 014-4h2a4 4 0 014 4v4m-6 4v-4m0 0l-2 2m2-2l2 2" />
+              </svg>
+              <div className="text-sm font-medium text-gray-700">Drag & drop a policy file here, or click to browse</div>
+              <div className="text-xs text-gray-500 mt-1">Supports PDF, DOCX, HTML, TXT</div>
+              <div className="mt-3 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click() }}
+                  className="bg-white border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50"
+                >
+                  Browse files
+                </button>
+                {file ? (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setFile(null) }}
+                    className="text-sm text-red-600 underline"
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            {/* File meta display */}
+            {file && (
+              <div className="mt-3 text-sm text-gray-700">
+                <div className="font-medium">Selected file</div>
+                <div className="text-xs text-gray-500">{file.name} • {Math.round((file.size || 0) / 1024)} KB • {file.type || 'n/a'}</div>
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <button onClick={handleAnalyze} className="w-full bg-blue-600 text-white px-4 py-2 rounded">Analyze</button>
+          </div>
+
+          <div className="mb-4">
+            <div className="text-sm font-medium">Progress: {progress}%</div>
+
+            {/* Inline bar directly beneath the progress label */}
+            {showBar && (
+              <div className="mt-2 w-full">
+                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-500 ease-out ${
+                      progress < 5 ? 'opacity-90 animate-pulse' : ''
+                    }`}
+                    style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.min(100, Math.max(0, progress))}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="text-sm text-gray-600 mt-2">{message}</div>
+          </div>
+
+          {/* Additional controls / filters can go here to match transaction history layout */}
+          <div className="mt-4 text-xs text-gray-500">Tip: You first need to upload a policy document before analyzing.</div>
+        </aside>
+
+  {/* Right: Main result area */}
+  <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Analysis Result</h2>
+            <div className="text-sm text-gray-600">Result JSON / report preview</div>
+          </div>
+
+          <div className="h-full flex-1 min-h-0">
+            <pre className="bg-gray-100 p-4 rounded flex-1 min-h-0 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+          </div>
+        </main>
       </div>
     </div>
   )

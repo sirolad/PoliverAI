@@ -17,9 +17,42 @@ export default function Credits() {
   const [dateFrom, setDateFrom] = useState<string | null>(null)
   const [dateTo, setDateTo] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<Record<string, boolean>>({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true })
+  const [progress, setProgress] = useState<number>(0)
+  const [showBar, setShowBar] = useState<boolean>(false)
   const paymentResult = usePaymentResult()
 
   useEffect(() => { fetchTx() }, [])
+  useEffect(() => {
+    const h = () => {
+      fetchTx().catch((e) => console.error('Failed to refresh transactions', e))
+      if (refreshUser) {
+        refreshUser().catch((e) => console.error('Failed to refresh user from transactions event', e))
+      }
+    }
+    window.addEventListener('transactions:refresh', h)
+    return () => window.removeEventListener('transactions:refresh', h)
+  }, [refreshUser])
+
+  // Animate a simple loading progress bar while isLoading is true
+  useEffect(() => {
+    let interval: number | undefined
+    let timeout: number | undefined
+    if (isLoading) {
+      setShowBar(true)
+      setProgress(10)
+      interval = window.setInterval(() => {
+        setProgress((p) => Math.min(90, Math.round(p + Math.random() * 12)))
+      }, 400) as unknown as number
+    } else {
+      // complete and hide shortly after
+      setProgress(100)
+      timeout = window.setTimeout(() => setShowBar(false), 700) as unknown as number
+    }
+    return () => {
+      if (interval) clearInterval(interval)
+      if (timeout) clearTimeout(timeout)
+    }
+  }, [isLoading])
 
   const fetchTx = async () => {
     setIsLoading(true)
@@ -173,6 +206,24 @@ export default function Credits() {
           <div>
             <button className="w-full bg-gray-100 px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true }) }}>Clear</button>
           </div>
+
+          {/* Progress bar for loading transactions */}
+          <div className="mt-4">
+            {showBar && (
+              <div className="w-full">
+                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
+                    style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.min(100, Math.max(0, progress))}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </aside>
 
         {/* List area */}
@@ -197,7 +248,30 @@ export default function Credits() {
                     </div>
                     <div className="text-right">
                       <div className="font-semibold">{t.credits ?? 0} credits</div>
-                      <div className="text-sm text-gray-500">${t.amount_usd?.toFixed(2) ?? '0.00'}</div>
+                        <div className="text-sm">
+                          {(() => {
+                            const et = (t.event_type || '').toString().toLowerCase()
+                            const amt = typeof t.amount_usd === 'number' ? t.amount_usd : 0
+                            const credits = typeof t.credits === 'number' ? t.credits : 0
+                            // Zero-usage (no credits, no USD) -> yellow
+                            if (credits === 0 && (!amt || amt === 0)) {
+                              return <span className="text-yellow-600 font-medium">${Math.abs(amt).toFixed(2)}</span>
+                            }
+                            // Positive events (purchases, credit top-ups, subscriptions)
+                            const positiveEvents = ['manual_credit', 'checkout_session_completed', 'credit', 'subscription', 'subscription_update', 'tier_update']
+                            const isPositive = positiveEvents.some((p) => et.includes(p)) || amt > 0 || credits > 0
+                            // Charge/operation events (analysis/report/ingest/charge) are negative
+                            const negativeEvents = ['charge', 'analysis', 'charge_ingest', 'charge_report', 'ingest', 'report']
+                            const isNegative = negativeEvents.some((n) => et.includes(n)) || amt < 0 || credits < 0
+
+                            if (isNegative && !isPositive) {
+                              return <span className="text-red-600 font-medium">−${Math.abs(amt).toFixed(2)}</span>
+                            }
+
+                            // Default to positive display
+                            return <span className="text-green-600 font-medium">+${Math.abs(amt).toFixed(2)}</span>
+                          })()}
+                        </div>
                       {t.session_id && (
                         <div className="mt-2">
                           <button
@@ -246,7 +320,7 @@ export default function Credits() {
                   </div>
                   {t.failure_code ? (
                         <div className="mt-2">
-                          {failureBadge((t as any).failure_code, (t as any).failure_message)}
+                          {failureBadge(t.failure_code, t.failure_message)}
                         </div>
                       ) : null}
                 </div>

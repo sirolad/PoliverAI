@@ -21,6 +21,7 @@ from ....reporting.exporter import export_report
 from ....rag.verification import analyze_policy
 from ....rag.verification import analyze_policy_stream
 from ....core.config import get_settings
+from ....db.transactions import transactions
 
 
 class ClauseMatch(BaseModel):
@@ -167,6 +168,58 @@ async def verify(
     # Run RAG-based verification over clauses with specified analysis mode
     result = analyze_policy(text, analysis_mode=effective_mode)
 
+    # Pricing (credits). 1 USD = 10 credits. Costs are in credits.
+    COSTS = {
+        'analysis': {'fast': 2, 'balanced': 5, 'detailed': 10},
+        'ingest': 2,
+        'report': 10,
+    }
+
+    # Determine total credits to charge (per-operation). We charge only for non-PRO users.
+    charges = []
+    if current_user and current_user.tier != UserTier.PRO:
+        analysis_cost = COSTS['analysis'].get(effective_mode, COSTS['analysis']['fast'])
+        charges.append(('analysis', int(analysis_cost)))
+        if ingest:
+            charges.append(('ingest', int(COSTS['ingest'])))
+        if generate_report:
+            charges.append(('report', int(COSTS['report'])))
+
+    # If charging is required, verify balance then apply deductions and create transactions
+    if charges and current_user:
+        # Refresh user from DB to get latest credits
+        try:
+            user_record = user_db.get_user_by_id(current_user.id)
+            if not user_record:
+                raise HTTPException(status_code=400, detail='User not found')
+            total_credits = sum(c for _, c in charges)
+            if (user_record.credits or 0) < total_credits:
+                raise HTTPException(status_code=402, detail={'message': 'Insufficient credits', 'required': total_credits, 'available': user_record.credits})
+            # Deduct per operation and record a transaction for each
+            for op, cred in charges:
+                success = user_db.update_user_credits(current_user.id, -int(cred))
+                try:
+                    usd = round(cred / 10.0, 2)
+                    tx = {
+                        'user_email': current_user.email,
+                        'event_type': 'charge',
+                        'amount_usd': -usd,
+                        'credits': -int(cred),
+                        'description': f'Charge for {op}',
+                        'status': 'completed',
+                    }
+                    try:
+                        transactions.add(tx)
+                    except Exception:
+                        logging.exception('Failed to record transaction for charge %s', tx)
+                except Exception:
+                    logging.exception('Failed to persist charge transaction for user %s', current_user.email)
+        except HTTPException:
+            # re-raise HTTP errors
+            raise
+        except Exception:
+            logging.exception('Failed to apply charges for user %s', getattr(current_user, 'email', None))
+
     # Optionally ingest the original file into the RAG store so it is available
     # for future queries. This is optional because ingestion can be expensive.
     if ingest:
@@ -177,6 +230,25 @@ async def verify(
             logging.info("Ingested file %s -> %s", temp_file, stats)
         except Exception:
             logging.exception("Failed to ingest file %s", temp_file)
+
+    # If there were no charges (free analysis) and we still have a current_user,
+    # create an informational zero-cost transaction so the user can track the analysis.
+    if not charges and current_user:
+        try:
+            tx = {
+                'user_email': current_user.email,
+                'event_type': 'analysis',
+                'amount_usd': 0.0,
+                'credits': 0,
+                'description': f'Free analysis ({effective_mode})',
+                'status': 'completed',
+            }
+            try:
+                transactions.add(tx)
+            except Exception:
+                logging.exception('Failed to record zero-cost analysis transaction for user %s', getattr(current_user, 'email', None))
+        except Exception:
+            logging.exception('Failed to add zero-cost analysis tx')
 
     # Optionally generate a PDF report from the analysis result
     if generate_report:
@@ -320,6 +392,41 @@ async def verify_stream(
                     yield f"data: {error_msg}\n\n"
                 return StreamingResponse(auth_error_stream(), media_type="text/plain")
             effective_mode = "fast"
+        # Pricing (credits). 1 USD = 10 credits. Costs are in credits.
+        COSTS = {
+            'analysis': {'fast': 2, 'balanced': 5, 'detailed': 10},
+            'ingest': 2,
+            'report': 10,
+        }
+
+        # Prepare charges list for non-PRO users. We'll check availability before
+        # starting heavy work and apply deductions after successful completion.
+        charges = []
+        if current_user and current_user.tier != UserTier.PRO:
+            analysis_cost = COSTS['analysis'].get(effective_mode, COSTS['analysis']['fast'])
+            charges.append(('analysis', int(analysis_cost)))
+            if ingest:
+                charges.append(('ingest', int(COSTS['ingest'])))
+            if generate_report:
+                charges.append(('report', int(COSTS['report'])))
+
+        # If charging is required, verify balance now and return an error stream if insufficient
+        if charges and current_user:
+            try:
+                user_record = user_db.get_user_by_id(current_user.id)
+                if not user_record:
+                    async def user_missing_stream():
+                        err = json.dumps({"status": "error", "progress": 0, "message": "User not found"})
+                        yield f"data: {err}\n\n"
+                    return StreamingResponse(user_missing_stream(), media_type="text/plain")
+                total_needed = sum(c for _, c in charges)
+                if (user_record.credits or 0) < total_needed:
+                    async def insufficient_stream():
+                        err = json.dumps({"status": "error", "progress": 0, "message": "Insufficient credits", "required": total_needed, "available": user_record.credits})
+                        yield f"data: {err}\n\n"
+                    return StreamingResponse(insufficient_stream(), media_type="text/plain")
+            except Exception:
+                logging.exception('Error checking user credits')
     except Exception as e_outer:
         error_message = f"File processing failed: {str(e_outer)}"
         async def file_error_stream():
@@ -428,6 +535,59 @@ async def verify_stream(
                     await q.put({"event": "report_completed", "data": {"path": rp}})
                 except Exception as e:
                     await q.put({"event": "report_failed", "data": {"message": str(e)}})
+
+            # Apply charges now that analysis/ingest/report completed successfully.
+            if charges and current_user:
+                try:
+                    # Refresh user to ensure latest credits
+                    user_record = user_db.get_user_by_id(current_user.id)
+                    if user_record:
+                        for op, cred in charges:
+                            try:
+                                user_db.update_user_credits(current_user.id, -int(cred))
+                                usd = round(cred / 10.0, 2)
+                                tx = {
+                                    'user_email': current_user.email,
+                                    'event_type': 'charge',
+                                    'amount_usd': -usd,
+                                    'credits': -int(cred),
+                                    'description': f'Charge for {op}',
+                                }
+                                try:
+                                    tx_ret = transactions.add(tx)
+                                    # Emit a transaction event so streaming clients can refresh
+                                    try:
+                                        await q.put({"event": "transaction", "data": tx_ret})
+                                    except Exception:
+                                        pass
+                                except Exception:
+                                    logging.exception('Failed to record transaction for charge %s', tx)
+                            except Exception:
+                                logging.exception('Failed to deduct credits for user %s op=%s', current_user.email, op)
+                except Exception:
+                    logging.exception('Failed to apply post-stream charges for user %s', getattr(current_user, 'email', None))
+            else:
+                # No charges => create a zero-cost informational transaction so users can track
+                if current_user:
+                    try:
+                        tx = {
+                            'user_email': current_user.email,
+                            'event_type': 'analysis',
+                            'amount_usd': 0.0,
+                            'credits': 0,
+                            'description': f'Free analysis ({effective_mode})',
+                            'status': 'completed',
+                        }
+                        try:
+                            txr = transactions.add(tx)
+                            try:
+                                await q.put({"event": "transaction", "data": txr})
+                            except Exception:
+                                pass
+                        except Exception:
+                            logging.exception('Failed to record zero-cost transaction for %s', getattr(current_user, 'email', None))
+                    except Exception:
+                        logging.exception('Failed to build zero-cost tx for %s', getattr(current_user, 'email', None))
         finally:
             # Attempt to cancel the background task if it's still running
             if task and not task.done():

@@ -79,6 +79,15 @@ class StreamingService {
                       const result = payload as unknown as ComplianceResult
                       onUpdate({ status: 'completed', progress: 100, message: 'completed', result })
                       resolve(result)
+                      // Notify app to refresh user/transactions
+                      try {
+                        if (typeof window !== 'undefined' && window.dispatchEvent) {
+                          window.dispatchEvent(new CustomEvent('payment:refresh-user'))
+                          window.dispatchEvent(new CustomEvent('transactions:refresh'))
+                        }
+                      } catch (e) {
+                        console.warn('Failed to dispatch refresh events from streamingService', e)
+                      }
                       return
                     } else if (ev === 'error') {
                       const msg = typeof payload['message'] === 'string' ? (payload['message'] as string) : 'Unknown error'
@@ -90,6 +99,17 @@ class StreamingService {
                       const p = typeof payload['progress'] === 'number' ? (payload['progress'] as number) : 0
                       const m = typeof payload['message'] === 'string' ? (payload['message'] as string) : ''
                       onUpdate({ status: 'processing', progress: p, message: m })
+                    }
+                    // Special: transaction event (backend recorded a tx)
+                    if (ev === 'transaction') {
+                      try {
+                        if (typeof window !== 'undefined' && window.dispatchEvent) {
+                          window.dispatchEvent(new CustomEvent('transactions:refresh'))
+                          window.dispatchEvent(new CustomEvent('payment:refresh-user'))
+                        }
+                      } catch (e) {
+                        console.warn('Failed to dispatch transaction refresh event', e)
+                      }
                     }
                   } else {
                     // Fallback: try to parse as legacy StreamingUpdate

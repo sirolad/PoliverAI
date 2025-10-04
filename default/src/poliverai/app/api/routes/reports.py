@@ -15,7 +15,7 @@ from ....db.mongo import MongoUserDB
 from fastapi import Header, Request, Depends
 from .auth import CURRENT_USER_DEPENDENCY
 from .verification import CURRENT_USER_OPTIONAL_DEPENDENCY
-from ....domain.auth import User
+from ....domain.auth import User, UserTier
 import os
 import stat
 
@@ -473,6 +473,19 @@ async def generate_report(req: ReportRequest) -> ReportResponse:
             filepath = reports_dir / filename
             filepath.write_text(req.content)
 
+        # Charge credits for report generation (non-PRO users)
+        try:
+            from ....db.users import user_db
+            from ....db.transactions import transactions
+            COSTS = {'report': 10}
+            # No current_user dependency here (this endpoint may be used server-side)
+            # If we can infer a default user from environment, we could charge; skip otherwise
+            # For explicit user-charged report generation, use /verification-report which has user context
+            usd = round(COSTS['report'] / 10.0, 2)
+            # We don't deduct here unless user context is provided; just return the report
+        except Exception:
+            pass
+
         return ReportResponse(
             filename=filename,
             path=str(filepath),
@@ -519,7 +532,7 @@ async def generate_verification_report(
         except Exception:
             gcs_url = None
 
-        # Insert a record into Mongo 'reports' collection if available
+    # Insert a record into Mongo 'reports' collection if available
         try:
             mongo_uri = os.getenv("MONGO_URI")
             if mongo_uri:
@@ -544,6 +557,30 @@ async def generate_verification_report(
                 mdb.db.get_collection("reports").insert_one(report_doc)
         except Exception:
             # Do not hard-fail report creation if DB logging fails
+            pass
+
+        # Charge credits for verification report generation for non-PRO users
+        try:
+            from ....db.users import user_db
+            from ....db.transactions import transactions
+            COSTS = {'report': 10}
+            if current_user and current_user.tier != UserTier.PRO:
+                user_record = user_db.get_user_by_id(current_user.id)
+                if user_record and (user_record.credits or 0) >= COSTS['report']:
+                    user_db.update_user_credits(current_user.id, -int(COSTS['report']))
+                    usd = round(COSTS['report'] / 10.0, 2)
+                    tx = {
+                        'user_email': current_user.email,
+                        'event_type': 'charge_report',
+                        'amount_usd': -usd,
+                        'credits': -int(COSTS['report']),
+                        'description': 'Charge for verification report',
+                    }
+                    try:
+                        transactions.add(tx)
+                    except Exception:
+                        pass
+        except Exception:
             pass
 
         return ReportResponse(

@@ -92,4 +92,7 @@ export interface ReportMetadata {
   analysis_mode?: 'fast' | 'balanced' | 'detailed'
   gcs_url?: string
   path?: string
+  // Optional verdict/status produced by the verification API
+  verdict?: string
+  status?: string
 }
