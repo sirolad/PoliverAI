@@ -1016,52 +1016,60 @@ async def save_report(
                     pass
                 inserted = mdb.db.get_collection("reports").insert_one(report_doc)
                 inserted_id = inserted.inserted_id
-                # If the save was for a quick report and user is not PRO, charge credits now
+                # Charge credits for any report save (quick or full) using a single
+                # configurable cost so the frontend can depend on a consistent
+                # transaction being recorded. Use a single COST value for now (10
+                # credits) and mark the DB record as charged when the transaction
+                # is successfully recorded.
                 try:
                     from ....db.users import user_db
                     from ....db.transactions import transactions
-                    COSTS = {'quick_report_save': 10, 'report': 20}
+                    COST_SAVE_CREDITS = 10
                     is_quick_save = bool(getattr(req, 'is_quick', False))
 
-                    if is_quick_save:
-                        # Quick (cheap) save — deduct credits and record transaction
-                        if current_user and current_user.tier != UserTier.PRO:
-                            user_record = user_db.get_user_by_id(current_user.id)
-                            if not user_record or (user_record.credits or 0) < COSTS['quick_report_save']:
-                                # Not enough credits: fail the save so user isn't surprised
-                                logger.info('Insufficient credits for user=%s to save quick report: have=%s need=%s', getattr(current_user, 'email', None), getattr(user_record, 'credits', None) if user_record else None, COSTS['quick_report_save'])
-                                raise HTTPException(status_code=402, detail='Insufficient credits to save quick report')
-                            # Deduct credits and record transaction
-                            user_db.update_user_credits(current_user.id, -int(COSTS['quick_report_save']))
-                            usd = round(COSTS['quick_report_save'] / 10.0, 2)
-                            tx = {
-                                'user_email': current_user.email,
-                                'event_type': 'saved_compliance_report',
-                                'amount_usd': -usd,
-                                'credits': -int(COSTS['quick_report_save']),
-                                'description': 'Saved Compliance Report',
-                            }
-                            try:
-                                transactions.add(tx)
-                                mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
-                                logger.info('Recorded transaction for quick save user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
-                            except Exception:
-                                logger.exception('Failed to add transaction for quick save for user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
+                    # If the user is not PRO, ensure they have enough credits and
+                    # deduct the cost. For now we charge the same amount for quick
+                    # and full saves; this can be tuned later.
+                    if current_user and current_user.tier != UserTier.PRO:
+                        user_record = user_db.get_user_by_id(current_user.id)
+                        if not user_record or (user_record.credits or 0) < COST_SAVE_CREDITS:
+                            logger.info('Insufficient credits for user=%s to save report: have=%s need=%s', getattr(current_user, 'email', None), getattr(user_record, 'credits', None) if user_record else None, COST_SAVE_CREDITS)
+                            raise HTTPException(status_code=402, detail='Insufficient credits to save report')
+
+                        # Deduct credits and record transaction
+                        user_db.update_user_credits(current_user.id, -int(COST_SAVE_CREDITS))
+                        usd = round(COST_SAVE_CREDITS / 10.0, 2)
+                        tx = {
+                            'user_email': current_user.email,
+                            'event_type': 'saved_compliance_report',
+                            'amount_usd': -usd,
+                            'credits': -int(COST_SAVE_CREDITS),
+                            'description': 'Saved Compliance Report',
+                        }
+                        try:
+                            transactions.add(tx)
+                            mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
+                            logger.info('Recorded transaction for save user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
+                        except Exception:
+                            logger.exception('Failed to add transaction for save for user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
                     else:
-                        # Full report save — do not double-charge here; record a zero-credit transaction
+                        # For PRO users or when no authenticated user is present,
+                        # still record a non-charging save event for auditability.
                         try:
                             tx = {
                                 'user_email': current_user.email if current_user else None,
-                                'event_type': 'saved_full_report',
+                                'event_type': 'saved_compliance_report',
                                 'amount_usd': 0.0,
                                 'credits': 0,
-                                'description': 'Saved Full Report',
+                                'description': 'Saved Compliance Report (no charge for PRO or anonymous)',
                             }
                             transactions.add(tx)
                         except Exception:
                             pass
                 except Exception:
-                    pass
+                    # Don't block save on transient transaction or user_db errors,
+                    # but log so we can diagnose charging issues.
+                    logger.exception('Error while attempting to charge for saved report')
         except Exception:
             # Swallow DB errors but log them so persistence issues are visible in logs
             import logging
