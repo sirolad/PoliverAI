@@ -725,6 +725,7 @@ async def list_user_reports(
                         # expose verdict and whether this is a full saved report so
                         # the frontend can filter by verdict or full/quick reports
                         "verdict": doc.get("verdict"),
+                        "score": doc.get("score"),
                         "is_full_report": bool(doc.get("is_full_report")),
                         "analysis_mode": doc.get("analysis_mode"),
                 }
