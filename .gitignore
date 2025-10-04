@@ -80,7 +80,8 @@ yarn-error.log
 # Ruby / CocoaPods
 mono-repo-nx/apps/poliverai/macos/Pods
 mono-repo-nx/apps/poliverai/ios/Pods
-mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/**/Objects-normal/**/Binary/
+mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/*/Objects-normal/arm64/Binary
+mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/*/Objects-normal/arm64/x86_64
 # **/vendor/bundle/
 
 # Metro
@@ -143,10 +144,3 @@ testem.log
 /typings
 
 # Ensure sensitive or user-specific files are not committed
-
-default/frontend/node_modules
-mono-repo-nx/patches/macos-generated/ios/Pods.build
-mono-repo-nx/patches/macos-generated/macos/pods-build-scripts/Debug/React-Fabric.build/Objects-normal/x86_64/Binary/libReact-Fabric.a
-mono-repo-nx/patches/macos-generated/ios/Pods.build/Debug/React-Fabric.build/Objects-normal/arm64/Binary/libReact-Fabric.a
-mono-repo-nx/patches/macos-generated/ios/Pods.build/Debug/React-RCTFabric.build/Objects-normal/x86_64/Binary/libReact-RCTFabric.a
-mono-repo-nx/patches/macos-generated/ios/Pods.build/Debug/React-RCTFabric.build/Objects-normal/arm64/Binary/libReact-RCTFabric.a
