@@ -97,6 +97,8 @@ export interface ReportMetadata {
   path?: string
   // Optional verdict/status produced by the verification API
   verdict?: string
+  // Optional numeric compliance score (0-100)
+  score?: number
   // whether the saved report represents a full generated verification report
   is_full_report?: boolean
   status?: string
