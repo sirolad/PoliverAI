@@ -1,4 +1,6 @@
 import policyService from '@/services/policyService'
+import { useState } from 'react'
+import EnterTitleModal from './EnterTitleModal'
 
 type Props = {
   reportUrl: string
@@ -11,6 +13,8 @@ type Props = {
 }
 
 export default function ReportViewerModal({ reportUrl, filename, title, onClose, onSaved, onDeleted, isQuick }: Props) {
+  const [titleModalOpen, setTitleModalOpen] = useState(false)
+  const [pendingTitle, setPendingTitle] = useState<string | null>(null)
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-6 bg-black/50">
       <div className="w-full max-w-5xl bg-white rounded shadow-lg overflow-hidden">
@@ -31,15 +35,10 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
               Download
             </button>
             <button
-              onClick={async () => {
-                if (!filename) return
-                try {
-                  const resp = await policyService.saveReport(filename, filename, { is_quick: !!isQuick })
-                  // If parent provided onSaved, call with normalized filename
-                  if (onSaved) onSaved(resp.filename)
-                } catch (e) {
-                  console.warn('modal save failed', e)
-                }
+              onClick={() => {
+                // open title modal to collect document title before saving
+                setPendingTitle(title || filename || '')
+                setTitleModalOpen(true)
               }}
               className="px-3 py-1 bg-green-600 text-white rounded"
             >
@@ -65,6 +64,20 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
         <div className="h-[80vh]">
           <iframe src={reportUrl} className="w-full h-full" title={filename || 'report-viewer'} />
         </div>
+        <EnterTitleModal
+          open={titleModalOpen}
+          initial={pendingTitle ?? ''}
+          onClose={() => setTitleModalOpen(false)}
+          onConfirm={async (docTitle: string) => {
+            if (!filename) return
+            try {
+              const resp = await policyService.saveReport(filename, docTitle, { is_quick: !!isQuick })
+              if (onSaved) onSaved(resp.filename)
+            } catch (err) {
+              console.warn('save with title failed', err)
+            }
+          }}
+        />
       </div>
     </div>
   )

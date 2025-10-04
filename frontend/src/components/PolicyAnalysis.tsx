@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import policyService from '@/services/policyService'
 import ReportViewerModal from './ui/ReportViewerModal'
+import EnterTitleModal from './ui/EnterTitleModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
 
@@ -18,6 +19,8 @@ export default function PolicyAnalysis() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [modalUrl, setModalUrl] = useState<string | null>(null)
   const [modalFilename, setModalFilename] = useState<string | null>(null)
+  const [titleModalOpen, setTitleModalOpen] = useState(false)
+  const [titleModalInitial] = useState<string>('')
   const saveProgressIntervalRef = useRef<number | null>(null)
 
   // If progress hits 100 (for any reason) ensure we hide the bar after a short delay
@@ -269,7 +272,9 @@ export default function PolicyAnalysis() {
               onClick={async () => {
                 try {
                   const r = await policyService.getUserReports()
-                  setUserReportsCount(r?.length ?? 0)
+                  // r may be legacy array or paged object
+                  if (Array.isArray(r)) setUserReportsCount(r.length)
+                  else setUserReportsCount(r?.total ?? (r?.reports?.length ?? 0))
                 } catch (e) {
                   console.warn('refresh reports failed', e)
                 }
@@ -470,6 +475,27 @@ export default function PolicyAnalysis() {
             // Refresh list count and clear filename if deleted
             setReportFilename((cur) => (cur === fn ? null : cur))
             policyService.getUserReportsCount().then((n) => setUserReportsCount(n ?? 0)).catch(() => {})
+          }}
+        />
+      ) : null}
+
+      {/* Title modal for saving directly from analysis view */}
+      {titleModalOpen ? (
+        <EnterTitleModal
+          open={titleModalOpen}
+          initial={titleModalInitial}
+          onClose={() => setTitleModalOpen(false)}
+          onConfirm={async (title) => {
+            if (!reportFilename) return
+            try {
+              await policyService.saveReport(reportFilename as string, title, { is_quick: !isFullReportGenerated })
+              setTitleModalOpen(false)
+              setReportFilename(reportFilename)
+              try { await refreshUser() } catch (err) { console.warn('refreshUser after save failed', err) }
+              try { window.dispatchEvent(new CustomEvent('transactions:refresh')) } catch (err) { console.warn('dispatch transactions refresh failed', err) }
+            } catch (e) {
+              console.warn('save from title modal failed', e)
+            }
           }}
         />
       ) : null}
