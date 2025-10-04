@@ -4,6 +4,7 @@ import useAuth from '@/contexts/useAuth'
 import policyService from '@/services/policyService'
 import ReportViewerModal from './ui/ReportViewerModal'
 import PaymentResultModal from './ui/PaymentResultModal'
+import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
 
 export default function Reports() {
@@ -68,6 +69,7 @@ export default function Reports() {
   const [modalTitle, setModalTitle] = useState('')
   const [modalMessage, setModalMessage] = useState<string | undefined>()
   const [deleting, setDeleting] = useState(false)
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
 
   useEffect(() => {
     fetchReports()
@@ -202,12 +204,23 @@ export default function Reports() {
             disabled={deleting}
             onClick={async () => {
               const fns = Object.keys(selectedFiles).filter((k) => selectedFiles[k])
-              console.log('SelectedFiles map:', selectedFiles)
-              console.log('Bulk delete requested for filenames:', fns)
               if (fns.length === 0) return
+              // open confirmation modal and perform delete on confirm
+              setBulkDeleteOpen(true)
+            }}
+            className="px-3 py-1 bg-red-600 text-white rounded"
+          >
+            Delete Selected
+          </button>
+          <ConfirmBulkDeleteModal
+            open={bulkDeleteOpen}
+            filenames={Object.keys(selectedFiles).filter((k) => selectedFiles[k])}
+            onClose={() => setBulkDeleteOpen(false)}
+            onConfirm={async () => {
+              setBulkDeleteOpen(false)
               setDeleting(true)
-
-              // Animate a small progress bar while the delete is running
+              // run the original bulk-delete logic
+              const fns = Object.keys(selectedFiles).filter((k) => selectedFiles[k])
               let interval: number | undefined
               try {
                 setShowBar(true)
@@ -217,8 +230,6 @@ export default function Reports() {
                 }, 300) as unknown as number
 
                 const resp = await policyService.bulkDeleteReports(fns)
-                console.log('Bulk delete response:', resp)
-                // finalize progress
                 if (interval) { clearInterval(interval); interval = undefined }
                 setProgress(100)
                 window.setTimeout(() => setShowBar(false), 600)
@@ -228,13 +239,11 @@ export default function Reports() {
                 const deleted = results.filter((r) => r.deleted).map((r) => r.filename)
                 const failed = results.filter((r) => !r.deleted)
 
-                // Update list
                 setReports((prev) => prev.filter(r => !deleted.includes(r.filename)))
                 const newSel = { ...selectedFiles }
                 deleted.forEach((d) => { delete newSel[d] })
                 setSelectedFiles(newSel)
 
-                // Show result modal
                 if (failed.length === 0) {
                   setModalSuccess(true)
                   setModalTitle(`Deleted ${deleted.length} report${deleted.length !== 1 ? 's' : ''}`)
@@ -269,10 +278,7 @@ export default function Reports() {
                 setDeleting(false)
               }
             }}
-            className="px-3 py-1 bg-red-600 text-white rounded"
-          >
-            Delete Selected
-          </button>
+          />
         </div>
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
