@@ -194,7 +194,6 @@ export default function Reports() {
   })
 
   // selection summary for UI labels
-  const selectedCount = Object.keys(selectedFiles).filter((k) => selectedFiles[k]).length
   const allOnPageSelected = filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])
 
   return (
