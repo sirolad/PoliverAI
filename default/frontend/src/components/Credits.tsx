@@ -53,13 +53,31 @@ export default function Credits() {
         return <span className="inline-block text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">Success</span>
       case 'failed':
         return <span className="inline-block text-xs px-2 py-1 rounded-full bg-red-100 text-red-800">Failed</span>
-      case 'insufficient_funds':
-        return <span className="inline-block text-xs px-2 py-1 rounded-full bg-red-50 text-red-700">Insufficient Funds</span>
-      case 'processing':
-        return <span className="inline-block text-xs px-2 py-1 rounded-full bg-yellow-50 text-yellow-700">Processing</span>
       default:
-        return <span className="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">Unknown</span>
+        return <span className="inline-block text-xs px-2 py-1 rounded-full bg-red-100 text-red-800">{status}</span>
     }
+  }
+
+  const failureBadge = (failure_code?: string | null, failure_message?: string | null) => {
+    if (!failure_code) return null
+    const map: Record<string, string> = {
+      'card_declined': 'Card Declined',
+      'insufficient_funds': 'Insufficient Funds',
+      'lost_card': 'Lost Card',
+      'stolen_card': 'Stolen Card',
+      'expired_card': 'Expired Card',
+      'incorrect_cvc': 'Incorrect CVC',
+      'processing_error': 'Processing Error',
+      'incorrect_number': 'Incorrect Number',
+      'card_velocity_exceeded': 'Velocity Exceeded',
+    }
+    const label = map[failure_code] || failure_code
+    return (
+      <div className="mt-2">
+        <span className="inline-block text-xs px-2 py-1 rounded-full bg-red-50 text-red-700">{label}</span>
+        {failure_message ? <div className="text-xs text-gray-500 mt-1">{failure_message}</div> : null}
+      </div>
+    )
   }
 
   const filtered = useMemo(() => {
@@ -112,7 +130,7 @@ export default function Credits() {
             onConfirm={async (amount_usd: number) => {
           try {
             await PaymentsService.purchaseCredits(amount_usd)
-            paymentResult.show(true, 'Purchase Successful', `Added ${(amount_usd * 10).toFixed(0)} credits`)
+            paymentResult.show('success', 'Credits Purchase Successful', `Added ${(amount_usd * 10).toFixed(0)} credits`)
             // Refresh transactions and user
             await fetchTx()
                 // refresh current user so balance updates
@@ -121,7 +139,7 @@ export default function Credits() {
                 setTimeout(() => {}, 500)
           } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : String(err)
-            paymentResult.show(false, 'Purchase Failed', msg)
+            paymentResult.show('failed', 'Credits Purchase Failed', msg)
           }
         }}
       />
@@ -172,7 +190,7 @@ export default function Credits() {
                     <div className="flex-1">
                       <div className="flex items-center justify-between gap-4">
                         <div className="font-medium">{t.description || t.event_type || 'Payment'}</div>
-                        <div>{statusBadge(st)}</div>
+                        <div>{t.failure_code ? statusBadge(t.failure_code) : statusBadge(st)}</div>
                       </div>
                       <div className="text-sm text-gray-600">{t.user_email ?? ''} • {t.session_id ?? ''}</div>
                       <div className="text-sm text-gray-600">{t.timestamp ? new Date(t.timestamp).toLocaleString() : '-'}</div>
@@ -188,19 +206,35 @@ export default function Credits() {
                               try {
                                 const sid = t.session_id
                                 if (!sid) {
-                                  paymentResult.show(false, 'Check Failed', 'Missing session id')
+                                  paymentResult.show('failed', 'Check Failed', 'Missing session id')
                                   return
                                 }
                                 const resp = await transactionsService.getTransaction(sid)
                                 const tx = resp.transaction
-                                paymentResult.show(true, 'Transaction Status', `Found transaction: ${tx.event_type} - ${tx.amount_usd ?? 0}$`)
+                                paymentResult.show('pending', 'Transaction Status', `Pending transaction: ${tx.event_type} - ${tx.amount_usd ?? 0}$`)
                                 // refresh list to pick up any changes
                                 await fetchTx()
+                                // if transaction finalized, clear any cached pending_checkout to avoid repeated checks
+                                try {
+                                  const updated = await transactionsService.getTransaction(sid)
+                                  const status = (updated.transaction as Transaction | undefined)?.status
+                                  if (status && status !== 'pending') {
+                                    if (typeof window !== 'undefined' && window.localStorage) {
+                                      try {
+                                        localStorage.removeItem('poliverai:pending_checkout')
+                                      } catch (e) {
+                                        console.warn('Failed to remove pending_checkout from localStorage', e)
+                                      }
+                                    }
+                                  }
+                                } catch (e) {
+                                  console.warn('Failed to refresh transaction status', e)
+                                }
                                 // refresh current user so balance updates
                                 try { await refreshUser() } catch { /* ignore errors */ }
                               } catch (err: unknown) {
                                 const msg = err instanceof Error ? err.message : String(err)
-                                paymentResult.show(false, 'Check Failed', msg)
+                                paymentResult.show('failed', 'Check Failed', msg)
                               }
                             }}
                           >
@@ -210,6 +244,11 @@ export default function Credits() {
                       )}
                     </div>
                   </div>
+                  {t.failure_code ? (
+                        <div className="mt-2">
+                          {failureBadge((t as any).failure_code, (t as any).failure_message)}
+                        </div>
+                      ) : null}
                 </div>
               )
             })}

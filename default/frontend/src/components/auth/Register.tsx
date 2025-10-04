@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 import useAuth from '@/contexts/useAuth'
-import { Shield, Mail, Lock, User, AlertCircle } from 'lucide-react'
+import { Mail, Lock, User, AlertCircle } from 'lucide-react'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -71,7 +71,7 @@ export function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <Shield className="mx-auto h-12 w-12 text-blue-600" />
+          <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48" />
           <h2 className="mt-6 text-3xl font-bold text-gray-900">Join PoliverAI</h2>
           <p className="mt-2 text-sm text-gray-600">
             Create your account and start ensuring GDPR compliance

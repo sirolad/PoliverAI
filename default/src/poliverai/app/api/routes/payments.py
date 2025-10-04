@@ -297,7 +297,7 @@ async def stripe_webhook(request: Request):
 
     # Handle specific event types
     evt_type = event.get('type') if isinstance(event, dict) else getattr(event, 'type', None)
-    if event and (evt_type == 'payment_intent.succeeded' or evt_type == 'checkout.session.completed'):
+    if event and (evt_type == 'payment_intent.succeeded' or evt_type == 'checkout.session.completed' or evt_type == 'payment_intent.payment_failed' or evt_type == 'charge.failed'):
         # event may be a dict (when webhook secret not used) or a Stripe.Event
         obj = None
         if isinstance(event, dict):
@@ -305,7 +305,7 @@ async def stripe_webhook(request: Request):
         else:
             obj = event.data.object
 
-        # For PaymentIntent the object is the intent, for Checkout it's the session
+    # For PaymentIntent the object is the intent, for Checkout it's the session
         metadata = (obj.get('metadata') or {}) if isinstance(obj, dict) else (obj.metadata or {})
         user_email = metadata.get('user_email') if isinstance(metadata, dict) else None
 
@@ -322,6 +322,25 @@ async def stripe_webhook(request: Request):
         else:
             amount_cents = getattr(obj, 'amount', None) or getattr(obj, 'amount_total', None)
             description = getattr(obj, 'description', '')
+
+        # Extract failure codes/messages if present
+        failure_code = None
+        failure_message = None
+        try:
+            if isinstance(obj, dict):
+                # look for last_payment_error on intent
+                if obj.get('last_payment_error'):
+                    lpe = obj.get('last_payment_error')
+                    failure_code = lpe.get('code')
+                    failure_message = lpe.get('message')
+                # charges list may contain failure info
+                charges = obj.get('charges', {}).get('data', [])
+                if charges and not failure_code:
+                    c = charges[0]
+                    failure_code = c.get('failure_code')
+                    failure_message = c.get('failure_message')
+        except Exception:
+            pass
 
         # Apply server-side changes based on metadata and description
         if user_email:
@@ -349,6 +368,8 @@ async def stripe_webhook(request: Request):
                 'amount_usd': amt,
                 'credits': int(round(amt * 10)),
                 'description': description,
+                'failure_code': failure_code,
+                'failure_message': failure_message,
             }
             transactions.add(tx)
         except Exception:
@@ -454,6 +475,69 @@ async def get_transaction(request: Request, session_or_id: str):
                                 found = transactions.get_by_session_or_id(session_or_id)
                             except Exception:
                                 logger.exception('Failed to update transaction status for %s', session_or_id)
+                        else:
+                            # Payment not paid: capture last payment error if available
+                            # Attempt to inspect payment_intent or latest_charge for failure details
+                            failure_code = None
+                            failure_message = None
+                            try:
+                                # For Checkout session, there may be a payment_intent attribute
+                                pi = None
+                                if isinstance(sess, dict):
+                                    pi = sess.get('payment_intent')
+                                else:
+                                    pi = getattr(sess, 'payment_intent', None)
+
+                                if pi:
+                                    # retrieve payment intent object if it's an id
+                                    if isinstance(pi, str):
+                                        try:
+                                            intent_obj = stripe.PaymentIntent.retrieve(pi)
+                                        except Exception:
+                                            intent_obj = None
+                                    else:
+                                        intent_obj = pi
+
+                                    if intent_obj:
+                                        # get last_payment_error if present
+                                        lpe = intent_obj.get('last_payment_error') if isinstance(intent_obj, dict) else getattr(intent_obj, 'last_payment_error', None)
+                                        if lpe:
+                                            failure_code = (lpe.get('code') if isinstance(lpe, dict) else getattr(lpe, 'code', None))
+                                            failure_message = (lpe.get('message') if isinstance(lpe, dict) else getattr(lpe, 'message', None))
+                                # If not found on payment_intent, try charges
+                                if not failure_code:
+                                    # attempt to read latest charge on the session
+                                    if isinstance(sess, dict):
+                                        payment_intent = sess.get('payment_intent')
+                                    else:
+                                        payment_intent = getattr(sess, 'payment_intent', None)
+                                    if payment_intent:
+                                        try:
+                                            intent_obj = stripe.PaymentIntent.retrieve(payment_intent) if isinstance(payment_intent, str) else payment_intent
+                                            charges = intent_obj.get('charges', {}).get('data', []) if isinstance(intent_obj, dict) else getattr(intent_obj, 'charges', None)
+                                            if charges:
+                                                c = charges[0]
+                                                failure_code = c.get('failure_code') if isinstance(c, dict) else getattr(c, 'failure_code', None)
+                                                failure_message = c.get('failure_message') if isinstance(c, dict) else getattr(c, 'failure_message', None)
+                                        except Exception:
+                                            pass
+                            except Exception:
+                                logger.exception('Failed to extract failure codes for session %s', session_or_id)
+
+                            # persist failure info on transaction so UI can reflect it
+                            try:
+                                updates = {}
+                                if failure_code:
+                                    updates['failure_code'] = failure_code
+                                if failure_message:
+                                    updates['failure_message'] = failure_message
+                                if updates:
+                                    # leave status as pending or set to 'failed' depending on payment_status
+                                    updates['status'] = 'failed' if payment_status in (None, 'unpaid', 'no_payment_required') else 'pending'
+                                    transactions.update(session_or_id, updates)
+                                    found = transactions.get_by_session_or_id(session_or_id)
+                            except Exception:
+                                logger.exception('Failed to persist failure info for %s', session_or_id)
                     except Exception:
                         # If Stripe retrieval failed, leave pending as-is
                         logger.exception('Failed to retrieve Stripe session for transaction check %s', session_or_id)

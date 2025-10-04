@@ -9,6 +9,9 @@ export type Transaction = {
   description?: string
   session_id?: string
   timestamp?: string
+  failure_code?: string | null
+  failure_message?: string | null
+  status?: string
 }
 
 const listTransactions = async (): Promise<{transactions: Transaction[]; balance: number}> => {
