@@ -595,25 +595,50 @@ async def generate_verification_report(
             COSTS = {'report': 5}
             if current_user and current_user.tier != UserTier.PRO:
                 user_record = user_db.get_user_by_id(current_user.id)
-                if user_record and (user_record.credits or 0) >= COSTS['report']:
-                    user_db.update_user_credits(current_user.id, -int(COSTS['report']))
-                    usd = round(COSTS['report'] / 10.0, 2)
-                    tx = {
-                        'user_email': current_user.email,
-                        'event_type': 'charge_report',
-                        'amount_usd': -usd,
-                        'credits': -int(COSTS['report']),
-                        'description': 'Charge: 5 credits for full verification report generation',
-                    }
+                if not user_record or (user_record.credits or 0) < COSTS['report']:
+                    # insufficient credits
+                    raise HTTPException(status_code=402, detail='Insufficient credits to generate full verification report')
+
+                # Attempt to deduct credits using configured user_db
+                deducted = False
+                try:
+                    deducted = user_db.update_user_credits(current_user.id, -int(COSTS['report']))
+                except Exception:
+                    deducted = False
+
+                # Fallback: if the configured user_db didn't update (e.g., mismatch), try Mongo directly
+                if not deducted and MongoUserDB:
                     try:
-                        transactions.add(tx)
-                        # mark the inserted report as charged (best-effort)
-                        try:
-                            mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
-                        except Exception:
-                            pass
+                        mdb2 = MongoUserDB(os.getenv('MONGO_URI'))
+                        deducted = mdb2.update_user_credits(current_user.id, -int(COSTS['report']))
+                    except Exception:
+                        deducted = False
+
+                if not deducted:
+                    # Could not deduct (user not found or other error)
+                    raise HTTPException(status_code=500, detail='Failed to deduct credits for report generation')
+
+                usd = round(COSTS['report'] / 10.0, 2)
+                tx = {
+                    'user_email': current_user.email,
+                    'event_type': 'charge_report',
+                    'amount_usd': -usd,
+                    'credits': -int(COSTS['report']),
+                    'description': 'Charge: 5 credits for full verification report generation',
+                    'timestamp': datetime.utcnow(),
+                }
+                try:
+                    transactions.add(tx)
+                    # mark the inserted report as charged (best-effort)
+                    try:
+                        mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
                     except Exception:
                         pass
+                except Exception:
+                    # Non-fatal: log and continue
+                    import logging
+
+                    logging.exception('Failed to record transaction for report charge')
         except Exception:
             pass
 
