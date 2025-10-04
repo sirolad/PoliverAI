@@ -591,7 +591,8 @@ async def generate_verification_report(
             # Charge a higher amount for a generated full verification report
             from ....db.users import user_db
             from ....db.transactions import transactions
-            COSTS = {'report': 20}
+            # Charge 5 credits for generating a full verification report
+            COSTS = {'report': 5}
             if current_user and current_user.tier != UserTier.PRO:
                 user_record = user_db.get_user_by_id(current_user.id)
                 if user_record and (user_record.credits or 0) >= COSTS['report']:
@@ -602,7 +603,7 @@ async def generate_verification_report(
                         'event_type': 'charge_report',
                         'amount_usd': -usd,
                         'credits': -int(COSTS['report']),
-                        'description': 'Charge for full verification report generation',
+                        'description': 'Charge: 5 credits for full verification report generation',
                     }
                     try:
                         transactions.add(tx)
