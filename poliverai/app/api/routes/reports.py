@@ -567,6 +567,9 @@ async def generate_verification_report(
                     # mark generated verification reports as full reports so we
                     # don't double-charge if the user later clicks Save
                     "is_full_report": True,
+                    # persist the raw generated content so it can be rendered
+                    # inline later by the frontend (detailed view)
+                    "content": content,
                     # store verdict and a simple type so the frontend can filter
                     "verdict": getattr(req, 'verdict', None),
                     "type": "verification",
@@ -752,6 +755,76 @@ async def list_user_reports(
         })
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list reports: {e}") from e
+
+
+
+@router.get("/reports/verdicts")
+async def list_verdicts():
+    """Return a list of verdict strings the backend understands for UI drop-downs.
+
+    This is intentionally permissive and returns common verdict labels used
+    across verification and reporting code paths so the frontend can render
+    consistent filter options.
+    """
+    # Base set - keep in sync with domain enums and places where verdict strings are used
+    verdicts = [
+        "compliant",
+        "partially_compliant",
+        "non_compliant",
+        "fulfills",
+        "violates",
+        "unclear",
+    ]
+    return {"verdicts": verdicts}
+
+
+@router.get('/reports/detailed/{filename}')
+async def get_detailed_report(filename: str, current_user: User = CURRENT_USER_DEPENDENCY):
+    """Return the stored detailed report content (markdown/plain) for a saved/generated report.
+
+    This endpoint is intended for the frontend viewer modal to fetch the rich
+    textual content of a verification report without requiring a GCS signed URL
+    or binary download. It first attempts to read a `content` field from the
+    Mongo document; if not present, it falls back to reading a local .md/.txt
+    file in the reports directory.
+    """
+    mongo_uri = os.getenv('MONGO_URI')
+    # If no Mongo configured, fallback to file system only
+    content = None
+    try:
+        if mongo_uri and MongoUserDB:
+            mdb = MongoUserDB(mongo_uri)
+            coll = mdb.db.get_collection('reports')
+            doc = coll.find_one({'user_id': current_user.id, 'filename': filename})
+            if doc:
+                # Prefer stored content (generated verification reports)
+                content = doc.get('content')
+    except Exception:
+        # Non-fatal: continue to file fallback
+        import logging
+
+        logging.exception('Failed to fetch stored report content from Mongo; falling back to file')
+
+    # File fallback: try .md, .txt, or any file with the filename
+    if not content:
+        try:
+            reports_dir = Path('reports')
+            candidates = [reports_dir / filename, reports_dir / f"{filename}.md", reports_dir / f"{filename}.txt"]
+            for cand in candidates:
+                if cand.exists():
+                    try:
+                        content = cand.read_text(encoding='utf-8', errors='ignore')
+                        break
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+
+    if not content:
+        raise HTTPException(status_code=404, detail='Detailed report content not found')
+
+    # Return as plain text so the frontend can render into an iframe or markdown viewer
+    return JSONResponse({'filename': filename, 'content': content})
 
 
 @router.delete("/reports/{filename}")

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Navigate } from 'react-router-dom'
 import useAuth from '@/contexts/useAuth'
 import policyService from '@/services/policyService'
@@ -25,36 +25,8 @@ export default function Reports() {
       return null
     }
   })
-  const [query, setQuery] = useState<string>('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [startDate, setStartDate] = useState<string>('')
-  const [endDate, setEndDate] = useState<string>('')
-  const [modalUrl, setModalUrl] = useState<string>('')
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalSuccess, setModalSuccess] = useState(true)
-  const [modalTitle, setModalTitle] = useState('')
-  const [modalMessage, setModalMessage] = useState<string | undefined>()
-  const [deleting, setDeleting] = useState(false)
 
-  useEffect(() => {
-    fetchReports()
-  }, [page, limit])
-
-  // keep selectedFiles in sync when reports list changes
-  // Only run when the reports array changes (don't include selectedFiles so we don't
-  // overwrite user toggles). This preserves selection for filenames that still exist
-  // and drops selections for removed items.
-  useEffect(() => {
-    setSelectedFiles((prev) => {
-      const next: Record<string, boolean> = {}
-      reports.forEach((r) => {
-        if (prev[r.filename]) next[r.filename] = true
-      })
-      return next
-    })
-  }, [reports])
-
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
@@ -84,7 +56,52 @@ export default function Reports() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [page, limit])
+  const [query, setQuery] = useState<string>('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [verdictOptions, setVerdictOptions] = useState<string[]>([])
+  const [startDate, setStartDate] = useState<string>('')
+  const [endDate, setEndDate] = useState<string>('')
+  const [modalUrl, setModalUrl] = useState<string>('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalSuccess, setModalSuccess] = useState(true)
+  const [modalTitle, setModalTitle] = useState('')
+  const [modalMessage, setModalMessage] = useState<string | undefined>()
+  const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    fetchReports()
+  }, [fetchReports])
+
+  // fetch verdict options once on mount
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const vresp = await policyService.getReportVerdicts()
+        if (mounted) setVerdictOptions(vresp.verdicts || [])
+      } catch (e) {
+        console.warn('Failed to load verdict options', e)
+      }
+    })()
+    return () => { mounted = false }
+  }, [])
+
+  // keep selectedFiles in sync when reports list changes
+  // Only run when the reports array changes (don't include selectedFiles so we don't
+  // overwrite user toggles). This preserves selection for filenames that still exist
+  // and drops selections for removed items.
+  useEffect(() => {
+    setSelectedFiles((prev) => {
+      const next: Record<string, boolean> = {}
+      reports.forEach((r) => {
+        if (prev[r.filename]) next[r.filename] = true
+      })
+      return next
+    })
+  }, [reports])
+
+  // fetchReports is defined above as a useCallback
 
   // Animate small progress while loading reports
   useEffect(() => {
@@ -112,7 +129,9 @@ export default function Reports() {
     try {
       // Instead of opening a new tab, show modal viewer for a smoother UX
       const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const url = report.gcs_url || `${apiBase}/api/v1/reports/download/${encodeURIComponent(report.filename)}`
+      // Always use our download endpoint inside the modal iframe so external gs:// or signed URLs
+      // don't break iframe rendering. Use a separate Open action to open the best URL in a new tab.
+      const url = `${apiBase}/api/v1/reports/download/${encodeURIComponent(report.filename)}`
       setSelected(report.filename)
       setModalUrl(url)
     } catch (err) {
@@ -143,11 +162,12 @@ export default function Reports() {
     }
     if (statusFilter !== 'all') {
       if (statusFilter === 'full') {
-        // filter saved full reports
-        if (!r.is_full_report) return false
+        // treat as full if explicitly flagged, or if type indicates a generated verification report
+        if (!(r.is_full_report || (r.type && String(r.type).toLowerCase() === 'verification'))) return false
       } else {
-        // reports may carry a 'verdict' or 'status' field in metadata; do exact match on verdict
-        const v = (r.verdict || r.status || '').toLowerCase()
+        // normalize verdict/status for robust matching (handles 'Compliant', 'partially compliant', etc.)
+        const normalize = (s?: string) => (s || '').toString().trim().toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
+        const v = normalize((r.verdict || r.status) as string)
         if (!v || v !== statusFilter) return false
       }
     }
@@ -269,8 +289,11 @@ export default function Reports() {
             <label className="block text-sm font-medium mb-1">Verdict / Status</label>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full border rounded px-3 py-2">
               <option value="all">All</option>
-              <option value="compliant">Compliant</option>
-              <option value="full">Full reports</option>
+              <option value="compliant">Compliance Reports</option>
+              {verdictOptions.filter(v => v !== 'compliant').map((v) => (
+                <option key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>
+              ))}
+              <option value="full">Full Reports</option>
             </select>
           </div>
 
@@ -344,8 +367,8 @@ export default function Reports() {
 
           <div className="space-y-3 max-h-[70vh] overflow-auto">
             {filtered.map((r) => (
-              <div key={r.filename} className={`p-4 border rounded flex items-start ${selectedFiles[r.filename] ? 'border-blue-600 bg-blue-50' : ''}`}>
-                <div className="mr-4 flex items-center">
+              <div key={r.filename} className={`p-4 border rounded flex items-center ${selectedFiles[r.filename] ? 'border-blue-600 bg-blue-50' : ''}`}>
+                <div className="mr-4 flex items-center h-full">
                   <input
                     type="checkbox"
                     checked={!!selectedFiles[r.filename]}
@@ -361,16 +384,30 @@ export default function Reports() {
                   {r.file_size ? (
                     <div className="text-sm text-gray-500">Size: {(r.file_size / 1024).toFixed(1)} KB</div>
                   ) : null}
-                  {r.verdict ? (
-                    <div className="inline-flex items-center mt-2 px-2 py-1 rounded text-xs font-medium bg-gray-100">
-                      <span className="mr-2 text-gray-700">Verdict:</span>
-                      <span className={`px-2 py-0.5 rounded ${r.verdict === 'compliant' ? 'bg-green-100 text-green-700' : r.verdict === 'partially_compliant' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>{r.verdict}</span>
-                    </div>
-                  ) : null}
+                  {/* Badge group: Full/Compliance label and verdict badge share height and touch borders */}
+                  {(() => {
+                    const normalize = (s?: string) => (s || '').toString().trim().toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
+                    const isFull = Boolean(r.is_full_report || (r.type && String(r.type).toLowerCase() === 'verification'))
+                    const vnorm = normalize(r.verdict)
+                    const hasVerdict = Boolean(r.verdict)
+                    if (!isFull && !hasVerdict) return null
+                    return (
+                      <div className="inline-flex items-center mt-2 text-xs font-medium rounded overflow-hidden">
+                        {isFull ? (
+                          <div className="px-2 py-1 bg-green-100 text-green-700 border border-r-0 border-green-200">Full</div>
+                        ) : null}
+                        {hasVerdict ? (
+                          <div className={`px-2 py-1 border ${vnorm === 'compliant' ? 'bg-green-100 text-green-700 border-green-200' : vnorm === 'partially_compliant' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
+                            {String(r.verdict).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                          </div>
+                        ) : null}
+                      </div>
+                    )
+                  })()}
                 </div>
                 <div className="flex-shrink-0 ml-4 flex items-center space-x-2">
                   {r.gcs_url ? (
-                    <a href={r.gcs_url} target="_blank" rel="noreferrer" className="text-sm text-blue-600">Open</a>
+                    <button onClick={() => policyService.openReport(r)} className="text-sm text-blue-600">Open</button>
                   ) : null}
                   <button onClick={() => onOpen(r)} className="bg-transparent text-blue-600 px-3 py-1 rounded border border-blue-200">View</button>
                   <button onClick={() => onDownload(r)} className="bg-blue-600 text-white px-3 py-1 rounded">Download</button>

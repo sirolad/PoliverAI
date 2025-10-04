@@ -152,6 +152,10 @@ class PolicyService {
     }>(url)
   }
 
+  async getReportVerdicts(): Promise<{ verdicts: string[] }> {
+    return apiService.get<{ verdicts: string[] }>('/api/v1/reports/verdicts')
+  }
+
   async getUserReportsCount(): Promise<number> {
     try {
       const resp = await apiService.get<{ count: number }>('/api/v1/user-reports/count')
