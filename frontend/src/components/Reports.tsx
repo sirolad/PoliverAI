@@ -397,6 +397,8 @@ export default function Reports() {
                   <div className="font-semibold">{r.title || r.document_name}</div>
                   <div className="text-sm text-gray-600">{r.document_name}</div>
                   <div className="text-sm text-gray-500 mt-1">{new Date(r.created_at).toLocaleString()}</div>
+                  {/* Filename line: shown above the size, styled like the size text */}
+                  <div className="text-sm text-gray-500 truncate">filename: <span className="font-mono">{r.filename}</span></div>
                   {r.file_size ? (
                     <div className="text-sm text-gray-500">Size: {(r.file_size / 1024).toFixed(1)} KB</div>
                   ) : null}
