@@ -2,13 +2,20 @@ import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import useAuth from '@/contexts/useAuth'
 import policyService from '@/services/policyService'
+import ReportViewerModal from './ui/ReportViewerModal'
+import PaymentResultModal from './ui/PaymentResultModal'
 import type { ReportMetadata } from '@/types/api'
 
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
   const [reports, setReports] = useState<ReportMetadata[]>([])
+  const [page, setPage] = useState<number>(1)
+  const [limit, setLimit] = useState<number>(10)
+  const [total, setTotal] = useState<number | null>(null)
+  const [totalPages, setTotalPages] = useState<number>(1)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>({})
   const [progress, setProgress] = useState<number>(0)
   const [showBar, setShowBar] = useState<boolean>(false)
   const [selected, setSelected] = useState<string | null>(() => {
@@ -22,18 +29,51 @@ export default function Reports() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [startDate, setStartDate] = useState<string>('')
   const [endDate, setEndDate] = useState<string>('')
+  const [modalUrl, setModalUrl] = useState<string>('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalSuccess, setModalSuccess] = useState(true)
+  const [modalTitle, setModalTitle] = useState('')
+  const [modalMessage, setModalMessage] = useState<string | undefined>()
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     fetchReports()
-  }, [])
+  }, [page, limit])
+
+  // keep selectedFiles in sync when reports list changes
+  // Only run when the reports array changes (don't include selectedFiles so we don't
+  // overwrite user toggles). This preserves selection for filenames that still exist
+  // and drops selections for removed items.
+  useEffect(() => {
+    setSelectedFiles((prev) => {
+      const next: Record<string, boolean> = {}
+      reports.forEach((r) => {
+        if (prev[r.filename]) next[r.filename] = true
+      })
+      return next
+    })
+  }, [reports])
 
   const fetchReports = async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const r = await policyService.getUserReports()
-      setReports(r)
-      if (!r || r.length === 0) {
+      const resp = await policyService.getUserReports({ page, limit })
+      // Handle both legacy array response and new paged response
+      let arr: ReportMetadata[] = []
+      if (Array.isArray(resp)) {
+        arr = resp as ReportMetadata[]
+        setReports(arr)
+        setTotal(arr.length)
+        setTotalPages(1)
+      } else {
+        arr = resp.reports || []
+        setReports(arr)
+        setTotal(resp.total ?? arr.length)
+        setTotalPages(resp.total_pages ?? 1)
+      }
+      // Use the freshly-loaded array to determine empty-state
+      if (!arr || arr.length === 0) {
         setError('You have no reports on file with us yet 🙂')
       } else {
         setError(null)
@@ -66,18 +106,15 @@ export default function Reports() {
     }
   }, [isLoading])
 
-  const onSelect = (report: ReportMetadata) => {
-    setSelected(report.filename)
-    try {
-      localStorage.setItem('selected_report', report.filename)
-    } catch (err) {
-      console.warn('Could not persist selected report', err)
-    }
-  }
+  // selection is handled by checkboxes; persisted "selected" (single) remains for modal/view
 
   const onOpen = async (report: ReportMetadata) => {
     try {
-      await policyService.openReport(report)
+      // Instead of opening a new tab, show modal viewer for a smoother UX
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const url = report.gcs_url || `${apiBase}/api/v1/reports/download/${encodeURIComponent(report.filename)}`
+      setSelected(report.filename)
+      setModalUrl(url)
     } catch (err) {
       console.error('Failed to open report', err)
       setError('Failed to open report')
@@ -105,9 +142,14 @@ export default function Reports() {
       if (!((r.title || r.document_name || '').toLowerCase().includes(q) || r.filename.toLowerCase().includes(q))) return false
     }
     if (statusFilter !== 'all') {
-      // reports may carry a 'verdict' or 'status' field in metadata
-      const s = (r.verdict || r.status || '').toLowerCase()
-      if (!s.includes(statusFilter)) return false
+      if (statusFilter === 'full') {
+        // filter saved full reports
+        if (!r.is_full_report) return false
+      } else {
+        // reports may carry a 'verdict' or 'status' field in metadata; do exact match on verdict
+        const v = (r.verdict || r.status || '').toLowerCase()
+        if (!v || v !== statusFilter) return false
+      }
     }
     if (startDate) {
       const d = new Date(r.created_at)
@@ -125,8 +167,88 @@ export default function Reports() {
 
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-3xl font-bold mb-4">Your Reports</h1>
-      {isLoading && <div>Loading...</div>}
+      <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-3xl font-bold">Your Reports</h1>
+        <div className="flex items-center gap-2">
+          <button onClick={fetchReports} className="px-3 py-1 bg-white border rounded">Refresh</button>
+          <button
+            disabled={deleting}
+            onClick={async () => {
+              const fns = Object.keys(selectedFiles).filter((k) => selectedFiles[k])
+              console.log('SelectedFiles map:', selectedFiles)
+              console.log('Bulk delete requested for filenames:', fns)
+              if (fns.length === 0) return
+              setDeleting(true)
+
+              // Animate a small progress bar while the delete is running
+              let interval: number | undefined
+              try {
+                setShowBar(true)
+                setProgress(10)
+                interval = window.setInterval(() => {
+                  setProgress((p) => Math.min(90, Math.round(p + Math.random() * 10)))
+                }, 300) as unknown as number
+
+                const resp = await policyService.bulkDeleteReports(fns)
+                console.log('Bulk delete response:', resp)
+                // finalize progress
+                if (interval) { clearInterval(interval); interval = undefined }
+                setProgress(100)
+                window.setTimeout(() => setShowBar(false), 600)
+
+                type BulkRes = { filename: string; deleted: boolean; error?: string }
+                const results = resp.results as BulkRes[]
+                const deleted = results.filter((r) => r.deleted).map((r) => r.filename)
+                const failed = results.filter((r) => !r.deleted)
+
+                // Update list
+                setReports((prev) => prev.filter(r => !deleted.includes(r.filename)))
+                const newSel = { ...selectedFiles }
+                deleted.forEach((d) => { delete newSel[d] })
+                setSelectedFiles(newSel)
+
+                // Show result modal
+                if (failed.length === 0) {
+                  setModalSuccess(true)
+                  setModalTitle(`Deleted ${deleted.length} report${deleted.length !== 1 ? 's' : ''}`)
+                  setModalMessage(deleted.slice(0, 6).join(', '))
+                } else if (deleted.length === 0) {
+                  setModalSuccess(false)
+                  setModalTitle('Failed to delete reports')
+                  setModalMessage(failed.map(f => `${f.filename}: ${f.error || 'unknown error'}`).join('\n'))
+                } else {
+                  setModalSuccess(false)
+                  setModalTitle('Partial delete')
+                  setModalMessage(`Deleted: ${deleted.join(', ')}\nFailed: ${failed.map(f => f.filename).join(', ')}`)
+                }
+                setModalOpen(true)
+              } catch (err) {
+                const e = err as unknown
+                if (interval) clearInterval(interval)
+                setProgress(100)
+                window.setTimeout(() => setShowBar(false), 600)
+                console.error('Bulk delete failed', e)
+                setModalSuccess(false)
+                setModalTitle('Bulk delete failed')
+                const extractMessage = (x: unknown): string => {
+                  if (!x) return String(x)
+                  if (typeof x === 'string') return x
+                  if (typeof x === 'object' && 'message' in (x as Record<string, unknown>)) return String((x as Record<string, unknown>)['message'])
+                  return String(x)
+                }
+                setModalMessage(extractMessage(e))
+                setModalOpen(true)
+              } finally {
+                setDeleting(false)
+              }
+            }}
+            className="px-3 py-1 bg-red-600 text-white rounded"
+          >
+            Delete Selected
+          </button>
+        </div>
+      </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -135,7 +257,6 @@ export default function Reports() {
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <div className="text-lg font-medium">Filters</div>
-              <button onClick={fetchReports} className="text-sm text-blue-600">Refresh</button>
             </div>
           </div>
 
@@ -149,8 +270,7 @@ export default function Reports() {
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full border rounded px-3 py-2">
               <option value="all">All</option>
               <option value="compliant">Compliant</option>
-              <option value="partially_compliant">Partially compliant</option>
-              <option value="non_compliant">Non-compliant</option>
+              <option value="full">Full reports</option>
             </select>
           </div>
 
@@ -162,9 +282,7 @@ export default function Reports() {
             </div>
           </div>
 
-          <div className="mt-6 text-sm text-gray-600">
-            Showing <span className="font-semibold">{filtered.length}</span> of <span className="font-semibold">{reports.length}</span> reports
-          </div>
+          {/* count is shown in the header next to the select-all control */}
 
           {/* Loading progress bar */}
           <div className="mt-4">
@@ -188,43 +306,110 @@ export default function Reports() {
         {/* Right: reports list */}
         <main className="md:col-span-2 bg-white p-4 rounded shadow">
           <div className="mb-4 flex items-center justify-between">
-            <div className="text-lg font-medium">Reports</div>
-            <div className="text-sm text-gray-600">{isLoading ? 'Loading...' : `${filtered.length} results`}</div>
+            <div>
+              <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])}
+                  onChange={() => {
+                    const allSelected = filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])
+                    // toggle all visible
+                    setSelectedFiles((prev) => {
+                      const next = { ...prev }
+                      filtered.forEach((f) => {
+                        next[f.filename] = !allSelected
+                      })
+                      return next
+                    })
+                  }}
+                  aria-label={filtered.length > 0 ? `Select all ${filtered.length} reports` : 'Select all reports'}
+                />
+                <span className="text-sm">Select all</span>
+
+                <div className="text-sm text-gray-600">{isLoading ? 'Loading...' : `${filtered.length} results`}</div>
+              </label>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 ml-4">
+                <label className="text-sm text-gray-600">Per page</label>
+                <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1">
+                  {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
+                </select>
+                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded">Prev</button>
+                <div className="px-2 py-1 text-sm">{page} / {totalPages}</div>
+                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded">Next</button>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-3 max-h-[70vh] overflow-auto">
             {filtered.map((r) => (
-              <div key={r.filename} className={`p-4 border rounded ${selected === r.filename ? 'border-blue-600 bg-blue-50' : ''}`}>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="font-semibold">{r.title || r.document_name}</div>
-                    <div className="text-sm text-gray-600">{r.document_name}</div>
-                    <div className="text-sm text-gray-500 mt-1">{new Date(r.created_at).toLocaleString()}</div>
-                    {r.file_size ? (
-                      <div className="text-sm text-gray-500">Size: {(r.file_size / 1024).toFixed(1)} KB</div>
-                    ) : null}
-                    {/* Verdict badge */}
-                    {r.verdict ? (
-                      <div className="inline-flex items-center mt-2 px-2 py-1 rounded text-xs font-medium bg-gray-100">
-                        <span className="mr-2 text-gray-700">Verdict:</span>
-                        <span className={`px-2 py-0.5 rounded ${r.verdict === 'compliant' ? 'bg-green-100 text-green-700' : r.verdict === 'partially_compliant' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>{r.verdict}</span>
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="flex-shrink-0 ml-4 flex items-center space-x-2">
-                    {r.gcs_url ? (
-                      <a href={r.gcs_url} target="_blank" rel="noreferrer" className="text-sm text-blue-600">Open</a>
-                    ) : null}
-                    <button onClick={() => onOpen(r)} className="bg-transparent text-blue-600 px-3 py-1 rounded border border-blue-200">View</button>
-                    <button onClick={() => onDownload(r)} className="bg-blue-600 text-white px-3 py-1 rounded">Download</button>
-                    <button onClick={() => onSelect(r)} className={`px-3 py-1 rounded ${selected === r.filename ? 'bg-green-600 text-white' : 'bg-gray-100'}`}>
-                      {selected === r.filename ? 'Selected' : 'Select'}
-                    </button>
-                  </div>
+              <div key={r.filename} className={`p-4 border rounded flex items-start ${selectedFiles[r.filename] ? 'border-blue-600 bg-blue-50' : ''}`}>
+                <div className="mr-4 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={!!selectedFiles[r.filename]}
+                    onChange={() => setSelectedFiles((prev) => ({ ...prev, [r.filename]: !prev[r.filename] }))}
+                    className="w-4 h-4"
+                    aria-label={`Select report ${r.filename}`}
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold">{r.title || r.document_name}</div>
+                  <div className="text-sm text-gray-600">{r.document_name}</div>
+                  <div className="text-sm text-gray-500 mt-1">{new Date(r.created_at).toLocaleString()}</div>
+                  {r.file_size ? (
+                    <div className="text-sm text-gray-500">Size: {(r.file_size / 1024).toFixed(1)} KB</div>
+                  ) : null}
+                  {r.verdict ? (
+                    <div className="inline-flex items-center mt-2 px-2 py-1 rounded text-xs font-medium bg-gray-100">
+                      <span className="mr-2 text-gray-700">Verdict:</span>
+                      <span className={`px-2 py-0.5 rounded ${r.verdict === 'compliant' ? 'bg-green-100 text-green-700' : r.verdict === 'partially_compliant' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>{r.verdict}</span>
+                    </div>
+                  ) : null}
+                </div>
+                <div className="flex-shrink-0 ml-4 flex items-center space-x-2">
+                  {r.gcs_url ? (
+                    <a href={r.gcs_url} target="_blank" rel="noreferrer" className="text-sm text-blue-600">Open</a>
+                  ) : null}
+                  <button onClick={() => onOpen(r)} className="bg-transparent text-blue-600 px-3 py-1 rounded border border-blue-200">View</button>
+                  <button onClick={() => onDownload(r)} className="bg-blue-600 text-white px-3 py-1 rounded">Download</button>
                 </div>
               </div>
             ))}
           </div>
+          {modalUrl ? (
+            <ReportViewerModal
+              reportUrl={modalUrl}
+              filename={selected}
+              title={selected || 'Report'}
+              isQuick={false}
+              onClose={() => setModalUrl('')}
+              onDeleted={(fn) => {
+                setModalUrl('')
+                // remove deleted from list
+                setReports((prev) => prev.filter((p) => p.filename !== fn))
+                setSelected((cur) => (cur === fn ? null : cur))
+              }}
+              onSaved={async () => {
+                setModalUrl('')
+                try {
+                  // re-fetch the current page of reports so pagination and counts stay accurate
+                  await fetchReports()
+                } catch (e) {
+                  console.warn('refresh reports after save failed', e)
+                }
+                try {
+                  // refresh user and transactions so credits and tx list update
+                  window.dispatchEvent(new CustomEvent('payment:refresh-user'))
+                  window.dispatchEvent(new CustomEvent('transactions:refresh'))
+                  window.dispatchEvent(new CustomEvent('reports:refresh'))
+                } catch (e) {
+                  console.warn('dispatch refresh events failed', e)
+                }
+              }}
+            />
+          ) : null}
         </main>
       </div>
     </div>

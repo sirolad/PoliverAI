@@ -650,9 +650,35 @@ async def list_transactions(request: Request):
     # list_transactions requires authentication and will fail if no valid token
 
     try:
+        # Fetch full list from storage (storage may be Mongo-backed or in-memory)
         items = transactions.list_for_user(email)
         if items is None:
             items = []
+
+        # Compute total spent credits (sum of negative credit events) across all items
+        total_spent_credits = sum((-(int(i.get('credits', 0) or 0)) if (int(i.get('credits', 0) or 0) < 0) else 0) for i in items)
+
+        # Pagination query parameters: page (1-based) and limit
+        qp = request.query_params
+        page = None
+        limit = None
+        try:
+            if 'page' in qp:
+                page = int(qp.get('page'))
+                if page < 1:
+                    page = None
+        except Exception:
+            page = None
+        try:
+            if 'limit' in qp:
+                limit = int(qp.get('limit'))
+                if limit <= 0:
+                    limit = None
+        except Exception:
+            limit = None
+
+        total_count = len(items)
+
         # Normalize any datetime objects to ISO strings so JSONResponse can serialize
         for it in items:
             try:
@@ -660,11 +686,28 @@ async def list_transactions(request: Request):
                 if isinstance(ts, datetime):
                     it['timestamp'] = ts.isoformat()
             except Exception:
-                # ignore normalization errors
                 pass
 
+        # Apply pagination (server-side slicing) if both page and limit are provided
+        paged_items = items
+        total_pages = 1
+        if page is not None and limit is not None:
+            start = (page - 1) * limit
+            end = start + limit
+            paged_items = items[start:end]
+            total_pages = max(1, (total_count + limit - 1) // limit)
+
         total_credits = sum(int(i.get('credits', 0) or 0) for i in items)
-        return JSONResponse({'transactions': items, 'balance': total_credits})
+        resp = {
+            'transactions': paged_items,
+            'balance': total_credits,
+            'total': total_count,
+            'total_pages': total_pages,
+            'page': page or 1,
+            'limit': limit or total_count,
+            'total_spent_credits': total_spent_credits,
+        }
+        return JSONResponse(resp)
     except Exception as e:
         # Log full traceback for debugging in dev
         logger.error('Failed to list transactions for email=%s: %s', email, e)

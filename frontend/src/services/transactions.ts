@@ -14,9 +14,23 @@ export type Transaction = {
   status?: string
 }
 
-const listTransactions = async (): Promise<{transactions: Transaction[]; balance: number}> => {
-  const res = await api.get<{transactions: Transaction[]; balance: number}>('/api/v1/transactions')
-  return res as {transactions: Transaction[]; balance: number}
+type TxListResp = {
+  transactions: Transaction[]
+  balance: number
+  total?: number
+  total_pages?: number
+  page?: number
+  limit?: number
+  total_spent_credits?: number
+}
+
+const listTransactions = async (opts?: { page?: number; limit?: number }): Promise<TxListResp> => {
+  let url = '/api/v1/transactions'
+  if (opts?.page && opts?.limit) {
+    url += `?page=${opts.page}&limit=${opts.limit}`
+  }
+  const res = await api.get<TxListResp>(url)
+  return res as TxListResp
 }
 
 const getTransaction = async (session_or_id: string): Promise<{transaction: Transaction}> => {

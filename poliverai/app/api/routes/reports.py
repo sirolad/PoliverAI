@@ -4,7 +4,7 @@ from typing import Any
 import os
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from ....core.config import get_settings
@@ -12,6 +12,7 @@ from ....rag.service import _init
 from ....reporting.exporter import export_report
 try:
     from ....storage.gcs_reports import upload_report_if_changed, compute_sha256_for_file
+    from ....storage.gcs_reports import delete_object
 except Exception:  # pragma: no cover - optional dependency
     upload_report_if_changed = None
     compute_sha256_for_file = None
@@ -563,10 +564,17 @@ async def generate_verification_report(
                     "user_id": user_id,
                     "document_name": req.document_name,
                     "analysis_mode": req.analysis_mode,
+                    # mark generated verification reports as full reports so we
+                    # don't double-charge if the user later clicks Save
+                    "is_full_report": True,
+                    # store verdict and a simple type so the frontend can filter
+                    "verdict": getattr(req, 'verdict', None),
+                    "type": "verification",
                     "file_size": file_size,
                     "created_at": datetime.utcnow(),
                 }
-                mdb.db.get_collection("reports").insert_one(report_doc)
+                inserted = mdb.db.get_collection("reports").insert_one(report_doc)
+                inserted_id = inserted.inserted_id
         except Exception:
             # Do not hard-fail report creation if DB logging fails, but log details
             import logging
@@ -575,9 +583,10 @@ async def generate_verification_report(
 
         # Charge credits for verification report generation for non-PRO users
         try:
+            # Charge a higher amount for a generated full verification report
             from ....db.users import user_db
             from ....db.transactions import transactions
-            COSTS = {'report': 10}
+            COSTS = {'report': 20}
             if current_user and current_user.tier != UserTier.PRO:
                 user_record = user_db.get_user_by_id(current_user.id)
                 if user_record and (user_record.credits or 0) >= COSTS['report']:
@@ -588,10 +597,15 @@ async def generate_verification_report(
                         'event_type': 'charge_report',
                         'amount_usd': -usd,
                         'credits': -int(COSTS['report']),
-                        'description': 'Charge for verification report',
+                        'description': 'Charge for full verification report generation',
                     }
                     try:
                         transactions.add(tx)
+                        # mark the inserted report as charged (best-effort)
+                        try:
+                            mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
+                        except Exception:
+                            pass
                     except Exception:
                         pass
         except Exception:
@@ -672,8 +686,17 @@ async def download_report(filename: str):
 
 
 @router.get("/user-reports")
-async def list_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
-    """List reports for the authenticated user."""
+async def list_user_reports(
+    current_user: User = CURRENT_USER_DEPENDENCY,
+    page: int | None = None,
+    limit: int | None = None,
+) :
+    """List reports for the authenticated user.
+
+    If `page` and `limit` query params are provided the endpoint will return a
+    paginated response with metadata. If not provided it returns a plain list
+    (for backwards compatibility with existing callers).
+    """
     mongo_uri = os.getenv("MONGO_URI")
     if not mongo_uri or not MongoUserDB:
         # Dev fallback: no persistent reports available; return empty list
@@ -695,12 +718,129 @@ async def list_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
                     else str(doc.get("created_at")),
                     "file_size": doc.get("file_size"),
                     "gcs_url": doc.get("gcs_url"),
-                    "path": doc.get("path"),
+                        "path": doc.get("path"),
+                        # expose verdict and whether this is a full saved report so
+                        # the frontend can filter by verdict or full/quick reports
+                        "verdict": doc.get("verdict"),
+                        "is_full_report": bool(doc.get("is_full_report")),
+                        "analysis_mode": doc.get("analysis_mode"),
                 }
             )
-        return out
+
+        total = len(out)
+        # If pagination params not provided, return raw list for compatibility
+        if page is None or limit is None:
+            return out
+
+        # sanitize page/limit
+        if page < 1:
+            page = 1
+        if limit < 1:
+            limit = total or 1
+
+        total_pages = max(1, (total + limit - 1) // limit)
+        start = (page - 1) * limit
+        end = start + limit
+        paged = out[start:end]
+
+        return JSONResponse({
+            "reports": paged,
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "total_pages": total_pages,
+        })
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list reports: {e}") from e
+
+
+@router.delete("/reports/{filename}")
+async def delete_user_report(filename: str, current_user: User = CURRENT_USER_DEPENDENCY):
+    """Delete a saved report for the current user. Removes DB record and
+    deletes the object from GCS if present. Returns 204 on success."""
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri or not MongoUserDB:
+        # Nothing to delete in dev fallback
+        raise HTTPException(status_code=404, detail="No persistent report storage configured")
+
+    try:
+        mdb = MongoUserDB(mongo_uri)
+        coll = mdb.db.get_collection("reports")
+        doc = coll.find_one({"user_id": current_user.id, "filename": filename})
+        if not doc:
+            raise HTTPException(status_code=404, detail="Report not found")
+
+        # Attempt to delete from GCS if gcs_url exists
+        gcs_url = doc.get("gcs_url")
+        deleted_from_gcs = False
+        if gcs_url:
+            # gcs_url expected in form gs://bucket/path
+            try:
+                if gcs_url.startswith("gs://"):
+                    parts = gcs_url[5:].split('/', 1)
+                    bucket = parts[0]
+                    object_path = parts[1] if len(parts) > 1 else filename
+                    deleted_from_gcs = delete_object(bucket, object_path)
+            except Exception:
+                # log and continue with DB deletion
+                import logging
+
+                logging.exception("Failed to delete object from GCS for report %s", filename)
+
+        # Delete DB record
+        coll.delete_one({"_id": doc.get("_id")})
+
+        return {"deleted": True, "deleted_from_gcs": bool(deleted_from_gcs)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete report: {e}") from e
+
+
+class BulkDeleteRequest(BaseModel):
+    filenames: list[str]
+
+
+@router.post("/reports/bulk-delete")
+async def bulk_delete_reports(req: BulkDeleteRequest, current_user: User = CURRENT_USER_DEPENDENCY):
+    """Delete multiple reports for the current user. Returns per-file deletion status."""
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri or not MongoUserDB:
+        raise HTTPException(status_code=404, detail="No persistent report storage configured")
+
+    try:
+        import logging
+        logging.info("bulk_delete_reports called for user %s with filenames: %s", getattr(current_user, 'id', None), req.filenames)
+        mdb = MongoUserDB(mongo_uri)
+        coll = mdb.db.get_collection("reports")
+        results = []
+        for fn in req.filenames:
+            logging.info("processing delete for filename=%s", fn)
+            doc = coll.find_one({"user_id": current_user.id, "filename": fn})
+            if not doc:
+                logging.info("report not found for filename=%s", fn)
+                results.append({"filename": fn, "deleted": False, "reason": "not_found"})
+                continue
+
+            gcs_url = doc.get("gcs_url")
+            deleted_from_gcs = False
+            if gcs_url and isinstance(gcs_url, str) and gcs_url.startswith("gs://"):
+                try:
+                    parts = gcs_url[5:].split('/', 1)
+                    bucket = parts[0]
+                    object_path = parts[1] if len(parts) > 1 else fn
+                    deleted_from_gcs = delete_object(bucket, object_path)
+                except Exception:
+                    deleted_from_gcs = False
+
+            # Remove DB record
+            coll.delete_one({"_id": doc.get("_id")})
+            logging.info("deleted db record for filename=%s", fn)
+            results.append({"filename": fn, "deleted": True, "deleted_from_gcs": bool(deleted_from_gcs)})
+
+        return {"results": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to bulk delete reports: {e}") from e
 
 
 @router.get("/user-reports/count")
@@ -722,6 +862,7 @@ async def count_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
 class SaveReportRequest(BaseModel):
     filename: str
     document_name: str | None = None
+    is_quick: bool | None = None
 
 
 @router.post("/reports/save", response_model=ReportResponse)
@@ -753,6 +894,9 @@ async def save_report(
 
         # Insert into Mongo 'reports' collection if available
         try:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info('save_report called user=%s filename=%s is_quick=%s', getattr(current_user, 'email', None), req.filename, getattr(req, 'is_quick', None))
             mongo_uri = os.getenv("MONGO_URI")
             if mongo_uri and MongoUserDB:
                 mdb = MongoUserDB(mongo_uri)
@@ -769,10 +913,82 @@ async def save_report(
                     "user_id": current_user.id,
                     "document_name": req.document_name or req.filename,
                     "analysis_mode": "balanced",
+                    # quick saves are not full reports
+                    "is_full_report": False,
+                    # try to infer verdict/type from file contents or filename
+                    "verdict": None,
+                    "type": ("revision" if str(req.filename).startswith("revised-") else ("verification" if "verification" in str(req.filename) or str(req.filename).startswith("gdpr-verification") else "other")),
                     "file_size": file_size,
                     "created_at": datetime.utcnow(),
                 }
-                mdb.db.get_collection("reports").insert_one(report_doc)
+                # Best-effort: try to extract a verdict string from the report file
+                try:
+                    txt = filepath.read_text(encoding='utf-8', errors='ignore')
+                    # look for markdown-style '**Verdict:**' or 'Verdict:' markers
+                    verdict = None
+                    for marker in ['**Verdict:**', 'Verdict:']:
+                        if marker in txt:
+                            # take the rest of the line after the marker
+                            for line in txt.splitlines():
+                                if marker in line:
+                                    verdict = line.split(marker, 1)[1].strip()
+                                    break
+                        if verdict:
+                            break
+                    if verdict:
+                        # normalize to lowercase keys used elsewhere
+                        report_doc['verdict'] = verdict.lower().replace(' ', '_')
+                except Exception:
+                    # ignore failures reading/parsing file
+                    pass
+                inserted = mdb.db.get_collection("reports").insert_one(report_doc)
+                inserted_id = inserted.inserted_id
+                # If the save was for a quick report and user is not PRO, charge credits now
+                try:
+                    from ....db.users import user_db
+                    from ....db.transactions import transactions
+                    COSTS = {'quick_report_save': 10, 'report': 20}
+                    is_quick_save = bool(getattr(req, 'is_quick', False))
+
+                    if is_quick_save:
+                        # Quick (cheap) save — deduct credits and record transaction
+                        if current_user and current_user.tier != UserTier.PRO:
+                            user_record = user_db.get_user_by_id(current_user.id)
+                            if not user_record or (user_record.credits or 0) < COSTS['quick_report_save']:
+                                # Not enough credits: fail the save so user isn't surprised
+                                logger.info('Insufficient credits for user=%s to save quick report: have=%s need=%s', getattr(current_user, 'email', None), getattr(user_record, 'credits', None) if user_record else None, COSTS['quick_report_save'])
+                                raise HTTPException(status_code=402, detail='Insufficient credits to save quick report')
+                            # Deduct credits and record transaction
+                            user_db.update_user_credits(current_user.id, -int(COSTS['quick_report_save']))
+                            usd = round(COSTS['quick_report_save'] / 10.0, 2)
+                            tx = {
+                                'user_email': current_user.email,
+                                'event_type': 'saved_compliance_report',
+                                'amount_usd': -usd,
+                                'credits': -int(COSTS['quick_report_save']),
+                                'description': 'Saved Compliance Report',
+                            }
+                            try:
+                                transactions.add(tx)
+                                mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
+                                logger.info('Recorded transaction for quick save user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
+                            except Exception:
+                                logger.exception('Failed to add transaction for quick save for user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
+                    else:
+                        # Full report save — do not double-charge here; record a zero-credit transaction
+                        try:
+                            tx = {
+                                'user_email': current_user.email if current_user else None,
+                                'event_type': 'saved_full_report',
+                                'amount_usd': 0.0,
+                                'credits': 0,
+                                'description': 'Saved Full Report',
+                            }
+                            transactions.add(tx)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
         except Exception:
             # Swallow DB errors but log them so persistence issues are visible in logs
             import logging

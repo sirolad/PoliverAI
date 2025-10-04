@@ -107,3 +107,65 @@ def upload_report_if_changed(bucket_name: str, object_path: str, local_path: str
             os.unlink(tmp.name)
         except Exception:
             pass
+
+
+def delete_object(bucket_name: str, object_path: str) -> bool:
+    """
+    Delete an object from the specified GCS bucket. Returns True if deleted or
+    False if the object did not exist or deletion couldn't be performed.
+    """
+    if storage is None:
+        logger.warning(
+            "google-cloud-storage not available; cannot delete gs://%s/%s",
+            bucket_name,
+            object_path,
+        )
+        return False
+
+    creds_path = os.getenv("POLIVERAI_GCS_CREDENTIALS_JSON")
+    client = None
+    if creds_path:
+        abs_path = creds_path if os.path.isabs(creds_path) else os.path.abspath(creds_path)
+        if os.path.exists(abs_path):
+            try:
+                client = storage.Client.from_service_account_json(abs_path)
+            except Exception as e:
+                logger.warning(
+                    "Failed to initialize GCS client from service account json %s for delete gs://%s/%s: %s",
+                    abs_path,
+                    bucket_name,
+                    object_path,
+                    str(e),
+                )
+                client = None
+        else:
+            logger.warning(
+                "POLIVERAI_GCS_CREDENTIALS_JSON is set to %s but file does not exist; falling back to default credentials",
+                abs_path,
+            )
+
+    if client is None:
+        try:
+            client = storage.Client()
+        except Exception as e:
+            logger.warning(
+                "Failed to initialize Google Cloud Storage client for delete gs://%s/%s: %s",
+                bucket_name,
+                object_path,
+                str(e),
+            )
+            return False
+
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(object_path)
+    try:
+        if blob.exists():
+            blob.delete()
+            logger.info("Deleted gs://%s/%s", bucket_name, object_path)
+            return True
+        else:
+            logger.info("GCS object gs://%s/%s does not exist", bucket_name, object_path)
+            return False
+    except Exception as e:
+        logger.exception("Failed to delete gs://%s/%s: %s", bucket_name, object_path, str(e))
+        return False

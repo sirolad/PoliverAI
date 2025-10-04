@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { Navigate } from 'react-router-dom'
 import useAuth from '@/contexts/useAuth'
 import transactionsService from '@/services/transactions'
@@ -16,12 +16,18 @@ export default function Credits() {
   const [search, setSearch] = useState('')
   const [dateFrom, setDateFrom] = useState<string | null>(null)
   const [dateTo, setDateTo] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<Record<string, boolean>>({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true })
+  const [statusFilter, setStatusFilter] = useState<Record<string, boolean>>({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true })
   const [progress, setProgress] = useState<number>(0)
   const [showBar, setShowBar] = useState<boolean>(false)
   const paymentResult = usePaymentResult()
+  const [page, setPage] = useState<number>(1)
+  const [limit, setLimit] = useState<number>(10)
+  const [total, setTotal] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(1)
+  const [totalSpentCredits, setTotalSpentCredits] = useState<number>(0)
 
-  useEffect(() => { fetchTx() }, [])
+  const fetchTxCb = useCallback(async () => { await fetchTx() }, [page, limit])
+  useEffect(() => { fetchTxCb() }, [fetchTxCb])
   useEffect(() => {
     const h = () => {
       fetchTx().catch((e) => console.error('Failed to refresh transactions', e))
@@ -32,6 +38,7 @@ export default function Credits() {
     window.addEventListener('transactions:refresh', h)
     return () => window.removeEventListener('transactions:refresh', h)
   }, [refreshUser])
+  
 
   // Animate a simple loading progress bar while isLoading is true
   useEffect(() => {
@@ -54,18 +61,21 @@ export default function Credits() {
     }
   }, [isLoading])
 
-  const fetchTx = async () => {
+  const fetchTx = useCallback(async () => {
     setIsLoading(true)
     try {
-      const r = await transactionsService.listTransactions()
+      const r = await transactionsService.listTransactions({ page, limit })
       setItems(r.transactions || [])
+      setTotal(r.total ?? (r.transactions?.length ?? 0))
+      setTotalPages(r.total_pages ?? 1)
+      setTotalSpentCredits(r.total_spent_credits ?? 0)
     } catch (e) {
       console.error('Failed to load transactions', e)
       setError('Failed to load transactions')
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [page, limit])
   const getTxStatus = (t: Transaction) => {
     const s = (t as unknown as Record<string, unknown>)['status'] as string | undefined
     const et = (t.event_type || '').toString().toLowerCase()
@@ -153,8 +163,43 @@ export default function Credits() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Transaction History</h1>
 
-        <div className="mb-4 flex items-center gap-4">
-          <div>Balance: <span className="font-semibold">{user?.credits ?? 0} credits</span></div>
+        <div className="mb-4 flex items-center gap-6">
+          {/* Credits breakdown: subscription, purchased, and spent */}
+          {(() => {
+            const subscriptionCredits = user?.subscription_credits ?? 0
+            const purchasedCredits = user?.credits ?? 0
+            const total = subscriptionCredits + purchasedCredits
+            const subscriptionUsd = (subscriptionCredits / 10)
+            const purchasedUsd = (purchasedCredits / 10)
+            // compute total spent credits from transactions (negative credit events)
+            const spentCredits = items.reduce((acc, t) => {
+              const c = typeof t.credits === 'number' ? t.credits : Number(t.credits || 0)
+              return acc + (c < 0 ? -c : 0)
+            }, 0)
+            const spentUsd = spentCredits / 10
+
+            return (
+              <div className="flex items-center gap-6">
+                <div className="bg-white p-3 rounded shadow text-sm">
+                  <div className="text-gray-600">Subscription Credits</div>
+                  <div className="font-semibold text-lg">{subscriptionCredits} credits</div>
+                  <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)} USD equivalent</div>
+                </div>
+
+                <div className="bg-white p-3 rounded shadow text-sm">
+                  <div className="text-gray-600">Purchased Credits</div>
+                  <div className="font-semibold text-lg">{purchasedCredits} credits</div>
+                  <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)} USD equivalent</div>
+                </div>
+
+                <div className="bg-white p-3 rounded shadow text-sm">
+                  <div className="text-gray-600">Total Spent</div>
+                  <div className="font-semibold text-lg">{spentCredits} credits</div>
+                  <div className="text-xs text-gray-500">${spentUsd.toFixed(2)} USD spent</div>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </div>
       <EnterCreditsModal
@@ -195,7 +240,7 @@ export default function Credits() {
             <input type="date" value={dateTo ?? ''} onChange={(e) => setDateTo(e.target.value || null)} className="w-full border px-2 py-1 rounded" />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Status</label>
+            <label className="block text-sm font-medium mb-1">Status</label>
             {Object.keys(statusFilter).map((k) => (
               <div key={k} className="flex items-center gap-2 mb-1">
                 <input type="checkbox" checked={statusFilter[k]} onChange={() => setStatusFilter((s) => ({ ...s, [k]: !s[k] }))} />
@@ -204,7 +249,7 @@ export default function Credits() {
             ))}
           </div>
           <div>
-            <button className="w-full bg-gray-100 px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true }) }}>Clear</button>
+            <button className="w-full bg-gray-100 px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }}>Clear</button>
           </div>
 
           {/* Progress bar for loading transactions */}
@@ -228,8 +273,20 @@ export default function Credits() {
 
         {/* List area */}
         <div className="flex-1 flex flex-col">
-          <div className="mb-2">
-            <div className="text-sm text-gray-600">Showing {filtered.length} of {items.length} transactions</div>
+          <div className="mb-2 flex items-center justify-between">
+            <div className="text-sm text-gray-600">Showing {filtered.length} of {total ?? items.length} transactions</div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-600">Per page</label>
+              <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1">
+                {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
+              </select>
+              <div className="text-sm text-gray-600">Page</div>
+              <div className="inline-flex items-center gap-2">
+                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded">Prev</button>
+                <div className="px-2 py-1">{page} / {totalPages}</div>
+                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded">Next</button>
+              </div>
+            </div>
           </div>
 
           <div className="flex-1 overflow-auto space-y-4">

@@ -86,9 +86,15 @@ class PolicyService {
     }
   }
   
-  async saveReport(filename: string, documentName?: string): Promise<{ filename: string; download_url: string }> {
+  async saveReport(
+    filename: string,
+    documentName?: string,
+    options?: { is_quick?: boolean }
+  ): Promise<{ filename: string; download_url: string }> {
     try {
-      return apiService.post<{ filename: string; download_url: string }>('/api/v1/reports/save', { filename, document_name: documentName })
+  const payload: Record<string, unknown> = { filename, document_name: documentName }
+      if (options?.is_quick) payload.is_quick = true
+      return apiService.post<{ filename: string; download_url: string }>('/api/v1/reports/save', payload)
     } catch (e) {
       console.warn('saveReport failed', e)
       throw e
@@ -127,9 +133,23 @@ class PolicyService {
     return analysisType === 'basic' ? 'fast' : 'balanced'
   }
   // List user reports from backend
-  async getUserReports(): Promise<import('@/types/api').ReportMetadata[]> {
+  async getUserReports(opts?: { page?: number; limit?: number }): Promise<{
+    reports?: import('@/types/api').ReportMetadata[]
+    total?: number
+    total_pages?: number
+    page?: number
+    limit?: number
+  }> {
     // Backend route is mounted at /api/v1 and defines GET /user-reports
-    return apiService.get<import('@/types/api').ReportMetadata[]>('/api/v1/user-reports')
+    let url = '/api/v1/user-reports'
+    if (opts?.page && opts?.limit) url += `?page=${opts.page}&limit=${opts.limit}`
+    return apiService.get<{
+      reports?: import('@/types/api').ReportMetadata[]
+      total?: number
+      total_pages?: number
+      page?: number
+      limit?: number
+    }>(url)
   }
 
   async getUserReportsCount(): Promise<number> {
@@ -155,6 +175,24 @@ class PolicyService {
       window.open(url, '_blank')
     } catch (e) {
       console.error('Failed to open report', e)
+      throw e
+    }
+  }
+
+  async deleteReport(filename: string): Promise<{ deleted: boolean; deleted_from_gcs?: boolean }> {
+    try {
+      return apiService.delete<{ deleted: boolean; deleted_from_gcs?: boolean }>(`/api/v1/reports/${encodeURIComponent(filename)}`)
+    } catch (e) {
+      console.warn('deleteReport failed', e)
+      throw e
+    }
+  }
+
+  async bulkDeleteReports(filenames: string[]): Promise<{ results: Array<{ filename: string; deleted: boolean; deleted_from_gcs?: boolean; reason?: string }> }> {
+    try {
+      return apiService.post<{ results: Array<{ filename: string; deleted: boolean; deleted_from_gcs?: boolean; reason?: string }> }>('/api/v1/reports/bulk-delete', { filenames })
+    } catch (e) {
+      console.warn('bulkDeleteReports failed', e)
       throw e
     }
   }
