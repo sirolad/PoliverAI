@@ -401,7 +401,7 @@ export default function Reports() {
                     <div className="text-sm text-gray-500">Size: {(r.file_size / 1024).toFixed(1)} KB</div>
                   ) : null}
                   {/* Rating: map score (0-100) to 0-5 stars and display percent beside verdict badges */}
-                  <div className="ml-2 mr-2 flex items-center gap-2">
+                  <div className="mt-2 ml-2 mr-2 flex items-center gap-2">
                     {(() => {
                       const score = typeof r.score === 'number' ? Math.max(0, Math.min(100, r.score)) : undefined
                       if (score == null) return null
