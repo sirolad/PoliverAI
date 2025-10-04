@@ -81,7 +81,7 @@ export default function Credits() {
     const et = (t.event_type || '').toString().toLowerCase()
     const desc = (t.description || '').toString().toLowerCase()
     if (s === 'pending' || et.includes('pending')) return 'pending'
-    if (s === 'completed' || et.includes('completed') || (t.credits && t.credits > 0)) return 'success'
+  if (s === 'completed' || et.includes('completed') || (typeof t.credits === 'number' && t.credits !== 0)) return 'success'
     if (et.includes('failed') || desc.includes('failed') || desc.includes('declined') || desc.includes('payment_failed')) return 'failed'
     if (desc.includes('insufficient') || desc.includes('insufficient_funds') || desc.includes('insufficient_fund')) return 'insufficient_funds'
     if (et.includes('processing') || desc.includes('processing')) return 'processing'

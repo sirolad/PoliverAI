@@ -73,6 +73,12 @@ export default function Reports() {
     fetchReports()
   }, [fetchReports])
 
+  useEffect(() => {
+    const h = () => { fetchReports().catch((e) => console.warn('reports refresh failed', e)) }
+    window.addEventListener('reports:refresh', h)
+    return () => window.removeEventListener('reports:refresh', h)
+  }, [fetchReports])
+
   // fetch verdict options once on mount
   useEffect(() => {
     let mounted = true
