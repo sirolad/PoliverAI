@@ -22,3 +22,4 @@ beautifulsoup4==4.12.3
 pdfplumber>=0.11
 reportlab==4.2.0
 google-cloud-storage==2.11.0
+pymongo>=4.0

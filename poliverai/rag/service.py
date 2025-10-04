@@ -309,7 +309,21 @@ def _gcs_download_persist(bucket_name: str, object_name: str | None, dest_dir: s
     if not object_name:
         raise ValueError("object_name is required to download persist")
 
-    client = storage.Client()
+    # Initialize GCS client, prefer explicit service-account JSON if provided
+    creds_path = os.getenv("POLIVERAI_GCS_CREDENTIALS_JSON")
+    if creds_path:
+        abs_path = creds_path if os.path.isabs(creds_path) else os.path.abspath(creds_path)
+        if os.path.exists(abs_path):
+            try:
+                client = storage.Client.from_service_account_json(abs_path)
+            except Exception as e:
+                logger.warning("Failed to init GCS client from %s: %s", abs_path, e)
+                client = storage.Client()
+        else:
+            logger.warning("POLIVERAI_GCS_CREDENTIALS_JSON set to %s but file not found; using default client", abs_path)
+            client = storage.Client()
+    else:
+        client = storage.Client()
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(object_name)
     if not blob.exists():
@@ -343,7 +357,21 @@ def _gcs_upload_persist(bucket_name: str, object_name: str | None, src_dir: str)
     if not os.path.exists(src_dir):
         raise ValueError("src_dir does not exist: %s" % src_dir)
 
-    client = storage.Client()
+    # Initialize GCS client, prefer explicit service-account JSON if provided
+    creds_path = os.getenv("POLIVERAI_GCS_CREDENTIALS_JSON")
+    if creds_path:
+        abs_path = creds_path if os.path.isabs(creds_path) else os.path.abspath(creds_path)
+        if os.path.exists(abs_path):
+            try:
+                client = storage.Client.from_service_account_json(abs_path)
+            except Exception as e:
+                logger.warning("Failed to init GCS client from %s: %s", abs_path, e)
+                client = storage.Client()
+        else:
+            logger.warning("POLIVERAI_GCS_CREDENTIALS_JSON set to %s but file not found; using default client", abs_path)
+            client = storage.Client()
+    else:
+        client = storage.Client()
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(object_name)
 
@@ -399,9 +427,35 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
         try:
             from sentence_transformers import SentenceTransformer
         except Exception as e:  # pragma: no cover - optional dependency
-            raise RuntimeError(
-                "sentence-transformers is not installed. Install with `pip install sentence-transformers`"
-            ) from e
+            # If sentence-transformers isn't installed, try to fall back to OpenAI
+            # embeddings if an API key is configured. This prevents a hard failure
+            # in streaming/ingest when local embeddings aren't available.
+            logger.warning(
+                "sentence-transformers not available: %s. Falling back to OpenAI embeddings if configured.",
+                str(e),
+            )
+            s = get_settings()
+            if s.openai_api_key:
+                # Use OpenAI embeddings for the processed texts
+                init = _init()
+                # If the configured embedding model points to a sentence-transformers path,
+                # replace it with a valid OpenAI embedding model for the fallback case.
+                model_to_use = s.openai_embedding_model
+                if isinstance(model_to_use, str) and model_to_use.startswith("sentence-transformers/"):
+                    logger.warning(
+                        "Configured POLIVERAI_OPENAI_EMBEDDING_MODEL appears to reference a local sentence-transformers model (%s). Using default OpenAI embedding 'text-embedding-3-small' as fallback.",
+                        model_to_use,
+                    )
+                    model_to_use = "text-embedding-3-small"
+                try:
+                    resp = init.client.embeddings.create(model=model_to_use, input=processed)
+                    return [d.embedding for d in resp.data]
+                except Exception as oe:
+                    raise RuntimeError("Failed to compute OpenAI embeddings as fallback: %s" % oe) from oe
+            else:
+                raise RuntimeError(
+                    "sentence-transformers is not installed and OpenAI API key is not configured. Install sentence-transformers or set POLIVERAI_OPENAI_API_KEY."
+                ) from e
 
         # Simple cache to avoid reloading the model repeatedly
         if not hasattr(_embed_texts, "_local_cache"):

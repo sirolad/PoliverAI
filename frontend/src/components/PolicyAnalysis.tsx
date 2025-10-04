@@ -390,7 +390,7 @@ export default function PolicyAnalysis() {
                           }}
                           className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
                         >
-                          Generate
+                          Full Report
                         </button>
 
                         <button

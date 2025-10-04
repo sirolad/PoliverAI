@@ -36,7 +36,42 @@ def upload_report_if_changed(bucket_name: str, object_path: str, local_path: str
             object_path,
         )
         return False, None
-    client = storage.Client()
+    # Try to initialize the client using an explicit service account JSON if configured.
+    creds_path = os.getenv("POLIVERAI_GCS_CREDENTIALS_JSON")
+    client = None
+    if creds_path:
+        # If a relative path is provided in env, make it relative to project root
+        abs_path = creds_path if os.path.isabs(creds_path) else os.path.abspath(creds_path)
+        if os.path.exists(abs_path):
+            try:
+                client = storage.Client.from_service_account_json(abs_path)
+            except Exception as e:
+                logger.warning(
+                    "Failed to initialize GCS client from service account json %s for gs://%s/%s: %s",
+                    abs_path,
+                    bucket_name,
+                    object_path,
+                    str(e),
+                )
+                client = None
+        else:
+            logger.warning(
+                "POLIVERAI_GCS_CREDENTIALS_JSON is set to %s but file does not exist; falling back to default credentials",
+                abs_path,
+            )
+
+    if client is None:
+        try:
+            client = storage.Client()
+        except Exception as e:
+            # Likely no application default credentials or other auth issue; log and no-op
+            logger.warning(
+                "Failed to initialize Google Cloud Storage client for gs://%s/%s: %s",
+                bucket_name,
+                object_path,
+                str(e),
+            )
+            return False, None
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(object_path)
 

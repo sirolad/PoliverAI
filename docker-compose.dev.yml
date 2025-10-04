@@ -11,11 +11,27 @@ services:
       - ./.env
     environment:
       - PYTHONPATH=src
+      # Connect to local Mongo service started below
+      - MONGO_URI=mongodb://mongo:27017/poliverai
+      # Ensure Google ADC and our code use the mounted key.json absolute path
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/key.json
+      - POLIVERAI_GCS_CREDENTIALS_JSON=/app/key.json
+      # Default user id used when no authenticated user is present (dev only)
+      - POLIVERAI_DEFAULT_USER_ID=d8faff07-97cb-42c6-aa42-cc002ba4584f
     ports:
       - "8000:8000"
     command: ["/opt/venv/bin/python", "-m", "uvicorn", "poliverai.app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000", "--app-dir", "/app/src"]
     volumes:
       - ./:/app
+
+  mongo:
+    image: mongo:6.0
+    container_name: poliverai-mongo
+    restart: unless-stopped
+    volumes:
+      - poliverai-mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=poliverai
 
   frontend_dev:
     image: node:20-alpine
@@ -46,3 +62,6 @@ services:
       - backend
 
 # Usage: docker compose -f docker-compose.dev.yml up --build
+
+volumes:
+  poliverai-mongo-data:
