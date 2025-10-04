@@ -35,6 +35,7 @@ class UserDatabase:
             email=email,
             tier=UserTier.FREE,
             credits=0,
+            subscription_credits=0,
             created_at=datetime.utcnow(),
             is_active=True,
             hashed_password=hashed_password,
@@ -50,6 +51,7 @@ class UserDatabase:
             email=email,
             tier=UserTier.FREE,
             credits=0,
+            subscription_credits=0,
             created_at=user_in_db.created_at,
             is_active=True,
         )
@@ -108,6 +110,7 @@ class UserDatabase:
             email=user.email,
             tier=user.tier,
             credits=user.credits,
+            subscription_credits=getattr(user, 'subscription_credits', 0),
             subscription_expires=user.subscription_expires,
             created_at=user.created_at,
             is_active=user.is_active,
@@ -179,6 +182,31 @@ class UserDatabase:
                     transactions.add(tx)
             except Exception:
                 pass
+            return True
+        return False
+
+    def update_user_subscription_credits(self, user_id: str, delta: int) -> bool:
+        """Adjust subscription_credits for in-memory users."""
+        if user_id in self.users:
+            try:
+                prev = int(getattr(self.users[user_id], 'subscription_credits', 0) or 0)
+                new_val = int(prev) + int(delta)
+            except Exception:
+                logger.exception('Invalid delta provided to update_user_subscription_credits: %s', delta)
+                return False
+            try:
+                self.users[user_id].subscription_credits = new_val
+                if transactions is not None:
+                    tx = {
+                        'user_email': self.users[user_id].email,
+                        'event_type': 'subscription_credit_change',
+                        'amount_usd': None,
+                        'credits': int(delta),
+                        'description': f'Subscription credits adjusted by {delta}',
+                    }
+                    transactions.add(tx)
+            except Exception:
+                logger.exception('Failed to add subscription credit tx for %s', user_id)
             return True
         return False
 

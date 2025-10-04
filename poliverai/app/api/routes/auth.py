@@ -1,6 +1,6 @@
 """Authentication API routes."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from ....core.auth import create_access_token, credentials_exception, verify_token
@@ -20,15 +20,44 @@ BEARER_TOKEN_TYPE = "bearer"  # noqa: S105
 SECURITY_DEPENDENCY = Depends(security)
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = SECURITY_DEPENDENCY) -> User:
+async def get_current_user(request: Request, credentials: HTTPAuthorizationCredentials = SECURITY_DEPENDENCY) -> User:
     """Get current user from JWT token."""
     token = credentials.credentials
+    # Optional, opt-in header diagnostics to help debug missing/malformed auth during redirects.
+    try:
+        if os.getenv('DEBUG_REQUEST_HEADERS') == '1':
+            # Build a safe, masked header dict for logging (don't print full auth tokens/cookies)
+            hdrs = {}
+            for k, v in request.headers.items():
+                lk = k.lower()
+                if lk == 'authorization':
+                    # mask most of the token but keep prefix
+                    try:
+                        parts = v.split(' ')
+                        if len(parts) == 2:
+                            hdrs[k] = parts[0] + ' ' + (parts[1][:8] + '...')
+                        else:
+                            hdrs[k] = '***'
+                    except Exception:
+                        hdrs[k] = '***'
+                elif lk in ('cookie', 'set-cookie'):
+                    hdrs[k] = '***'
+                else:
+                    hdrs[k] = v
+            logger.info('Request headers (masked) for get_current_user: %s', hdrs)
+    except Exception:
+        logger.exception('Failed to emit request header diagnostics in get_current_user')
     email = verify_token(token)
 
     if email is None:
         raise credentials_exception
 
     user_in_db = user_db.get_user_by_email(email)
+    # Diagnostic: log whether the token maps to a known user (helps debug 403s)
+    try:
+        logger.info('get_current_user token_sub=%s user_found=%s', email, bool(user_in_db))
+    except Exception:
+        logger.exception('Failed to log get_current_user diagnostic info')
     if user_in_db is None:
         raise credentials_exception
 
@@ -39,6 +68,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = SECURITY_
         email=user_in_db.email,
         tier=user_in_db.tier,
         credits=user_in_db.credits,
+        subscription_credits=getattr(user_in_db, 'subscription_credits', 0),
         subscription_expires=user_in_db.subscription_expires,
         created_at=user_in_db.created_at,
         is_active=user_in_db.is_active,
@@ -173,6 +203,7 @@ async def upgrade_to_pro(current_user: User = CURRENT_USER_DEPENDENCY, credits: 
             email=updated_user.email,
             tier=updated_user.tier,
             credits=updated_user.credits,
+            subscription_credits=getattr(updated_user, 'subscription_credits', 0),
             subscription_expires=updated_user.subscription_expires,
             created_at=updated_user.created_at,
             is_active=updated_user.is_active,

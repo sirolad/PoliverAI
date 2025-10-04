@@ -5,7 +5,7 @@ import useAuth from '@/contexts/useAuth'
 import { User, LogOut } from 'lucide-react'
 import PaymentsService from '@/services/payments'
 import { useState } from 'react'
-import PaymentResultModal from './ui/paymentResultModal'
+import PaymentResultModal from './ui/PaymentResultModal'
 import EnterCreditsModal from './ui/EnterCreditsModal'
 
 export function Navbar() {
@@ -204,8 +204,19 @@ export function Navbar() {
                 Buy Credits
               </Button>
 
-              {/* Display credits */}
-              <div className="text-sm px-2 py-1 rounded bg-gray-100">Credits: {user?.credits ?? 0}</div>
+              {/* Display total credits with breakdown tooltip */}
+              {(() => {
+                const subscriptionCredits = (user?.subscription_credits ?? 0)
+                const purchasedCredits = (user?.credits ?? 0)
+                const total = subscriptionCredits + purchasedCredits
+                const title = `Total: ${total} (Subscription: ${subscriptionCredits}, Purchased: ${purchasedCredits})`
+                return (
+                  <div title={title} className="text-sm px-2 py-1 rounded bg-gray-100">
+                    Credits: {total}
+                    <div className="text-xs text-gray-500">{subscriptionCredits > 0 ? `(${subscriptionCredits} sub)` : ''}</div>
+                  </div>
+                )
+              })()}
 
               {/* Logout button */}
               <Button

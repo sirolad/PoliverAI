@@ -1,3 +1,4 @@
+import React from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import useAuth from '@/contexts/useAuth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -15,9 +16,29 @@ import {
 import PaymentsService from '@/services/payments'
 
 export function Dashboard() {
-  const { user, isAuthenticated, isPro, loading } = useAuth()
-  const hasCredits = (user?.credits ?? 0) > 0
+  const { user, isAuthenticated, isPro, loading, refreshUser } = useAuth()
+  const subscriptionCredits = (user?.subscription_credits ?? 0)
+  const purchasedCredits = (user?.credits ?? 0)
+  const effectiveCredits = subscriptionCredits + purchasedCredits
+  const hasCredits = effectiveCredits > 0
   const navigate = useNavigate()
+
+  // Refresh user when payment/transaction events occur elsewhere in the app
+  React.useEffect(() => {
+    const handler = () => {
+      try {
+        refreshUser().catch((e) => console.warn('Failed to refresh user from Dashboard event', e))
+      } catch (e) {
+        console.warn('Failed to call refreshUser', e)
+      }
+    }
+    window.addEventListener('payment:refresh-user', handler)
+    window.addEventListener('transactions:refresh', handler)
+    return () => {
+      window.removeEventListener('payment:refresh-user', handler)
+      window.removeEventListener('transactions:refresh', handler)
+    }
+  }, [refreshUser])
 
   if (loading) {
     return (
@@ -138,6 +159,9 @@ export function Dashboard() {
                     Upgrade to Pro
                   </Button>
                 )}
+                <Button size="sm" variant="outline" onClick={() => refreshUser()}>
+                  Refresh
+                </Button>
               </div>
             </div>
           </CardHeader>
@@ -169,6 +193,28 @@ export function Dashboard() {
               </div>
             </CardContent>
           )}
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm text-gray-600">Subscription credits</div>
+                <div className="text-xl font-semibold">{subscriptionCredits}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">Purchased credits</div>
+                <div className="text-xl font-semibold">{purchasedCredits}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">Total available</div>
+                <div className="text-xl font-semibold">{effectiveCredits}</div>
+              </div>
+            </div>
+            {user?.subscription_expires && (
+              <div className="mt-2 text-sm text-gray-500">Subscription expires: {new Date(user.subscription_expires).toLocaleDateString()}</div>
+            )}
+            <div className="mt-3 text-sm text-gray-600">
+              <strong>How credits are used:</strong> Subscription credits are consumed first and each subscription credit covers {"~1.5"}x of a regular credit (discounted). If subscription credits run out, the system falls back to purchased credits which are charged at a slightly higher rate (penalty ~1.25x).
+            </div>
+          </CardContent>
         </Card>
 
         {/* Quick Actions */}

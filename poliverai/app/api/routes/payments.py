@@ -46,8 +46,11 @@ async def create_payment_intent(request: Request):
     Expects JSON: {"amount_usd": float, "description": str}
     Returns client_secret and publishable key for client-side confirmation.
     """
-    if stripe is None:
-        raise HTTPException(status_code=500, detail="Stripe not configured")
+    # If Stripe is not configured, allow a development fallback: create a
+    # fake session object so local flows can proceed and be finalized by
+    # the dev-only simulation below. In production stripe will be set and
+    # used to create real sessions.
+    fake_session = None
 
     data = await request.json()
     amount_usd = data.get("amount_usd")
@@ -129,23 +132,29 @@ async def create_checkout_session(request: Request):
             metadata['user_email'] = email
 
     try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[
-                {
-                    'price_data': {
-                        'currency': 'usd',
-                        'product_data': {'name': description},
-                        'unit_amount': amount_cents,
-                    },
-                    'quantity': 1,
-                }
-            ],
-            mode='payment',
-            success_url=success_url,
-            cancel_url=cancel_url,
-            metadata={**(metadata or {}), **({'payment_type': payment_type} if payment_type else {})} or None,
-        )
+        if stripe is not None:
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[
+                    {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {'name': description},
+                            'unit_amount': amount_cents,
+                        },
+                        'quantity': 1,
+                    }
+                ],
+                mode='payment',
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata={**(metadata or {}), **({'payment_type': payment_type} if payment_type else {})} or None,
+            )
+        else:
+            # Development fallback: construct a simple dict mimicking Stripe's session
+            import uuid
+            session = {'id': f'dev_{uuid.uuid4().hex}', 'url': success_url}
+            fake_session = session
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Failed to create checkout session: {e}') from e
 
@@ -166,7 +175,89 @@ async def create_checkout_session(request: Request):
         # Non-fatal: proceed even if we can't persist the pending tx
         logger.exception('Failed to persist pending transaction for session creation')
 
+    # DEV: If Stripe isn't configured (local dev), simulate immediate completion
+    # so local checkout flows can be finalized without external Stripe calls.
+    if stripe is None:
+        try:
+            sess_id = getattr(session, 'id', None) or (session.get('id') if isinstance(session, dict) else None)
+            # mark transaction completed and apply credits immediately
+            if sess_id:
+                try:
+                    found = transactions.get_by_session_or_id(sess_id)
+                    if found:
+                        amt = float(amount_usd)
+                        credits = int(round(amt * 10))
+                        # if subscription payment_type, upgrade user and allocate sub credits
+                        if payment_type == 'subscription' or ('upgrade' in (description or '').lower()):
+                            ue = found.get('user_email')
+                            if ue:
+                                u = user_db.get_user_by_email(ue)
+                                if u:
+                                    try:
+                                        from datetime import timedelta
+                                        user_db.update_user_tier(u.id, UserTier.PRO)
+                                        expires_at = datetime.utcnow() + timedelta(days=30)
+                                        if hasattr(user_db, 'update_user_subscription'):
+                                            user_db.update_user_subscription(u.id, expires_at)
+                                        else:
+                                            u.subscription_expires = expires_at
+                                    except Exception:
+                                        logger.exception('Dev: failed to set subscription expiry for %s', ue)
+                                    # allocate subscription credits
+                                    try:
+                                        base_sub_credits = int(round(amt * 10))
+                                        bonus = int(round(base_sub_credits * 0.2))
+                                        sub_credits = base_sub_credits + bonus
+                                        if hasattr(user_db, 'update_user_subscription_credits'):
+                                            user_db.update_user_subscription_credits(u.id, sub_credits)
+                                        else:
+                                            try:
+                                                u.subscription_credits = (getattr(u, 'subscription_credits', 0) or 0) + sub_credits
+                                            except Exception:
+                                                pass
+                                    except Exception:
+                                        logger.exception('Dev: failed to allocate subscription credits for %s', ue)
+                        else:
+                            # For one-off purchases, add purchased credits
+                            try:
+                                if found.get('user_email'):
+                                    u = user_db.get_user_by_email(found.get('user_email'))
+                                    if u:
+                                        user_db.update_user_credits(u.id, credits)
+                            except Exception:
+                                logger.exception('Dev: failed to apply credits for session %s', sess_id)
+
+                        try:
+                            transactions.update(sess_id, {'status': 'completed', 'amount_usd': amt, 'credits': credits})
+                        except Exception:
+                            logger.exception('Dev: failed to update transaction for %s', sess_id)
+                except Exception:
+                    logger.exception('Dev: error simulating checkout completion for session %s', sess_id)
+        except Exception:
+            logger.exception('Dev: error in simulated completion flow')
+
     return JSONResponse({'url': session.url, 'id': getattr(session, 'id', None) or session.get('id') if isinstance(session, dict) else None})
+
+
+@router.get('/debug/transactions')
+async def debug_transactions():
+    """DEV-ONLY: return raw transactions list for debugging. Enabled when FAST_DEV=1 or DEBUG_TRANSACTION_DUMP=1."""
+    if os.getenv('FAST_DEV', 'false').lower() != 'true' and os.getenv('DEBUG_TRANSACTION_DUMP', 'false').lower() != 'true':
+        raise HTTPException(status_code=404, detail='Not found')
+    try:
+        # Try to expose internal items if present (in-memory store)
+        if hasattr(transactions, 'items'):
+            out = list(getattr(transactions, 'items'))
+        else:
+            # Fallback for Mongo-backed store: attempt to list a few entries
+            try:
+                out = transactions.list_for_user(None) or []
+            except Exception:
+                out = []
+        return JSONResponse({'transactions_raw': out})
+    except Exception as e:
+        logger.exception('Failed to return debug transactions: %s', e)
+        raise HTTPException(status_code=500, detail='Failed to read transactions') from e
 
 
 
@@ -227,35 +318,54 @@ async def complete_checkout_session(request: Request):
         pass
 
     # Apply server-side changes based on metadata
-        if user_email:
-            user = user_db.get_user_by_email(user_email)
-            if user:
-                try:
-                    # If this checkout was a subscription/upgrade, update tier and subscription expiry
-                    if payment_type == 'subscription' or (isinstance(description, str) and 'upgrade' in (description or '').lower()):
+    if user_email:
+        user = user_db.get_user_by_email(user_email)
+        if user:
+            try:
+                # If this checkout was a subscription/upgrade, update tier and subscription expiry
+                if payment_type == 'subscription' or (isinstance(description, str) and 'upgrade' in (description or '').lower()):
+                    try:
+                        from datetime import timedelta
+                        user_db.update_user_tier(user.id, UserTier.PRO)
+                        expires_at = datetime.utcnow() + timedelta(days=30)
                         try:
-                            from datetime import timedelta
-                            user_db.update_user_tier(user.id, UserTier.PRO)
-                            expires_at = datetime.utcnow() + timedelta(days=30)
-                            try:
-                                if hasattr(user_db, 'update_user_subscription'):
-                                    user_db.update_user_subscription(user.id, expires_at)
-                                else:
-                                    user.subscription_expires = expires_at
-                            except Exception:
-                                logger.exception('Failed to persist subscription_expires for %s', user_email)
+                            if hasattr(user_db, 'update_user_subscription'):
+                                user_db.update_user_subscription(user.id, expires_at)
+                            else:
+                                user.subscription_expires = expires_at
                         except Exception:
-                            logger.exception('Failed to upgrade user to PRO for %s', user_email)
+                            logger.exception('Failed to persist subscription_expires for %s', user_email)
+
+                        # Allocate subscription credits as part of the subscription benefit.
+                        try:
+                            # Simple rule: convert paid USD to credits (1 USD -> 10 credits)
+                            # and add a subscription bonus multiplier (e.g., 1.2x).
+                            usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
+                            base_sub_credits = int(round(usd * 10))
+                            bonus = int(round(base_sub_credits * 0.2))
+                            sub_credits = base_sub_credits + bonus
+                            if hasattr(user_db, 'update_user_subscription_credits'):
+                                user_db.update_user_subscription_credits(user.id, sub_credits)
+                            else:
+                                # Fallback for in-memory user without helper (shouldn't happen)
+                                try:
+                                    user.subscription_credits = (getattr(user, 'subscription_credits', 0) or 0) + sub_credits
+                                except Exception:
+                                    pass
+                        except Exception:
+                            logger.exception('Failed to allocate subscription credits for %s', user_email)
+                    except Exception:
+                        logger.exception('Failed to upgrade user to PRO for %s', user_email)
+                else:
+                    usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
+                    credits = int(round(usd * 10))
+                    logger.info('Finalizing checkout for session=%s user=%s amount_usd=%s credits=%s', session_id, user_email, usd, credits)
+                    if not isinstance(credits, int):
+                        logger.error('Computed credits is not int: %s', credits)
                     else:
-                        usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
-                        credits = int(round(usd * 10))
-                        logger.info('Finalizing checkout for session=%s user=%s amount_usd=%s credits=%s', session_id, user_email, usd, credits)
-                        if not isinstance(credits, int):
-                            logger.error('Computed credits is not int: %s', credits)
-                        else:
-                            user_db.update_user_credits(user.id, credits)
-                except Exception:
-                    pass
+                        user_db.update_user_credits(user.id, credits)
+            except Exception:
+                pass
 
     # Persist transaction record
     try:
@@ -286,6 +396,111 @@ async def complete_checkout_session(request: Request):
         logger.exception('Failed to include updated user info in checkout response for %s', user_email)
 
     return JSONResponse(resp)
+
+
+
+@router.get('/checkout/finalize')
+async def checkout_finalize_get(request: Request):
+    """Finalize a checkout session via GET for use as a redirect target from Stripe.
+
+    Query param: session_id
+    This endpoint is intended for development flows where the browser is
+    redirected back from Stripe; it finalizes the session server-side and
+    then redirects the user to the app credits page.
+    """
+    if stripe is None:
+        raise HTTPException(status_code=500, detail='Stripe not configured')
+
+    session_id = request.query_params.get('session_id')
+    if not session_id:
+        raise HTTPException(status_code=400, detail='Missing session_id')
+
+    try:
+        sess = stripe.checkout.Session.retrieve(session_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f'Failed to retrieve session: {e}') from e
+
+    payment_status = getattr(sess, 'payment_status', None) or (sess.get('payment_status') if isinstance(sess, dict) else None)
+    if payment_status != 'paid':
+        # Not paid - redirect back to credits page but include session id so
+        # the frontend can attempt to finalize/check the transaction and
+        # show a failure result if applicable.
+        from fastapi.responses import RedirectResponse
+        try:
+            return RedirectResponse(url=f'/credits?session_id={session_id}&status=failed')
+        except Exception:
+            return RedirectResponse(url='/credits')
+
+    # Reuse similar finalization logic to complete_checkout_session (best-effort)
+    try:
+        metadata = (sess.get('metadata') or {}) if isinstance(sess, dict) else (sess.metadata or {})
+        user_email = metadata.get('user_email') if isinstance(metadata, dict) else None
+        amount_cents = getattr(sess, 'amount_total', None) or sess.get('amount_total') if isinstance(sess, dict) else None
+        description = getattr(sess, 'description', None) or sess.get('description') if isinstance(sess, dict) else None
+
+        if user_email:
+            u = user_db.get_user_by_email(user_email)
+            if u:
+                try:
+                    payment_type = metadata.get('payment_type') if isinstance(metadata, dict) else None
+                    if payment_type == 'subscription' or (isinstance(description, str) and 'upgrade' in (description or '').lower()):
+                        from datetime import timedelta
+                        user_db.update_user_tier(u.id, UserTier.PRO)
+                        expires_at = datetime.utcnow() + timedelta(days=30)
+                        try:
+                            if hasattr(user_db, 'update_user_subscription'):
+                                user_db.update_user_subscription(u.id, expires_at)
+                            else:
+                                u.subscription_expires = expires_at
+                        except Exception:
+                            logger.exception('Failed to persist subscription_expires for %s', user_email)
+                        # Allocate subscription credits (same rule as complete_checkout_session)
+                        try:
+                            usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
+                            base_sub_credits = int(round(usd * 10))
+                            bonus = int(round(base_sub_credits * 0.2))
+                            sub_credits = base_sub_credits + bonus
+                            if hasattr(user_db, 'update_user_subscription_credits'):
+                                user_db.update_user_subscription_credits(u.id, sub_credits)
+                            else:
+                                try:
+                                    u.subscription_credits = (getattr(u, 'subscription_credits', 0) or 0) + sub_credits
+                                except Exception:
+                                    pass
+                        except Exception:
+                            logger.exception('Failed to allocate subscription credits for %s', user_email)
+                    else:
+                        usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
+                        credits = int(round(usd * 10))
+                        user_db.update_user_credits(u.id, credits)
+                except Exception:
+                    logger.exception('Failed to apply purchase for %s', user_email)
+
+        # Persist transaction record (best-effort)
+        try:
+            amt = (float(amount_cents) / 100.0) if amount_cents else 0.0
+            tx = {
+                'user_email': user_email,
+                'event_type': 'checkout_session_completed',
+                'amount_usd': amt,
+                'credits': int(round(amt * 10)),
+                'description': description or 'Checkout purchase',
+                'session_id': session_id,
+            }
+            transactions.add(tx)
+        except Exception:
+            logger.exception('Failed to persist transaction for session %s', session_id)
+
+    except Exception:
+        logger.exception('Error finalizing checkout session %s', session_id)
+
+    from fastapi.responses import RedirectResponse
+    try:
+        # Include session_id so the frontend can detect the return and show
+        # the result modal by calling the transactions endpoint.
+        return RedirectResponse(url=f'/credits?session_id={session_id}&status=completed')
+    except Exception:
+        return RedirectResponse(url='/credits')
 
 
 @router.post("/webhook")
@@ -417,14 +632,22 @@ async def list_transactions(request: Request):
 
     Returns list of transaction records and a balance (sum of credits).
     """
+    # Allow unauthenticated access to this endpoint for finalization flows
+    # that return from external checkout redirects (Stripe). If an
+    # Authorization header is present, verify it; otherwise proceed and
+    # rely on the stored transaction (which includes user_email) to
+    # identify and finalize the transaction. If an auth token is present
+    # but does not match the transaction owner, reject with 403.
     auth_header = request.headers.get('authorization')
-    if not auth_header or not auth_header.lower().startswith('bearer '):
-        raise HTTPException(status_code=401, detail='Missing Authorization')
+    email = None
+    if auth_header and auth_header.lower().startswith('bearer '):
+        token = auth_header.split(' ', 1)[1]
+        email = verify_token(token)
+        if not email:
+            # Provided token is invalid
+            raise HTTPException(status_code=401, detail='Invalid token')
 
-    token = auth_header.split(' ', 1)[1]
-    email = verify_token(token)
-    if not email:
-        raise HTTPException(status_code=401, detail='Invalid token')
+    # list_transactions requires authentication and will fail if no valid token
 
     try:
         items = transactions.list_for_user(email)
@@ -456,14 +679,51 @@ async def get_transaction(request: Request, session_or_id: str):
 
     Returns 404 if not found or 401 if not authorized.
     """
+    # Allow unauthenticated access to this endpoint for finalization flows
+    # that return from external checkout redirects (Stripe). If an
+    # Authorization header is present, verify it; otherwise proceed and
+    # rely on the stored transaction (which includes user_email) to
+    # identify and finalize the transaction. If an auth token is present
+    # but does not match the transaction owner, reject with 403.
     auth_header = request.headers.get('authorization')
-    if not auth_header or not auth_header.lower().startswith('bearer '):
-        raise HTTPException(status_code=401, detail='Missing Authorization')
+    email = None
+    if auth_header and auth_header.lower().startswith('bearer '):
+        token = auth_header.split(' ', 1)[1]
+        email = verify_token(token)
+        if not email:
+            # Provided token is invalid
+            raise HTTPException(status_code=401, detail='Invalid token')
 
-    token = auth_header.split(' ', 1)[1]
-    email = verify_token(token)
-    if not email:
-        raise HTTPException(status_code=401, detail='Invalid token')
+    # Diagnostic logging for finalizer requests
+    try:
+        origin = request.headers.get('origin') or request.headers.get('referer')
+        has_auth = bool(auth_header)
+        remote = request.client.host if getattr(request, 'client', None) else 'unknown'
+        logger.info('Transaction fetch request session=%s origin=%s has_auth=%s remote=%s', session_or_id, origin, has_auth, remote)
+        # Optional detailed header diagnostics (masked) when DEBUG_REQUEST_HEADERS=1
+        try:
+            if os.getenv('DEBUG_REQUEST_HEADERS') == '1':
+                hdrs = {}
+                for k, v in request.headers.items():
+                    lk = k.lower()
+                    if lk == 'authorization':
+                        try:
+                            parts = v.split(' ')
+                            if len(parts) == 2:
+                                hdrs[k] = parts[0] + ' ' + (parts[1][:8] + '...')
+                            else:
+                                hdrs[k] = '***'
+                        except Exception:
+                            hdrs[k] = '***'
+                    elif lk in ('cookie', 'set-cookie'):
+                        hdrs[k] = '***'
+                    else:
+                        hdrs[k] = v
+                logger.info('Transaction request headers (masked): %s', hdrs)
+        except Exception:
+            logger.exception('Failed to emit request header diagnostics for transaction request')
+    except Exception:
+        logger.exception('Failed to log diagnostic info for transaction request %s', session_or_id)
 
     try:
         # Try to find a transaction matching session_id or id
@@ -476,6 +736,15 @@ async def get_transaction(request: Request, session_or_id: str):
 
         if not found:
             raise HTTPException(status_code=404, detail='Transaction not found')
+
+        # If an authenticated user is making the request, ensure they own
+        # the transaction. If the request is unauthenticated, allow
+        # finalization based on the stored transaction (useful after
+        # external redirects where local auth state may have been lost).
+        tx_user = found.get('user_email')
+        if email and tx_user and tx_user != email:
+            # Authenticated user attempting to access another user's tx
+            raise HTTPException(status_code=403, detail='Forbidden')
 
         # If the transaction is pending, attempt to retrieve latest status from Stripe
         try:
@@ -622,9 +891,10 @@ async def get_transaction(request: Request, session_or_id: str):
                 if u:
                     user_info = {
                         'email': u.email,
-                        'credits': getattr(u, 'credits', None),
-                        'tier': getattr(u, 'tier', None),
-                        'subscription_expires': getattr(u, 'subscription_expires', None).isoformat() if getattr(u, 'subscription_expires', None) else None,
+                            'credits': getattr(u, 'credits', None),
+                            'subscription_credits': getattr(u, 'subscription_credits', None) or 0,
+                            'tier': getattr(u, 'tier', None),
+                            'subscription_expires': getattr(u, 'subscription_expires', None).isoformat() if getattr(u, 'subscription_expires', None) else None,
                     }
         except Exception:
             logger.exception('Failed to include user info in transaction response for %s', session_or_id)

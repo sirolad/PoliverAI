@@ -48,6 +48,12 @@ class StreamingService {
         const decoder = new TextDecoder()
         let buffer = ''
         try {
+          // Keep track of the latest analysis result emitted by the server.
+          // The server may emit additional events after 'completed' (ingest/report/transaction),
+          // so we should not resolve immediately when we see 'completed'. Instead, record the
+          // result and keep listening for report/ingest events. When a report is generated we
+          // dispatch an explicit DOM event so the app can act (download/open the report).
+          let latestResult: ComplianceResult | null = null
           while (true) {
             const { done, value } = await reader.read()
             if (done) break
@@ -75,11 +81,11 @@ class StreamingService {
                         : (typeof payload['progress'] === 'number' ? (payload['progress'] as number) : 0)
                       onUpdate({ status: 'processing', progress, message: (payload['message'] as string) || '' })
                     } else if (ev === 'completed') {
-                      // Completed carries the final result in data
+                      // Completed carries the final result in data; record it but keep listening
                       const result = payload as unknown as ComplianceResult
+                      latestResult = result
                       onUpdate({ status: 'completed', progress: 100, message: 'completed', result })
-                      resolve(result)
-                      // Notify app to refresh user/transactions
+                      // Notify app to refresh user/transactions (but don't resolve yet)
                       try {
                         if (typeof window !== 'undefined' && window.dispatchEvent) {
                           window.dispatchEvent(new CustomEvent('payment:refresh-user'))
@@ -88,7 +94,21 @@ class StreamingService {
                       } catch (e) {
                         console.warn('Failed to dispatch refresh events from streamingService', e)
                       }
-                      return
+                    } else if (ev === 'report_completed') {
+                      // Server generated a report; payload should include a path
+                      const reportPath = (payload['path'] as string) || (payload['filename'] as string) || null
+                      try {
+                        if (typeof window !== 'undefined' && window.dispatchEvent) {
+                          window.dispatchEvent(new CustomEvent('report:generated', { detail: { path: reportPath } }))
+                        }
+                      } catch (e) {
+                        console.warn('Failed to dispatch report:generated event', e)
+                      }
+                      // Resolve if we have the analysis result available
+                      if (latestResult) {
+                        resolve(latestResult)
+                        return
+                      }
                     } else if (ev === 'error') {
                       const msg = typeof payload['message'] === 'string' ? (payload['message'] as string) : 'Unknown error'
                       onUpdate({ status: 'error', progress: 0, message: msg })
@@ -116,8 +136,8 @@ class StreamingService {
                     const data = JSON.parse(line.substring(6)) as StreamingUpdate
                     onUpdate(data)
                     if (data.status === 'completed' && data.result) {
-                      resolve(data.result as ComplianceResult)
-                      return
+                      latestResult = data.result as ComplianceResult
+                      // keep listening in case the server emits additional events (report/ingest)
                     }
                     if (data.status === 'error') {
                       reject(new Error(data.message))

@@ -14,6 +14,9 @@ export interface User {
   email: string
   tier: 'free' | 'pro'
   credits: number
+  // Credits allocated as part of an active subscription. These are consumed
+  // before regular purchased credits and are intended to show subscription value.
+  subscription_credits?: number
   subscription_expires?: string
   created_at: string
   is_active: boolean

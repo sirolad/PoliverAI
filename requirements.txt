@@ -52,3 +52,4 @@ stripe==5.0.0
 # rag==0.1.0
 # domain-models==0.1.0
 gradio==4.35.0
+email_validator

@@ -75,7 +75,7 @@ export default function Credits() {
     if (et.includes('failed') || desc.includes('failed') || desc.includes('declined') || desc.includes('payment_failed')) return 'failed'
     if (desc.includes('insufficient') || desc.includes('insufficient_funds') || desc.includes('insufficient_fund')) return 'insufficient_funds'
     if (et.includes('processing') || desc.includes('processing')) return 'processing'
-    return 'unknown'
+    return 'task'
   }
 
   const statusBadge = (status: string) => {

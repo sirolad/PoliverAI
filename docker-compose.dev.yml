@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
+      args:
+        - FAST_DEV=true
     container_name: poliverai-backend
     env_file:
       - ./.env

@@ -43,7 +43,9 @@ class ApiService {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        // Avoid setting Content-Type on GET requests (no body) because
+        // it triggers CORS preflight in browsers. Use Accept instead.
+        Accept: 'application/json',
         ...this.getAuthHeaders(),
         ...options?.headers,
       },

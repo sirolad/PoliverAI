@@ -28,6 +28,7 @@ class User(BaseModel):
     email: EmailStr
     tier: UserTier = UserTier.FREE
     credits: int = 0
+    subscription_credits: int = 0
     subscription_expires: datetime | None = None
     created_at: datetime
     is_active: bool = True

@@ -1,5 +1,6 @@
 FROM python:3.11-slim
 
+ARG FAST_DEV=false
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
@@ -9,22 +10,24 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gcc curl ca-certificates python3-venv && rm -rf /var/lib/apt/lists/*
 
-# Copy project
+# Install pip/tools early to cache wheel building step
+RUN python3 -m pip install --upgrade pip setuptools wheel virtualenv
+
+# Copy only requirements first to leverage Docker cache when dependencies don't change
+COPY requirements.docker.txt requirements.txt requirements.dev.txt /app/
+
+# Create venv outside /app so mounting the project does not overwrite it
+RUN python3 -m virtualenv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install dependencies. If FAST_DEV is true, install a smaller dev set for faster builds.
+RUN if [ "$FAST_DEV" = "true" ] ; then pip install -r /app/requirements.dev.txt ; else if [ -f /app/requirements.docker.txt ]; then pip install -r /app/requirements.docker.txt; elif [ -f /app/requirements.txt ]; then pip install -r /app/requirements.txt; fi; fi
+
+# Copy the rest of the project (use after deps to maximize cache)
 COPY . /app
 
 # Ensure run script is executable
 RUN chmod +x ./scripts/run_server.sh || true
-
-# Create a virtual environment at build time in /opt/venv (outside /app) so that
-# runtime bind-mounting /app does not overwrite the venv. Use virtualenv for
-# compatibility.
-RUN python3 -m pip install --upgrade pip setuptools wheel virtualenv
-RUN python3 -m virtualenv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Install Python dependencies into the created venv at /opt/venv
-# Prefer a lean requirements.docker.txt at build time (faster, fewer heavy deps). Fall back to requirements.txt.
-RUN if [ -f requirements.docker.txt ]; then /opt/venv/bin/pip install -r requirements.docker.txt; elif [ -f requirements.txt ]; then /opt/venv/bin/pip install -r requirements.txt; fi
 
 EXPOSE 8000
 

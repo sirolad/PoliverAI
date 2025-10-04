@@ -3,13 +3,9 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api.routes.auth import router as auth_router
-from .api.routes.comparison import router as comparison_router
-from .api.routes.ingest import router as ingest_router
-from .api.routes.query import router as query_router
-from .api.routes.reports import router as reports_router
-from .api.routes.verification import router as verification_router
-from .api.routes.payments import router as payments_router
+# Route modules are imported lazily inside create_app() to avoid import-time
+# failures when optional heavy dependencies (chromadb, tiktoken, etc.) are not
+# present in FAST_DEV development builds.
 
 
 def create_app() -> FastAPI:
@@ -22,19 +18,49 @@ def create_app() -> FastAPI:
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:3000",
-        ],  # React dev servers
+            "http://localhost:8080",
+            "http://127.0.0.1:8080",
+        ],  # React dev servers and proxy
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
-    app.include_router(auth_router, prefix="/auth")
-    app.include_router(verification_router, prefix="/api/v1")
-    app.include_router(query_router, prefix="/api/v1")
-    app.include_router(comparison_router, prefix="/api/v1")
-    app.include_router(reports_router, prefix="/api/v1")
-    app.include_router(ingest_router, prefix="/api/v1")
-    app.include_router(payments_router, prefix="/api/v1")
+    # Lazily import and register routers to avoid hard dependency on optional
+    # packages at import time (helps FAST_DEV builds which may omit heavy deps).
+    try:
+        from .api.routes.auth import router as auth_router
+
+        app.include_router(auth_router, prefix="/auth")
+    except Exception as e:  # pragma: no cover - optional during dev
+        logging.warning("Auth routes not mounted: %s", e)
+
+    def try_mount(module_path: str, prefix: str | None = None) -> None:
+        """Import module and mount `router` if present.
+
+        Accepts relative module paths that start with '.' and resolves them
+        to the package absolute path under 'poliverai.app'. Logs a warning if
+        the import or mount fails.
+        """
+        try:
+            if module_path.startswith("."):
+                # Convert relative '.api.routes.foo' -> 'poliverai.app.api.routes.foo'
+                abs_path = f"poliverai.app{module_path}"
+            else:
+                abs_path = module_path
+            mod = __import__(abs_path, fromlist=["router"])
+            router = getattr(mod, "router")
+            app.include_router(router, prefix=(prefix or ""))
+        except Exception as e:  # pragma: no cover - optional during dev
+            logging.warning("Failed to mount %s (resolved: %s): %s", module_path, abs_path, e)
+
+    try_mount(".api.routes.verification", "/api/v1")
+    try_mount(".api.routes.query", "/api/v1")
+    try_mount(".api.routes.comparison", "/api/v1")
+    try_mount(".api.routes.reports", "/api/v1")
+    try_mount(".api.routes.ingest", "/api/v1")
+    try_mount(".api.routes.payments", "/api/v1")
+
 
     @app.get("/health")
     def health() -> dict[str, str]:

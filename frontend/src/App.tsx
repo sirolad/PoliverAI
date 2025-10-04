@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import PaymentResultProvider from './components/ui/PaymentResultProvider'
 import LandingPage from './components/LandingPage'
@@ -15,7 +15,9 @@ function App() {
   // Component to handle post-checkout finalization when returning from Stripe
   function CheckoutFinalizer() {
     const location = useLocation()
-  // We'll use a full page navigation after finalizing checkout to refresh state
+  const nav = useNavigate()
+    // We'll use SPA navigation after finalizing checkout to keep the app state
+    // and allow the modal to display without a full page reload.
 
     React.useEffect(() => {
       console.debug('CheckoutFinalizer effect running, location=', location)
@@ -31,7 +33,15 @@ function App() {
           // pending transaction persisted at checkout creation and finalize it
           // (update user credits and mark transaction completed) if Stripe
           // reports the session as paid. This avoids duplicating logic.
-          await api.apiService.get(`/api/v1/transactions/${sessionId}`)
+          const txResp = await api.apiService.get(`/api/v1/transactions/${sessionId}`)
+          // If the finalize endpoint returned an updated user object, dispatch it for immediate UI update
+          if (txResp && (txResp as any).user) {
+            try {
+              window.dispatchEvent(new CustomEvent('payment:user-update', { detail: (txResp as any).user }))
+            } catch {
+              // ignore
+            }
+          }
           // Show success modal via payment result provider if available
           const result = { success: true, title: 'Purchase Complete', message: 'Your credits have been added' }
           try {
@@ -54,8 +64,13 @@ function App() {
           } catch {
             // ignore
           }
-          // Navigate to credits page to show updated balance and transactions
-          window.location.href = '/credits'
+          // Navigate within the SPA so listeners and persisted data remain available
+          try {
+            nav('/credits', { replace: true })
+          } catch {
+            // Fallback to full reload if SPA navigation fails
+            window.location.href = '/credits'
+          }
         } catch (e) {
           console.error('Failed to finalize checkout session', e)
           const result = { success: false, title: 'Finalize Failed', message: String(e) }
@@ -72,7 +87,7 @@ function App() {
           }
         }
       })()
-  }, [location])
+  }, [location, nav])
     return null
   }
   return (

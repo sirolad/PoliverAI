@@ -68,7 +68,17 @@ const PaymentsService = {
     // Create a Stripe Checkout session and redirect the user to the hosted checkout page
     const token = authService.getStoredToken()
     const headers = token ? { Authorization: `Bearer ${token}` } : undefined
-    const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd, description: 'Upgrade to Pro', payment_type: 'subscription' }, { headers })
+  // Ensure Stripe redirects back to the same origin the app is currently running on.
+  // When running behind the nginx proxy the app origin may be http://localhost:8080
+  // whereas the backend default success_url is http://localhost:5173 which would
+  // cause cross-origin redirects and loss of localStorage/auth context.
+  // Prefer the configured API URL (VITE_API_URL) so return URLs go to the
+  // proxy/backend (e.g. http://localhost:8080) even when the frontend dev
+  // server is served from a different origin (e.g. http://localhost:5173).
+  const apiBase = (import.meta.env.VITE_API_URL as string) || (typeof window !== 'undefined' ? window.location.origin : undefined)
+  const success = apiBase ? `${apiBase}/api/v1/checkout/finalize` : undefined
+  const cancel = apiBase ? `${apiBase}/` : undefined
+  const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd, description: 'Upgrade to Pro', payment_type: 'subscription', success_url: success, cancel_url: cancel }, { headers })
     if (res?.url) {
       // Cache pending session so we can finalize/check it when user returns
       try {
@@ -89,7 +99,10 @@ const PaymentsService = {
   async purchaseCredits(amount_usd: number) {
     const token = authService.getStoredToken()
     const headers = token ? { Authorization: `Bearer ${token}` } : undefined
-    const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd, description: 'Buy credits' }, { headers })
+  const apiBase2 = (import.meta.env.VITE_API_URL as string) || (typeof window !== 'undefined' ? window.location.origin : undefined)
+  const successForCredits = apiBase2 ? `${apiBase2}/api/v1/checkout/finalize` : undefined
+  const cancelForCredits = apiBase2 ? `${apiBase2}/` : undefined
+  const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd, description: 'Buy credits', success_url: successForCredits, cancel_url: cancelForCredits }, { headers })
     if (res?.url) {
       try {
         const typed = res as unknown as { id?: string; sessionId?: string }

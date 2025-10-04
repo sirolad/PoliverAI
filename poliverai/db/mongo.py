@@ -103,6 +103,7 @@ class MongoUserDB:
             "email": email,
             "tier": UserTier.FREE.value if isinstance(UserTier.FREE, UserTier) else "free",
             "credits": 0,
+            "subscription_credits": 0,
             "subscription_expires": None,
             "created_at": datetime.utcnow(),
             "is_active": True,
@@ -141,6 +142,7 @@ class MongoUserDB:
             email=doc.get("email"),
             tier=UserTier(doc.get("tier", "free")),
             credits=doc.get("credits", 0),
+            subscription_credits=doc.get("subscription_credits", 0),
             subscription_expires=doc.get("subscription_expires"),
             created_at=doc.get("created_at"),
             is_active=doc.get("is_active", True),
@@ -159,6 +161,7 @@ class MongoUserDB:
             email=doc.get("email"),
             tier=UserTier(doc.get("tier", "free")),
             credits=doc.get("credits", 0),
+            subscription_credits=doc.get("subscription_credits", 0),
             subscription_expires=doc.get("subscription_expires"),
             created_at=doc.get("created_at"),
             is_active=doc.get("is_active", True),
@@ -249,6 +252,28 @@ class MongoUserDB:
         except Exception:
             pass
         return success
+
+    def update_user_subscription_credits(self, user_id: str, delta: int) -> bool:
+        """Increment (or decrement) the subscription_credits field (used to track credits provided by active subscriptions)."""
+        from bson import ObjectId
+        try:
+            result = self.users.update_one({"_id": ObjectId(user_id)}, {"$inc": {"subscription_credits": int(delta)}})
+            success = result.modified_count > 0
+            if success and self.transactions is not None:
+                user = self.get_user_by_id(user_id)
+                tx = {
+                    'user_email': user.email if user else None,
+                    'event_type': 'subscription_credit_change',
+                    'amount_usd': None,
+                    'credits': int(delta),
+                    'description': f'Subscription credits adjusted by {delta}',
+                    'timestamp': datetime.utcnow(),
+                }
+                self.transactions.insert_one(tx)
+            return success
+        except Exception:
+            logger.exception('Failed to update subscription_credits for user_id=%s', user_id)
+            return False
 
     def update_user_subscription(self, user_id: str, expires_at) -> bool:
         """Set user's subscription_expires timestamp in Mongo."""

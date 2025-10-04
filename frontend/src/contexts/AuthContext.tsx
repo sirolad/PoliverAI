@@ -6,8 +6,8 @@ import type { User } from '@/types/api'
 import { AuthContext } from './auth-context'
 import type { AuthContextType } from './auth-context'
 
-// Configure axios defaults
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+// Configure axios defaults (use the same VITE_API_URL as other services)
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 axios.defaults.baseURL = API_BASE_URL
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -32,7 +32,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       refreshUser().catch((e) => console.error('Failed to refresh user from event', e))
     }
     window.addEventListener('payment:refresh-user', handler)
-    return () => window.removeEventListener('payment:refresh-user', handler)
+    // Listen for explicit user update payloads (faster UI update when transaction returns user info)
+    const userUpdateHandler = (ev: Event) => {
+      try {
+        const detail = (ev as CustomEvent<{ email?: string }>)?.detail
+        if (detail && typeof detail === 'object' && 'email' in detail) {
+          setUser((prev) => {
+            const prevObj = (prev ?? {}) as Record<string, unknown>
+            return ({ ...prevObj, ...detail } as User)
+          })
+        }
+      } catch (err) {
+        console.error('Failed to apply user update event', err)
+      }
+    }
+    window.addEventListener('payment:user-update', userUpdateHandler as EventListener)
+    return () => {
+      window.removeEventListener('payment:refresh-user', handler)
+      window.removeEventListener('payment:user-update', userUpdateHandler as EventListener)
+    }
   }, [])
 
   const fetchUser = async () => {
@@ -40,10 +58,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userData = await authService.getCurrentUser()
       setUser(userData)
     } catch (error) {
+      // If the request failed because the token is invalid or forbidden,
+      // clear stored credentials. For network errors or other transient
+      // failures (which can happen right after returning from an external
+      // OAuth/checkout redirect), keep the token so the app can retry and
+      // avoid logging the user out unexpectedly.
       console.error('Failed to fetch user:', error)
-      localStorage.removeItem('token')
-      delete axios.defaults.headers.common['Authorization']
-      authService.logout()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const maybeStatus = (error as any)?.status || (error as any)?.response?.status
+      if (maybeStatus === 401 || maybeStatus === 403) {
+        localStorage.removeItem('token')
+        delete axios.defaults.headers.common['Authorization']
+        authService.logout()
+      } else {
+        // transient error: keep token and allow background retries
+        console.debug('Keeping stored token after transient fetch error')
+      }
     } finally {
       setLoading(false)
     }

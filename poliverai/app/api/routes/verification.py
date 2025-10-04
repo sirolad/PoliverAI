@@ -14,6 +14,12 @@ from pydantic import BaseModel
 from ....core.auth import verify_token
 from ....db.users import user_db
 from ....domain.auth import User, UserTier
+import math
+# How many regular credits one subscription_credit is worth when used for pro features.
+# A value > 1 means subscription credits are more valuable (i.e., discounted usage).
+SUBSCRIPTION_CREDIT_VALUE = float(os.getenv('SUBSCRIPTION_CREDIT_VALUE', '1.5'))
+# When falling back to purchased credits, they consume faster (cost more).
+PURCHASED_CREDIT_PENALTY = float(os.getenv('PURCHASED_CREDIT_PENALTY', '1.25'))
 from ....ingestion.readers.docx_reader import read_docx_text
 from ....ingestion.readers.html_reader import read_html_text
 from ....ingestion.readers.pdf_reader import read_pdf_text
@@ -91,6 +97,7 @@ async def get_current_user_optional(
         email=user_in_db.email,
         tier=user_in_db.tier,
         credits=user_in_db.credits,
+        subscription_credits=getattr(user_in_db, 'subscription_credits', 0),
         subscription_expires=user_in_db.subscription_expires,
         created_at=user_in_db.created_at,
         is_active=user_in_db.is_active,
@@ -193,11 +200,41 @@ async def verify(
             if not user_record:
                 raise HTTPException(status_code=400, detail='User not found')
             total_credits = sum(c for _, c in charges)
-            if (user_record.credits or 0) < total_credits:
-                raise HTTPException(status_code=402, detail={'message': 'Insufficient credits', 'required': total_credits, 'available': user_record.credits})
-            # Deduct per operation and record a transaction for each
+            # Check combined balance (subscription_credits converted to equivalent regular credits + regular credits)
+            sub_avail = float(getattr(user_record, 'subscription_credits', 0) or 0)
+            reg_avail = float(getattr(user_record, 'credits', 0) or 0)
+            combined_equiv = sub_avail * SUBSCRIPTION_CREDIT_VALUE + reg_avail
+            if combined_equiv < total_credits:
+                raise HTTPException(status_code=402, detail={'message': 'Insufficient credits', 'required': total_credits, 'available': int(math.floor(combined_equiv))})
+            # Deduct per operation and record a transaction for each, consuming subscription_credits first at a discounted conversion
             for op, cred in charges:
-                success = user_db.update_user_credits(current_user.id, -int(cred))
+                remaining_base = int(cred)
+                try:
+                    # Attempt to cover as much as possible with subscription credits
+                    sub_avail_now = int(getattr(user_record, 'subscription_credits', 0) or 0)
+                    if sub_avail_now > 0:
+                        # How many subscription credits would be needed to fully cover this op
+                        subs_needed_for_full = int(math.ceil(remaining_base / SUBSCRIPTION_CREDIT_VALUE))
+                        subs_to_use = min(sub_avail_now, subs_needed_for_full)
+                        if subs_to_use > 0:
+                            # Deduct subs_to_use subscription_credits
+                            if hasattr(user_db, 'update_user_subscription_credits'):
+                                user_db.update_user_subscription_credits(current_user.id, -int(subs_to_use))
+                            else:
+                                # No-op fallback
+                                pass
+                            # Compute how many base credits those subscription credits covered
+                            covered = subs_to_use * SUBSCRIPTION_CREDIT_VALUE
+                            remaining_base = max(0, int(math.ceil(remaining_base - covered)))
+                            # Refresh the in-memory user_record values for subsequent ops
+                            user_record = user_db.get_user_by_id(current_user.id) or user_record
+                    # If still remaining, deduct from regular credits
+                    if remaining_base > 0:
+                        # Apply penalty multiplier when consuming purchased credits
+                        penalized = int(math.ceil(remaining_base * PURCHASED_CREDIT_PENALTY))
+                        user_db.update_user_credits(current_user.id, -int(penalized))
+                except Exception:
+                    logging.exception('Failed to deduct credits for user %s op=%s', current_user.email, op)
                 try:
                     usd = round(cred / 10.0, 2)
                     tx = {
@@ -475,44 +512,30 @@ async def verify_stream(
                 except Exception:
                     payload = json.dumps({"event": "error", "data": {"message": "Serialization error"}})
                 yield f"data: {payload}\n\n"
-                # Stop if the analysis completed or errored
-                ev = item.get("event")
-                if ev in {"completed", "error"}:
-                    break
 
         # Start analysis in background and stream queue items
-        task = None
-        try:
-            task = asyncio.create_task(
-                analyze_policy_stream(text, analysis_mode=effective_mode, progress_cb=progress_cb)
-            )
+        task = asyncio.create_task(
+            analyze_policy_stream(text, analysis_mode=effective_mode, progress_cb=progress_cb)
+        )
 
-            # Iterate over queue yields
-            async for s in _yield_from_queue():
-                yield s
-
-            # Ensure analysis task completed and capture result
-            result = None
+        # Finalizer watches the analysis task, applies charges and emits
+        # transaction events, then emits a completed event and a sentinel
+        async def finalizer():
             try:
                 result = await task
             except Exception as e:
-                # Emit error event
-                err = {"event": "error", "data": {"message": f"Analysis failed: {str(e)}"}}
+                # Emit error event then sentinel to terminate the stream
                 try:
-                    yield f"data: {json.dumps(err)}\n\n"
+                    await q.put({"event": "error", "data": {"message": f"Analysis failed: {str(e)}"}})
                 except Exception:
-                    yield f"data: {json.dumps({'event': 'error', 'data': {'message': 'Unknown analysis failure'}})}\n\n"
+                    pass
+                try:
+                    await q.put(None)
+                except Exception:
+                    pass
                 return
 
-            # Emit completed if not already emitted
-            try:
-                await q.put({"event": "completed", "data": result})
-                payload = json.dumps({"event": "completed", "data": result})
-                yield f"data: {payload}\n\n"
-            except Exception:
-                pass
-
-            # Optionally ingest the file and emit events
+            # Optionally ingest/report events (non-blocking best-effort)
             if ingest:
                 try:
                     await q.put({"event": "ingest_started", "data": {}})
@@ -523,7 +546,6 @@ async def verify_stream(
                 except Exception as e:
                     await q.put({"event": "ingest_failed", "data": {"message": str(e)}})
 
-            # Optionally generate report and emit events
             if generate_report:
                 try:
                     await q.put({"event": "report_started", "data": {}})
@@ -539,12 +561,24 @@ async def verify_stream(
             # Apply charges now that analysis/ingest/report completed successfully.
             if charges and current_user:
                 try:
-                    # Refresh user to ensure latest credits
                     user_record = user_db.get_user_by_id(current_user.id)
                     if user_record:
                         for op, cred in charges:
                             try:
-                                user_db.update_user_credits(current_user.id, -int(cred))
+                                remaining_base = int(cred)
+                                sub_avail_now = int(getattr(user_record, 'subscription_credits', 0) or 0)
+                                if sub_avail_now > 0:
+                                    subs_needed_for_full = int(math.ceil(remaining_base / SUBSCRIPTION_CREDIT_VALUE))
+                                    subs_to_use = min(sub_avail_now, subs_needed_for_full)
+                                    if subs_to_use > 0:
+                                        if hasattr(user_db, 'update_user_subscription_credits'):
+                                            user_db.update_user_subscription_credits(current_user.id, -int(subs_to_use))
+                                        remaining_base = max(0, int(math.ceil(remaining_base - (subs_to_use * SUBSCRIPTION_CREDIT_VALUE))))
+                                        user_record = user_db.get_user_by_id(current_user.id) or user_record
+                                if remaining_base > 0:
+                                    penalized = int(math.ceil(remaining_base * PURCHASED_CREDIT_PENALTY))
+                                    user_db.update_user_credits(current_user.id, -int(penalized))
+
                                 usd = round(cred / 10.0, 2)
                                 tx = {
                                     'user_email': current_user.email,
@@ -555,7 +589,6 @@ async def verify_stream(
                                 }
                                 try:
                                     tx_ret = transactions.add(tx)
-                                    # Emit a transaction event so streaming clients can refresh
                                     try:
                                         await q.put({"event": "transaction", "data": tx_ret})
                                     except Exception:
@@ -567,7 +600,6 @@ async def verify_stream(
                 except Exception:
                     logging.exception('Failed to apply post-stream charges for user %s', getattr(current_user, 'email', None))
             else:
-                # No charges => create a zero-cost informational transaction so users can track
                 if current_user:
                     try:
                         tx = {
@@ -588,13 +620,23 @@ async def verify_stream(
                             logging.exception('Failed to record zero-cost transaction for %s', getattr(current_user, 'email', None))
                     except Exception:
                         logging.exception('Failed to build zero-cost tx for %s', getattr(current_user, 'email', None))
-        finally:
-            # Attempt to cancel the background task if it's still running
-            if task and not task.done():
-                try:
-                    task.cancel()
-                except Exception:
-                    pass
+
+            # Emit completed and terminate
+            try:
+                await q.put({"event": "completed", "data": result})
+            except Exception:
+                pass
+            try:
+                await q.put(None)
+            except Exception:
+                pass
+
+        # start finalizer
+        asyncio.create_task(finalizer())
+
+        # Iterate over queue yields until sentinel
+        async for s in _yield_from_queue():
+            yield s
     return StreamingResponse(
         generate_stream(),
         media_type="text/plain",
