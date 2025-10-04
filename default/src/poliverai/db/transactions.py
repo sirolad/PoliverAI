@@ -27,6 +27,19 @@ class InMemoryTransactions:
     def list_for_user(self, user_email: str) -> List[dict]:
         return [r for r in self.items if r.get("user_email") == user_email]
 
+    def get_by_session_or_id(self, session_or_id: str) -> Optional[dict]:
+        for r in self.items:
+            if str(r.get('session_id')) == session_or_id or str(r.get('id')) == session_or_id:
+                return r
+        return None
+
+    def update(self, session_or_id: str, updates: dict) -> Optional[dict]:
+        found = self.get_by_session_or_id(session_or_id)
+        if not found:
+            return None
+        found.update(updates)
+        return found
+
 
 if MONGO_URI:
     try:
@@ -64,6 +77,47 @@ if MONGO_URI:
                     d.pop("_id", None)
                     out.append(d)
                 return out
+
+            def get_by_session_or_id(self, session_or_id: str) -> Optional[dict]:
+                # Try session_id match first
+                doc = transactions_coll.find_one({"session_id": session_or_id})
+                if not doc:
+                    # Try by Mongo _id
+                    try:
+                        from bson import ObjectId
+
+                        doc = transactions_coll.find_one({"_id": ObjectId(session_or_id)})
+                    except Exception:
+                        doc = None
+                if not doc:
+                    return None
+                doc["id"] = str(doc.get("_id"))
+                doc.pop("_id", None)
+                return doc
+
+            def update(self, session_or_id: str, updates: dict) -> Optional[dict]:
+                # Update by session_id if possible, otherwise by _id
+                filter_q = {"session_id": session_or_id}
+                try:
+                    result = transactions_coll.update_one(filter_q, {"$set": updates})
+                    if result.modified_count == 0:
+                        # Try by ObjectId
+                        from bson import ObjectId
+
+                        try:
+                            result = transactions_coll.update_one({"_id": ObjectId(session_or_id)}, {"$set": updates})
+                        except Exception:
+                            pass
+                except Exception:
+                    try:
+                        # fallback: maybe session_or_id is an ObjectId string
+                        from bson import ObjectId
+
+                        transactions_coll.update_one({"_id": ObjectId(session_or_id)}, {"$set": updates})
+                    except Exception:
+                        return None
+
+                return self.get_by_session_or_id(session_or_id)
 
 
         transactions = MongoTransactions()

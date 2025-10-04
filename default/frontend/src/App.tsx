@@ -18,14 +18,20 @@ function App() {
   // We'll use a full page navigation after finalizing checkout to refresh state
 
     React.useEffect(() => {
+      console.debug('CheckoutFinalizer effect running, location=', location)
       const params = new URLSearchParams(location.search)
       const sessionId = params.get('session_id')
+      console.debug('CheckoutFinalizer parsed session_id=', sessionId)
       if (!sessionId) return
 
       ;(async () => {
         try {
           const api = await import('./services/api')
-          await api.apiService.post('/api/v1/checkout/complete', { session_id: sessionId })
+          // Prefer the transaction check endpoint which will look up the
+          // pending transaction persisted at checkout creation and finalize it
+          // (update user credits and mark transaction completed) if Stripe
+          // reports the session as paid. This avoids duplicating logic.
+          await api.apiService.get(`/api/v1/transactions/${sessionId}`)
           // Show success modal via payment result provider if available
           const result = { success: true, title: 'Purchase Complete', message: 'Your credits have been added' }
           try {

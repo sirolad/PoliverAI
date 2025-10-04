@@ -40,6 +40,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const refreshUser = async () => {
+    try {
+      const u = await authService.getCurrentUser()
+      setUser(u)
+    } catch (err) {
+      console.error('Failed to refresh user', err)
+    }
+  }
+
   const login = async (email: string, password: string) => {
     try {
       const response = await authService.login({ email, password })
@@ -76,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     register,
     logout,
+    refreshUser,
     loading,
     isAuthenticated: !!user,
     isPro: user?.tier === 'pro',

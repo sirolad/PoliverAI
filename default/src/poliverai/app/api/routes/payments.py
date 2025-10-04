@@ -14,6 +14,7 @@ except Exception:
     pass
 from ....db.users import user_db
 from ....db.transactions import transactions
+from datetime import datetime
 from ....domain.auth import User, UserTier
 from ....core.auth import verify_token
 
@@ -100,6 +101,18 @@ async def create_checkout_session(request: Request):
     success_url = data.get('success_url') or 'http://localhost:5173'
     cancel_url = data.get('cancel_url') or success_url
 
+    # Ensure Stripe will include the session id on redirect so the frontend
+    # can finalize the persisted pending transaction. Stripe supports the
+    # placeholder {CHECKOUT_SESSION_ID} which will be replaced server-side.
+    try:
+        if '?' in success_url:
+            success_url = f"{success_url}&session_id={{CHECKOUT_SESSION_ID}}"
+        else:
+            success_url = f"{success_url}?session_id={{CHECKOUT_SESSION_ID}}"
+    except Exception:
+        # Fallback: leave success_url unchanged
+        pass
+
     if not amount_usd or amount_usd <= 0:
         raise HTTPException(status_code=400, detail='Invalid amount')
 
@@ -134,6 +147,22 @@ async def create_checkout_session(request: Request):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Failed to create checkout session: {e}') from e
+
+    # Persist a pending transaction record so the client can poll/finalize it
+    try:
+        tx = {
+            'user_email': metadata.get('user_email') if isinstance(metadata, dict) else None,
+            'event_type': 'checkout_session_pending',
+            'amount_usd': float(amount_usd),
+            'credits': None,
+            'description': description,
+            'session_id': getattr(session, 'id', None) or (session.get('id') if isinstance(session, dict) else None),
+            'status': 'pending',
+        }
+        transactions.add(tx)
+    except Exception:
+        # Non-fatal: proceed even if we can't persist the pending tx
+        logger.exception('Failed to persist pending transaction for session creation')
 
     return JSONResponse({'url': session.url, 'id': getattr(session, 'id', None) or session.get('id') if isinstance(session, dict) else None})
 
@@ -352,6 +381,16 @@ async def list_transactions(request: Request):
         items = transactions.list_for_user(email)
         if items is None:
             items = []
+        # Normalize any datetime objects to ISO strings so JSONResponse can serialize
+        for it in items:
+            try:
+                ts = it.get('timestamp')
+                if isinstance(ts, datetime):
+                    it['timestamp'] = ts.isoformat()
+            except Exception:
+                # ignore normalization errors
+                pass
+
         total_credits = sum(int(i.get('credits', 0) or 0) for i in items)
         return JSONResponse({'transactions': items, 'balance': total_credits})
     except Exception as e:
@@ -379,14 +418,56 @@ async def get_transaction(request: Request, session_or_id: str):
 
     try:
         # Try to find a transaction matching session_id or id
-        items = transactions.list_for_user(email) or []
+        # Use the storage helper to locate the transaction
         found = None
-        for t in items:
-            if str(t.get('session_id')) == session_or_id or str(t.get('id')) == session_or_id:
-                found = t
-                break
+        try:
+            found = transactions.get_by_session_or_id(session_or_id)
+        except Exception:
+            found = None
+
         if not found:
             raise HTTPException(status_code=404, detail='Transaction not found')
+
+        # If the transaction is pending, attempt to retrieve latest status from Stripe
+        try:
+            if found.get('status') == 'pending' and stripe is not None:
+                session_id = found.get('session_id')
+                if session_id:
+                    try:
+                        sess = stripe.checkout.Session.retrieve(session_id)
+                        payment_status = getattr(sess, 'payment_status', None) or (sess.get('payment_status') if isinstance(sess, dict) else None)
+                        if payment_status == 'paid':
+                            # Finalize: compute credits, update user, and mark transaction completed
+                            amt = (float(getattr(sess, 'amount_total', None) or (sess.get('amount_total') if isinstance(sess, dict) else 0)) / 100.0)
+                            credits = int(round(amt * 10))
+                            user_email = (sess.get('metadata') or {}).get('user_email') if isinstance(sess, dict) else (sess.metadata.get('user_email') if sess.metadata else None)
+                            if user_email:
+                                u = user_db.get_user_by_email(user_email)
+                                if u:
+                                    user_db.update_user_credits(u.id, credits)
+
+                            # update transaction record
+                            updates = {'status': 'completed', 'amount_usd': amt, 'credits': credits}
+                            try:
+                                transactions.update(session_or_id, updates)
+                                # refresh found
+                                found = transactions.get_by_session_or_id(session_or_id)
+                            except Exception:
+                                logger.exception('Failed to update transaction status for %s', session_or_id)
+                    except Exception:
+                        # If Stripe retrieval failed, leave pending as-is
+                        logger.exception('Failed to retrieve Stripe session for transaction check %s', session_or_id)
+        except Exception:
+            logger.exception('Error while attempting to finalize pending transaction %s', session_or_id)
+
+        # Normalize timestamp for response
+        try:
+            ts = found.get('timestamp')
+            if isinstance(ts, datetime):
+                found['timestamp'] = ts.isoformat()
+        except Exception:
+            pass
+
         return JSONResponse({'transaction': found})
     except HTTPException:
         raise

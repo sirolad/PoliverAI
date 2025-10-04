@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
 import { User, LogOut } from 'lucide-react'
@@ -30,31 +30,47 @@ export function Navbar() {
     setModalOpen(true)
   }
 
-  // Listen for global payment result events so other pages/components can trigger the modal
+  // Listen for global payment result events and also re-check persisted
+  // payment results when the window regains focus or when the route changes.
+  const location = useLocation()
   React.useEffect(() => {
-    const handler = (e: Event) => {
+    const eventHandler = (e: Event) => {
       const detail = (e as CustomEvent).detail
+      console.log('payment:result event received', detail)
       if (detail) showResult(detail.success, detail.title, detail.message)
     }
-    window.addEventListener('payment:result', handler as EventListener)
 
-    // On mount also check for a persisted result (used when the app navigates/reloads after Stripe)
-    try {
-      const raw = localStorage.getItem('poliverai:payment_result')
-      if (raw) {
-        const parsed = JSON.parse(raw)
-        if (parsed) {
-          showResult(parsed.success, parsed.title, parsed.message)
-          // clear so it doesn't show repeatedly
-          localStorage.removeItem('poliverai:payment_result')
+    const checkPersisted = () => {
+      try {
+        const raw = localStorage.getItem('poliverai:payment_result')
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (parsed) {
+            showResult(parsed.success, parsed.title, parsed.message)
+            // clear so it doesn't show repeatedly
+            console.log('clearing persisted payment result', parsed)
+            localStorage.removeItem('poliverai:payment_result')
+          }
         }
+      } catch (err) {
+        // ignore parse errors
+        console.warn('Failed to read persisted payment_result', err)
       }
-    } catch {
-      // ignore parse errors
     }
 
-    return () => window.removeEventListener('payment:result', handler as EventListener)
-  }, [])
+    // Listen for global dispatched events
+    window.addEventListener('payment:result', eventHandler as EventListener)
+    // Re-check when the window gains focus (user returns to tab)
+    window.addEventListener('focus', checkPersisted)
+
+    // Run once on mount and also whenever location changes
+    checkPersisted()
+
+    return () => {
+      window.removeEventListener('payment:result', eventHandler as EventListener)
+      window.removeEventListener('focus', checkPersisted)
+    }
+  }, [location])
 
   return (
     <>
@@ -64,7 +80,21 @@ export function Navbar() {
         onClose={() => setCreditsModalOpen(false)}
         onConfirm={async (amount_usd: number) => {
           try {
-            await PaymentsService.purchaseCredits(amount_usd)
+            const res = await PaymentsService.purchaseCredits(amount_usd)
+            // Persist the API response (session id) so the app can call the
+            // transaction status check endpoint when the user returns from
+            // Stripe. PaymentsService already attempts to cache pending checkout
+            // before redirect, but persist the actual response here to be sure.
+            try {
+              const r = res as unknown as Record<string, unknown> | null
+              const sid = r ? (r['id'] || r['sessionId'] || r['session_id'] || null) : null
+              const pending = { session_id: sid, type: 'credits', amount_usd }
+              localStorage.setItem('poliverai:pending_checkout', JSON.stringify(pending))
+              console.log('persisted pending checkout after purchaseCredits', pending, res)
+            } catch (e) {
+              // Non-fatal: continue even if localStorage fails
+              console.warn('Failed to persist pending checkout after purchaseCredits', e)
+            }
             // Do not show success here — the app will finalize the checkout on return
             // and the global payment:result event will trigger the modal.
             setCreditsModalOpen(false)
