@@ -979,6 +979,13 @@ async def save_report(
                 except Exception:
                     file_size = None
 
+                coll = mdb.db.get_collection('reports')
+                # If a report doc already exists for this user+filename (e.g. a
+                # generated verification report was created earlier), update the
+                # existing document rather than inserting a duplicate. This also
+                # allows us to avoid double-charging if the existing doc is
+                # already marked as charged.
+                existing = coll.find_one({"user_id": current_user.id, "filename": req.filename})
                 report_doc = {
                     "filename": req.filename,
                     "path": str(filepath),
@@ -1014,8 +1021,16 @@ async def save_report(
                 except Exception:
                     # ignore failures reading/parsing file
                     pass
-                inserted = mdb.db.get_collection("reports").insert_one(report_doc)
-                inserted_id = inserted.inserted_id
+                if existing:
+                    # Update fields that may have changed (path, gcs_url, file_size)
+                    coll.update_one({"_id": existing.get("_id")}, {"$set": {"path": report_doc['path'], "gcs_url": report_doc['gcs_url'], "file_size": report_doc['file_size'], "created_at": report_doc['created_at']}})
+                    inserted_id = existing.get("_id")
+                    # use the existing doc mapping for charged state
+                    existing_charged = bool(existing.get('charged'))
+                else:
+                    inserted = coll.insert_one(report_doc)
+                    inserted_id = inserted.inserted_id
+                    existing_charged = False
                 # Charge credits for any report save (quick or full) using a single
                 # configurable cost so the frontend can depend on a consistent
                 # transaction being recorded. Use a single COST value for now (10
@@ -1030,7 +1045,9 @@ async def save_report(
                     # If the user is not PRO, ensure they have enough credits and
                     # deduct the cost. For now we charge the same amount for quick
                     # and full saves; this can be tuned later.
-                    if current_user and current_user.tier != UserTier.PRO:
+                    # Only attempt to charge if the report hasn't already been
+                    # marked as charged (avoid double-charging generated reports)
+                    if not existing_charged and current_user:
                         user_record = user_db.get_user_by_id(current_user.id)
                         if not user_record or (user_record.credits or 0) < COST_SAVE_CREDITS:
                             logger.info('Insufficient credits for user=%s to save report: have=%s need=%s', getattr(current_user, 'email', None), getattr(user_record, 'credits', None) if user_record else None, COST_SAVE_CREDITS)
@@ -1048,24 +1065,26 @@ async def save_report(
                         }
                         try:
                             transactions.add(tx)
-                            mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
+                            coll.update_one({'_id': inserted_id}, {'$set': {'charged': True}})
                             logger.info('Recorded transaction for save user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
                         except Exception:
                             logger.exception('Failed to add transaction for save for user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
                     else:
-                        # For PRO users or when no authenticated user is present,
-                        # still record a non-charging save event for auditability.
-                        try:
-                            tx = {
-                                'user_email': current_user.email if current_user else None,
-                                'event_type': 'saved_compliance_report',
-                                'amount_usd': 0.0,
-                                'credits': 0,
-                                'description': 'Saved Compliance Report (no charge for PRO or anonymous)',
-                            }
-                            transactions.add(tx)
-                        except Exception:
-                            pass
+                        # If no authenticated user is present, still record a
+                        # non-charging save event for auditability. If the report
+                        # was already charged, skip adding a duplicate transaction.
+                        if not existing_charged:
+                            try:
+                                tx = {
+                                    'user_email': current_user.email if current_user else None,
+                                    'event_type': 'saved_compliance_report',
+                                    'amount_usd': 0.0,
+                                    'credits': 0,
+                                    'description': 'Saved Compliance Report (no charge)',
+                                }
+                                transactions.add(tx)
+                            except Exception:
+                                pass
                 except Exception:
                     # Don't block save on transient transaction or user_db errors,
                     # but log so we can diagnose charging issues.
