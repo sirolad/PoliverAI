@@ -12,6 +12,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 from ....core.auth import verify_token
+from ....core.exceptions import IngestionError, VerificationError
 from ....db.users import user_db
 from ....domain.auth import User, UserTier
 from ....ingestion.readers.docx_reader import read_docx_text
@@ -162,7 +163,18 @@ async def verify(
         effective_mode = "fast"
 
     # Run RAG-based verification over clauses with specified analysis mode
-    result = analyze_policy(text, analysis_mode=effective_mode)
+    try:
+        result = analyze_policy(text, analysis_mode=effective_mode)
+    except VerificationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Policy verification failed: {str(e)}",
+        ) from e
+    except IngestionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Verification service unavailable: {str(e)}",
+        ) from e
 
     # PERFORMANCE OPTIMIZATION: Skip RAG ingestion for verification-only requests
     # This optional step can add significant latency. Users can use the separate
@@ -241,7 +253,11 @@ async def analyze_policy_stream(
 
         # Run the actual analysis in executor to avoid blocking
         loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, analyze_policy, text, analysis_mode)
+        try:
+            result = await loop.run_in_executor(None, analyze_policy, text, analysis_mode)
+        except (VerificationError, IngestionError) as e:
+            # Re-raise custom exceptions to be handled by the outer except block
+            raise e
 
         # Yield final completion status
         await asyncio.sleep(0.1)
@@ -261,10 +277,22 @@ async def analyze_policy_stream(
         )
         yield f"data: {completion_data}\n\n"
 
-    except Exception as e:
-        # Yield error status
+    except VerificationError as e:
+        # Yield verification-specific error
         error_data = json.dumps(
-            {"status": "error", "progress": 0, "message": f"Analysis failed: {str(e)}"}
+            {"status": "error", "progress": 0, "message": f"Policy verification failed: {str(e)}"}
+        )
+        yield f"data: {error_data}\n\n"
+    except IngestionError as e:
+        # Yield ingestion-specific error
+        error_data = json.dumps(
+            {"status": "error", "progress": 0, "message": f"Service unavailable: {str(e)}"}
+        )
+        yield f"data: {error_data}\n\n"
+    except Exception as e:
+        # Yield generic error
+        error_data = json.dumps(
+            {"status": "error", "progress": 0, "message": f"Unexpected error: {str(e)}"}
         )
         yield f"data: {error_data}\n\n"
 

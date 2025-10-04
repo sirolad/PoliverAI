@@ -5,6 +5,7 @@ import logging
 from typing import Any
 
 from ..core.config import get_settings
+from ..core.exceptions import VerificationError
 from ..knowledge.gdpr_articles import get_article_with_title
 from ..knowledge.mappings import map_requirement_to_articles
 from ..preprocessing.segment import split_into_paragraphs
@@ -45,20 +46,162 @@ MAX_VIOLATIONS_FOR_PARTIAL = 3
 MAX_CRITICAL_FOR_PARTIAL = 2
 
 
-def _llm_judge_clause(clause: str, context_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    s = get_settings()
-    init = _init()
-
-    # Build compact context with article labels if available
+def _build_context_from_items(context_items: list[dict[str, Any]], top_k: int) -> str:
+    """Build compact context with article labels if available."""
     parts: list[str] = []
-    for item in context_items[: s.top_k]:
+    for item in context_items[:top_k]:
         meta = item.get("meta", {}) or {}
         article = meta.get("article", "")
         src = meta.get("source", "")
         snippet = (item.get("doc") or "")[:800]
         label = f"[{article or 'Unknown'} | {src}]"
         parts.append(f"{label}\n{snippet}")
-    context = "\n\n".join(parts) if parts else ""
+    return "\n\n".join(parts) if parts else ""
+
+
+def _make_openai_request(messages: list[dict[str, Any]], init, s) -> str:
+    """Make OpenAI API request with timeout."""
+    try:
+        resp = init.client.chat.completions.create(
+            model=s.openai_chat_model,
+            messages=messages,
+            temperature=0.0,  # Make completely deterministic
+            seed=42,  # Ensure consistent results
+            timeout=LLM_TIMEOUT_SECONDS,  # Add timeout for performance
+        )
+        return (resp.choices[0].message.content or "").strip()
+    except Exception as e:
+        logging.warning(f"OpenAI API call failed for LLM judgment: {e}")
+        return ""
+
+
+def _parse_llm_response(content: str) -> list[dict[str, Any]]:
+    """Parse LLM response and handle various JSON formats."""
+    if not content:
+        return []
+
+    try:
+        data = json.loads(content)
+        return _normalize_judgments(data.get("judgments", []))
+    except json.JSONDecodeError:
+        return _extract_json_from_response(content)
+    except Exception as e:
+        logging.warning(f"Unexpected error processing LLM judgment response: {e}")
+        return []
+
+
+def _normalize_judgments(judg: Any) -> list[dict[str, Any]]:
+    """Normalize judgment data into consistent format."""
+    if not isinstance(judg, list):
+        logging.warning(f"LLM response has invalid 'judgments' field type: {type(judg)}")
+        return []
+
+    out: list[dict[str, Any]] = []
+    for j in judg:
+        article = str(j.get("article", "")).strip()
+        verdict = str(j.get("verdict", "unclear")).strip().lower()
+        rationale = str(j.get("rationale", "")).strip()
+        excerpt = str(j.get("policy_excerpt", "")).strip()
+        try:
+            conf = float(j.get("confidence", 0.5))
+        except Exception:
+            conf = 0.5
+        if article:
+            out.append(
+                {
+                    "article": article,
+                    "verdict": verdict,
+                    "rationale": rationale,
+                    "policy_excerpt": excerpt,
+                    "confidence": conf,
+                }
+            )
+    return out
+
+
+def _extract_json_from_response(content: str) -> list[dict[str, Any]]:
+    """Extract JSON from various response formats including markdown code blocks."""
+    extracted_json = _try_extract_from_markdown(content)
+    if not extracted_json:
+        extracted_json = _try_extract_from_code_blocks(content)
+    if not extracted_json:
+        extracted_json = _try_extract_multiline_json(content)
+
+    if extracted_json:
+        judg = extracted_json.get("judgments", [])
+        if isinstance(judg, list):
+            return _normalize_judgments(judg)
+        else:
+            logging.warning(f"Extracted JSON has invalid 'judgments' field type: {type(judg)}")
+
+    logging.debug(f"Failed to extract JSON from response. Full content:\n{content}")
+    return []
+
+
+def _try_extract_from_markdown(content: str) -> dict[str, Any] | None:
+    """Try to extract JSON from markdown code blocks."""
+    if "```json" in content:
+        try:
+            start = content.find("```json") + 7  # Skip '```json'
+            end = content.find("```", start)
+            if end != -1:
+                json_content = content[start:end].strip()
+                extracted = json.loads(json_content)
+                logging.info("Successfully extracted JSON from markdown code block")
+                return extracted
+        except (json.JSONDecodeError, ValueError):
+            pass
+    return None
+
+
+def _try_extract_from_code_blocks(content: str) -> dict[str, Any] | None:
+    """Try to extract JSON from generic code blocks."""
+    if "```" in content:
+        try:
+            parts = content.split("```")
+            for part in parts:
+                stripped_part = part.strip()
+                if stripped_part.startswith("{") and stripped_part.endswith("}"):
+                    extracted = json.loads(stripped_part)
+                    logging.info("Successfully extracted JSON from generic code block")
+                    return extracted
+        except (json.JSONDecodeError, ValueError):
+            pass
+    return None
+
+
+def _try_extract_multiline_json(content: str) -> dict[str, Any] | None:
+    """Try to extract JSON from multi-line content."""
+    lines = content.split("\n")
+    json_lines = []
+    in_json = False
+
+    for line in lines:
+        stripped_line = line.strip()
+        if stripped_line.startswith("{"):
+            json_lines = [stripped_line]
+            in_json = True
+        elif in_json:
+            json_lines.append(stripped_line)
+            if stripped_line.endswith("}"):
+                try:
+                    json_content = "\n".join(json_lines)
+                    extracted = json.loads(json_content)
+                    logging.info("Successfully extracted JSON from multi-line content")
+                    return extracted
+                except json.JSONDecodeError:
+                    pass
+                json_lines = []
+                in_json = False
+    return None
+
+
+def _llm_judge_clause(clause: str, context_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    s = get_settings()
+    init = _init()
+
+    # Build context from items
+    context = _build_context_from_items(context_items, s.top_k)
 
     prompt = (
         "You are PoliverAI, a GDPR compliance assistant.\n"
@@ -88,46 +231,11 @@ def _llm_judge_clause(clause: str, context_items: list[dict[str, Any]]) -> list[
         },
     ]
 
-    # Add timeout to OpenAI API call for better performance
-    resp = init.client.chat.completions.create(
-        model=s.openai_chat_model,
-        messages=messages,
-        temperature=0.0,  # Make completely deterministic
-        seed=42,  # Ensure consistent results
-        timeout=LLM_TIMEOUT_SECONDS,  # Add timeout for performance
-    )
-    content = (resp.choices[0].message.content or "").strip()
-    try:
-        data = json.loads(content)
-        judg = data.get("judgments", [])
-        if isinstance(judg, list):
-            # Normalize
-            out: list[dict[str, Any]] = []
-            for j in judg:
-                article = str(j.get("article", "")).strip()
-                verdict = str(j.get("verdict", "unclear")).strip().lower()
-                rationale = str(j.get("rationale", "")).strip()
-                excerpt = str(j.get("policy_excerpt", "")).strip()
-                try:
-                    conf = float(j.get("confidence", 0.5))
-                except Exception:
-                    conf = 0.5
-                if article:
-                    out.append(
-                        {
-                            "article": article,
-                            "verdict": verdict,
-                            "rationale": rationale,
-                            "policy_excerpt": excerpt,
-                            "confidence": conf,
-                        }
-                    )
-            return out
-    except Exception as e:
-        logging.warning(f"Failed to parse LLM judgment response: {e}")
+    # Make OpenAI request
+    content = _make_openai_request(messages, init, s)
 
-    # Fallback if parsing fails
-    return []
+    # Parse the response
+    return _parse_llm_response(content)
 
 
 def _heuristic_judge_clause(
@@ -941,59 +1049,39 @@ def analyze_policy_streaming(text: str, analysis_mode: str = "fast", progress_ca
     }
 
 
-def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
-    """Analyze a policy text for GDPR compliance.
+def _setup_analysis_mode(
+    analysis_mode: str, clauses: list[str], rule_based_score: int, have_key: bool
+) -> bool:
+    """Determine if expensive processing should be skipped based on analysis mode."""
+    if analysis_mode == "fast":
+        return True  # Pure heuristic processing
+    elif analysis_mode == "detailed":
+        return False  # Full LLM processing on all substantial clauses
+    elif analysis_mode == "balanced":
+        # Intelligent selective processing based on content sensitivity
+        return _should_skip_expensive_processing_balanced(clauses, rule_based_score, have_key)
+    else:
+        # Default to fast mode for unknown modes
+        return True
 
-    Args:
-        text: Policy text to analyze
-        analysis_mode: Analysis depth - 'fast', 'balanced', or 'detailed'
-                      - fast: heuristic-only processing (fastest)
-                      - balanced: selective LLM processing on sensitive clauses (recommended)
-                      - detailed: full LLM processing on all substantial clauses "
-                      "(slowest but most thorough)
-    """
-    s = get_settings()
-    clauses = [c.text for c in split_into_paragraphs(text)]
-    clauses = [c for c in clauses if len(c.split()) >= MIN_MEANINGFUL_WORDS][
-        :MAX_CLAUSES_TO_PROCESS
-    ]
 
-    # First apply rule-based checks for deterministic baseline
-    rule_based = _rule_based_compliance_check(text)
-
+def _perform_clause_analysis(
+    skip_expensive_processing: bool,
+    analysis_mode: str,
+    clauses: list[str],
+    have_key: bool,
+    s: Any,
+) -> tuple[list[dict[str, Any]], dict[str, int], dict[str, int]]:
+    """Perform clause analysis based on processing mode."""
     all_evidence: list[dict[str, Any]] = []
     article_violations: dict[str, int] = {}
     article_fulfills: dict[str, int] = {}
 
-    # Add rule-based evidence and preserve severity mapping
-    article_severity_map = _add_rule_based_evidence(
-        rule_based, all_evidence, article_violations, article_fulfills
-    )
-
-    # PERFORMANCE OPTIMIZATION: Check if rule-based analysis is already sufficient
-    rule_based_score, _ = _calculate_score_and_verdict(article_violations, article_fulfills)
-
-    # Process clauses with smart optimization
-    have_key = bool(s.openai_api_key)
     collections = {
         "all_evidence": all_evidence,
         "article_violations": article_violations,
         "article_fulfills": article_fulfills,
     }
-
-    # Analysis mode-based processing strategy
-    if analysis_mode == "fast":
-        skip_expensive_processing = True  # Pure heuristic processing
-    elif analysis_mode == "detailed":
-        skip_expensive_processing = False  # Full LLM processing on all substantial clauses
-    elif analysis_mode == "balanced":
-        # Intelligent selective processing based on content sensitivity
-        skip_expensive_processing = _should_skip_expensive_processing_balanced(
-            clauses, rule_based_score, have_key
-        )
-    else:
-        # Default to fast mode for unknown modes
-        skip_expensive_processing = True
 
     if not skip_expensive_processing:
         if analysis_mode == "balanced":
@@ -1024,7 +1112,23 @@ def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
                 elif verdict == "fulfills":
                     article_fulfills[art] = article_fulfills.get(art, 0) + 1
 
-    # Generate findings and recommendations with preserved severity
+    return all_evidence, article_violations, article_fulfills
+
+
+def _build_final_results(
+    analysis_data: dict[str, Any],
+    analysis_mode: str,
+    have_key: bool,
+    clauses: list[str],
+    skip_expensive_processing: bool,
+) -> dict[str, Any]:
+    """Build the final analysis results."""
+    article_violations = analysis_data["article_violations"]
+    article_fulfills = analysis_data["article_fulfills"]
+    article_severity_map = analysis_data["article_severity_map"]
+    all_evidence = analysis_data["all_evidence"]
+
+    # Generate findings and recommendations
     findings, recommendations = _generate_findings_and_recommendations(
         article_violations, article_severity_map
     )
@@ -1032,7 +1136,7 @@ def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
     # Calculate score and verdict
     score, verdict = _calculate_score_and_verdict(article_violations, article_fulfills)
 
-    # Calculate additional metrics for analysis
+    # Calculate additional metrics
     total_violations = sum(article_violations.values())
     total_fulfills = sum(article_fulfills.values())
     critical_articles = ["Article 6(1)", "Article 13", "Article 5(1)(e)"]
@@ -1043,7 +1147,7 @@ def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
         verdict, score, critical_violations, total_violations
     )
 
-    # Collapse evidence to top 10 for brevity
+    # Get top evidence
     evidence_sorted = sorted(
         all_evidence,
         key=lambda e: (1 if e.get("verdict") == "fulfills" else 0, e.get("score", 0.0)),
@@ -1054,7 +1158,7 @@ def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
         for e in evidence_sorted[:10]
     ]
 
-    # Calculate dynamic confidence score based on analysis quality
+    # Calculate confidence
     confidence = _calculate_analysis_confidence(
         analysis_mode, have_key, all_evidence, clauses, skip_expensive_processing
     )
@@ -1073,3 +1177,73 @@ def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
             "critical_violations": critical_violations,
         },
     }
+
+
+def analyze_policy(text: str, analysis_mode: str = "fast") -> dict[str, Any]:
+    """Analyze a policy text for GDPR compliance.
+
+    Args:
+        text: Policy text to analyze
+        analysis_mode: Analysis depth - 'fast', 'balanced', or 'detailed'
+    """
+    try:
+        if not text or not text.strip():
+            raise VerificationError("Cannot analyze empty policy text")
+
+        s = get_settings()
+        clauses = [c.text for c in split_into_paragraphs(text)]
+        clauses = [c for c in clauses if len(c.split()) >= MIN_MEANINGFUL_WORDS][
+            :MAX_CLAUSES_TO_PROCESS
+        ]
+
+        # First apply rule-based checks for deterministic baseline
+        rule_based = _rule_based_compliance_check(text)
+
+        all_evidence: list[dict[str, Any]] = []
+        article_violations: dict[str, int] = {}
+        article_fulfills: dict[str, int] = {}
+
+        # Add rule-based evidence and preserve severity mapping
+        article_severity_map = _add_rule_based_evidence(
+            rule_based, all_evidence, article_violations, article_fulfills
+        )
+
+        # Check if rule-based analysis is sufficient
+        rule_based_score, _ = _calculate_score_and_verdict(article_violations, article_fulfills)
+        have_key = bool(s.openai_api_key)
+
+        # Determine processing strategy
+        skip_expensive_processing = _setup_analysis_mode(
+            analysis_mode, clauses, rule_based_score, have_key
+        )
+
+        # Perform clause analysis
+        clause_evidence, clause_violations, clause_fulfills = _perform_clause_analysis(
+            skip_expensive_processing, analysis_mode, clauses, have_key, s
+        )
+
+        # Merge clause analysis with rule-based analysis
+        all_evidence.extend(clause_evidence)
+        for art, count in clause_violations.items():
+            article_violations[art] = article_violations.get(art, 0) + count
+        for art, count in clause_fulfills.items():
+            article_fulfills[art] = article_fulfills.get(art, 0) + count
+
+        # Prepare analysis data
+        analysis_data = {
+            "article_violations": article_violations,
+            "article_fulfills": article_fulfills,
+            "article_severity_map": article_severity_map,
+            "all_evidence": all_evidence,
+        }
+
+        # Build final results
+        return _build_final_results(
+            analysis_data,
+            analysis_mode,
+            have_key,
+            clauses,
+            skip_expensive_processing,
+        )
+    except Exception as e:
+        raise VerificationError(f"Policy verification failed: {e}") from e

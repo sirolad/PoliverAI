@@ -14,6 +14,7 @@ from chromadb.api.models.Collection import Collection
 from openai import OpenAI
 
 from ..core.config import get_settings
+from ..core.exceptions import IngestionError
 from ..ingestion.readers.docx_reader import read_docx_text
 from ..ingestion.readers.html_reader import read_html_text
 from ..ingestion.readers.pdf_reader import read_pdf_text
@@ -124,6 +125,40 @@ def _hash_id(source: str, chunk_text: str, i: int) -> str:
     return hashlib.sha256(f"{source}::{i}::{chunk_text}".encode()).hexdigest()
 
 
+def _read_file_content(path: str, ext: str) -> str:
+    """Read file content based on extension."""
+    if ext in {".txt", ".md"}:
+        return _read_text_file(path)
+    elif ext == ".pdf":
+        return read_pdf_text(path)
+    elif ext == ".docx":
+        return read_docx_text(path)
+    else:  # .html / .htm
+        return read_html_text(path)
+
+
+def _process_file_chunks(path: str, text: str) -> tuple[list[str], list[str], list[dict[str, Any]]]:
+    """Process text into chunks and create metadata."""
+    s = get_settings()
+    chunks = chunk_by_tokens(text, s.chunk_size_tokens, s.chunk_overlap_tokens)
+
+    # Detect document title from the full text
+    doc_title = _detect_document_title(text)
+
+    ids = [_hash_id(os.path.basename(path), c, i) for i, c in enumerate(chunks)]
+    metadatas = []
+    for i, c in enumerate(chunks):
+        md: dict[str, Any] = {"source": os.path.basename(path), "chunk": i}
+        if doc_title:
+            md["title"] = doc_title
+        art = _detect_article_label(c)
+        if art:
+            md["article"] = art
+        metadatas.append(md)
+
+    return chunks, ids, metadatas
+
+
 def _read_text_file(path: str) -> str:
     with open(path, encoding="utf-8", errors="ignore") as f:
         return f.read()
@@ -182,7 +217,6 @@ def _detect_document_title(text: str) -> str | None:
 
 def ingest_paths(paths: list[str]) -> dict[str, Any]:
     """Ingest local file paths (txt/md/pdf/docx/html). Returns stats."""
-    s = get_settings()
     _ = _init()
 
     supported_ext = {".txt", ".md", ".pdf", ".docx", ".html", ".htm"}
@@ -195,42 +229,22 @@ def ingest_paths(paths: list[str]) -> dict[str, Any]:
         if ext not in supported_ext:
             skipped.append((p, f"unsupported extension: {ext}"))
             continue
+
         try:
-            if ext in {".txt", ".md"}:
-                text = _read_text_file(p)
-            elif ext == ".pdf":
-                text = read_pdf_text(p)
-            elif ext == ".docx":
-                text = read_docx_text(p)
-            else:  # .html / .htm
-                text = read_html_text(p)
+            text = _read_file_content(p, ext)
 
             if not text.strip():
                 skipped.append((p, "empty file"))
                 continue
 
-            chunks = chunk_by_tokens(text, s.chunk_size_tokens, s.chunk_overlap_tokens)
+            chunks, ids, metadatas = _process_file_chunks(p, text)
             if not chunks:
                 skipped.append((p, "no chunks produced"))
                 continue
 
-            # Detect document title from the full text
-            doc_title = _detect_document_title(text)
-
             embeddings = _embed_texts(chunks)
-            ids = [_hash_id(os.path.basename(p), c, i) for i, c in enumerate(chunks)]
-            metadatas = []
-            for i, c in enumerate(chunks):
-                md: dict[str, Any] = {"source": os.path.basename(p), "chunk": i}
-                if doc_title:
-                    md["title"] = doc_title
-                art = _detect_article_label(c)
-                if art:
-                    md["article"] = art
-                metadatas.append(md)
 
-            # Store with precomputed embeddings to ensure search works
-            # without a separate embedding function
+            # Store with precomputed embeddings
             _init().collection.upsert(
                 documents=chunks,
                 metadatas=metadatas,
@@ -240,9 +254,10 @@ def ingest_paths(paths: list[str]) -> dict[str, Any]:
 
             files_ingested += 1
             chunks_ingested += len(chunks)
+        except IngestionError as e:
+            skipped.append((p, str(e)))
         except Exception as e:
-            skipped.append((p, f"error: {e}"))
-            continue
+            skipped.append((p, f"unexpected error: {e}"))
 
     return {
         "files": files_ingested,
@@ -255,7 +270,7 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
     s = get_settings()
     init = _init()
     if not s.openai_api_key:
-        raise RuntimeError(
+        raise IngestionError(
             "OpenAI API key not set. Please export POLIVERAI_OPENAI_API_KEY or set it in .env."
         )
     model = s.openai_embedding_model

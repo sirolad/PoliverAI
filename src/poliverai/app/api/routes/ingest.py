@@ -4,9 +4,10 @@ import logging
 import tempfile
 from pathlib import Path
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, HTTPException, UploadFile, status
 from pydantic import BaseModel
 
+from ....core.exceptions import IngestionError
 from ....rag.service import ingest_paths
 
 
@@ -21,6 +22,11 @@ router = APIRouter(tags=["ingest"])
 
 @router.post("/ingest", response_model=IngestResponse)
 async def ingest(files: list[UploadFile]) -> IngestResponse:
+    if not files:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No files provided for ingestion"
+        )
+
     tmpdir = Path(tempfile.mkdtemp(prefix="poliverai_ingest_"))
     saved_paths: list[str] = []
     try:
@@ -32,6 +38,15 @@ async def ingest(files: list[UploadFile]) -> IngestResponse:
             saved_paths.append(str(p))
         stats = ingest_paths(saved_paths)
         return IngestResponse(**stats)
+    except IngestionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f"Ingestion failed: {str(e)}"
+        ) from e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error during ingestion: {str(e)}",
+        ) from e
     finally:
         # Best-effort cleanup of tempdir
         try:
