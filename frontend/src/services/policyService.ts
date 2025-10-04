@@ -170,7 +170,24 @@ class PolicyService {
   async openReport(report: import('@/types/api').ReportMetadata): Promise<void> {
     try {
       if (report.gcs_url) {
-        window.open(report.gcs_url, '_blank')
+        // If the backend stored a gs:// URL (deep link) the browser cannot
+        // open it directly. Prefer opening the app download endpoint which
+        // will stream the file (and handle auth/signed URLs).
+        if (typeof report.gcs_url === 'string' && report.gcs_url.startsWith('gs://')) {
+          const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(report.filename)}`
+          const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${downloadUrl}`
+          window.open(url, '_blank')
+          return
+        }
+        // If it's an http(s) URL, open directly
+        if (typeof report.gcs_url === 'string' && (report.gcs_url.startsWith('http://') || report.gcs_url.startsWith('https://'))) {
+          window.open(report.gcs_url, '_blank')
+          return
+        }
+        // Unknown scheme: fall back to download endpoint
+        const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(report.filename)}`
+        const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${downloadUrl}`
+        window.open(url, '_blank')
         return
       }
       // fallback to download endpoint

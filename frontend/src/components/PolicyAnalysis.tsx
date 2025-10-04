@@ -20,7 +20,7 @@ export default function PolicyAnalysis() {
   const [modalUrl, setModalUrl] = useState<string | null>(null)
   const [modalFilename, setModalFilename] = useState<string | null>(null)
   const [titleModalOpen, setTitleModalOpen] = useState(false)
-  const [titleModalInitial] = useState<string>('')
+  const [titleModalInitial, setTitleModalInitial] = useState<string>('')
   const saveProgressIntervalRef = useRef<number | null>(null)
 
   // If progress hits 100 (for any reason) ensure we hide the bar after a short delay
@@ -297,9 +297,11 @@ export default function PolicyAnalysis() {
 
             <button
               disabled={!reportFilename}
-              onClick={async () => {
+              onClick={() => {
                 if (!reportFilename) return
-                await handleSaveReport(reportFilename as string, reportFilename as string)
+                // open title modal so user can provide a document title before saving
+                setTitleModalInitial(reportFilename)
+                setTitleModalOpen(true)
               }}
               className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
             >
