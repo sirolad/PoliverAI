@@ -250,6 +250,27 @@ class MongoUserDB:
             pass
         return success
 
+    def update_user_subscription(self, user_id: str, expires_at) -> bool:
+        """Set user's subscription_expires timestamp in Mongo."""
+        from bson import ObjectId
+        try:
+            result = self.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"subscription_expires": expires_at}})
+            success = result.modified_count > 0
+            if success and self.transactions is not None:
+                tx = {
+                    'user_email': self.get_user_by_id(user_id).email if self.get_user_by_id(user_id) else None,
+                    'event_type': 'subscription_update',
+                    'amount_usd': 0.0,
+                    'credits': 0,
+                    'description': f'Subscription expires at {expires_at}',
+                    'timestamp': datetime.utcnow(),
+                }
+                self.transactions.insert_one(tx)
+            return success
+        except Exception:
+            logger.exception('Failed to set subscription_expires for user_id=%s', user_id)
+            return False
+
     # --- helper methods for idempotent startup seeding ---
     def has_seed_marker(self) -> bool:
         """Return True if a one-time seed marker exists in the metadata collection."""

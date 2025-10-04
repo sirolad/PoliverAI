@@ -26,6 +26,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  // Listen for events that should trigger a user refresh (e.g., after payment finalization)
+  useEffect(() => {
+    const handler = () => {
+      refreshUser().catch((e) => console.error('Failed to refresh user from event', e))
+    }
+    window.addEventListener('payment:refresh-user', handler)
+    return () => window.removeEventListener('payment:refresh-user', handler)
+  }, [])
+
   const fetchUser = async () => {
     try {
       const userData = await authService.getCurrentUser()
@@ -88,7 +97,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser,
     loading,
     isAuthenticated: !!user,
-    isPro: user?.tier === 'pro',
+    isPro: (() => {
+      try {
+        if (!user) return false
+        if (user.tier === 'pro') {
+          // if subscription_expires present, ensure it's still in the future
+          if (user.subscription_expires) {
+            const exp = new Date(user.subscription_expires)
+            return exp > new Date()
+          }
+          return true
+        }
+        return false
+      } catch {
+        return false
+      }
+    })(),
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

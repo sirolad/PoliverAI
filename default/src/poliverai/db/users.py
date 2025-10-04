@@ -134,6 +134,27 @@ class UserDatabase:
             return True
         return False
 
+    def update_user_subscription(self, user_id: str, expires_at) -> bool:
+        """Set a user's subscription expiry timestamp."""
+        if user_id in self.users:
+            try:
+                self.users[user_id].subscription_expires = expires_at
+                # Record a transaction for subscription update (best-effort)
+                if transactions is not None:
+                    tx = {
+                        'user_email': self.users[user_id].email,
+                        'event_type': 'subscription_update',
+                        'amount_usd': 0.0,
+                        'credits': 0,
+                        'description': f'Subscription expires at {expires_at}',
+                    }
+                    transactions.add(tx)
+            except Exception:
+                logger.exception('Failed to update subscription_expires for %s', user_id)
+                return False
+            return True
+        return False
+
     def update_user_credits(self, user_id: str, delta: int) -> bool:
         """Increment (or decrement) credits for a user."""
         if user_id in self.users:

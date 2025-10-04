@@ -71,7 +71,7 @@ export function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48" />
+          <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48 mx-auto" />
           <h2 className="mt-6 text-3xl font-bold text-gray-900">Join PoliverAI</h2>
           <p className="mt-2 text-sm text-gray-600">
             Create your account and start ensuring GDPR compliance

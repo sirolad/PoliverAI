@@ -68,13 +68,13 @@ const PaymentsService = {
     // Create a Stripe Checkout session and redirect the user to the hosted checkout page
     const token = authService.getStoredToken()
     const headers = token ? { Authorization: `Bearer ${token}` } : undefined
-    const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd }, { headers })
+    const res = await apiService.post<{ url: string }>('/api/v1/create-checkout-session', { amount_usd, description: 'Upgrade to Pro', payment_type: 'subscription' }, { headers })
     if (res?.url) {
       // Cache pending session so we can finalize/check it when user returns
       try {
         const typed = res as unknown as { id?: string; sessionId?: string }
         const sid = typed.id || typed.sessionId || null
-        const pending = { session_id: sid, type: 'upgrade', amount_usd }
+        const pending = { session_id: sid, type: 'subscription', amount_usd }
         localStorage.setItem('poliverai:pending_checkout', JSON.stringify(pending))
       } catch (err) {
         console.warn('Failed to cache pending checkout', err)

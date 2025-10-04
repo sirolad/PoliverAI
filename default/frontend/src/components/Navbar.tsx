@@ -9,7 +9,7 @@ import PaymentResultModal from './ui/paymentResultModal'
 import EnterCreditsModal from './ui/EnterCreditsModal'
 
 export function Navbar() {
-  const { user, logout, isAuthenticated, isPro } = useAuth()
+  const { user, logout, isAuthenticated, isPro, refreshUser } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -34,10 +34,14 @@ export function Navbar() {
   // payment results when the window regains focus or when the route changes.
   const location = useLocation()
   React.useEffect(() => {
-    const eventHandler = (e: Event) => {
+      const eventHandler = (e: Event) => {
       const detail = (e as CustomEvent).detail
       console.log('payment:result event received', detail)
-      if (detail) showResult(detail.success, detail.title, detail.message)
+      if (detail) {
+          // refresh current user to pick up potential tier changes
+          (async () => { try { await refreshUser() } catch (err) { console.warn('refreshUser failed', err) } })()
+          showResult(detail.status || (detail.success ? 'success' : 'failed'), detail.title, detail.message)
+      }
     }
 
     const checkPersisted = () => {
@@ -46,7 +50,9 @@ export function Navbar() {
         if (raw) {
           const parsed = JSON.parse(raw)
           if (parsed) {
-            showResult(parsed.success, parsed.title, parsed.message)
+            // refresh current user to pick up potential tier changes
+            (async () => { try { await refreshUser() } catch (err) { console.warn('refreshUser failed', err) } })()
+            showResult(parsed.status || (parsed.success ? 'success' : 'failed'), parsed.title, parsed.message)
             // clear so it doesn't show repeatedly
             console.log('clearing persisted payment result', parsed)
             localStorage.removeItem('poliverai:payment_result')
@@ -70,7 +76,7 @@ export function Navbar() {
       window.removeEventListener('payment:result', eventHandler as EventListener)
       window.removeEventListener('focus', checkPersisted)
     }
-  }, [location])
+  }, [location, refreshUser])
 
   return (
     <>
@@ -141,7 +147,7 @@ export function Navbar() {
                 to="/credits"
                 className="text-sm font-medium hover:text-blue-600 transition-colors"
               >
-                Purchased Credits
+                Transaction History
               </Link>
             </>
           )}

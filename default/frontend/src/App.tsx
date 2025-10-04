@@ -37,6 +37,8 @@ function App() {
           try {
             // Dispatch event for any in-memory listeners
             window.dispatchEvent(new CustomEvent('payment:result', { detail: result }))
+            // Notify app to refresh user info (Navbar/AuthContext can listen)
+            window.dispatchEvent(new Event('payment:refresh-user'))
           } catch {
             // ignore
           }
@@ -59,6 +61,7 @@ function App() {
           const result = { success: false, title: 'Finalize Failed', message: String(e) }
           try {
             window.dispatchEvent(new CustomEvent('payment:result', { detail: result }))
+            window.dispatchEvent(new Event('payment:refresh-user'))
           } catch {
             // ignore
           }

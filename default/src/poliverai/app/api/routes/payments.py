@@ -98,6 +98,7 @@ async def create_checkout_session(request: Request):
     data = await request.json()
     amount_usd = data.get('amount_usd')
     description = data.get('description', 'PoliverAI credits')
+    payment_type = data.get('payment_type')
     success_url = data.get('success_url') or 'http://localhost:5173'
     cancel_url = data.get('cancel_url') or success_url
 
@@ -143,7 +144,7 @@ async def create_checkout_session(request: Request):
             mode='payment',
             success_url=success_url,
             cancel_url=cancel_url,
-            metadata=metadata or None,
+            metadata={**(metadata or {}), **({'payment_type': payment_type} if payment_type else {})} or None,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Failed to create checkout session: {e}') from e
@@ -158,6 +159,7 @@ async def create_checkout_session(request: Request):
             'description': description,
             'session_id': getattr(session, 'id', None) or (session.get('id') if isinstance(session, dict) else None),
             'status': 'pending',
+            'payment_type': payment_type,
         }
         transactions.add(tx)
     except Exception:
@@ -195,6 +197,7 @@ async def complete_checkout_session(request: Request):
     # Extract metadata and amount
     metadata = (sess.get('metadata') or {}) if isinstance(sess, dict) else (sess.metadata or {})
     user_email = metadata.get('user_email') if isinstance(metadata, dict) else None
+    payment_type = metadata.get('payment_type') if isinstance(metadata, dict) else getattr(sess, 'metadata', {}).get('payment_type') if getattr(sess, 'metadata', None) else None
     amount_cents = getattr(sess, 'amount_total', None) or sess.get('amount_total') if isinstance(sess, dict) else None
     description = getattr(sess, 'description', None) or sess.get('description') if isinstance(sess, dict) else None
 
@@ -224,20 +227,35 @@ async def complete_checkout_session(request: Request):
         pass
 
     # Apply server-side changes based on metadata
-    if user_email:
-        user = user_db.get_user_by_email(user_email)
-        if user:
-            try:
-                usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
-                credits = int(round(usd * 10))
-                logger.info('Finalizing checkout for session=%s user=%s amount_usd=%s credits=%s', session_id, user_email, usd, credits)
-                # Defensive: ensure credits is an int and reasonably small to avoid accidental deletion
-                if not isinstance(credits, int):
-                    logger.error('Computed credits is not int: %s', credits)
-                else:
-                    user_db.update_user_credits(user.id, credits)
-            except Exception:
-                pass
+        if user_email:
+            user = user_db.get_user_by_email(user_email)
+            if user:
+                try:
+                    # If this checkout was a subscription/upgrade, update tier and subscription expiry
+                    if payment_type == 'subscription' or (isinstance(description, str) and 'upgrade' in (description or '').lower()):
+                        try:
+                            from datetime import timedelta
+                            user_db.update_user_tier(user.id, UserTier.PRO)
+                            expires_at = datetime.utcnow() + timedelta(days=30)
+                            try:
+                                if hasattr(user_db, 'update_user_subscription'):
+                                    user_db.update_user_subscription(user.id, expires_at)
+                                else:
+                                    user.subscription_expires = expires_at
+                            except Exception:
+                                logger.exception('Failed to persist subscription_expires for %s', user_email)
+                        except Exception:
+                            logger.exception('Failed to upgrade user to PRO for %s', user_email)
+                    else:
+                        usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
+                        credits = int(round(usd * 10))
+                        logger.info('Finalizing checkout for session=%s user=%s amount_usd=%s credits=%s', session_id, user_email, usd, credits)
+                        if not isinstance(credits, int):
+                            logger.error('Computed credits is not int: %s', credits)
+                        else:
+                            user_db.update_user_credits(user.id, credits)
+                except Exception:
+                    pass
 
     # Persist transaction record
     try:
@@ -249,6 +267,7 @@ async def complete_checkout_session(request: Request):
             'credits': int(round(amt * 10)),
             'description': description or 'Checkout purchase',
             'session_id': session_id,
+            'payment_type': payment_type,
         }
         transactions.add(tx)
     except Exception:
@@ -348,10 +367,19 @@ async def stripe_webhook(request: Request):
             if user:
                 try:
                     if isinstance(description, str) and 'upgrade' in description.lower():
-                        user_db.update_user_tier(user.id, UserTier.PRO)
-                        from datetime import datetime, timedelta
-
-                        user.subscription_expires = datetime.utcnow() + timedelta(days=30)
+                        try:
+                            from datetime import timedelta
+                            user_db.update_user_tier(user.id, UserTier.PRO)
+                            expires_at = datetime.utcnow() + timedelta(days=30)
+                            try:
+                                if hasattr(user_db, 'update_user_subscription'):
+                                    user_db.update_user_subscription(user.id, expires_at)
+                                else:
+                                    user.subscription_expires = expires_at
+                            except Exception:
+                                logger.exception('Failed to persist subscription_expires for %s', user_email)
+                        except Exception:
+                            logger.exception('Failed to upgrade user to PRO for %s', user_email)
                     else:
                         usd = (float(amount_cents) / 100.0) if amount_cents else 0.0
                         credits = int(round(usd * 10))
@@ -462,13 +490,46 @@ async def get_transaction(request: Request, session_or_id: str):
                             amt = (float(getattr(sess, 'amount_total', None) or (sess.get('amount_total') if isinstance(sess, dict) else 0)) / 100.0)
                             credits = int(round(amt * 10))
                             user_email = (sess.get('metadata') or {}).get('user_email') if isinstance(sess, dict) else (sess.metadata.get('user_email') if sess.metadata else None)
+                            # Detect payment_type either from stored transaction or from session metadata
+                            stored_type = found.get('payment_type')
+                            sess_meta_type = (sess.get('metadata') or {}).get('payment_type') if isinstance(sess, dict) else (sess.metadata.get('payment_type') if sess.metadata else None)
+                            payment_type_final = stored_type or sess_meta_type
                             if user_email:
                                 u = user_db.get_user_by_email(user_email)
                                 if u:
-                                    user_db.update_user_credits(u.id, credits)
+                                    # determine description from session or stored transaction
+                                    sess_description = None
+                                    try:
+                                        if isinstance(sess, dict):
+                                            sess_description = sess.get('description')
+                                        else:
+                                            sess_description = getattr(sess, 'description', None)
+                                    except Exception:
+                                        sess_description = None
+                                    description_local = sess_description or found.get('description')
+
+                                    if payment_type_final == 'subscription' or (isinstance(description_local, str) and 'upgrade' in (description_local or '').lower()):
+                                        # upgrade user to PRO and set subscription expiry via DB helper
+                                        try:
+                                            from datetime import timedelta
+                                            user_db.update_user_tier(u.id, UserTier.PRO)
+                                            expires_at = datetime.utcnow() + timedelta(days=30)
+                                            try:
+                                                # Prefer DB helper if available
+                                                if hasattr(user_db, 'update_user_subscription'):
+                                                    user_db.update_user_subscription(u.id, expires_at)
+                                                else:
+                                                    # fallback: set attribute on returned object
+                                                    u.subscription_expires = expires_at
+                                            except Exception:
+                                                logger.exception('Failed to persist subscription_expires for %s', user_email)
+                                        except Exception:
+                                            logger.exception('Failed to upgrade user to PRO for %s', user_email)
+                                    else:
+                                        user_db.update_user_credits(u.id, credits)
 
                             # update transaction record
-                            updates = {'status': 'completed', 'amount_usd': amt, 'credits': credits}
+                            updates = {'status': 'completed', 'amount_usd': amt, 'credits': credits, 'payment_type': payment_type_final}
                             try:
                                 transactions.update(session_or_id, updates)
                                 # refresh found
@@ -552,7 +613,26 @@ async def get_transaction(request: Request, session_or_id: str):
         except Exception:
             pass
 
-        return JSONResponse({'transaction': found})
+        # If possible include updated user info so frontend can refresh state
+        user_info = None
+        try:
+            ue = found.get('user_email')
+            if ue:
+                u = user_db.get_user_by_email(ue)
+                if u:
+                    user_info = {
+                        'email': u.email,
+                        'credits': getattr(u, 'credits', None),
+                        'tier': getattr(u, 'tier', None),
+                        'subscription_expires': getattr(u, 'subscription_expires', None).isoformat() if getattr(u, 'subscription_expires', None) else None,
+                    }
+        except Exception:
+            logger.exception('Failed to include user info in transaction response for %s', session_or_id)
+
+        resp = {'transaction': found}
+        if user_info:
+            resp['user'] = user_info
+        return JSONResponse(resp)
     except HTTPException:
         raise
     except Exception as e:

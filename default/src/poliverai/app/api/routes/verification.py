@@ -296,15 +296,77 @@ async def verify_stream(
         return StreamingResponse(file_error_stream(), media_type="text/plain")
     # Now create the streaming response with extracted text (no file operations in async context)
     async def generate_stream() -> AsyncGenerator[str, None]:
+        """Produce Server-Sent-Event formatted chunks by driving analyze_policy_stream
+
+        analyze_policy_stream is an async function that returns a dict result and reports
+        progress via an async progress callback. We create an asyncio.Queue and a
+        progress_cb that pushes events into the queue. We then schedule the analysis
+        as a background task and yield events from the queue as they arrive.
+        """
+        q: asyncio.Queue = asyncio.Queue()
+
+        async def progress_cb(event_name: str, data: dict):
+            # Normalize event payload and put into queue
+            try:
+                await q.put({"event": event_name, "data": data})
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:
+                # If putting into the queue fails, log and put an error event
+                logging.exception("progress_cb failed: %s", e)
+                try:
+                    await q.put({"event": "error", "data": {"message": str(e)}})
+                except Exception:
+                    pass
+
+        # Helper to format and yield JSON SSE messages
+        async def _yield_from_queue():
+            while True:
+                item = await q.get()
+                if item is None:
+                    break
+                try:
+                    payload = json.dumps(item)
+                except Exception:
+                    payload = json.dumps({"event": "error", "data": {"message": "Serialization error"}})
+                yield f"data: {payload}\n\n"
+                # Stop if the analysis completed or errored
+                ev = item.get("event")
+                if ev in {"completed", "error"}:
+                    break
+
+        # Start analysis in background and stream queue items
+        task = None
         try:
-            # Stream the analysis process using the pre-extracted text
-            async for chunk in analyze_policy_stream(text, analysis_mode=effective_mode):
-                yield chunk
-        except Exception as e:
-            error_msg = json.dumps(
-                {"status": "error", "progress": 0, "message": f"Analysis failed: {str(e)}"}
+            task = asyncio.create_task(
+                analyze_policy_stream(text, analysis_mode=effective_mode, progress_cb=progress_cb)
             )
-            yield f"data: {error_msg}\n\n"
+
+            # Iterate over queue yields
+            async for s in _yield_from_queue():
+                yield s
+
+            # Ensure task completed and propagate any exception as an SSE error
+            try:
+                result = await task
+                # If the analysis finished but didn't emit a 'completed' event, emit result
+                await q.put({"event": "completed", "data": result})
+                # Yield the final result
+                payload = json.dumps({"event": "completed", "data": result})
+                yield f"data: {payload}\n\n"
+            except Exception as e:
+                err = {"event": "error", "data": {"message": f"Analysis failed: {str(e)}"}}
+                try:
+                    yield f"data: {json.dumps(err)}\n\n"
+                except Exception:
+                    yield f"data: {json.dumps({'event': 'error', 'data': {'message': 'Unknown analysis failure'}})}\n\n"
+        finally:
+            # Attempt to cancel the background task if it's still running
+            if task and not task.done():
+                try:
+                    task.cancel()
+                except Exception:
+                    pass
     return StreamingResponse(
         generate_stream(),
         media_type="text/plain",

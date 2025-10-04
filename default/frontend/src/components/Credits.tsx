@@ -118,7 +118,7 @@ export default function Credits() {
   return (
     <div className="h-screen p-8 flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-bold">Purchased Credits</h1>
+        <h1 className="text-3xl font-bold">Transaction History</h1>
 
         <div className="mb-4 flex items-center gap-4">
           <div>Balance: <span className="font-semibold">{user?.credits ?? 0} credits</span></div>
