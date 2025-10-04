@@ -10,7 +10,7 @@
         "commands": [
           "bash ./scripts/run_server.sh"
         ],
-        "cwd": "../default",
+        "cwd": "./",
         "parallel": false
       }
     },
@@ -20,7 +20,7 @@
         "commands": [
           "bash ./scripts/dev/bootstrap.sh"
         ],
-        "cwd": "../default"
+        "cwd": "./"
       }
     },
     "test": {
@@ -29,7 +29,7 @@
         "commands": [
           "pytest"
         ],
-        "cwd": "../default"
+        "cwd": "./"
       }
     },
     "lint": {
@@ -38,7 +38,7 @@
         "commands": [
           "ruff check src/ tests/ || true"
         ],
-        "cwd": "../default"
+        "cwd": "./"
       }
     },
     "typecheck": {
@@ -47,7 +47,7 @@
         "commands": [
           "mypy src/ || true"
         ],
-        "cwd": "../default"
+        "cwd": "./"
       }
     }
   },
