@@ -567,6 +567,8 @@ async def generate_verification_report(
                     # mark generated verification reports as full reports so we
                     # don't double-charge if the user later clicks Save
                     "is_full_report": True,
+                    # numeric compliance score reported by the verification step
+                    "score": getattr(req, 'score', None),
                     # persist the raw generated content so it can be rendered
                     # inline later by the frontend (detailed view)
                     "content": content,
@@ -996,6 +998,8 @@ async def save_report(
                     "analysis_mode": "balanced",
                     # quick saves are not full reports
                     "is_full_report": False,
+                    # optional numeric compliance score (0-100)
+                    "score": None,
                     # try to infer verdict/type from file contents or filename
                     "verdict": None,
                     "type": ("revision" if str(req.filename).startswith("revised-") else ("verification" if "verification" in str(req.filename) or str(req.filename).startswith("gdpr-verification") else "other")),
@@ -1019,6 +1023,15 @@ async def save_report(
                     if verdict:
                         # normalize to lowercase keys used elsewhere
                         report_doc['verdict'] = verdict.lower().replace(' ', '_')
+                    # try to extract a score (e.g. 'Score: 78%' or 'Score 78')
+                    import re
+                    score_match = re.search(r"Score\s*[:]?\s*(\d{1,3})(?:\s*%?)", txt, re.IGNORECASE)
+                    if score_match:
+                        try:
+                            s = int(score_match.group(1))
+                            report_doc['score'] = max(0, min(100, s))
+                        except Exception:
+                            pass
                 except Exception:
                     # ignore failures reading/parsing file
                     pass
