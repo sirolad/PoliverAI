@@ -1039,7 +1039,7 @@ async def save_report(
                 try:
                     from ....db.users import user_db
                     from ....db.transactions import transactions
-                    COST_SAVE_CREDITS = 10
+                    COST_SAVE_CREDITS = 1
                     is_quick_save = bool(getattr(req, 'is_quick', False))
 
                     # If the user is not PRO, ensure they have enough credits and
