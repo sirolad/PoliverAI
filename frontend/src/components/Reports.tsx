@@ -6,6 +6,7 @@ import ReportViewerModal from './ui/ReportViewerModal'
 import PaymentResultModal from './ui/PaymentResultModal'
 import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
+import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
 
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
@@ -399,6 +400,27 @@ export default function Reports() {
                   {r.file_size ? (
                     <div className="text-sm text-gray-500">Size: {(r.file_size / 1024).toFixed(1)} KB</div>
                   ) : null}
+                  {/* Rating: map score (0-100) to 0-5 stars and display percent beside verdict badges */}
+                  <div className="ml-2 mr-2 flex items-center gap-2">
+                    {(() => {
+                      const score = typeof r.score === 'number' ? Math.max(0, Math.min(100, r.score)) : undefined
+                      if (score == null) return null
+                      const stars = (score / 100) * 5
+                      const full = Math.floor(stars)
+                      const half = stars - full >= 0.5 ? 1 : 0
+                      const empty = 5 - full - half
+                      const icons: JSX.Element[] = []
+                      for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={16} weight="fill" className="text-yellow-500" />)
+                      if (half) icons.push(<StarHalf key={`h`} size={16} weight="fill" className="text-yellow-500" />)
+                      for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={16} weight="duotone" className="text-gray-300" />)
+                      return (
+                        <div className="flex items-center text-sm text-gray-700">
+                          <div className="flex items-center gap-0.5">{icons}</div>
+                          <div className="ml-2 text-xs text-gray-500">{score}%</div>
+                        </div>
+                      )
+                    })()}
+                  </div>
                   {/* Badge group: Full/Compliance label and verdict badge share height and touch borders */}
                   {(() => {
                     const normalize = (s?: string) => (s || '').toString().trim().toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
