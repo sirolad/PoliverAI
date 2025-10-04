@@ -31,12 +31,15 @@ numpy==1.26.4
 scikit-learn==1.5.1
 requests==2.32.3
 beautifulsoup4==4.12.3 # for scraping GDPR text
-python-docx==0.8.11 # provides `docx` module used by ingestion
+python-docx>=1.1 # provides `docx` module used by ingestion
 
-pdfplumber==0.9.0
+pdfplumber>=0.11
 
 # protobuf constraint to satisfy google-cloud-aiplatform
 protobuf
+
+# Google Cloud Storage client (optional, needed for GCS report uploads)
+google-cloud-storage==2.11.0
 
 # Ensure python-docx is at least a modern release (0.8.11 is available on PyPI)
 python-docx

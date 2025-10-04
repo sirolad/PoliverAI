@@ -10,8 +10,16 @@ from pydantic import BaseModel
 from ....core.config import get_settings
 from ....rag.service import _init
 from ....reporting.exporter import export_report
-from ....storage.gcs_reports import upload_report_if_changed, compute_sha256_for_file
-from ....db.mongo import MongoUserDB
+try:
+    from ....storage.gcs_reports import upload_report_if_changed, compute_sha256_for_file
+except Exception:  # pragma: no cover - optional dependency
+    upload_report_if_changed = None
+    compute_sha256_for_file = None
+
+try:
+    from ....db.mongo import MongoUserDB
+except Exception:  # pragma: no cover - optional dependency
+    MongoUserDB = None
 from fastapi import Header, Request, Depends
 from .auth import CURRENT_USER_DEPENDENCY
 from .verification import CURRENT_USER_OPTIONAL_DEPENDENCY
@@ -526,16 +534,20 @@ async def generate_verification_report(
 
         gcs_url = None
         try:
-            if gcs_bucket and user_id:
+            if gcs_bucket and user_id and upload_report_if_changed:
                 object_path = f"{user_id}/{filename}"
                 uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, filepath)
         except Exception:
+            # Log upload errors so we can diagnose why GCS upload failed
+            import logging
+
+            logging.exception('Failed to upload report to GCS')
             gcs_url = None
 
     # Insert a record into Mongo 'reports' collection if available
         try:
             mongo_uri = os.getenv("MONGO_URI")
-            if mongo_uri:
+            if mongo_uri and MongoUserDB:
                 mdb = MongoUserDB(mongo_uri)
                 # collect additional metadata
                 file_size = None
@@ -556,8 +568,10 @@ async def generate_verification_report(
                 }
                 mdb.db.get_collection("reports").insert_one(report_doc)
         except Exception:
-            # Do not hard-fail report creation if DB logging fails
-            pass
+            # Do not hard-fail report creation if DB logging fails, but log details
+            import logging
+
+            logging.exception('Failed to persist verification report record to Mongo')
 
         # Charge credits for verification report generation for non-PRO users
         try:
@@ -652,15 +666,18 @@ async def download_report(filename: str):
     # Determine media type based on file extension
     media_type = "application/pdf" if filename.endswith(".pdf") else "text/plain"
 
-    return FileResponse(path=str(filepath), filename=filename, media_type=media_type)
+    # Serve inline so it can be rendered inside an iframe/modal in the UI.
+    headers = {"Content-Disposition": f'inline; filename="{filename}"'}
+    return FileResponse(path=str(filepath), filename=filename, media_type=media_type, headers=headers)
 
 
 @router.get("/user-reports")
 async def list_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
     """List reports for the authenticated user."""
     mongo_uri = os.getenv("MONGO_URI")
-    if not mongo_uri:
-        raise HTTPException(status_code=500, detail="MongoDB not configured")
+    if not mongo_uri or not MongoUserDB:
+        # Dev fallback: no persistent reports available; return empty list
+        return []
 
     try:
         mdb = MongoUserDB(mongo_uri)
@@ -684,3 +701,87 @@ async def list_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
         return out
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to list reports: {e}") from e
+
+
+@router.get("/user-reports/count")
+async def count_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
+    """Return the number of saved reports for the authenticated user."""
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri or not MongoUserDB:
+        # Dev fallback: no persistent reports available; return zero
+        return {"count": 0}
+
+    try:
+        mdb = MongoUserDB(mongo_uri)
+        count = mdb.db.get_collection("reports").count_documents({"user_id": current_user.id})
+        return {"count": int(count)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to count reports: {e}") from e
+
+
+class SaveReportRequest(BaseModel):
+    filename: str
+    document_name: str | None = None
+
+
+@router.post("/reports/save", response_model=ReportResponse)
+async def save_report(
+    req: SaveReportRequest, current_user: User = CURRENT_USER_DEPENDENCY
+) -> ReportResponse:
+    """Persist an existing generated report file: upload to GCS (if configured) and insert a DB record."""
+    try:
+        reports_dir = Path("reports")
+        filepath = reports_dir / req.filename
+
+        if not filepath.exists():
+            raise HTTPException(status_code=404, detail="Report file not found")
+
+        # Try upload to GCS if available
+        settings = get_settings()
+        gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_REPORTS_GCS_BUCKET")
+        gcs_url = None
+        try:
+            if gcs_bucket and current_user and upload_report_if_changed:
+                object_path = f"{current_user.id}/{req.filename}"
+                uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, str(filepath))
+        except Exception:
+            # don't fail if upload not possible; continue to insert DB record
+            import logging
+
+            logging.exception('Failed to upload report to GCS on save')
+            gcs_url = None
+
+        # Insert into Mongo 'reports' collection if available
+        try:
+            mongo_uri = os.getenv("MONGO_URI")
+            if mongo_uri and MongoUserDB:
+                mdb = MongoUserDB(mongo_uri)
+                file_size = None
+                try:
+                    file_size = filepath.stat().st_size
+                except Exception:
+                    file_size = None
+
+                report_doc = {
+                    "filename": req.filename,
+                    "path": str(filepath),
+                    "gcs_url": gcs_url,
+                    "user_id": current_user.id,
+                    "document_name": req.document_name or req.filename,
+                    "analysis_mode": "balanced",
+                    "file_size": file_size,
+                    "created_at": datetime.utcnow(),
+                }
+                mdb.db.get_collection("reports").insert_one(report_doc)
+        except Exception:
+            # Swallow DB errors but log them so persistence issues are visible in logs
+            import logging
+
+            logging.exception('Failed to persist saved report record to Mongo')
+
+        return ReportResponse(filename=req.filename, path=str(filepath), download_url=gcs_url or f"/api/v1/reports/download/{req.filename}")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save report: {e}") from e

@@ -85,6 +85,15 @@ class PolicyService {
       throw error
     }
   }
+  
+  async saveReport(filename: string, documentName?: string): Promise<{ filename: string; download_url: string }> {
+    try {
+      return apiService.post<{ filename: string; download_url: string }>('/api/v1/reports/save', { filename, document_name: documentName })
+    } catch (e) {
+      console.warn('saveReport failed', e)
+      throw e
+    }
+  }
   // Convert backend response to frontend UI format
   transformResultForUI(
     result: ComplianceResult,
@@ -121,6 +130,16 @@ class PolicyService {
   async getUserReports(): Promise<import('@/types/api').ReportMetadata[]> {
     // Backend route is mounted at /api/v1 and defines GET /user-reports
     return apiService.get<import('@/types/api').ReportMetadata[]>('/api/v1/user-reports')
+  }
+
+  async getUserReportsCount(): Promise<number> {
+    try {
+      const resp = await apiService.get<{ count: number }>('/api/v1/user-reports/count')
+      return resp?.count ?? 0
+    } catch (e) {
+      console.warn('getUserReportsCount failed', e)
+      return 0
+    }
   }
 
   // Open report in new tab: prefer GCS signed URL if available, otherwise hit download endpoint

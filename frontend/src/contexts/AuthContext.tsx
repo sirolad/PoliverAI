@@ -35,11 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for explicit user update payloads (faster UI update when transaction returns user info)
     const userUpdateHandler = (ev: Event) => {
       try {
-        const detail = (ev as CustomEvent<{ email?: string }>)?.detail
-        if (detail && typeof detail === 'object' && 'email' in detail) {
+        const detail = (ev as CustomEvent<Record<string, unknown>>)?.detail
+        if (detail && typeof detail === 'object') {
           setUser((prev) => {
             const prevObj = (prev ?? {}) as Record<string, unknown>
-            return ({ ...prevObj, ...detail } as User)
+            return ({ ...prevObj, ...detail } as unknown as User)
           })
         }
       } catch (err) {

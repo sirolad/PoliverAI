@@ -13,6 +13,10 @@ export default function PolicyAnalysis() {
   const [userReportsCount, setUserReportsCount] = useState<number | null>(null)
   const [showBar, setShowBar] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [modalUrl, setModalUrl] = useState<string | null>(null)
+  const [modalFilename, setModalFilename] = useState<string | null>(null)
+  const saveProgressIntervalRef = useRef<number | null>(null)
 
   // If progress hits 100 (for any reason) ensure we hide the bar after a short delay
   useEffect(() => {
@@ -22,6 +26,26 @@ export default function PolicyAnalysis() {
     }
     return undefined
   }, [progress])
+
+  // Clear any running progress interval on unmount
+  useEffect(() => {
+    return () => {
+      if (saveProgressIntervalRef.current) {
+        window.clearInterval(saveProgressIntervalRef.current)
+        saveProgressIntervalRef.current = null
+      }
+    }
+  }, [])
+
+  // Fetch initial reports count when component mounts or user authenticates
+  useEffect(() => {
+    if (!isAuthenticated) return
+    let mounted = true
+    policyService.getUserReportsCount().then((n) => {
+      if (mounted) setUserReportsCount(n ?? 0)
+    }).catch(() => {})
+    return () => { mounted = false }
+  }, [isAuthenticated])
 
   // Listen for report generation events from the streaming service and open the report
   useEffect(() => {
@@ -37,7 +61,7 @@ export default function PolicyAnalysis() {
           const filename = typeof path === 'string' ? path.split('/').pop() as string : String(path)
           setReportFilename(filename)
           // Refresh the user's reports list count so Reports UI stays up-to-date
-          policyService.getUserReports().then((r) => setUserReportsCount(r?.length ?? 0)).catch(() => {})
+          policyService.getUserReportsCount().then((n) => setUserReportsCount(n ?? 0)).catch(() => {})
         }
       } catch (err) {
         console.warn('report:generated handler error', err)
@@ -89,6 +113,96 @@ export default function PolicyAnalysis() {
       else if (typeof err === 'string') setMessage(err)
       else setMessage('Analysis failed')
       // hide bar on error after a short pause so user can see failure state
+      setTimeout(() => setShowBar(false), 700)
+    }
+  }
+
+  // Animate a progress bar while an async operation is pending. The returned
+  // stop function should be called when the operation completes (success/fail)
+  const startIndeterminateProgress = (startMessage = 'Working...') => {
+    setShowBar(true)
+    setMessage(startMessage)
+    setProgress(5)
+    if (saveProgressIntervalRef.current) {
+      window.clearInterval(saveProgressIntervalRef.current)
+      saveProgressIntervalRef.current = null
+    }
+    saveProgressIntervalRef.current = window.setInterval(() => {
+      setProgress((cur) => {
+        // increase quickly at first, then slow down; never exceed 90
+        const inc = cur < 50 ? Math.floor(Math.random() * 6) + 5 : Math.floor(Math.random() * 3) + 1
+        return Math.min(90, cur + inc)
+      })
+    }, 300)
+    return () => {
+      if (saveProgressIntervalRef.current) {
+        window.clearInterval(saveProgressIntervalRef.current)
+        saveProgressIntervalRef.current = null
+      }
+    }
+  }
+
+  const handleGenerateReport = async () => {
+    if (!result || !file) return
+    const stop = startIndeterminateProgress('Generating report...')
+    try {
+      // call backend to generate a verification report
+      const resp = await policyService.generateVerificationReport(result, file.name, 'balanced')
+      // set filename returned by backend
+      if (resp?.filename) {
+        setReportFilename(resp.filename)
+        // notify other listeners (streaming path expects this event)
+        try {
+          window.dispatchEvent(new CustomEvent('report:generated', { detail: { path: resp.filename, download_url: resp.download_url } }))
+        } catch (e) {
+          console.warn('dispatch report:generated failed', e)
+        }
+      }
+      setMessage('Report generated')
+      setProgress(100)
+      // refresh user's reports list count
+      try {
+        const n = await policyService.getUserReportsCount()
+        setUserReportsCount(n ?? 0)
+      } catch {
+        console.warn('refresh reports after generate failed')
+      }
+    } catch (e) {
+      console.warn('generate report failed', e)
+      setMessage(e instanceof Error ? e.message : 'Generate failed')
+    } finally {
+      stop()
+      setTimeout(() => setShowBar(false), 700)
+    }
+  }
+
+  const handleSaveReport = async (filename?: string, documentName?: string) => {
+    if (!filename) return
+    const stop = startIndeterminateProgress('Saving report...')
+    try {
+      const resp = await policyService.saveReport(filename, documentName)
+      // backend may return normalized filename / download_url
+      if (resp?.filename) setReportFilename(resp.filename)
+      setMessage('Saved')
+      setProgress(100)
+      // Refresh count after successful save
+      try {
+        const n = await policyService.getUserReportsCount()
+        setUserReportsCount(n ?? 0)
+      } catch (e) {
+        console.warn('refresh after save failed', e)
+      }
+      // Inform other UI parts
+      try {
+        window.dispatchEvent(new CustomEvent('reports:refresh'))
+      } catch {
+        // ignore
+      }
+    } catch (e) {
+      console.warn('save report failed', e)
+      setMessage(e instanceof Error ? e.message : 'Save failed')
+    } finally {
+      stop()
       setTimeout(() => setShowBar(false), 700)
     }
   }
@@ -196,6 +310,9 @@ export default function PolicyAnalysis() {
             <h3 className="font-semibold">Summary</h3>
             <div className="text-sm text-gray-700 mt-2">{result?.summary || 'No result yet'}</div>
           </div>
+
+
+
               <div className="mb-4">
                 <h3 className="font-semibold">Findings ({result?.findings?.length ?? 0})</h3>
                 <div className="text-sm text-gray-700 mt-2 max-h-40 overflow-auto">
@@ -220,9 +337,72 @@ export default function PolicyAnalysis() {
                     <div className="space-y-2">
                       <div className="text-sm">Generated: <span className="font-medium">{reportFilename}</span></div>
                       <div className="flex items-center gap-2 mt-2">
-                        <button onClick={async () => { try { const meta = { filename: reportFilename as string, title: reportFilename as string, type: 'verification' as const, created_at: new Date().toISOString(), file_size: 0, document_name: reportFilename as string }; await (await import('@/services/policyService')).policyService.openReport(meta) } catch (e) { console.warn(e) } }} className="px-3 py-1 bg-blue-600 text-white rounded">Open</button>
-                        <button onClick={async () => { try { await (await import('@/services/policyService')).policyService.downloadReport(reportFilename) } catch (e) { console.warn(e) } }} className="px-3 py-1 bg-gray-100 rounded">Download</button>
-                        <button onClick={async () => { try { const r = await (await import('@/services/policyService')).policyService.getUserReports(); setUserReportsCount(r?.length ?? 0) } catch (e) { console.warn(e) } }} className="px-3 py-1 bg-white border rounded">Refresh</button>
+                        <button
+                          disabled={!reportFilename}
+                          onClick={() => {
+                            if (!reportFilename) return
+                            // Build a fallback URL to the download endpoint if GCS url not available
+                            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+                            const url = `${apiBase}/api/v1/reports/download/${encodeURIComponent(reportFilename as string)}`
+                            setModalUrl(url)
+                            setModalFilename(reportFilename)
+                            setIsModalOpen(true)
+                          }}
+                          className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+                        >
+                          Open
+                        </button>
+
+                        <button
+                          disabled={!reportFilename}
+                          onClick={async () => {
+                            if (!reportFilename) return
+                            try {
+                              await policyService.downloadReport(reportFilename as string)
+                            } catch (e) {
+                              console.warn('download failed', e)
+                            }
+                          }}
+                          className="px-3 py-1 bg-gray-100 rounded disabled:opacity-50"
+                        >
+                          Download
+                        </button>
+
+                        <button
+                          onClick={async () => {
+                            try {
+                              const r = await policyService.getUserReports()
+                              setUserReportsCount(r?.length ?? 0)
+                            } catch (e) {
+                              console.warn('refresh reports failed', e)
+                            }
+                          }}
+                          className="px-3 py-1 bg-white border rounded"
+                        >
+                          Refresh
+                        </button>
+
+                        <button
+                          disabled={!result}
+                          onClick={async () => {
+                            // Generate a report from the current analysis result
+                            await handleGenerateReport()
+                          }}
+                          className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
+                        >
+                          Generate
+                        </button>
+
+                        <button
+                          disabled={!reportFilename}
+                          onClick={async () => {
+                            if (!reportFilename) return
+                            await handleSaveReport(reportFilename as string, reportFilename as string)
+                          }}
+                          className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
+                        >
+                          Save
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -232,8 +412,8 @@ export default function PolicyAnalysis() {
               </div>
         </aside>
 
-  {/* Right: Main result area */}
-  <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
+        {/* Right: Main result area */}
+        <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">Analysis Result</h2>
@@ -242,10 +422,51 @@ export default function PolicyAnalysis() {
             <div className="text-sm text-gray-600">{result ? `${result.verdict} • Score ${result.score}` : ''}</div>
           </div>
 
-            <div className="col-span-2 h-full min-h-0">
-              <pre className="bg-gray-100 p-4 rounded h-full min-h-0 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+            <div className="h-full flex-1 min-h-0">
+              <pre className="bg-gray-100 p-4 rounded h-full min-h-0 overflow-auto w-full">{JSON.stringify(result, null, 2)}</pre>
             </div>
         </main>
+
+      {/* Modal viewer for reports */}
+      {isModalOpen && modalUrl ? (
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-6 bg-black/50">
+          <div className="w-full max-w-5xl bg-white rounded shadow-lg overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2 border-b">
+              <div className="font-semibold">{modalFilename || 'Report'}</div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    if (!modalFilename) return
+                    try {
+                      await policyService.downloadReport(modalFilename)
+                    } catch (e) {
+                      console.warn('modal download failed', e)
+                    }
+                  }}
+                  className="px-3 py-1 bg-gray-100 rounded"
+                >
+                  Download
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!modalFilename) return
+                    await handleSaveReport(modalFilename, modalFilename)
+                  }}
+                  className="px-3 py-1 bg-green-600 text-white rounded"
+                >
+                  Save
+                </button>
+                <a href={modalUrl} target="_blank" rel="noreferrer" className="px-3 py-1 bg-white border rounded">Open in new tab</a>
+                <button onClick={() => setIsModalOpen(false)} className="px-3 py-1 bg-red-600 text-white rounded">Close</button>
+              </div>
+            </div>
+            <div className="h-[80vh]">
+              <iframe src={modalUrl} className="w-full h-full" title={modalFilename || 'report-viewer'} />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       </div>
     </div>
   )

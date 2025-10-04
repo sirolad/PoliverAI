@@ -4,7 +4,7 @@ import hashlib
 import os
 import tempfile
 from datetime import datetime
-from typing import Tuple
+from typing import Tuple, Optional
 
 try:
     from google.cloud import storage
@@ -23,13 +23,19 @@ def compute_sha256_for_file(path: str) -> str:
     return h.hexdigest()
 
 
-def upload_report_if_changed(bucket_name: str, object_path: str, local_path: str) -> Tuple[bool, str]:
+def upload_report_if_changed(bucket_name: str, object_path: str, local_path: str) -> Tuple[bool, Optional[str]]:
     """
     Uploads local_path to GCS bucket in object_path only if the stored object's sha256 metadata
     does not match the computed sha256 for local_path. Returns (uploaded, gcs_object_path).
     """
     if storage is None:
-        raise RuntimeError("google-cloud-storage is not available")
+        # Optional dependency not installed; log and return no-op so callers can continue
+        logger.warning(
+            "google-cloud-storage not available; skipping upload for gs://%s/%s",
+            bucket_name,
+            object_path,
+        )
+        return False, None
     client = storage.Client()
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(object_path)
