@@ -193,6 +193,10 @@ export default function Reports() {
     return true
   })
 
+  // selection summary for UI labels
+  const selectedCount = Object.keys(selectedFiles).filter((k) => selectedFiles[k]).length
+  const allOnPageSelected = filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])
+
   return (
     <div className="min-h-screen p-8">
       <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
@@ -210,7 +214,7 @@ export default function Reports() {
             }}
             className="px-3 py-1 bg-red-600 text-white rounded"
           >
-            Delete Selected
+            {allOnPageSelected ? 'Delete All' : 'Delete Selected'}
           </button>
           <ConfirmBulkDeleteModal
             open={bulkDeleteOpen}
