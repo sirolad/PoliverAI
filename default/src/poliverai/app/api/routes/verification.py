@@ -17,8 +17,10 @@ from ....domain.auth import User, UserTier
 from ....ingestion.readers.docx_reader import read_docx_text
 from ....ingestion.readers.html_reader import read_html_text
 from ....ingestion.readers.pdf_reader import read_pdf_text
+from ....reporting.exporter import export_report
 from ....rag.verification import analyze_policy
 from ....rag.verification import analyze_policy_stream
+from ....core.config import get_settings
 
 
 class ClauseMatch(BaseModel):
@@ -104,6 +106,8 @@ async def verify(
     analysis_mode: str | None = Form(
         "fast", description="Analysis mode: 'fast', 'balanced', or 'detailed'"
     ),
+    ingest: bool = Form(False, description="If true, ingest the uploaded file into the RAG store after analysis"),
+    generate_report: bool = Form(False, description="If true, generate a PDF report after analysis"),
     current_user: User | None = CURRENT_USER_OPTIONAL_DEPENDENCY,
 ) -> ComplianceResult:
     # Handle different file types properly
@@ -115,7 +119,7 @@ async def verify(
     filename = file.filename or "upload.txt"
     file_ext = Path(filename).suffix.lower()
 
-    # Create temporary file with proper extension
+    # Create temporary file with proper extension and keep until ingestion/report complete
     tmpdir = Path(tempfile.mkdtemp(prefix="poliverai_verify_temp_"))
     temp_file = tmpdir / f"upload{file_ext}"
     temp_file.write_bytes(raw)
@@ -134,13 +138,14 @@ async def verify(
                 text = raw.decode("utf-8", errors="ignore")
             except Exception:
                 text = ""
-    finally:
-        # Clean up temp file
+    except Exception as e:
+        # Clean up on failure to extract
         try:
             temp_file.unlink(missing_ok=True)
             tmpdir.rmdir()
-        except Exception as e:
-            logging.warning(f"Failed to cleanup temp file: {e}")
+        except Exception:
+            pass
+        raise
 
     # Check user tier and restrict analysis modes for free users
     effective_mode = analysis_mode or "fast"
@@ -161,6 +166,37 @@ async def verify(
 
     # Run RAG-based verification over clauses with specified analysis mode
     result = analyze_policy(text, analysis_mode=effective_mode)
+
+    # Optionally ingest the original file into the RAG store so it is available
+    # for future queries. This is optional because ingestion can be expensive.
+    if ingest:
+        try:
+            from ....rag.service import ingest_paths
+
+            stats = ingest_paths([str(temp_file)])
+            logging.info("Ingested file %s -> %s", temp_file, stats)
+        except Exception:
+            logging.exception("Failed to ingest file %s", temp_file)
+
+    # Optionally generate a PDF report from the analysis result
+    if generate_report:
+        try:
+            # Create a simple markdown summary for the report
+            md_lines = [f"# Compliance Report\n", f"**Verdict:** {result.get('verdict')}\n", f"**Score:** {result.get('score')}\n", f"**Summary:** {result.get('summary')}\n\n", "## Findings\n"]
+            for f in result.get('findings', []):
+                md_lines.append(f"- {f.get('article')}: {f.get('issue')}\n")
+            md = "\n".join(md_lines)
+            report_path = export_report(md, out_dir=get_settings().reports_dir)
+            logging.info("Generated report: %s", report_path)
+        except Exception:
+            logging.exception("Failed to generate report for %s", temp_file)
+
+    # Clean up temporary file and directory after optional ingest/report
+    try:
+        temp_file.unlink(missing_ok=True)
+        tmpdir.rmdir()
+    except Exception as e:
+        logging.warning(f"Failed to cleanup temp file: {e}")
 
     # PERFORMANCE OPTIMIZATION: Skip RAG ingestion for verification-only requests
     # This optional step can add significant latency. Users can use the separate
@@ -217,6 +253,8 @@ async def verify_stream(
     analysis_mode: str | None = Form(
         "fast", description="Analysis mode: 'fast', 'balanced', or 'detailed'"
     ),
+    ingest: bool = Form(False, description="If true, ingest the uploaded file into the RAG store after analysis"),
+    generate_report: bool = Form(False, description="If true, generate a PDF report after analysis"),
     current_user: User | None = CURRENT_USER_OPTIONAL_DEPENDENCY,
 ) -> StreamingResponse:
     """Stream policy verification with real-time progress updates."""
@@ -346,20 +384,50 @@ async def verify_stream(
             async for s in _yield_from_queue():
                 yield s
 
-            # Ensure task completed and propagate any exception as an SSE error
+            # Ensure analysis task completed and capture result
+            result = None
             try:
                 result = await task
-                # If the analysis finished but didn't emit a 'completed' event, emit result
-                await q.put({"event": "completed", "data": result})
-                # Yield the final result
-                payload = json.dumps({"event": "completed", "data": result})
-                yield f"data: {payload}\n\n"
             except Exception as e:
+                # Emit error event
                 err = {"event": "error", "data": {"message": f"Analysis failed: {str(e)}"}}
                 try:
                     yield f"data: {json.dumps(err)}\n\n"
                 except Exception:
                     yield f"data: {json.dumps({'event': 'error', 'data': {'message': 'Unknown analysis failure'}})}\n\n"
+                return
+
+            # Emit completed if not already emitted
+            try:
+                await q.put({"event": "completed", "data": result})
+                payload = json.dumps({"event": "completed", "data": result})
+                yield f"data: {payload}\n\n"
+            except Exception:
+                pass
+
+            # Optionally ingest the file and emit events
+            if ingest:
+                try:
+                    await q.put({"event": "ingest_started", "data": {}})
+                    from ....rag.service import ingest_paths
+
+                    stats = ingest_paths([str(temp_file)])
+                    await q.put({"event": "ingest_completed", "data": stats})
+                except Exception as e:
+                    await q.put({"event": "ingest_failed", "data": {"message": str(e)}})
+
+            # Optionally generate report and emit events
+            if generate_report:
+                try:
+                    await q.put({"event": "report_started", "data": {}})
+                    md_lines = [f"# Compliance Report\n", f"**Verdict:** {result.get('verdict')}\n", f"**Score:** {result.get('score')}\n", f"**Summary:** {result.get('summary')}\n\n", "## Findings\n"]
+                    for f in result.get('findings', []):
+                        md_lines.append(f"- {f.get('article')}: {f.get('issue')}\n")
+                    md = "\n".join(md_lines)
+                    rp = export_report(md, out_dir=get_settings().reports_dir)
+                    await q.put({"event": "report_completed", "data": {"path": rp}})
+                except Exception as e:
+                    await q.put({"event": "report_failed", "data": {"message": str(e)}})
         finally:
             # Attempt to cancel the background task if it's still running
             if task and not task.done():

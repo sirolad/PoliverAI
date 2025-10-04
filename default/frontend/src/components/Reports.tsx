@@ -75,7 +75,7 @@ export default function Reports() {
 
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-4">Your Reports</h1>
+      <h1 className="text-3xl font-bold mb-4">Your Reports</h1>
       {isLoading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
       <div className="space-y-4">
