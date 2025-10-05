@@ -7,6 +7,10 @@ services:
     container_name: poliverai-backend
     env_file:
       - ./.env
+    # The backend will read MONGO_URI from the environment. For local development
+    # you can set MONGO_URI in .env to point at a local mongo or an Atlas URI.
+    environment:
+      - MONGO_URI
     ports:
       - "8000:8000"
     volumes:

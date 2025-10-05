@@ -1,3 +1,16 @@
+# Ignore local secrets and environment files
+.env
+key.json
+/.git
+/.venv
+venv/
+__pycache__
+*.py[cod]
+node_modules
+frontend/node_modules
+dist
+build
+*.log
 .venv
 __pycache__
 *.pyc
