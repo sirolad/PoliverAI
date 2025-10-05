@@ -632,33 +632,71 @@ async def list_transactions(request: Request):
 
     Returns list of transaction records and a balance (sum of credits).
     """
-    # Allow unauthenticated access to this endpoint for finalization flows
-    # that return from external checkout redirects (Stripe). If an
-    # Authorization header is present, verify it; otherwise proceed and
-    # rely on the stored transaction (which includes user_email) to
-    # identify and finalize the transaction. If an auth token is present
-    # but does not match the transaction owner, reject with 403.
     auth_header = request.headers.get('authorization')
     email = None
     if auth_header and auth_header.lower().startswith('bearer '):
         token = auth_header.split(' ', 1)[1]
         email = verify_token(token)
         if not email:
-            # Provided token is invalid
             raise HTTPException(status_code=401, detail='Invalid token')
 
-    # list_transactions requires authentication and will fail if no valid token
-
     try:
-        # Fetch full list from storage (storage may be Mongo-backed or in-memory)
-        items = transactions.list_for_user(email)
-        if items is None:
-            items = []
+        # Fetch transactions (may be in-memory or Mongo-backed)
+        items = transactions.list_for_user(email) or []
 
-        # Compute total spent credits (sum of negative credit events) across all items
+        # total spent credits (negative credit events)
         total_spent_credits = sum((-(int(i.get('credits', 0) or 0)) if (int(i.get('credits', 0) or 0) < 0) else 0) for i in items)
 
-        # Pagination query parameters: page (1-based) and limit
+        # Parse optional date filters
+        qp = request.query_params
+        date_from = None
+        date_to = None
+        if 'date_from' in qp and qp.get('date_from'):
+            try:
+                date_from = datetime.fromisoformat(qp.get('date_from'))
+            except Exception:
+                try:
+                    date_from = datetime.strptime(qp.get('date_from'), "%Y-%m-%d")
+                except Exception:
+                    date_from = None
+        if 'date_to' in qp and qp.get('date_to'):
+            try:
+                date_to = datetime.fromisoformat(qp.get('date_to'))
+            except Exception:
+                try:
+                    date_to = datetime.strptime(qp.get('date_to'), "%Y-%m-%d")
+                except Exception:
+                    date_to = None
+            if date_to:
+                date_to = date_to.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        # If date filters provided, filter items by timestamp
+        if date_from or date_to:
+            def ts_to_dt(it_ts):
+                try:
+                    if isinstance(it_ts, datetime):
+                        return it_ts
+                    return datetime.fromisoformat(str(it_ts))
+                except Exception:
+                    try:
+                        return datetime.strptime(str(it_ts), "%Y-%m-%dT%H:%M:%S")
+                    except Exception:
+                        return None
+
+            filtered = []
+            for it in items:
+                ts = it.get('timestamp')
+                dt = ts_to_dt(ts)
+                if not dt:
+                    continue
+                if date_from and dt < date_from:
+                    continue
+                if date_to and dt > date_to:
+                    continue
+                filtered.append(it)
+            items = filtered
+
+        # Pagination
         qp = request.query_params
         page = None
         limit = None
@@ -679,7 +717,7 @@ async def list_transactions(request: Request):
 
         total_count = len(items)
 
-        # Normalize any datetime objects to ISO strings so JSONResponse can serialize
+        # Normalize timestamps for JSON
         for it in items:
             try:
                 ts = it.get('timestamp')
@@ -688,7 +726,6 @@ async def list_transactions(request: Request):
             except Exception:
                 pass
 
-        # Apply pagination (server-side slicing) if both page and limit are provided
         paged_items = items
         total_pages = 1
         if page is not None and limit is not None:
@@ -698,6 +735,41 @@ async def list_transactions(request: Request):
             total_pages = max(1, (total_count + limit - 1) // limit)
 
         total_credits = sum(int(i.get('credits', 0) or 0) for i in items)
+
+        def is_success(it: dict) -> bool:
+            s = str(it.get('status') or '').lower()
+            if s in ('completed', 'success'):
+                return True
+            et = str(it.get('event_type') or '').lower()
+            if 'completed' in et or 'success' in et:
+                return True
+            return False
+
+        total_bought_credits = 0
+        total_subscription_credits = 0
+        total_subscription_usd = 0.0
+        for it in items:
+            try:
+                credits = int(it.get('credits', 0) or 0)
+            except Exception:
+                credits = 0
+            et = str(it.get('event_type') or '').lower()
+            try:
+                amount = float(it.get('amount_usd') or 0.0)
+            except Exception:
+                amount = 0.0
+            success = is_success(it)
+            if ('subscription' in et) or ('subs' in et):
+                if success and credits > 0:
+                    total_subscription_credits += credits
+                if success and amount:
+                    total_subscription_usd += amount
+                continue
+            if 'task' in et:
+                continue
+            if success and credits > 0:
+                total_bought_credits += credits
+
         resp = {
             'transactions': paged_items,
             'balance': total_credits,
@@ -706,10 +778,15 @@ async def list_transactions(request: Request):
             'page': page or 1,
             'limit': limit or total_count,
             'total_spent_credits': total_spent_credits,
+            'total_bought_credits': total_bought_credits,
+            'total_subscription_credits': total_subscription_credits,
+            'total_subscription_usd': total_subscription_usd,
         }
+
         return JSONResponse(resp)
+    except HTTPException:
+        raise
     except Exception as e:
-        # Log full traceback for debugging in dev
         logger.error('Failed to list transactions for email=%s: %s', email, e)
         logger.debug(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f'Failed to list transactions: {e}') from e

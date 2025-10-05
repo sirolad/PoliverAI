@@ -287,6 +287,41 @@ export default function Reports() {
                 deleted.forEach((d) => { delete newSel[d] })
                 setSelectedFiles(newSel)
 
+                // Classify deleted files by type using the reports array we just updated
+                try {
+                  const deletedMeta = results.filter((r) => r.deleted).map((r) => r.filename)
+                  const deletedDetails = deletedMeta.map((fn) => {
+                    const found = reports.find((x) => x.filename === fn)
+                    return {
+                      filename: fn,
+                      is_full_report: !!(found && found.is_full_report),
+                      is_revision: !!(found && found.type === 'revision'),
+                      is_free: !!(found && ((found.analysis_mode || '').toString() === 'fast')),
+                    }
+                  })
+
+                  // Increment local counters (persisted) so the Dashboard can show a running track record
+                  try {
+                    const key = 'poliverai.deleted_report_counts'
+                    const existingRaw = localStorage.getItem(key)
+                    const existing = existingRaw ? JSON.parse(existingRaw) : { full: 0, revision: 0, free: 0 }
+                    let { full, revision, free } = existing
+                    deletedDetails.forEach((d) => {
+                      if (d.is_full_report) full += 1
+                      if (d.is_revision) revision += 1
+                      if (d.is_free) free += 1
+                    })
+                    const updated = { full, revision, free }
+                    localStorage.setItem(key, JSON.stringify(updated))
+                    // dispatch a global event with the breakdown
+                    window.dispatchEvent(new CustomEvent('reports:deleted', { detail: { counts: updated, filenames: deletedMeta } }))
+                  } catch (e) {
+                    console.warn('Failed to persist deleted report counts', e)
+                  }
+                } catch (e) {
+                  console.warn('Failed to classify deleted reports', e)
+                }
+
                 if (failed.length === 0) {
                   setModalSuccess(true)
                   setModalTitle(`Deleted ${deleted.length} report${deleted.length !== 1 ? 's' : ''}`)

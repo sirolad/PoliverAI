@@ -12,7 +12,8 @@ services:
     environment:
       - PYTHONPATH=src
       # Connect to local Mongo service started below
-      - MONGO_URI=mongodb://mongo:27017/poliverai
+      # Enable in dev by uncommenting
+      # - MONGO_URI=mongodb://mongo:27017/poliverai
       # Ensure Google ADC and our code use the mounted key.json absolute path
       - GOOGLE_APPLICATION_CREDENTIALS=/app/key.json
       - POLIVERAI_GCS_CREDENTIALS_JSON=/app/key.json

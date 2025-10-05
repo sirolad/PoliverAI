@@ -702,30 +702,103 @@ async def generate_verification_report(
 
 
 @router.post("/generate-revision", response_model=ReportResponse)
-async def generate_policy_revision(req: PolicyRevisionRequest) -> ReportResponse:
-    """Generate a revised policy document that addresses compliance issues."""
+async def generate_policy_revision(req: PolicyRevisionRequest, current_user: User = CURRENT_USER_DEPENDENCY) -> ReportResponse:
+    """Generate a revised policy document that addresses compliance issues.
+
+    Pre-charge the authenticated user (10 credits) before making the AI call.
+    If generation or persistence fails, attempt to refund.
+    """
     try:
-        # Generate the revised policy
-        revised_policy = _generate_revised_policy(req)
+        from ....db.users import user_db
+        from ....db.transactions import transactions
 
-        # Save the revised policy
-        reports_dir = Path("reports")
+        COST = 10
+        charged = False
+
+        # Require auth and pre-charge
+        if current_user is None:
+            raise HTTPException(status_code=401, detail='Authentication required to generate policy revision')
+
+        user_record = user_db.get_user_by_id(current_user.id)
+        if not user_record or (user_record.credits or 0) < COST:
+            raise HTTPException(status_code=402, detail='Insufficient credits to generate revised policy')
+
+        deducted = False
+        try:
+            deducted = user_db.update_user_credits(current_user.id, -int(COST))
+        except Exception:
+            deducted = False
+
+        if not deducted and MongoUserDB:
+            try:
+                mdb_try = MongoUserDB(os.getenv('MONGO_URI'))
+                deducted = mdb_try.update_user_credits(current_user.id, -int(COST))
+            except Exception:
+                deducted = False
+
+        if not deducted:
+            raise HTTPException(status_code=500, detail='Failed to deduct credits for revised policy generation')
+
+        usd = round(COST / 10.0, 2)
+        tx = {
+            'user_email': current_user.email,
+            'event_type': 'charge_revised_policy',
+            'amount_usd': -usd,
+            'credits': -int(COST),
+            'description': f'Charge: {int(COST)} credits for revised policy generation',
+            'timestamp': datetime.utcnow(),
+        }
+        try:
+            transactions.add(tx)
+            charged = True
+        except Exception:
+            # log but continue; credits were already deducted
+            import logging
+
+            logging.exception('Failed to record transaction for revised policy pre-charge')
+
+        # Perform the AI revision
+        try:
+            revised_policy = _generate_revised_policy(req)
+        except Exception as e:
+            # refund if charged
+            if charged:
+                try:
+                    user_db.update_user_credits(current_user.id, int(COST))
+                except Exception:
+                    if MongoUserDB:
+                        try:
+                            mdb_rf = MongoUserDB(os.getenv('MONGO_URI'))
+                            mdb_rf.update_user_credits(current_user.id, int(COST))
+                        except Exception:
+                            pass
+                try:
+                    refund_tx = {
+                        'user_email': current_user.email,
+                        'event_type': 'refund_revised_policy_generation',
+                        'amount_usd': round(COST/10.0, 2),
+                        'credits': int(COST),
+                        'description': 'Refund: failed revised policy generation',
+                        'timestamp': datetime.utcnow(),
+                    }
+                    transactions.add(refund_tx)
+                except Exception:
+                    pass
+            raise HTTPException(status_code=500, detail=f'Failed to generate revised policy: {e}') from e
+
+        # Save the revised policy to disk and persist metadata
+        reports_dir = Path('reports')
         reports_dir.mkdir(parents=True, exist_ok=True)
-        ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+        ts = datetime.utcnow().strftime('%Y%m%d-%H%M%S')
 
-        # Clean document name for filename
-        clean_name = "".join(
-            c for c in req.document_name if c.isalnum() or c in (" ", "-", "_")
-        ).rstrip()
-        clean_name = clean_name.replace(" ", "-") if clean_name else "policy"
-
-        filename = f"revised-{clean_name}-{ts}.txt"
+        clean_name = ''.join(c for c in (req.document_name or 'policy') if c.isalnum() or c in (' ', '-', '_')).rstrip()
+        clean_name = clean_name.replace(' ', '-') if clean_name else 'policy'
+        filename = f'revised-{clean_name}-{ts}.txt'
         filepath = reports_dir / filename
 
-        # Add header to revised document
         header = f"""
 # REVISED PRIVACY POLICY
-# Generated: {datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")}
+# Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
 # Original: {req.document_name}
 # Revision Mode: {req.revision_mode}
 # Generated by: PoliverAI GDPR Compliance System
@@ -735,18 +808,57 @@ async def generate_policy_revision(req: PolicyRevisionRequest) -> ReportResponse
 """
 
         full_content = header + revised_policy
-        filepath.write_text(full_content, encoding="utf-8")
+        filepath.write_text(full_content, encoding='utf-8')
 
-        return ReportResponse(
-            filename=filename,
-            path=str(filepath),
-            download_url=f"/api/v1/reports/download/{filename}",
-        )
+        # Try to persist a report document and upload to GCS
+        try:
+            mongo_uri = os.getenv('MONGO_URI')
+            settings = get_settings()
+            gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv('POLIVERAI_REPORTS_GCS_BUCKET')
+            gcs_url = None
+            if gcs_bucket and upload_report_if_changed:
+                try:
+                    object_path = f"{current_user.id}/{filename}"
+                    uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, str(filepath))
+                except Exception:
+                    gcs_url = None
 
+            if mongo_uri and MongoUserDB:
+                mdb = MongoUserDB(mongo_uri)
+                file_size = None
+                try:
+                    file_size = filepath.stat().st_size
+                except Exception:
+                    file_size = None
+
+                coll = mdb.db.get_collection('reports')
+                report_doc = {
+                    'filename': filename,
+                    'path': str(filepath),
+                    'gcs_url': gcs_url,
+                    'user_id': current_user.id,
+                    'document_name': req.document_name,
+                    'analysis_mode': req.revision_mode,
+                    'is_full_report': False,
+                    'score': None,
+                    'verdict': None,
+                    'type': 'revision',
+                    'file_size': file_size,
+                    'created_at': datetime.utcnow(),
+                    'charged': bool(charged),
+                }
+                coll.insert_one(report_doc)
+        except Exception:
+            import logging
+
+            logging.exception('Failed to persist revised policy record to Mongo or upload to GCS')
+
+        return ReportResponse(filename=filename, path=str(filepath), download_url=f'/api/v1/reports/download/{filename}')
+
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to generate revised policy: {str(e)}"
-        ) from e
+        raise HTTPException(status_code=500, detail=f'Failed to generate revised policy: {str(e)}') from e
 
 
 @router.get("/reports/download/{filename}")
@@ -771,6 +883,9 @@ async def list_user_reports(
     current_user: User = CURRENT_USER_DEPENDENCY,
     page: int | None = None,
     limit: int | None = None,
+    date_from: str | None = None,
+    date_to: str | None = None,
+    analysis_mode: str | None = None,
 ) :
     """List reports for the authenticated user.
 
@@ -785,9 +900,36 @@ async def list_user_reports(
 
     try:
         mdb = MongoUserDB(mongo_uri)
-        cursor = mdb.db.get_collection("reports").find({"user_id": current_user.id}).sort(
-            "created_at", -1
-        )
+        coll = mdb.db.get_collection("reports")
+        # Build filter with optional date range and analysis_mode
+        query: dict = {"user_id": current_user.id}
+        try:
+            if analysis_mode:
+                query["analysis_mode"] = analysis_mode
+            if date_from or date_to:
+                created_q: dict = {}
+                if date_from:
+                    # accept YYYY-MM-DD or full ISO strings
+                    try:
+                        dt_from = datetime.fromisoformat(date_from)
+                    except Exception:
+                        dt_from = datetime.strptime(date_from, "%Y-%m-%d")
+                    created_q["$gte"] = dt_from
+                if date_to:
+                    try:
+                        dt_to = datetime.fromisoformat(date_to)
+                    except Exception:
+                        dt_to = datetime.strptime(date_to, "%Y-%m-%d")
+                    # include whole day for 'to' date
+                    dt_to = dt_to.replace(hour=23, minute=59, second=59, microsecond=999999)
+                    created_q["$lte"] = dt_to
+                if created_q:
+                    query["created_at"] = created_q
+        except Exception:
+            # If parsing fails, ignore date filters and continue
+            query = {"user_id": current_user.id}
+
+        cursor = coll.find(query).sort("created_at", -1)
         out = []
         for doc in cursor:
             out.append(
@@ -996,7 +1138,7 @@ async def bulk_delete_reports(req: BulkDeleteRequest, current_user: User = CURRE
 
 
 @router.get("/user-reports/count")
-async def count_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
+async def count_user_reports(current_user: User = CURRENT_USER_DEPENDENCY, date_from: str | None = None, date_to: str | None = None, analysis_mode: str | None = None):
     """Return the number of saved reports for the authenticated user."""
     mongo_uri = os.getenv("MONGO_URI")
     if not mongo_uri or not MongoUserDB:
@@ -1005,7 +1147,32 @@ async def count_user_reports(current_user: User = CURRENT_USER_DEPENDENCY):
 
     try:
         mdb = MongoUserDB(mongo_uri)
-        count = mdb.db.get_collection("reports").count_documents({"user_id": current_user.id})
+        coll = mdb.db.get_collection("reports")
+        query: dict = {"user_id": current_user.id}
+        try:
+            if analysis_mode:
+                query["analysis_mode"] = analysis_mode
+            if date_from or date_to:
+                created_q: dict = {}
+                if date_from:
+                    try:
+                        dt_from = datetime.fromisoformat(date_from)
+                    except Exception:
+                        dt_from = datetime.strptime(date_from, "%Y-%m-%d")
+                    created_q["$gte"] = dt_from
+                if date_to:
+                    try:
+                        dt_to = datetime.fromisoformat(date_to)
+                    except Exception:
+                        dt_to = datetime.strptime(date_to, "%Y-%m-%d")
+                    dt_to = dt_to.replace(hour=23, minute=59, second=59, microsecond=999999)
+                    created_q["$lte"] = dt_to
+                if created_q:
+                    query["created_at"] = created_q
+        except Exception:
+            query = {"user_id": current_user.id}
+
+        count = coll.count_documents(query)
         return {"count": int(count)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to count reports: {e}") from e

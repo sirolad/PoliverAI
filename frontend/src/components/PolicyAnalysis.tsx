@@ -359,6 +359,68 @@ export default function PolicyAnalysis() {
             >
               {isFullReportGenerated ? 'Save Full Report' : 'Save Report (costs credits)'}
             </Button>
+            {/* Generate revised policy button - visible only after full report generated */}
+            {isFullReportGenerated && (
+              <Button
+                disabled={!isFullReportGenerated || !result}
+                onClick={async () => {
+                  if (!result) return
+                  const stop = startIndeterminateProgress('Generating revised policy...')
+                  try {
+                    // Call backend to generate a revised policy; this endpoint charges credits server-side
+                    const original = (file ? await file.text() : '') || ''
+                    const resp = await policyService.generatePolicyRevision(
+                      original,
+                      result.findings || [],
+                      result.recommendations || [],
+                      result.evidence || [],
+                      file?.name || 'policy',
+                      'comprehensive'
+                    )
+                    if (resp?.filename) {
+                      // mark that a revised policy exists and allow saving
+                      setReportFilename(resp.filename)
+                      // change the save button label to indicate saving revised policy
+                      // (we rely on filename prefix to indicate revision)
+                      setMessage('Revised policy generated')
+                      // Refresh reports count and user credits
+                      try {
+                        const n = await policyService.getUserReportsCount()
+                        setUserReportsCount(n ?? 0)
+                      } catch (e) {
+                        console.warn('refresh reports after revision failed', e)
+                      }
+                      try {
+                        await refreshUser()
+                      } catch (e) {
+                        console.warn('refreshUser after revision failed', e)
+                      }
+                      try {
+                        window.dispatchEvent(new CustomEvent('transactions:refresh'))
+                        window.dispatchEvent(new CustomEvent('payment:refresh-user'))
+                        window.dispatchEvent(new CustomEvent('reports:refresh'))
+                      } catch {}
+                    }
+                  } catch (e) {
+                    try {
+                      const anyErr = e as any
+                      if (anyErr && anyErr.status === 402) setInsufficientOpen(true)
+                    } catch {}
+                    console.warn('generate revision failed', e)
+                    setMessage('Revision failed')
+                  } finally {
+                    stop()
+                    setTimeout(() => setShowBar(false), 700)
+                  }
+                }}
+                className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50"
+                icon={<Lightbulb className="h-4 w-4" />}
+                iconColor="text-white"
+                collapseToIcon
+              >
+                Generate Revised Policy
+              </Button>
+            )}
           </div>
         ) : null}
       </div>
@@ -691,6 +753,7 @@ export default function PolicyAnalysis() {
             setReportFilename((cur) => (cur === fn ? null : cur))
             policyService.getUserReportsCount().then((n) => setUserReportsCount(n ?? 0)).catch(() => {})
           }}
+          onInsufficient={() => setInsufficientOpen(true)}
         />
       ) : null}
 

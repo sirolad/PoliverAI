@@ -12,9 +12,10 @@ type Props = {
   onSaved?: (filename: string) => void
   onDeleted?: (filename: string) => void
   isQuick?: boolean
+  onInsufficient?: () => void
 }
 
-export default function ReportViewerModal({ reportUrl, filename, title, onClose, onSaved, onDeleted, isQuick }: Props) {
+export default function ReportViewerModal({ reportUrl, filename, title, onClose, onSaved, onDeleted, isQuick, onInsufficient }: Props) {
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [pendingTitle, setPendingTitle] = useState<string | null>(null)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
@@ -66,19 +67,26 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
           open={titleModalOpen}
           initial={pendingTitle ?? ''}
           onClose={() => setTitleModalOpen(false)}
-          onConfirm={async (docTitle: string) => {
+            onConfirm={async (docTitle: string) => {
             if (!filename) return
             try {
               const resp = await policyService.saveReport(filename, docTitle, { is_quick: !!isQuick })
               if (onSaved) onSaved(resp.filename)
             } catch (err) {
               console.warn('save with title failed', err)
-              try {
-                const anyErr = err as any
-                if (anyErr && anyErr.status === 402) setInsufficientOpen(true)
-              } catch {
-                // ignore
-              }
+                try {
+                  const unknownErr = err as unknown
+                  const maybeErr = unknownErr as { status?: number }
+                  if (maybeErr && maybeErr.status === 402) {
+                    setInsufficientOpen(true)
+                    if (typeof onInsufficient === 'function') onInsufficient()
+                  } else {
+                    throw err
+                  }
+                } catch (innerErr) {
+                  // If it's not a 402 we still log it; other consumers may handle it
+                  console.warn('save with title unexpected error', innerErr)
+                }
             }
           }}
         />
@@ -91,13 +99,20 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
             try {
               await policyService.deleteReport(filename)
               if (onDeleted) onDeleted(filename)
+              // Emit a global event so other UI (Dashboard) can track deletions
+              try {
+                window.dispatchEvent(new CustomEvent('reports:deleted', { detail: { filenames: [filename] } }))
+              } catch (e) {
+                console.warn('Failed to dispatch reports:deleted event', e)
+              }
               setConfirmDeleteOpen(false)
             } catch (e) {
               console.warn('delete failed', e)
             }
-            <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
+            
           }}
         />
+        <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
       </div>
     </div>
   )

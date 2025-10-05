@@ -54,6 +54,24 @@ class PolicyService {
       reportRequest
     )
   }
+  async generatePolicyRevision(
+    original: string,
+    findings: Array<Record<string, any>>,
+    recommendations: Array<Record<string, any>>,
+    evidence: Array<Record<string, any>>,
+    documentName?: string,
+    revisionMode: 'comprehensive' | 'minimal' | 'targeted' = 'comprehensive'
+  ): Promise<{ filename: string; download_url: string }> {
+    const payload = {
+      original_document: original,
+      findings,
+      recommendations,
+      evidence,
+      document_name: documentName,
+      revision_mode: revisionMode,
+    }
+    return apiService.post<{ filename: string; download_url: string }>('/api/v1/generate-revision', payload)
+  }
   async downloadReport(filename: string): Promise<void> {
     const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(filename)}`
     try {
@@ -133,7 +151,7 @@ class PolicyService {
     return analysisType === 'basic' ? 'fast' : 'balanced'
   }
   // List user reports from backend
-  async getUserReports(opts?: { page?: number; limit?: number }): Promise<{
+  async getUserReports(opts?: { page?: number; limit?: number; date_from?: string | null; date_to?: string | null }): Promise<{
     reports?: import('@/types/api').ReportMetadata[]
     total?: number
     total_pages?: number
@@ -142,7 +160,11 @@ class PolicyService {
   }> {
     // Backend route is mounted at /api/v1 and defines GET /user-reports
     let url = '/api/v1/user-reports'
-    if (opts?.page && opts?.limit) url += `?page=${opts.page}&limit=${opts.limit}`
+    const qs: string[] = []
+    if (opts?.page && opts?.limit) qs.push(`page=${opts.page}`, `limit=${opts.limit}`)
+    if (opts?.date_from) qs.push(`date_from=${encodeURIComponent(opts.date_from)}`)
+    if (opts?.date_to) qs.push(`date_to=${encodeURIComponent(opts.date_to)}`)
+    if (qs.length) url += `?${qs.join('&')}`
     return apiService.get<{
       reports?: import('@/types/api').ReportMetadata[]
       total?: number
@@ -156,9 +178,16 @@ class PolicyService {
     return apiService.get<{ verdicts: string[] }>('/api/v1/reports/verdicts')
   }
 
-  async getUserReportsCount(): Promise<number> {
+  // Optionally accept filters (date range, analysis_mode) to let the backend return a filtered count
+  async getUserReportsCount(opts?: { date_from?: string | null; date_to?: string | null; analysis_mode?: string | null }): Promise<number> {
     try {
-      const resp = await apiService.get<{ count: number }>('/api/v1/user-reports/count')
+      let url = '/api/v1/user-reports/count'
+      const qs: string[] = []
+      if (opts?.date_from) qs.push(`date_from=${encodeURIComponent(opts.date_from)}`)
+      if (opts?.date_to) qs.push(`date_to=${encodeURIComponent(opts.date_to)}`)
+      if (opts?.analysis_mode) qs.push(`analysis_mode=${encodeURIComponent(opts.analysis_mode)}`)
+      if (qs.length) url += `?${qs.join('&')}`
+      const resp = await apiService.get<{ count: number }>(url)
       return resp?.count ?? 0
     } catch (e) {
       console.warn('getUserReportsCount failed', e)

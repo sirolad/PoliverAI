@@ -11,11 +11,28 @@ import {
   Zap,
   Upload,
   Star,
-  Lock
+  Lock,
+  CreditCard,
+  Trash2
 } from 'lucide-react'
 import { ArrowRight, RefreshCcw } from 'lucide-react'
 import PaymentsService from '@/services/payments'
+import policyService from '@/services/policyService'
+import type { ReportMetadata } from '@/types/api'
+import transactionsService from '@/services/transactions'
 import Splash from '@/components/ui/Splash'
+
+// Pricing accessor (server must enforce; this view is only for display).
+// Use a runtime lookup to avoid module cyclic/TDZ issues when modules import each other.
+const getCost = (key: string | undefined): { credits: number; usd: number } | undefined => {
+  const MAP: Record<string, { credits: number; usd: number }> = {
+    analysis: { credits: 5, usd: 0.5 },
+    report: { credits: 5, usd: 0.5 },
+    ingest: { credits: 2, usd: 0.2 },
+  }
+  if (!key) return undefined
+  return MAP[key]
+}
 
 export function Dashboard() {
   const { user, isAuthenticated, isPro, loading, refreshUser } = useAuth()
@@ -25,6 +42,253 @@ export function Dashboard() {
   const effectiveCredits = subscriptionCredits + purchasedCredits
   const hasCredits = effectiveCredits > 0
   const navigate = useNavigate()
+  
+
+  // Report state: fetch user reports and compute counts/costs for dashboard
+  const [userReports, setUserReports] = React.useState<ReportMetadata[] | null>(null)
+  // Keep a server-driven count for free reports (faster when dataset large). Fallback to client computed value.
+  // (removed server-driven free count; derive on the fly)
+  // Date range state per-section (default to current month)
+  const toIso = (d: Date) => d.toISOString().slice(0, 10)
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+  const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
+
+  const [reportsRange, setReportsRange] = React.useState<{ from: string | null; to: string | null }>({ from: toIso(startOfMonth), to: toIso(endOfMonth) })
+  const [completedRange, setCompletedRange] = React.useState<{ from: string | null; to: string | null }>({ from: toIso(startOfMonth), to: toIso(endOfMonth) })
+  const [txRange, setTxRange] = React.useState<{ from: string | null; to: string | null }>({ from: toIso(startOfMonth), to: toIso(endOfMonth) })
+
+  const [txTotals, setTxTotals] = React.useState<{ total_bought_credits?: number; total_spent_credits?: number; total_subscription_usd?: number; total_subscription_credits?: number } | null>(null)
+
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        // pass date range for saved files view
+        const respRaw = await policyService.getUserReports({ date_from: reportsRange.from, date_to: reportsRange.to })
+        if (!mounted) return
+        const resp = respRaw as unknown as { reports?: ReportMetadata[] } | ReportMetadata[]
+        if (Array.isArray(resp)) setUserReports(resp)
+        else setUserReports(resp.reports ?? [])
+      } catch (e) {
+        console.warn('Failed to fetch user reports for dashboard', e)
+        if (mounted) setUserReports([])
+      }
+    })()
+    return () => { mounted = false }
+  }, [reportsRange.from, reportsRange.to])
+
+  const getCostForReport = (r: ReportMetadata) => {
+    if (r.type === 'revision') return getCost('ingest') ?? { credits: 0, usd: 0 }
+    if (r.is_full_report) return getCost('report') ?? { credits: 0, usd: 0 }
+    return getCost('analysis') ?? { credits: 0, usd: 0 }
+  }
+
+  const totalSavedFiles = userReports ? userReports.length : null
+  const fullReportsSaved = userReports ? userReports.filter((r) => !!r.is_full_report).length : null
+  const revisedDocsSaved = userReports ? userReports.filter((r) => r.type === 'revision').length : null
+
+  const totalSavedCredits = userReports ? userReports.reduce((acc, r) => acc + (getCostForReport(r).credits || 0), 0) : null
+  const totalSavedUsd = userReports ? userReports.reduce((acc, r) => acc + (getCostForReport(r).usd || 0), 0) : null
+
+  const hasStatusField = !!(userReports && userReports.find((r) => typeof r.status !== 'undefined'))
+  const fullReportsDone = userReports
+    ? (hasStatusField ? userReports.filter((r) => r.is_full_report && (r.status === 'completed')).length : fullReportsSaved)
+    : null
+  const revisedCompleted = userReports
+    ? (hasStatusField ? userReports.filter((r) => r.type === 'revision' && (r.status === 'completed')).length : revisedDocsSaved)
+    : null
+  const freeReportsSaved = userReports ? userReports.filter((r) => (r.analysis_mode || '').toString() === 'fast').length : null
+  // Derived free reports: total saved files minus full reports minus revised docs
+  const derivedFreeReportsSaved = ((): number | null => {
+    if (totalSavedFiles === null || fullReportsSaved === null || revisedDocsSaved === null) return null
+    const val = (totalSavedFiles || 0) - (fullReportsSaved || 0) - (revisedDocsSaved || 0)
+    return Math.max(0, val)
+  })()
+  const freeReportsCompleted = userReports
+    ? (hasStatusField ? userReports.filter((r) => (r.analysis_mode || '').toString() === 'fast' && (r.status === 'completed')).length : freeReportsSaved)
+    : null
+
+  // Deleted files tracking
+  // New behavior: persist an event log of deletions with timestamps so we can
+  // compute date-scoped totals. Keep legacy cumulative counts as a fallback
+  // for older installs.
+  type DeletedEvent = { ts: number; counts: { full: number; revision: number; free: number }; filenames?: string[] }
+
+  const [deletedEvents, setDeletedEvents] = React.useState<DeletedEvent[]>(() => {
+    try {
+      const raw = localStorage.getItem('poliverai.deleted_report_events')
+      if (raw) return JSON.parse(raw)
+      return []
+    } catch {
+      return []
+    }
+  })
+
+  // legacy cumulative counts (kept for backward compatibility)
+  const [legacyDeletedCounts, setLegacyDeletedCounts] = React.useState<{ full: number; revision: number; free: number }>(() => {
+    try {
+      const raw = localStorage.getItem('poliverai.deleted_report_counts')
+      return raw ? JSON.parse(raw) : { full: 0, revision: 0, free: 0 }
+    } catch {
+      return { full: 0, revision: 0, free: 0 }
+    }
+  })
+
+  React.useEffect(() => {
+    const handler = (ev: Event) => {
+      try {
+        const ce = ev as CustomEvent
+        const counts = (ce.detail && (ce.detail.counts as { full?: number; revision?: number; free?: number }))
+        const filenames = (ce.detail && (ce.detail.filenames as string[])) || undefined
+
+        // Normalize counts
+        const eventCounts = counts ? {
+          full: counts.full || 0,
+          revision: counts.revision || 0,
+          free: counts.free || 0,
+        } : (filenames ? { full: 0, revision: 0, free: filenames.length } : { full: 0, revision: 0, free: 0 })
+
+        const evObj: DeletedEvent = { ts: Date.now(), counts: eventCounts, filenames }
+
+        // Append to event log
+        setDeletedEvents((prev) => {
+          const next = [...prev, evObj]
+          try { localStorage.setItem('poliverai.deleted_report_events', JSON.stringify(next)) } catch { console.debug('Failed to persist deleted_report_events') }
+          return next
+        })
+
+        // Also update legacy cumulative counts for older UI/consumers
+        setLegacyDeletedCounts((prev) => {
+          const next = {
+            full: (prev.full || 0) + (eventCounts.full || 0),
+            revision: (prev.revision || 0) + (eventCounts.revision || 0),
+            free: (prev.free || 0) + (eventCounts.free || 0),
+          }
+          try { localStorage.setItem('poliverai.deleted_report_counts', JSON.stringify(next)) } catch { console.debug('Failed to persist deleted_report_counts') }
+          return next
+        })
+      } catch (e) {
+        console.warn('Failed to handle reports:deleted event', e)
+      }
+    }
+    window.addEventListener('reports:deleted', handler as EventListener)
+    return () => window.removeEventListener('reports:deleted', handler as EventListener)
+  }, [])
+
+  // Compute deleted counts scoped to the saved-files date range. If we have
+  // event logs use them; otherwise fall back to legacy cumulative counts.
+  const computeDeletedCountsForRange = (range: { from: string | null; to: string | null }) => {
+    // If no events recorded, fallback to legacy totals (all-time only)
+    if (!deletedEvents || deletedEvents.length === 0) return legacyDeletedCounts
+
+    const fromTs = range && range.from ? new Date(range.from).setHours(0, 0, 0, 0) : null
+    const toTs = range && range.to ? new Date(range.to).setHours(23, 59, 59, 999) : null
+
+    const selected = deletedEvents.filter((e) => {
+      if (fromTs && e.ts < fromTs) return false
+      if (toTs && e.ts > toTs) return false
+      return true
+    })
+
+    return selected.reduce((acc, e) => ({
+      full: acc.full + (e.counts.full || 0),
+      revision: acc.revision + (e.counts.revision || 0),
+      free: acc.free + (e.counts.free || 0),
+    }), { full: 0, revision: 0, free: 0 })
+  }
+
+  const displayedDeletedCounts = computeDeletedCountsForRange(reportsRange)
+
+  // Prefer server-provided free count; fall back to derived value, then client-filtered free count
+  // Prefer derived value, then client-filtered free count
+  const freeReportsSavedDisplay = derivedFreeReportsSaved !== null ? derivedFreeReportsSaved : freeReportsSaved
+
+  React.useEffect(() => {
+    // derived free reports are computed from totals; no server call needed
+    return undefined
+  }, [reportsRange.from, reportsRange.to])
+
+  // Helper to format range labels for UI
+  const formatRangeLabel = (range: { from: string | null; to: string | null } | null) => {
+    if (!range || (!range.from && !range.to)) return 'Showing: all time'
+    const defFrom = toIso(startOfMonth)
+    const defTo = toIso(endOfMonth)
+    if (range.from === defFrom && range.to === defTo) return `Showing: this month (${defFrom} → ${defTo})`
+    if (range.from && range.to) return `Showing: ${range.from} → ${range.to}`
+    if (range.from) return `Showing from ${range.from}`
+    return `Showing up to ${range.to}`
+  }
+
+  // Fetch transactions totals for Transaction Status panel when txRange changes
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        // fetch a reasonably large page of transactions in the selected date range
+        const resp = await transactionsService.listTransactions({ page: 1, limit: 1000, date_from: txRange.from ?? undefined, date_to: txRange.to ?? undefined })
+        if (!mounted) return
+        const txs = resp.transactions ?? []
+        // helper to detect successful payments
+        const isSuccess = (t: typeof txs[number]) => {
+          const s = (t.status || '').toString().toLowerCase()
+          if (s === 'completed' || s === 'success') return true
+          const et = (t.event_type || '').toString().toLowerCase()
+          if (et.includes('completed') || et.includes('success')) return true
+          return false
+        }
+
+        // Compute total credits bought (exclude subscription/task events per UX decision)
+        const total_bought_credits = txs.reduce((acc, t) => {
+          const credits = typeof t.credits === 'number' ? t.credits : 0
+          const et = (t.event_type || '').toString().toLowerCase()
+          // Exclude subscription and task-type transactions from 'bought credits' total
+          if (et.includes('subscription') || et.includes('subs') || et.includes('task')) return acc
+          return acc + (credits > 0 && isSuccess(t) ? credits : 0)
+        }, 0)
+
+        // Compute subscription credits (if any) separately so we can inspect why they're not showing
+        const total_subscription_credits = txs.reduce((acc, t) => {
+          const credits = typeof t.credits === 'number' ? t.credits : 0
+          const et = (t.event_type || '').toString().toLowerCase()
+          if (et.includes('subscription') && isSuccess(t) && credits > 0) return acc + credits
+          return acc
+        }, 0)
+
+        const total_spent_credits = resp.total_spent_credits ?? undefined
+
+        const total_subscription_usd = txs.reduce((acc, t) => {
+          const et = (t.event_type || '').toString().toLowerCase()
+          const amount = typeof t.amount_usd === 'number' ? t.amount_usd : 0
+          return acc + (et.includes('subscription') && isSuccess(t) ? amount : 0)
+        }, 0)
+
+        // Detailed debug logging to trace why subscription-credits might be missing
+        try {
+          console.debug('[Dashboard] transactions response summary', { count: txs.length, total_spent_credits: resp.total_spent_credits })
+          // Log a compact view of each transaction relevant fields and our decision for it
+          txs.forEach((t, i) => {
+            const et = (t.event_type || '').toString().toLowerCase()
+            const status = (t.status || '').toString()
+            const credits = typeof t.credits === 'number' ? t.credits : 0
+            const amount = typeof t.amount_usd === 'number' ? t.amount_usd : 0
+            const success = isSuccess(t)
+            const excludedFromBought = et.includes('subscription') || et.includes('subs') || et.includes('task')
+            console.debug(`[Dashboard] tx[${i}] id=${t.id ?? '(no-id)'} event_type=${et} status=${status} credits=${credits} amount_usd=${amount} success=${success} excludedFromBought=${excludedFromBought}`)
+          })
+          console.debug('[Dashboard] totals computed', { total_bought_credits, total_subscription_credits, total_subscription_usd, total_spent_credits })
+        } catch (logErr) {
+          console.warn('[Dashboard] failed to emit transaction debug logs', logErr)
+        }
+
+        setTxTotals({ total_bought_credits: total_bought_credits || undefined, total_spent_credits: total_spent_credits || undefined, total_subscription_usd: total_subscription_usd || undefined, total_subscription_credits: total_subscription_credits || undefined })
+      } catch (e) {
+        console.warn('Failed to fetch transactions for dashboard', e)
+        if (mounted) setTxTotals(null)
+      }
+    })()
+    return () => { mounted = false }
+  }, [txRange.from, txRange.to])
+
 
   // Refresh user when payment/transaction events occur elsewhere in the app
   React.useEffect(() => {
@@ -111,13 +375,6 @@ export function Dashboard() {
     },
   ]
 
-    // Pricing (server must enforce; this view is only for display)
-    const COSTS: Record<string, { credits: number; usd: number }> = {
-      analysis: { credits: 5, usd: 0.5 },
-      // Updated comprehensive report cost to 5 credits per product request
-      report: { credits: 5, usd: 0.5 },
-      ingest: { credits: 2, usd: 0.2 },
-    }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -231,6 +488,144 @@ export function Dashboard() {
             <div className="mt-3 text-sm text-gray-600">
               <strong>How credits are used:</strong> Subscription credits are consumed first and each subscription credit covers {"~1.5"}x of a regular credit (discounted). If subscription credits run out, the system falls back to purchased credits which are charged at a slightly higher rate (penalty ~1.25x).
             </div>
+            {/* New layer: Files saved status */}
+            <div className="mt-6 border-t pt-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium text-gray-800 mb-2 flex items-center gap-2"><FileCheck className="h-4 w-4 text-gray-600" />Saved Files</h4>
+                <div className="flex items-center gap-2">
+                  <input type="date" value={reportsRange.from ?? ''} onChange={(e) => setReportsRange({ ...reportsRange, from: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
+                  <input type="date" value={reportsRange.to ?? ''} onChange={(e) => setReportsRange({ ...reportsRange, to: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-4">
+                <div>
+                  <div className="text-sm text-gray-600">Total files saved</div>
+                  <div className="text-lg font-semibold">{totalSavedFiles !== null ? totalSavedFiles : '—'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Total full reports saved</div>
+                  <div className="text-lg font-semibold">{fullReportsSaved !== null ? fullReportsSaved : '—'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Total revised policies saved</div>
+                  <div className="text-lg font-semibold">{revisedDocsSaved !== null ? revisedDocsSaved : '—'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Total free reports saved</div>
+                  <div className="text-lg font-semibold">{freeReportsSavedDisplay !== null ? freeReportsSavedDisplay : '—'}</div>
+                </div>
+              </div>
+
+              {/* Deleted files track record */}
+              <div className="mb-4 mt-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-2 flex items-center gap-2"><Trash2 className="h-4 w-4 text-gray-600" />Deleted Files</h4>
+                <div className="grid grid-cols-4 gap-4">
+                  <div>
+                    <div className="text-sm text-gray-600">Deleted full reports</div>
+                    <div className="text-lg font-semibold">{displayedDeletedCounts.full}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">Deleted revised policies</div>
+                    <div className="text-lg font-semibold">{displayedDeletedCounts.revision}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">Deleted free reports</div>
+                    <div className="text-lg font-semibold">{displayedDeletedCounts.free}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">Total deleted files</div>
+                    <div className="text-lg font-semibold">{(displayedDeletedCounts.full || 0) + (displayedDeletedCounts.revision || 0) + (displayedDeletedCounts.free || 0)}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 text-sm text-gray-600">
+                <strong>How limit results by date:</strong> Use the "Saved Files" date picker at the top of this card to narrow the Saved Files and Deleted Files counts to a specific range. The dashboard filters deletion events recorded in this browser. If no per-event data is available (older installs), the dashboard falls back to legacy all-time totals stored locally.
+              </div>
+              <div className="mt-3 text-sm text-gray-600">Estimated cost: <span className="font-semibold">{totalSavedCredits !== null ? `${totalSavedCredits} credits` : '—'}</span> (<span className="font-semibold">{totalSavedUsd !== null ? `$${totalSavedUsd.toFixed(2)}` : '—'}</span>)</div>
+              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(reportsRange)}</div>
+            </div>
+
+            {/* New layer: Completed reports */}
+            <div className="mt-6 border-t pt-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium text-gray-800 mb-2 flex items-center gap-2"><BarChart className="h-4 w-4 text-gray-600" />Completed Reports</h4>
+                <div className="flex items-center gap-2">
+                  <input type="date" value={completedRange.from ?? ''} onChange={(e) => setCompletedRange({ ...completedRange, from: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
+                  <input type="date" value={completedRange.to ?? ''} onChange={(e) => setCompletedRange({ ...completedRange, to: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <div className="text-sm text-gray-600">Full reports completed</div>
+                  <div className="text-lg font-semibold">{fullReportsDone !== null ? fullReportsDone : '—'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Revised policies completed</div>
+                  <div className="text-lg font-semibold">{revisedCompleted !== null ? revisedCompleted : '—'}</div>
+                </div>
+
+                <div>
+                  <div className="text-sm text-gray-600">Free reports completed</div>
+                  <div className="text-lg font-semibold">{freeReportsCompleted !== null ? freeReportsCompleted : '—'}</div>
+                  <div className="text-xs text-gray-500">Cost per free report: 0 credits</div>
+                </div>
+              </div>
+              {/* Costs for completed items: compute credits & usd for completed subset if statuses available */}
+              {userReports ? (
+                <div className="mt-3 text-sm text-gray-600">
+                  Estimated completed cost: <span className="font-semibold">{
+                    (() => {
+                      const completed = userReports.filter((r) => {
+                        if (typeof r.status !== 'undefined') return r.status === 'completed'
+                        // fallback: consider saved items as completed
+                        return true
+                      })
+                      const creds = completed.reduce((acc, r) => acc + getCostForReport(r).credits, 0)
+                      return `${creds} credits`
+                    })()
+                  }</span> (<span className="font-semibold">{
+                    (() => {
+                      const completed = userReports.filter((r) => {
+                        if (typeof r.status !== 'undefined') return r.status === 'completed'
+                        return true
+                      })
+                      const usd = completed.reduce((acc, r) => acc + getCostForReport(r).usd, 0)
+                      return `$${usd.toFixed(2)}`
+                    })()
+                  }</span>)
+                </div>
+              ) : null}
+              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(completedRange)}</div>
+            </div>
+
+            {/* Transaction Status (credits bought/spent/subscriptions) */}
+            <div className="mt-6 border-t pt-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium text-gray-800 mb-2 flex items-center gap-2"><CreditCard className="h-4 w-4 text-gray-600" />Transaction Status</h4>
+                <div className="flex items-center gap-2">
+                  <input type="date" value={txRange.from ?? ''} onChange={(e) => setTxRange({ ...txRange, from: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
+                  <input type="date" value={txRange.to ?? ''} onChange={(e) => setTxRange({ ...txRange, to: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <div className="text-sm text-gray-600">Total credits bought</div>
+                  <div className="text-lg font-semibold">{txTotals?.total_bought_credits ?? '—'}</div>
+                  <div className="text-sm text-gray-500">{txTotals?.total_bought_credits ? `${txTotals.total_bought_credits} credits` : ''}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Total credits spent</div>
+                  <div className="text-lg font-semibold">{txTotals?.total_spent_credits ?? '—'}</div>
+                  <div className="text-sm text-gray-500">{txTotals?.total_spent_credits ? `${txTotals.total_spent_credits} credits` : ''}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Total subscription payments (USD)</div>
+                  <div className="text-lg font-semibold">{txTotals?.total_subscription_usd ? `$${txTotals.total_subscription_usd.toFixed(2)}` : '—'}</div>
+                </div>
+              </div>
+              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(txRange)}</div>
+            </div>
           </CardContent>
         </Card>
 
@@ -333,7 +728,7 @@ export function Dashboard() {
                       <div className="mt-2">
                         {(() => {
                           const k = (feature as unknown as { key?: string }).key
-                          const c = k ? COSTS[k] : undefined
+                          const c = getCost(k)
                           return (
                             <div className="text-sm text-gray-700">Cost: <span className="font-semibold">{c ? `$${c.usd.toFixed(2)} / ${c.credits} credits` : '—'}</span></div>
                           )

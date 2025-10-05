@@ -22,8 +22,13 @@ beautifulsoup4==4.12.3
 pdfplumber>=0.11
 reportlab==4.2.0
 google-cloud-storage==2.11.0
+
+# protobuf constraint to satisfy google-cloud-aiplatform
+# google-cloud-aiplatform requires protobuf>=3.19.5 and <5.0.0dev
+protobuf
 pymongo>=4.0
+pyflakes
 # Optional: sentence-transformers is required for some embedding/semantic search features.
 # Note: this may pull in heavy dependencies (torch). If you want a CPU-only install, consider
 # pinning a cpu build of torch or installing sentence-transformers inside a separate dev venv.
-sentence-transformers
+# sentence-transformers
