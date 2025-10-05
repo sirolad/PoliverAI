@@ -14,14 +14,53 @@
 set -euo pipefail
 
 if [ -z "${PROJECT_ID:-}" ]; then
-  echo "Please set PROJECT_ID environment variable (GCP project id)."
-  exit 2
+  # Try to auto-detect gcloud configured project
+  if command -v gcloud >/dev/null 2>&1; then
+    PROJECT_ID=$(gcloud config get-value project 2>/dev/null || "")
+  fi
+  if [ -z "${PROJECT_ID:-}" ]; then
+    echo "Please set PROJECT_ID environment variable (GCP project id) or configure gcloud (gcloud config set project <id>)."
+    exit 2
+  fi
+  echo "Using PROJECT_ID=${PROJECT_ID} (from gcloud config)"
 fi
 
 REGION=${REGION:-us-central1}
 IMAGE_NAME=${IMAGE_NAME:-poliverai-backend}
 TAG=${TAG:-latest}
 IMAGE_FULL="gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG}"
+
+# By default we load environment variables from .env in the repo root.
+ENV_FILE=${ENV_FILE:-.env}
+
+# Build a comma-separated KEY=VAL string for --set-env-vars. We avoid printing values.
+ENV_PAIRS=""
+if [ -f "${ENV_FILE}" ]; then
+  # Read non-empty, non-comment lines
+  while IFS= read -r line || [ -n "$line" ]; do
+    # strip leading/trailing whitespace
+    line=$(echo "$line" | sed -e 's/^\s*//' -e 's/\s*$//')
+    [ -z "$line" ] && continue
+    echo "$line" | grep -Eq '^\s*#' && continue
+    # Only accept KEY=VAL
+    if echo "$line" | grep -q '='; then
+      key=$(echo "$line" | cut -d'=' -f1)
+      val=$(echo "$line" | cut -d'=' -f2-)
+      # Trim whitespace around key
+      key=$(echo "$key" | sed -e 's/^\s*//' -e 's/\s*$//')
+      # Append to env pairs. We keep raw value here to pass to gcloud but we won't echo it.
+      if [ -z "$ENV_PAIRS" ]; then
+        ENV_PAIRS="${key}=${val}"
+      else
+        ENV_PAIRS="${ENV_PAIRS},${key}=${val}"
+      fi
+      # Print a masked preview for the user
+      echo "Will pass env var: ${key} (value masked)"
+    fi
+  done < "${ENV_FILE}"
+else
+  echo "Env file ${ENV_FILE} not found; proceeding without file-sourced env vars."
+fi
 
 echo "Building Docker image ${IMAGE_FULL} (FAST_DEV=false)"
 # Build using the Dockerfile.backend
@@ -43,18 +82,26 @@ else
   echo "Quick verification build failed. Please inspect the Dockerfile and build context." >&2
 fi
 
-gcloud run deploy "${IMAGE_NAME}" \
+DEPLOY_CMD=(gcloud run deploy "${IMAGE_NAME}" \
   --image "${IMAGE_FULL}" \
   --region "${REGION}" \
   --project "${PROJECT_ID}" \
   --platform managed \
   --allow-unauthenticated \
-  --set-env-vars "MONGO_URI=${MONGO_URI:-}" \
   --memory 1024Mi \
-  --concurrency 50 || {
-    echo "gcloud run deploy failed" >&2
-    exit 3
-  }
+  --concurrency 50)
+
+if [ -n "${ENV_PAIRS:-}" ]; then
+  DEPLOY_CMD+=(--set-env-vars "${ENV_PAIRS}")
+else
+  # Fallback to MONGO_URI only (backwards compatible)
+  DEPLOY_CMD+=(--set-env-vars "MONGO_URI=${MONGO_URI:-}")
+fi
+
+"${DEPLOY_CMD[@]}" || {
+  echo "gcloud run deploy failed" >&2
+  exit 3
+}
 
 echo "Deployment complete. Now streaming recent logs from Cloud Run (press Ctrl-C to stop)."
 echo "If you'd prefer build logs during docker push, run the script and watch the terminal output — push is not backgrounded by this script."
