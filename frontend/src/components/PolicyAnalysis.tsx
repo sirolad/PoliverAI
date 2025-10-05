@@ -5,7 +5,8 @@ import EnterTitleModal from './ui/EnterTitleModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
 import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
-import { UploadCloud, CheckCircle2, FileText, AlertTriangle, Lightbulb, BarChart, FileSearch, Star as LucideStar, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck } from 'lucide-react'
+import { UploadCloud, CheckCircle2, FileText, AlertTriangle, Lightbulb, BarChart, FileSearch, Star as LucideStar, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck, X } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import InsufficientCreditsModal from './ui/InsufficientCreditsModal'
 
 export default function PolicyAnalysis() {
@@ -267,12 +268,14 @@ export default function PolicyAnalysis() {
 
 
   return (
-    <div className="h-screen p-8">
+    // Use a column flex layout so a footer placed after the grow area will sit
+    // at the bottom of the screen on mobile (push-to-bottom behavior).
+    <div className="p-8 flex flex-col min-h-screen">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Policy Analysis</h1>
         {(result || reportFilename) ? (
           <div className="flex items-center gap-2">
-            <button
+            <Button
               disabled={!reportFilename}
               onClick={() => {
                 if (!reportFilename) return
@@ -282,12 +285,15 @@ export default function PolicyAnalysis() {
                 setModalFilename(reportFilename)
                 setIsModalOpen(true)
               }}
-              className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
+              className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+              icon={<ExternalLink className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
             >
-              <ExternalLink className="h-4 w-4"/>Open
-            </button>
+              Open
+            </Button>
 
-            <button
+            <Button
               disabled={!reportFilename}
               onClick={async () => {
                 if (!reportFilename) return
@@ -297,12 +303,15 @@ export default function PolicyAnalysis() {
                   console.warn('download failed', e)
                 }
               }}
-              className="px-3 py-1 bg-gray-100 rounded disabled:opacity-50 flex items-center gap-2"
+              className="px-3 py-1 bg-yellow-500 text-white rounded disabled:opacity-50"
+              icon={<DownloadCloud className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
             >
-              <DownloadCloud className="h-4 w-4"/>Download
-            </button>
+              Download
+            </Button>
 
-            <button
+            <Button
               onClick={async () => {
                 try {
                   const r = await policyService.getUserReports()
@@ -313,24 +322,29 @@ export default function PolicyAnalysis() {
                   console.warn('refresh reports failed', e)
                 }
               }}
-              className="px-3 py-1 bg-white border rounded flex items-center gap-2"
+              className="px-3 py-1 bg-white border rounded text-black"
+              icon={<RefreshCcw className="h-4 w-4" />}
+              iconColor="text-black"
+              collapseToIcon
             >
-              <RefreshCcw className="h-4 w-4"/>Refresh
-            </button>
+              Refresh
+            </Button>
 
-            <button
+            <Button
               disabled={!result}
               onClick={async () => {
                 // Generate a report from the current analysis result
                 await handleGenerateReport()
               }}
-              className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
+              className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
+              icon={<FileCheck className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
             >
-              <FileCheck className="h-4 w-4" />
               Full Report
-            </button>
+            </Button>
 
-            <button
+            <Button
               disabled={!reportFilename}
               onClick={() => {
                 if (!reportFilename) return
@@ -338,18 +352,22 @@ export default function PolicyAnalysis() {
                 setTitleModalInitial(reportFilename)
                 setTitleModalOpen(true)
               }}
-              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
+              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
+              icon={<Save className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
             >
-              <Save className="h-4 w-4" />
               {isFullReportGenerated ? 'Save Full Report' : 'Save Report (costs credits)'}
-            </button>
+            </Button>
           </div>
         ) : null}
       </div>
   <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
 
       {/* Two-column layout: controls (filters) on left, main result on right */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Growable main area. Footer placed after this will be pushed to screen bottom. */}
+      <div className="flex-1 flex flex-col">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left: Main controls / filters */}
         <aside className="md:col-span-1 bg-white p-4 rounded shadow">
           <div className="mb-4">
@@ -379,22 +397,20 @@ export default function PolicyAnalysis() {
               <div className="text-sm font-medium text-gray-700">Drag & drop a policy file here, or click to browse</div>
               <div className="text-xs text-gray-500 mt-1">Supports PDF, DOCX, HTML, TXT</div>
               <div className="mt-3 flex items-center gap-3">
-                <button
+                <Button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click() }}
-                  className="bg-white border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50 flex items-center"
+                  className="bg-white border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50"
+                  icon={<UploadCloud className="h-4 w-4" />}
+                  collapseToIcon
+                  canCollapse={false}
                 >
-                  <UploadCloud className="h-4 w-4 mr-2" />
                   Browse files
-                </button>
+                </Button>
                 {file ? (
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setFile(null) }}
-                    className="text-sm text-red-600 underline"
-                  >
+                  <Button type="button" onClick={(e) => { e.stopPropagation(); setFile(null) }} className="text-sm text-red-600" icon={<X className="h-4 w-4" />} iconColor="text-red-600" collapseToIcon canCollapse={false} hasBackground={false} textUnderline={false}>
                     Remove
-                  </button>
+                  </Button>
                 ) : null}
               </div>
             </div>
@@ -409,7 +425,9 @@ export default function PolicyAnalysis() {
           </div>
 
           <div className="mb-4">
-            <button onClick={handleAnalyze} className="w-full bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center"><BarChart className="h-4 w-4 mr-2"/>Analyze</button>
+            <Button onClick={handleAnalyze} className="w-full bg-blue-600 text-white px-4 py-2 rounded" icon={<BarChart className="h-4 w-4" />} collapseToIcon canCollapse={false}>
+              Analyze
+            </Button>
           </div>
           <div className="mb-2 text-xs text-gray-500">Quick analysis is free. Saving a quick report will cost credits.</div>
 
@@ -480,12 +498,12 @@ export default function PolicyAnalysis() {
               </div>
         </aside>
 
-        {/* Right: Main result area */}
-        <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
+  {/* Right: Main result area */}
+  <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">Analysis Result</h2>
-              <div className="text-sm text-gray-600">Result JSON / report preview</div>
+              <div className="text-sm text-gray-600">Result Broken Down / Report Preview</div>
             </div>
             <div className="text-sm text-gray-600">{result ? `${result.verdict} • Score ${result.score}` : ''}</div>
           </div>
@@ -493,15 +511,15 @@ export default function PolicyAnalysis() {
             <div className="h-full flex-1 min-h-0">
               {result ? (
                 <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
-                  <div className="flex items-start justify-between gap-6">
-                    <div>
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-6">
+                    <div className="w-full md:w-auto">
                       <div className="text-sm text-gray-500 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-600" />Verdict</div>
                       <div className="mt-1 flex items-center gap-3">
                         <div className="text-lg font-semibold">{String(result.verdict).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</div>
                         <div className="text-sm text-gray-500">Confidence: {(result.confidence * 100).toFixed(0)}%</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className="w-full md:w-auto flex items-center gap-6 mt-1 md:mt-0 mb-2 md:mb-0">
                       <div className="text-sm text-gray-500 flex items-center gap-2"><LucideStar className="h-4 w-4 text-yellow-500" />Score</div>
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1">
@@ -511,7 +529,7 @@ export default function PolicyAnalysis() {
                             const full = Math.floor(stars)
                             const half = stars - full >= 0.5 ? 1 : 0
                             const empty = 5 - full - half
-                            const icons: JSX.Element[] = []
+                            const icons: React.ReactElement[] = []
                             for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={18} weight="fill" className="text-yellow-500" />)
                             if (half) icons.push(<StarHalf key={`h`} size={18} className="text-yellow-500" />)
                             for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={18} weight="duotone" className="text-gray-300" />)
@@ -650,8 +668,9 @@ export default function PolicyAnalysis() {
               )}
             </div>
         </main>
+        </div>
 
-      {/* Modal viewer for reports */}
+        {/* Modal viewer for reports */}
       {isModalOpen && modalUrl ? (
         <ReportViewerModal
           reportUrl={modalUrl}
@@ -698,6 +717,62 @@ export default function PolicyAnalysis() {
       ) : null}
 
       </div>
+
+      {/* Mobile-only footer: mirror key actions and anchor to bottom on small screens. Hidden on md+ where top controls are visible. */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Button
+              disabled={!reportFilename}
+              onClick={() => {
+                if (!reportFilename) return
+                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+                const url = `${apiBase}/api/v1/reports/download/${encodeURIComponent(reportFilename as string)}`
+                setModalUrl(url)
+                setModalFilename(reportFilename)
+                setIsModalOpen(true)
+              }}
+              className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+              icon={<ExternalLink className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
+            />
+            <Button
+              disabled={!reportFilename}
+              onClick={async () => {
+                if (!reportFilename) return
+                try {
+                  await policyService.downloadReport(reportFilename as string)
+                } catch (e) { console.warn('download failed', e) }
+              }}
+              className="px-3 py-1 bg-yellow-500 text-white rounded disabled:opacity-50"
+              icon={<DownloadCloud className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              disabled={!result}
+              onClick={async () => { await handleGenerateReport() }}
+              className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
+              icon={<FileCheck className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
+            />
+            <Button
+              disabled={!reportFilename}
+              onClick={() => { if (!reportFilename) return; setTitleModalInitial(reportFilename); setTitleModalOpen(true) }}
+              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
+              icon={<Save className="h-4 w-4" />}
+              iconColor="text-white"
+              collapseToIcon
+            />
+          </div>
+        </div>
+      </div>
+
     </div>
   )
 }

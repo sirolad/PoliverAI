@@ -6,7 +6,8 @@ import PaymentsService from '@/services/payments'
 import EnterCreditsModal from '@/components/ui/EnterCreditsModal'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
 import type { Transaction } from '@/services/transactions'
-import { X, ChevronLeft, ChevronRight, RefreshCcw, Shield, CreditCard, DollarSign } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, RefreshCcw, Shield, CreditCard, DollarSign, Filter } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 
 export default function Credits() {
   const { user, isAuthenticated, loading, refreshUser } = useAuth()
@@ -26,6 +27,10 @@ export default function Credits() {
   const [total, setTotal] = useState<number>(0)
   const [totalPages, setTotalPages] = useState<number>(1)
   const [totalSpentCredits, setTotalSpentCredits] = useState<number>(0)
+  const [isMobile, setIsMobile] = useState<boolean>(() => (typeof window !== 'undefined' ? window.innerWidth <= 1140 : false))
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(() => (typeof window !== 'undefined' ? window.innerWidth > 1140 : true))
+  const [isWide1276, setIsWide1276] = useState<boolean>(() => (typeof window !== 'undefined' ? window.innerWidth > 1276 : true))
+  const [isCompactUnderHeader, setIsCompactUnderHeader] = useState<boolean>(() => (typeof window !== 'undefined' ? (window.innerWidth > 768 && window.innerWidth <= 1276) : false))
 
   
   
@@ -70,6 +75,21 @@ export default function Credits() {
   useEffect(() => {
     fetchTx()
   }, [fetchTx])
+
+  // Track viewport width to control mobile behavior for filters
+  useEffect(() => {
+    const onResize = () => {
+      const mobile = window.innerWidth <= 1140
+      setIsMobile(mobile)
+      setIsWide1276(window.innerWidth > 1276)
+      setIsCompactUnderHeader(window.innerWidth > 768 && window.innerWidth <= 1276)
+      // Auto-close filters on mobile, open on desktop
+      setFiltersOpen(!mobile)
+    }
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   // Listen for external refresh events (transactions refreshed elsewhere in the app)
   useEffect(() => {
@@ -169,59 +189,121 @@ export default function Credits() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Transaction History</h1>
 
-        <div className="mb-4 flex items-center gap-6">
-          {/* Credits breakdown: subscription, purchased, and spent */}
+        <div className="flex items-center gap-3">
+          {/* Show filters toggle on mobile */}
+          {isMobile && (
+            <Button size="sm" variant="outline" icon={<Filter className="h-4 w-4" />} onClick={() => setFiltersOpen((s) => !s)} collapseToIcon>
+              {filtersOpen ? 'Hide filters' : 'Show filters'}
+            </Button>
+          )}
+
+          {/* On wide screens (>1276) show a compact credits summary inline */}
+          {isWide1276 && (() => {
+            const subscriptionCredits = user?.subscription_credits ?? 0
+            const purchasedCredits = user?.credits ?? 0
+            const spentCredits = totalSpentCredits ?? 0
+            return (
+              <div className="flex items-center gap-4">
+                <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                  <div className={`flex-shrink-0 bg-blue-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                    <Shield className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-blue-600`} />
+                  </div>
+                  <div>
+                    <div className="text-gray-600">Subscription</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{subscriptionCredits} credits</div>
+                  </div>
+                </div>
+                <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                  <div className={`flex-shrink-0 bg-gray-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                    <CreditCard className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-gray-700`} />
+                  </div>
+                  <div>
+                    <div className="text-gray-600">Purchased</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{purchasedCredits} credits</div>
+                  </div>
+                </div>
+                <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                  <div className={`flex-shrink-0 bg-red-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                    <DollarSign className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-red-600`} />
+                  </div>
+                  <div>
+                    <div className="text-gray-600">Total Spent</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{spentCredits} credits</div>
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+        </div>
+      </div>
+
+      {/* If not wide, render the full credits breakdown below the header */}
+      {!isWide1276 && (
+        <div className="mb-4">
           {(() => {
             const subscriptionCredits = user?.subscription_credits ?? 0
             const purchasedCredits = user?.credits ?? 0
             const total = subscriptionCredits + purchasedCredits
             const subscriptionUsd = (subscriptionCredits / 10)
             const purchasedUsd = (purchasedCredits / 10)
-            // Use server-provided total spent credits when available (keeps consistent
-            // cross-page totals); fallback to 0 if not set yet.
             const spentCredits = totalSpentCredits ?? 0
             const spentUsd = spentCredits / 10
 
             return (
-              <div className="flex items-center gap-6">
-                    <div className="bg-white p-3 rounded shadow text-sm flex items-center gap-4">
-                      <div className="flex-shrink-0 bg-blue-50 rounded-md p-3 flex items-center justify-center">
-                        <Shield className="h-10 w-10 text-blue-600" />
-                      </div>
-                      <div>
-                        <div className="text-gray-600">Subscription Credits</div>
-                        <div className="font-semibold text-lg">{subscriptionCredits} credits</div>
-                        <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)} USD equivalent</div>
-                      </div>
-                    </div>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div className={`bg-white rounded shadow text-sm flex items-center gap-4 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                  <div className={`flex-shrink-0 bg-blue-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                    <Shield className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-blue-600`} />
+                  </div>
+                  <div>
+                    <div className="text-gray-600">Subscription Credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{subscriptionCredits} credits</div>
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)} USD equivalent</div>}
+                  </div>
+                </div>
 
-                    <div className="bg-white p-3 rounded shadow text-sm flex items-center gap-4">
-                      <div className="flex-shrink-0 bg-gray-50 rounded-md p-3 flex items-center justify-center">
-                        <CreditCard className="h-10 w-10 text-gray-700" />
-                      </div>
-                      <div>
-                        <div className="text-gray-600">Purchased Credits</div>
-                        <div className="font-semibold text-lg">{purchasedCredits} credits</div>
-                        <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)} USD equivalent</div>
-                        <div className="text-xs text-gray-500">Total available: {total} credits</div>
-                      </div>
-                    </div>
+                <div className={`bg-white rounded shadow text-sm flex items-center gap-4 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                  <div className={`flex-shrink-0 bg-gray-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                    <CreditCard className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-gray-700`} />
+                  </div>
+                  <div>
+                    <div className="text-gray-600">Purchased Credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{purchasedCredits} credits</div>
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)} USD equivalent</div>}
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">Total available: {total} credits</div>}
+                  </div>
+                </div>
 
-                    <div className="bg-white p-3 rounded shadow text-sm flex items-center gap-4">
-                      <div className="flex-shrink-0 bg-red-50 rounded-md p-3 flex items-center justify-center">
-                        <DollarSign className="h-10 w-10 text-red-600" />
-                      </div>
-                      <div>
-                        <div className="text-gray-600">Total Spent</div>
-                        <div className="font-semibold text-lg">{spentCredits} credits</div>
-                        <div className="text-xs text-gray-500">${spentUsd.toFixed(2)} USD spent</div>
-                      </div>
-                    </div>
+                <div className={`bg-white rounded shadow text-sm flex items-center gap-4 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                  <div className={`flex-shrink-0 bg-red-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
+                    <DollarSign className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-red-600`} />
+                  </div>
+                  <div>
+                    <div className="text-gray-600">Total Spent</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{spentCredits} credits</div>
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">${spentUsd.toFixed(2)} USD spent</div>}
+                  </div>
+                </div>
               </div>
             )
           })()}
         </div>
-      </div>
+      )}
+      {/* Mobile: show a compact progress bar here too so it's visible even when filters are hidden */}
+      {isMobile && showBar && (
+        <div className="mb-4">
+          <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
+              style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.min(100, Math.max(0, progress))}
+            />
+          </div>
+        </div>
+      )}
       <EnterCreditsModal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -244,70 +326,129 @@ export default function Credits() {
       {isLoading && <div>Loading...</div>}
       {error && <div className="text-red-600">{error}</div>}
 
-      <div className="flex-1 flex gap-6">
-        {/* Sidebar filters */}
-        <aside className="w-64 p-4 border rounded bg-white">
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Search</label>
-            <input value={search} onChange={(e) => setSearch(e.target.value)} className="w-full border px-2 py-1 rounded" placeholder="description, session id, email..." />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Date from</label>
-            <input type="date" value={dateFrom ?? ''} onChange={(e) => setDateFrom(e.target.value || null)} className="w-full border px-2 py-1 rounded" />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Date to</label>
-            <input type="date" value={dateTo ?? ''} onChange={(e) => setDateTo(e.target.value || null)} className="w-full border px-2 py-1 rounded" />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Status</label>
-            {Object.keys(statusFilter).map((k) => (
-              <div key={k} className="flex items-center gap-2 mb-1">
-                <input type="checkbox" checked={statusFilter[k]} onChange={() => setStatusFilter((s) => ({ ...s, [k]: !s[k] }))} />
-                <label className="text-sm capitalize">{k.replace('_', ' ')}</label>
+      <div className={`flex-1 ${isMobile ? 'flex flex-col' : 'flex gap-6'}`}>
+        {/* Sidebar filters: render as sidebar on desktop, as collapsible block above list on mobile */}
+        {isMobile ? (
+          filtersOpen ? (
+            <div className="w-full p-4 border rounded bg-white mb-4">
+              {/* ...existing filter contents... */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Search</label>
+                <input value={search} onChange={(e) => setSearch(e.target.value)} className="w-full border px-2 py-1 rounded" placeholder="description, session id, email..." />
               </div>
-            ))}
-          </div>
-          <div>
-            <button className="w-full bg-gray-100 px-3 py-1 rounded flex items-center justify-center" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }}><X className="h-4 w-4 mr-2"/>Clear</button>
-          </div>
-          <div className="mt-2">
-            <button className="w-full bg-white border px-3 py-1 rounded flex items-center justify-center" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }}><RefreshCcw className="h-4 w-4 mr-2"/>Refresh</button>
-          </div>
-
-          {/* Progress bar for loading transactions */}
-          <div className="mt-4">
-            {showBar && (
-              <div className="w-full">
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
-                    style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
-                    role="progressbar"
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={Math.min(100, Math.max(0, progress))}
-                  />
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Date from</label>
+                <input type="date" value={dateFrom ?? ''} onChange={(e) => setDateFrom(e.target.value || null)} className="w-full border px-2 py-1 rounded" />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Date to</label>
+                <input type="date" value={dateTo ?? ''} onChange={(e) => setDateTo(e.target.value || null)} className="w-full border px-2 py-1 rounded" />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Status</label>
+                {Object.keys(statusFilter).map((k) => (
+                  <div key={k} className="flex items-center gap-2 mb-1">
+                    <input type="checkbox" checked={statusFilter[k]} onChange={() => setStatusFilter((s) => ({ ...s, [k]: !s[k] }))} />
+                    <label className="text-sm capitalize">{k.replace('_', ' ')}</label>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <Button className="w-full bg-gray-100 text-black px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }} icon={<X className="h-4 w-4" />} collapseToIcon>
+                  Clear
+                </Button>
+              </div>
+              <div className="mt-2">
+                <Button className="w-full bg-white border text-black px-3 py-1 rounded" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }} icon={<RefreshCcw className="h-4 w-4" />} collapseToIcon>
+                  Refresh
+                </Button>
+              </div>
+              <div className="mt-4">
+                {showBar && (
+                  <div className="w-full">
+                    <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
+                        style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
+                        role="progressbar"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={Math.min(100, Math.max(0, progress))}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null
+        ) : (
+          <aside className="w-64 p-4 border rounded bg-white">
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Search</label>
+              <input value={search} onChange={(e) => setSearch(e.target.value)} className="w-full border px-2 py-1 rounded" placeholder="description, session id, email..." />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Date from</label>
+              <input type="date" value={dateFrom ?? ''} onChange={(e) => setDateFrom(e.target.value || null)} className="w-full border px-2 py-1 rounded" />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Date to</label>
+              <input type="date" value={dateTo ?? ''} onChange={(e) => setDateTo(e.target.value || null)} className="w-full border px-2 py-1 rounded" />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Status</label>
+              {Object.keys(statusFilter).map((k) => (
+                <div key={k} className="flex items-center gap-2 mb-1">
+                  <input type="checkbox" checked={statusFilter[k]} onChange={() => setStatusFilter((s) => ({ ...s, [k]: !s[k] }))} />
+                  <label className="text-sm capitalize">{k.replace('_', ' ')}</label>
                 </div>
-              </div>
-            )}
-          </div>
-        </aside>
+              ))}
+            </div>
+            <div>
+              <Button className="w-full bg-gray-100 text-black px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }} icon={<X className="h-4 w-4" />} collapseToIcon>
+                Clear
+              </Button>
+            </div>
+            <div className="mt-2">
+              <Button className="w-full bg-white border text-black px-3 py-1 rounded" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }} icon={<RefreshCcw className="h-4 w-4" />} collapseToIcon>
+                Refresh
+              </Button>
+            </div>
+
+            {/* Progress bar for loading transactions */}
+            <div className="mt-4">
+              {showBar && (
+                <div className="w-full">
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
+                      style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
+                      role="progressbar"
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.min(100, Math.max(0, progress))}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </aside>
+        )}
 
         {/* List area */}
         <div className="flex-1 flex flex-col">
-          <div className="mb-2 flex items-center justify-between">
+            <div className="mb-2 flex items-center justify-between">
             <div className="text-sm text-gray-600">Showing {filtered.length} of {total ?? items.length} transactions</div>
             <div className="flex items-center gap-3">
-              <label className="text-sm text-gray-600">Per page</label>
+              {!isMobile && <label className="text-sm text-gray-600">Per page</label>}
               <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1">
                 {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
               </select>
-              <div className="text-sm text-gray-600">Page</div>
+              {!isMobile && <div className="text-sm text-gray-600">Page</div>}
               <div className="inline-flex items-center gap-2">
-                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/>Prev</button>
+                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4"/>{!isMobile && <span className="ml-1">Prev</span>}</button>
                 <div className="px-2 py-1">{page} / {totalPages}</div>
-                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center">Next<ChevronRight className="h-4 w-4 ml-1"/></button>
+                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center">{!isMobile && <span className="mr-1">Next</span>}<ChevronRight className="h-4 w-4"/></button>
               </div>
             </div>
           </div>

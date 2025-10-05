@@ -15,9 +15,11 @@ import {
 } from 'lucide-react'
 import { ArrowRight, RefreshCcw } from 'lucide-react'
 import PaymentsService from '@/services/payments'
+import Splash from '@/components/ui/Splash'
 
 export function Dashboard() {
   const { user, isAuthenticated, isPro, loading, refreshUser } = useAuth()
+  const [showSplash, setShowSplash] = React.useState(false)
   const subscriptionCredits = (user?.subscription_credits ?? 0)
   const purchasedCredits = (user?.credits ?? 0)
   const effectiveCredits = subscriptionCredits + purchasedCredits
@@ -40,6 +42,16 @@ export function Dashboard() {
       window.removeEventListener('transactions:refresh', handler)
     }
   }, [refreshUser])
+
+  // Show a short splash after authentication to give a friendly transition.
+  React.useEffect(() => {
+    if (!loading && isAuthenticated) {
+      setShowSplash(true)
+      const t = window.setTimeout(() => setShowSplash(false), 1400)
+      return () => clearTimeout(t)
+    }
+    return undefined
+  }, [loading, isAuthenticated])
 
   if (loading) {
     return (
@@ -109,6 +121,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {showSplash ? <Splash onFinish={() => setShowSplash(false)} delayMs={200} durationMs={1200} /> : null}
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -145,24 +158,26 @@ export function Dashboard() {
                 </span>
                 {!isPro && (
                   <Button
-                    className="bg-blue-600 hover:bg-blue-700"
-                    onClick={async () => {
-                      try {
-                        await PaymentsService.purchaseUpgrade(29)
-                        window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' } }))
-                        window.location.reload()
-                      } catch (err: unknown) {
-                        console.error(err)
-                        const msg = err instanceof Error ? err.message : String(err)
-                        window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
-                      }
-                    }}
-                  >
-                    <><ArrowRight className="h-4 w-4 mr-2" />Upgrade to Pro</>
-                  </Button>
+                      className="bg-blue-600 hover:bg-blue-700"
+                      onClick={async () => {
+                        try {
+                          await PaymentsService.purchaseUpgrade(29)
+                          window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' } }))
+                          window.location.reload()
+                        } catch (err: unknown) {
+                          console.error(err)
+                          const msg = err instanceof Error ? err.message : String(err)
+                          window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
+                        }
+                      }}
+                      icon={<ArrowRight className="h-4 w-4" />}
+                      collapseToIcon
+                    >
+                      Upgrade to Pro
+                    </Button>
                 )}
-                <Button size="sm" variant="outline" onClick={() => refreshUser()}>
-                  <><RefreshCcw className="h-4 w-4 mr-2" />Refresh</>
+                <Button size="sm" variant="outline" onClick={() => refreshUser()} icon={<RefreshCcw className="h-4 w-4" />} collapseToIcon>
+                  Refresh
                 </Button>
               </div>
             </div>

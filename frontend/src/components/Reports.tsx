@@ -7,10 +7,21 @@ import PaymentResultModal from './ui/PaymentResultModal'
 import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
 import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
-import { RefreshCcw, Trash2, DownloadCloud, ExternalLink, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { RefreshCcw, Trash2, DownloadCloud, ExternalLink, ChevronLeft, ChevronRight, X, SlidersHorizontal } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+// local small responsive overrides
+import '@/styles/responsive.css'
 
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
+  // showFilters: controls whether the filter sidebar is visible.
+  // Default: visible when viewport > 700px, hidden when <= 700px. If the user
+  // manually toggles, their preference persists across resizes.
+  const [showFilters, setShowFilters] = useState<boolean>(true)
+  const [filtersUserToggled, setFiltersUserToggled] = useState<boolean>(false)
+  // When true the filters are rendered above the reports list (stacked)
+  // instead of in a left sidebar. This kicks in for widths <= 1276px.
+  const [isMobile1276, setIsMobile1276] = useState<boolean>(() => (typeof window !== 'undefined' ? window.innerWidth <= 1276 : false))
   const [reports, setReports] = useState<ReportMetadata[]>([])
   const [page, setPage] = useState<number>(1)
   const [limit, setLimit] = useState<number>(10)
@@ -60,6 +71,19 @@ export default function Reports() {
       setIsLoading(false)
     }
   }, [page, limit])
+
+  // initialize showFilters based on viewport and respond to resizes
+  useEffect(() => {
+    const onResize = () => {
+      const isMobile = window.innerWidth <= 700
+      if (!filtersUserToggled) setShowFilters(!isMobile)
+      // when the viewport is 1276px or less, stack filters on top of the list
+      setIsMobile1276(window.innerWidth <= 1276)
+    }
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [filtersUserToggled])
   const [query, setQuery] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [verdictOptions, setVerdictOptions] = useState<string[]>([])
@@ -204,8 +228,20 @@ export default function Reports() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Your Reports</h1>
         <div className="flex items-center gap-2">
-          <button onClick={fetchReports} className="px-3 py-1 bg-white border rounded flex items-center"><RefreshCcw className="h-4 w-4 mr-2"/>Refresh</button>
-          <button
+          {/* Filter toggle button (shows/hides left filter column on small screens) */}
+          <Button variant="ghost" size="sm" className="flex items-center" icon={<SlidersHorizontal className="h-4 w-4" />} collapseToIcon onClick={() => { setFiltersUserToggled(true); setShowFilters((s) => !s) }}>
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
+          
+          <Button
+            onClick={fetchReports}
+            className="px-3 py-1 bg-white border rounded text-black"
+            icon={<RefreshCcw className="h-4 w-4" />}
+            collapseToIcon
+          >
+            Refresh
+          </Button>
+          <Button
             disabled={deleting}
             onClick={async () => {
               const fns = Object.keys(selectedFiles).filter((k) => selectedFiles[k])
@@ -213,10 +249,12 @@ export default function Reports() {
               // open confirmation modal and perform delete on confirm
               setBulkDeleteOpen(true)
             }}
-            className="px-3 py-1 bg-red-600 text-white rounded flex items-center"
+            className="px-3 py-1 bg-red-600 text-white rounded"
+            icon={<Trash2 className="h-4 w-4" />}
+            collapseToIcon
           >
-            <><Trash2 className="h-4 w-4 mr-2"/>{allOnPageSelected ? 'Delete All' : 'Delete Selected'}</>
-          </button>
+            {allOnPageSelected ? 'Delete All' : 'Delete Selected'}
+          </Button>
           <ConfirmBulkDeleteModal
             open={bulkDeleteOpen}
             filenames={Object.keys(selectedFiles).filter((k) => selectedFiles[k])}
@@ -288,9 +326,75 @@ export default function Reports() {
       </div>
       {error && <div className="text-red-600 mb-4">{error}</div>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left: filters / controls */}
-        <aside className="md:col-span-1 bg-white p-4 rounded shadow">
+  <div className="grid gap-6" style={{ gridTemplateColumns: isMobile1276 ? '1fr' : '320px 1fr' }}>
+        {/* When stacking is enabled we render the filters first so they appear on top */}
+      {isMobile1276 ? (
+          <aside className={`bg-white p-4 rounded shadow ${showFilters ? '' : 'hidden'}`}>
+            <div className="mb-4">
+              <div className="flex items-center justify-between">
+                <div className="text-lg font-medium">Filters</div>
+                <button
+                  onClick={() => {
+                    setQuery('')
+                    setStatusFilter('all')
+                    setStartDate('')
+                    setEndDate('')
+                    setSelectedFiles({})
+                  }}
+                  className="text-sm text-blue-600 flex items-center gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  Clear filters
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Search</label>
+              <input value={query} onChange={(e) => setQuery(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="file name or title" />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Verdict / Status</label>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full border rounded px-3 py-2">
+                <option value="all">All</option>
+                <option value="compliant">Compliance Reports</option>
+                {verdictOptions.filter(v => v !== 'compliant').map((v) => (
+                  <option key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>
+                ))}
+                <option value="full">Full Reports</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Date range</label>
+              <div className="flex gap-2">
+                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-1/2 border rounded px-2 py-1" />
+                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-1/2 border rounded px-2 py-1" />
+              </div>
+            </div>
+
+            {/* Loading progress bar: always visible even if filters hidden on small screens */}
+            <div className="mt-4">
+              {showBar && (
+                <div className="w-full">
+                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
+                      style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
+                      role="progressbar"
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.min(100, Math.max(0, progress))}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </aside>
+        ) : (
+      /* Left: filters / controls for desktop (sidebar) */
+      <aside className={`bg-white p-4 rounded shadow ${showFilters ? '' : 'hidden'}`}>
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <div className="text-lg font-medium">Filters</div>
@@ -337,7 +441,7 @@ export default function Reports() {
 
           {/* count is shown in the header next to the select-all control */}
 
-          {/* Loading progress bar */}
+          {/* Loading progress bar: always visible even if filters hidden on small screens */}
           <div className="mt-4">
             {showBar && (
               <div className="w-full">
@@ -354,13 +458,14 @@ export default function Reports() {
               </div>
             )}
           </div>
-        </aside>
+    </aside>
+  )}
 
-        {/* Right: reports list */}
-        <main className="md:col-span-2 bg-white p-4 rounded shadow">
+  {/* Right: reports list */}
+  <main className={'bg-white p-4 rounded shadow'}>
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+              <label className="inline-flex items-center gap-2 text-sm text-gray-700 ml-4">
                 <input
                   type="checkbox"
                   checked={filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])}
@@ -377,28 +482,47 @@ export default function Reports() {
                   }}
                   aria-label={filtered.length > 0 ? `Select all ${filtered.length} reports` : 'Select all reports'}
                 />
-                <span className="text-sm">Select all</span>
+                <span className="text-sm hide-below-700">Select all</span>
 
-                <div className="text-sm text-gray-600">{isLoading ? 'Loading...' : `${filtered.length} results`}</div>
+                <div className="text-sm text-gray-600">{isLoading ? 'Loading...' : (total != null ? `${filtered.length} / ${total} results` : `${filtered.length} results`)}</div>
               </label>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-3 ml-4">
-                <label className="text-sm text-gray-600">Per page</label>
-                <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1">
+                <label className="text-sm text-gray-600 hide-below-700">Per page</label>
+                <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1 hide-below-700">
                   {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
                 </select>
-                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/>Prev</button>
+                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/><span className="hide-below-700">Prev</span></button>
                 <div className="px-2 py-1 text-sm">{page} / {totalPages}</div>
-                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center">Next<ChevronRight className="h-4 w-4 ml-1"/></button>
+                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center"><span className="hide-below-700">Next</span><ChevronRight className="h-4 w-4 ml-1"/></button>
               </div>
             </div>
           </div>
 
           <div className="space-y-3 max-h-[70vh] overflow-auto">
-            {filtered.map((r) => (
-              <div key={r.filename} className={`p-4 border rounded flex items-center ${selectedFiles[r.filename] ? 'border-blue-600 bg-blue-50' : ''}`}>
-                <div className="mr-4 flex items-center h-full">
+            {filtered.map((r) => {
+              const score = typeof r.score === 'number' ? Math.max(0, Math.min(100, r.score)) : undefined
+              const hasStars = score != null
+              const isFull = Boolean(r.is_full_report || (r.type && String(r.type).toLowerCase() === 'verification'))
+              const vnorm = (r.verdict || '').toString().trim().toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
+              const hasVerdict = Boolean(r.verdict)
+              // When an item has no stars/full/verdict, give the card a small
+              // minimum height on mobile so the action buttons can be anchored
+              // to the bottom using `self-end`. Relying on large top margins
+              // doesn't work reliably because the row height is determined by
+              // the tallest content column; a min-height creates predictable
+              // vertical spacing.
+              // If the card has a lot of visible content (stars, full badge,
+              // verdict, file size, or a document name), use a longer mobile
+              // min-height so controls anchor nicely. Otherwise use a shorter
+              // mobile min-height to keep list density.
+              const hasExtraContent = hasStars || isFull || hasVerdict || Boolean(r.file_size) || Boolean(r.document_name)
+              const cardMinHeightClass = hasExtraContent ? 'card-min-h-mobile-long md:min-h-0' : 'card-min-h-mobile md:min-h-0'
+
+              return (
+              <div key={r.filename} className={`${cardMinHeightClass} p-4 border rounded grid grid-cols-12 gap-4 items-start md:flex md:items-center ${selectedFiles[r.filename] ? 'border-blue-600 bg-blue-50' : ''}`}>
+                <div className="col-span-1 flex items-center h-full">
                   <input
                     type="checkbox"
                     checked={!!selectedFiles[r.filename]}
@@ -407,7 +531,7 @@ export default function Reports() {
                     aria-label={`Select report ${r.filename}`}
                   />
                 </div>
-                <div className="flex-1">
+                <div className="col-span-10 flex-1">
                   <div className="font-semibold">{r.title || r.document_name}</div>
                   <div className="text-sm text-gray-600">{r.document_name}</div>
                   <div className="text-sm text-gray-500 mt-1">{new Date(r.created_at).toLocaleString()}</div>
@@ -419,13 +543,12 @@ export default function Reports() {
                   {/* Rating: map score (0-100) to 0-5 stars and display percent beside verdict badges */}
                   <div className="mt-2 ml-2 mr-2 flex items-center gap-2">
                     {(() => {
-                      const score = typeof r.score === 'number' ? Math.max(0, Math.min(100, r.score)) : undefined
                       if (score == null) return null
                       const stars = (score / 100) * 5
                       const full = Math.floor(stars)
                       const half = stars - full >= 0.5 ? 1 : 0
                       const empty = 5 - full - half
-                      const icons: JSX.Element[] = []
+                      const icons: React.ReactElement[] = []
                       for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={16} weight="fill" className="text-yellow-500" />)
                       if (half) icons.push(<StarHalf key={`h`} size={16} weight="fill" className="text-yellow-500" />)
                       for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={16} weight="duotone" className="text-gray-300" />)
@@ -439,10 +562,6 @@ export default function Reports() {
                   </div>
                   {/* Badge group: Full/Compliance label and verdict badge share height and touch borders */}
                   {(() => {
-                    const normalize = (s?: string) => (s || '').toString().trim().toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
-                    const isFull = Boolean(r.is_full_report || (r.type && String(r.type).toLowerCase() === 'verification'))
-                    const vnorm = normalize(r.verdict)
-                    const hasVerdict = Boolean(r.verdict)
                     if (!isFull && !hasVerdict) return null
                     return (
                       <div className="inline-flex items-center mt-2 text-xs font-medium rounded overflow-hidden">
@@ -458,15 +577,22 @@ export default function Reports() {
                     )
                   })()}
                 </div>
-                <div className="flex-shrink-0 ml-4 flex items-center space-x-2">
+                <div className={`col-span-1 flex-shrink-0 ml-0 md:ml-4 flex items-center space-x-2 w-full md:w-auto justify-end self-end`}>
                   {r.gcs_url ? (
-                    <button onClick={() => policyService.openReport(r)} className="text-sm text-blue-600 flex items-center"><ExternalLink className="h-4 w-4 mr-2"/>Open</button>
+                    <Button onClick={() => policyService.openReport(r)} className="text-sm bg-gray-700 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
+                      Open
+                    </Button>
                   ) : null}
-                  <button onClick={() => onOpen(r)} className="bg-transparent text-blue-600 px-3 py-1 rounded border border-blue-200 flex items-center"><ExternalLink className="h-4 w-4 mr-2"/>View</button>
-                  <button onClick={() => onDownload(r)} className="bg-blue-600 text-white px-3 py-1 rounded flex items-center"><DownloadCloud className="h-4 w-4 mr-2"/>Download</button>
+                  <Button onClick={() => onOpen(r)} className="text-sm bg-blue-600 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} collapseToIcon>
+                    View
+                  </Button>
+                  <Button onClick={() => onDownload(r)} className="bg-green-600 text-white px-3 py-1 rounded" icon={<DownloadCloud className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
+                    Download
+                  </Button>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
           {modalUrl ? (
             <ReportViewerModal

@@ -1,0 +1,9 @@
+/* Hide the .btn-label when the button has .collapse-to-icon and viewport <= 700px */
+@media (max-width: 700px) {
+  .collapse-to-icon .btn-label {
+    display: none !important;
+  }
+  .collapse-to-icon .btn-icon {
+    margin-right: 0 !important;
+  }
+}

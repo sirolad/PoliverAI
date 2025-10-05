@@ -5,7 +5,7 @@ import useAuth from '@/contexts/useAuth'
 import { useNavigate } from 'react-router-dom'
 import { CheckCircle2, Shield, Zap, Clock, FileCheck, BarChart, CreditCard } from 'lucide-react'
 import Footer from './Footer'
-import PaymentsService from '@/services/payments'
+import Splash from './ui/Splash'
 
 interface FeatureCardProps {
   icon: React.ElementType
@@ -36,7 +36,8 @@ function FeatureCard({ icon: Icon, title, description, isPro = false }: FeatureC
 export default function LandingPage() {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  const [isProcessing, setIsProcessing] = React.useState(false)
+  const [isProcessing] = React.useState(false)
+  const [showSplash, setShowSplash] = React.useState(true)
 
   const freeFeatures = [
     {
@@ -79,6 +80,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {showSplash ? <Splash onFinish={() => setShowSplash(false)} delayMs={200} durationMs={1600} /> : null}
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">
@@ -97,28 +99,19 @@ export default function LandingPage() {
                   onClick={() => navigate('/signup')}
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                  icon={<Clock className="h-5 w-5" />}
+                  collapseToIcon
                 >
-                  <Clock className="h-5 w-5" />
                   Start Free Analysis
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={async () => {
-                    setIsProcessing(true)
-                    try {
-                        await PaymentsService.purchaseUpgrade(29)
-                        // Redirecting to Stripe; finalization will trigger the success modal after return
-                    } catch (err: unknown) {
-                      console.error(err)
-                      const msg = err instanceof Error ? err.message : String(err)
-                      window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
-                    } finally {
-                      setIsProcessing(false)
-                    }
-                  }}
+                  onClick={() => navigate('/login')}
+                  icon={<CreditCard className="h-5 w-5" />}
+                  collapseToIcon
                 >
-                  {isProcessing ? 'Processing...' : <><CreditCard className="h-5 w-5 mr-2" />Upgrade to Pro</>}
+                  {isProcessing ? 'Processing...' : 'Upgrade to Pro'}
                 </Button>
               </>
             ) : (
@@ -250,8 +243,7 @@ export default function LandingPage() {
                   <span className="text-sm">Basic recommendations</span>
                 </li>
               </ul>
-              <Button className="w-full mt-6" variant="outline" onClick={() => navigate('/signup')}>
-                <Clock className="h-4 w-4 mr-2" />
+              <Button className="w-full mt-6" variant="outline" onClick={() => navigate('/signup')} icon={<Clock className="h-4 w-4" />} collapseToIcon>
                 Get Started Free
               </Button>
             </CardContent>
@@ -292,19 +284,8 @@ export default function LandingPage() {
               </ul>
               <Button 
                 className="w-full mt-6 bg-blue-600 hover:bg-blue-700 flex items-center gap-2" 
-                onClick={async () => {
-                  setIsProcessing(true)
-                  try {
-                      await PaymentsService.purchaseUpgrade(29)
-                      // Redirecting to Stripe; finalization will trigger the success modal after return
-                  } catch (err: unknown) {
-                    console.error(err)
-                    const msg = err instanceof Error ? err.message : String(err)
-                    window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
-                  } finally {
-                    setIsProcessing(false)
-                  }
-              }}>
+                onClick={() => navigate('/login')}
+              >
                 <CreditCard className="h-4 w-4" />
                 Upgrade to Pro
               </Button>
