@@ -515,136 +515,186 @@ async def generate_verification_report(
         reports_dir.mkdir(parents=True, exist_ok=True)
         ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
 
-        # Generate report content
-        content = _generate_verification_report_content(req)
+        # Charge credits for verification report generation (do it before
+        # generating the report to avoid doing heavy work and then failing
+        # at the charge step). If charging succeeds we will record a
+        # transaction. If generation later fails we attempt a refund.
+        from ....db.users import user_db
+        from ....db.transactions import transactions
 
-        # Export as PDF
-        filename = f"gdpr-verification-{ts}.pdf"
-        filepath = export_report(content, str(reports_dir))
-        filename = Path(filepath).name
-
-        # If GCS is configured, upload under user folder if we have a user id
-        settings = get_settings()
-        gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_REPORTS_GCS_BUCKET")
-        user_id = None
-        if current_user is not None:
-            user_id = current_user.id
-        else:
-            # fallback to environment variable for backward compatibility
-            user_id = os.getenv("POLIVERAI_DEFAULT_USER_ID")
-
-        gcs_url = None
+        COST = 5
+        charged = False
         try:
-            if gcs_bucket and user_id and upload_report_if_changed:
-                object_path = f"{user_id}/{filename}"
-                uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, filepath)
-        except Exception:
-            # Log upload errors so we can diagnose why GCS upload failed
-            import logging
+            if current_user is None:
+                raise HTTPException(status_code=401, detail='Authentication required to generate a charged verification report')
 
-            logging.exception('Failed to upload report to GCS')
-            gcs_url = None
+            user_record = user_db.get_user_by_id(current_user.id)
+            if not user_record or (user_record.credits or 0) < COST:
+                raise HTTPException(status_code=402, detail='Insufficient credits to generate full verification report')
 
-    # Insert a record into Mongo 'reports' collection if available
-        try:
-            mongo_uri = os.getenv("MONGO_URI")
-            if mongo_uri and MongoUserDB:
-                mdb = MongoUserDB(mongo_uri)
-                # collect additional metadata
-                file_size = None
-                try:
-                    file_size = Path(filepath).stat().st_size
-                except Exception:
-                    file_size = None
-
-                report_doc = {
-                    "filename": filename,
-                    "path": str(filepath),
-                    "gcs_url": gcs_url,
-                    "user_id": user_id,
-                    "document_name": req.document_name,
-                    "analysis_mode": req.analysis_mode,
-                    # mark generated verification reports as full reports so we
-                    # don't double-charge if the user later clicks Save
-                    "is_full_report": True,
-                    # numeric compliance score reported by the verification step
-                    "score": getattr(req, 'score', None),
-                    # persist the raw generated content so it can be rendered
-                    # inline later by the frontend (detailed view)
-                    "content": content,
-                    # store verdict and a simple type so the frontend can filter
-                    "verdict": getattr(req, 'verdict', None),
-                    "type": "verification",
-                    "file_size": file_size,
-                    "created_at": datetime.utcnow(),
-                }
-                inserted = mdb.db.get_collection("reports").insert_one(report_doc)
-                inserted_id = inserted.inserted_id
-        except Exception:
-            # Do not hard-fail report creation if DB logging fails, but log details
-            import logging
-
-            logging.exception('Failed to persist verification report record to Mongo')
-
-        # Charge credits for verification report generation for non-PRO users
-        try:
-            # Charge a higher amount for a generated full verification report
-            from ....db.users import user_db
-            from ....db.transactions import transactions
-            # Charge 5 credits for generating a full verification report
-            COSTS = {'report': 5}
-            if current_user and current_user.tier != UserTier.PRO:
-                user_record = user_db.get_user_by_id(current_user.id)
-                if not user_record or (user_record.credits or 0) < COSTS['report']:
-                    # insufficient credits
-                    raise HTTPException(status_code=402, detail='Insufficient credits to generate full verification report')
-
-                # Attempt to deduct credits using configured user_db
+            deducted = False
+            try:
+                deducted = user_db.update_user_credits(current_user.id, -int(COST))
+            except Exception:
                 deducted = False
+
+            if not deducted and MongoUserDB:
                 try:
-                    deducted = user_db.update_user_credits(current_user.id, -int(COSTS['report']))
+                    mdb_try = MongoUserDB(os.getenv('MONGO_URI'))
+                    deducted = mdb_try.update_user_credits(current_user.id, -int(COST))
                 except Exception:
                     deducted = False
 
-                # Fallback: if the configured user_db didn't update (e.g., mismatch), try Mongo directly
-                if not deducted and MongoUserDB:
+            if not deducted:
+                raise HTTPException(status_code=500, detail='Failed to deduct credits for report generation')
+
+            usd = round(COST / 10.0, 2)
+            tx = {
+                'user_email': current_user.email,
+                'event_type': 'charge_report',
+                'amount_usd': -usd,
+                'credits': -int(COST),
+                'description': f'Charge: {int(COST)} credits for full verification report generation',
+                'timestamp': datetime.utcnow(),
+            }
+            try:
+                transactions.add(tx)
+                charged = True
+            except Exception:
+                import logging
+
+                logging.exception('Failed to record transaction for pre-charge of report generation')
+        except HTTPException:
+            # Propagate auth/insufficient errors before doing heavy work
+            raise
+        except Exception:
+            import logging
+
+            logging.exception('Unexpected error while attempting to pre-charge for verification report')
+            raise HTTPException(status_code=500, detail='Failed to charge for verification report')
+
+        try:
+            # Generate report content
+            content = _generate_verification_report_content(req)
+
+            # Export as PDF
+            filename = f"gdpr-verification-{ts}.pdf"
+            filepath = export_report(content, str(reports_dir))
+            filename = Path(filepath).name
+
+            # If GCS is configured, upload under user folder if we have a user id
+            settings = get_settings()
+            gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_REPORTS_GCS_BUCKET")
+            user_id = None
+            if current_user is not None:
+                user_id = current_user.id
+            else:
+                # fallback to environment variable for backward compatibility
+                user_id = os.getenv("POLIVERAI_DEFAULT_USER_ID")
+
+            gcs_url = None
+            try:
+                if gcs_bucket and user_id and upload_report_if_changed:
+                    object_path = f"{user_id}/{filename}"
+                    uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, filepath)
+            except Exception:
+                # Log upload errors so we can diagnose why GCS upload failed
+                import logging
+
+                logging.exception('Failed to upload report to GCS')
+                gcs_url = None
+
+            # Insert a record into Mongo 'reports' collection if available
+            # Prepare placeholders in case Mongo persistence fails so later
+            # logic that references these variables doesn't raise UnboundLocalError.
+            mdb = None
+            inserted_id = None
+            try:
+                mongo_uri = os.getenv("MONGO_URI")
+                if mongo_uri and MongoUserDB:
+                    mdb = MongoUserDB(mongo_uri)
+                    # collect additional metadata
+                    file_size = None
                     try:
-                        mdb2 = MongoUserDB(os.getenv('MONGO_URI'))
-                        deducted = mdb2.update_user_credits(current_user.id, -int(COSTS['report']))
+                        file_size = Path(filepath).stat().st_size
                     except Exception:
-                        deducted = False
+                        file_size = None
 
-                if not deducted:
-                    # Could not deduct (user not found or other error)
-                    raise HTTPException(status_code=500, detail='Failed to deduct credits for report generation')
+                    report_doc = {
+                        "filename": filename,
+                        "path": str(filepath),
+                        "gcs_url": gcs_url,
+                        "user_id": user_id,
+                        "document_name": req.document_name,
+                        "analysis_mode": req.analysis_mode,
+                        # mark generated verification reports as full reports so we
+                        # don't double-charge if the user later clicks Save
+                        "is_full_report": True,
+                        # numeric compliance score reported by the verification step
+                        "score": getattr(req, 'score', None),
+                        # persist the raw generated content so it can be rendered
+                        # inline later by the frontend (detailed view)
+                        "content": content,
+                        # store verdict and a simple type so the frontend can filter
+                        "verdict": getattr(req, 'verdict', None),
+                        "type": "verification",
+                        "file_size": file_size,
+                        "created_at": datetime.utcnow(),
+                    }
+                    inserted = mdb.db.get_collection("reports").insert_one(report_doc)
+                    inserted_id = inserted.inserted_id
+            except Exception:
+                # Do not hard-fail report creation if DB logging fails, but log details
+                import logging
 
-                usd = round(COSTS['report'] / 10.0, 2)
-                tx = {
-                    'user_email': current_user.email,
-                    'event_type': 'charge_report',
-                    'amount_usd': -usd,
-                    'credits': -int(COSTS['report']),
-                    'description': 'Charge: 5 credits for full verification report generation',
-                    'timestamp': datetime.utcnow(),
-                }
-                try:
-                    transactions.add(tx)
-                    # mark the inserted report as charged (best-effort)
+                logging.exception('Failed to persist verification report record to Mongo')
+
+            # If we successfully pre-charged earlier, mark the report doc as charged
+            try:
+                if charged and mdb is not None and inserted_id is not None:
+                    mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
+            except Exception:
+                # don't block the response if marking charged fails
+                pass
+
+            return ReportResponse(
+                filename=filename, path=filepath, download_url=gcs_url or f"/api/v1/reports/download/{filename}"
+            )
+        except HTTPException:
+            # propagate known HTTP errors without trying to refund (they
+            # indicate client-side issues like 402/401)
+            raise
+        except Exception as e:
+            # If we charged the user but generation/persistence failed, try to refund
+            try:
+                if charged and current_user is not None:
                     try:
-                        mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
+                        user_db.update_user_credits(current_user.id, int(COST))
+                    except Exception:
+                        if MongoUserDB:
+                            try:
+                                mdb_rf = MongoUserDB(os.getenv('MONGO_URI'))
+                                mdb_rf.update_user_credits(current_user.id, int(COST))
+                            except Exception:
+                                pass
+                    try:
+                        refund_tx = {
+                            'user_email': current_user.email,
+                            'event_type': 'refund_report_generation',
+                            'amount_usd': round(COST/10.0, 2),
+                            'credits': int(COST),
+                            'description': 'Refund: failed verification report generation',
+                            'timestamp': datetime.utcnow(),
+                        }
+                        transactions.add(refund_tx)
                     except Exception:
                         pass
-                except Exception:
-                    # Non-fatal: log and continue
-                    import logging
-
-                    logging.exception('Failed to record transaction for report charge')
-        except Exception:
-            pass
-
-        return ReportResponse(
-            filename=filename, path=filepath, download_url=gcs_url or f"/api/v1/reports/download/{filename}"
-        )
+            except Exception:
+                pass
+            raise HTTPException(status_code=500, detail=f'Failed to generate verification report: {e}') from e
+    except HTTPException:
+        # Propagate HTTPExceptions (e.g., 402 Insufficient credits)
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to generate verification report: {str(e)}"

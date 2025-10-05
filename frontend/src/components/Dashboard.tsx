@@ -13,6 +13,7 @@ import {
   Star,
   Lock
 } from 'lucide-react'
+import { ArrowRight, RefreshCcw } from 'lucide-react'
 import PaymentsService from '@/services/payments'
 
 export function Dashboard() {
@@ -101,7 +102,8 @@ export function Dashboard() {
     // Pricing (server must enforce; this view is only for display)
     const COSTS: Record<string, { credits: number; usd: number }> = {
       analysis: { credits: 5, usd: 0.5 },
-      report: { credits: 10, usd: 1.0 },
+      // Updated comprehensive report cost to 5 credits per product request
+      report: { credits: 5, usd: 0.5 },
       ingest: { credits: 2, usd: 0.2 },
     }
 
@@ -156,11 +158,11 @@ export function Dashboard() {
                       }
                     }}
                   >
-                    Upgrade to Pro
+                    <><ArrowRight className="h-4 w-4 mr-2" />Upgrade to Pro</>
                   </Button>
                 )}
                 <Button size="sm" variant="outline" onClick={() => refreshUser()}>
-                  Refresh
+                  <><RefreshCcw className="h-4 w-4 mr-2" />Refresh</>
                 </Button>
               </div>
             </div>
@@ -188,7 +190,7 @@ export function Dashboard() {
                     }
                   }}
                 >
-                  Learn More
+                  <><ArrowRight className="h-4 w-4 mr-2" />Learn More</>
                 </Button>
               </div>
             </CardContent>

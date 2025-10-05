@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
-import { User, LogOut } from 'lucide-react'
+import { User, LogOut, CreditCard, ChevronRight, LogIn, UserPlus } from 'lucide-react'
 import PaymentsService from '@/services/payments'
 import { useState } from 'react'
 import PaymentResultModal from './ui/PaymentResultModal'
@@ -176,10 +176,10 @@ export function Navbar() {
 
               {/* Upgrade button for free users */}
               {!isPro && (
-                <Button
-                  size="sm"
-                  className="bg-blue-600 hover:bg-blue-700"
-                    onClick={async () => {
+                  <Button
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700"
+                      onClick={async () => {
                       try {
                         await PaymentsService.purchaseUpgrade(29)
                         // Don't show success or reload here — finalization will occur when
@@ -191,7 +191,7 @@ export function Navbar() {
                       }
                   }}
                 >
-                  Upgrade to Pro
+                  <><ChevronRight className="h-4 w-4 mr-2" />Upgrade to Pro</>
                 </Button>
               )}
 
@@ -201,7 +201,7 @@ export function Navbar() {
                 variant="outline"
                 onClick={() => setCreditsModalOpen(true)}
               >
-                Buy Credits
+                <><CreditCard className="h-4 w-4 mr-2" />Buy Credits</>
               </Button>
 
               {/* Display total credits with breakdown tooltip */}
@@ -226,18 +226,20 @@ export function Navbar() {
                 className="flex items-center gap-1"
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                <span className="ml-1">Logout</span>
               </Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <LogIn className="h-4 w-4" />
                   Login
                 </Button>
               </Link>
               <Link to="/register">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
+                  <UserPlus className="h-4 w-4" />
                   Sign Up
                 </Button>
               </Link>

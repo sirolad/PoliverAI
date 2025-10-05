@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 import useAuth from '@/contexts/useAuth'
-import { Mail, Lock, User, AlertCircle } from 'lucide-react'
+import { Mail, Lock, User, AlertCircle, UserPlus, LogIn } from 'lucide-react'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -179,16 +179,17 @@ export function Register() {
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Creating account...' : 'Create Account'}
+                {isSubmitting ? <><UserPlus className="h-4 w-4"/> Creating account...</> : <><UserPlus className="h-4 w-4"/> Create Account</>}
               </Button>
 
               <div className="text-center">
                 <p className="text-sm text-gray-600">
                   Already have an account?{' '}
-                  <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                  <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
+                    <LogIn className="h-4 w-4" />
                     Sign in
                   </Link>
                 </p>

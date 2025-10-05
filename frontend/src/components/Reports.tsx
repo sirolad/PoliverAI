@@ -7,6 +7,7 @@ import PaymentResultModal from './ui/PaymentResultModal'
 import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
 import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
+import { RefreshCcw, Trash2, DownloadCloud, ExternalLink, ChevronLeft, ChevronRight, X } from 'lucide-react'
 
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
@@ -203,7 +204,7 @@ export default function Reports() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Your Reports</h1>
         <div className="flex items-center gap-2">
-          <button onClick={fetchReports} className="px-3 py-1 bg-white border rounded">Refresh</button>
+          <button onClick={fetchReports} className="px-3 py-1 bg-white border rounded flex items-center"><RefreshCcw className="h-4 w-4 mr-2"/>Refresh</button>
           <button
             disabled={deleting}
             onClick={async () => {
@@ -212,9 +213,9 @@ export default function Reports() {
               // open confirmation modal and perform delete on confirm
               setBulkDeleteOpen(true)
             }}
-            className="px-3 py-1 bg-red-600 text-white rounded"
+            className="px-3 py-1 bg-red-600 text-white rounded flex items-center"
           >
-            {allOnPageSelected ? 'Delete All' : 'Delete Selected'}
+            <><Trash2 className="h-4 w-4 mr-2"/>{allOnPageSelected ? 'Delete All' : 'Delete Selected'}</>
           </button>
           <ConfirmBulkDeleteModal
             open={bulkDeleteOpen}
@@ -293,6 +294,19 @@ export default function Reports() {
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <div className="text-lg font-medium">Filters</div>
+              <button
+                onClick={() => {
+                  setQuery('')
+                  setStatusFilter('all')
+                  setStartDate('')
+                  setEndDate('')
+                  setSelectedFiles({})
+                }}
+                className="text-sm text-blue-600 flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                Clear filters
+              </button>
             </div>
           </div>
 
@@ -374,9 +388,9 @@ export default function Reports() {
                 <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1">
                   {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
                 </select>
-                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded">Prev</button>
+                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/>Prev</button>
                 <div className="px-2 py-1 text-sm">{page} / {totalPages}</div>
-                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded">Next</button>
+                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center">Next<ChevronRight className="h-4 w-4 ml-1"/></button>
               </div>
             </div>
           </div>
@@ -446,10 +460,10 @@ export default function Reports() {
                 </div>
                 <div className="flex-shrink-0 ml-4 flex items-center space-x-2">
                   {r.gcs_url ? (
-                    <button onClick={() => policyService.openReport(r)} className="text-sm text-blue-600">Open</button>
+                    <button onClick={() => policyService.openReport(r)} className="text-sm text-blue-600 flex items-center"><ExternalLink className="h-4 w-4 mr-2"/>Open</button>
                   ) : null}
-                  <button onClick={() => onOpen(r)} className="bg-transparent text-blue-600 px-3 py-1 rounded border border-blue-200">View</button>
-                  <button onClick={() => onDownload(r)} className="bg-blue-600 text-white px-3 py-1 rounded">Download</button>
+                  <button onClick={() => onOpen(r)} className="bg-transparent text-blue-600 px-3 py-1 rounded border border-blue-200 flex items-center"><ExternalLink className="h-4 w-4 mr-2"/>View</button>
+                  <button onClick={() => onDownload(r)} className="bg-blue-600 text-white px-3 py-1 rounded flex items-center"><DownloadCloud className="h-4 w-4 mr-2"/>Download</button>
                 </div>
               </div>
             ))}

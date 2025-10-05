@@ -2,6 +2,7 @@ import policyService from '@/services/policyService'
 import { useState } from 'react'
 import EnterTitleModal from './EnterTitleModal'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
+import InsufficientCreditsModal from './InsufficientCreditsModal'
 
 type Props = {
   reportUrl: string
@@ -17,6 +18,7 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [pendingTitle, setPendingTitle] = useState<string | null>(null)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
+  const [insufficientOpen, setInsufficientOpen] = useState(false)
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-6 bg-black/50">
       <div className="w-full max-w-5xl bg-white rounded shadow-lg overflow-hidden">
@@ -71,6 +73,12 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
               if (onSaved) onSaved(resp.filename)
             } catch (err) {
               console.warn('save with title failed', err)
+              try {
+                const anyErr = err as any
+                if (anyErr && anyErr.status === 402) setInsufficientOpen(true)
+              } catch {
+                // ignore
+              }
             }
           }}
         />
@@ -87,6 +95,7 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
             } catch (e) {
               console.warn('delete failed', e)
             }
+            <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
           }}
         />
       </div>

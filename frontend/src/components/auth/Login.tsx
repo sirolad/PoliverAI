@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 import useAuth from '@/contexts/useAuth'
-import { Mail, Lock, AlertCircle } from 'lucide-react'
+import { Mail, Lock, AlertCircle, LogIn, UserPlus } from 'lucide-react'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -129,16 +129,17 @@ export function Login() {
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Signing in...' : 'Sign In'}
+                {isSubmitting ? <><LogIn className="h-4 w-4"/> Signing in...</> : <><LogIn className="h-4 w-4"/> Sign In</>}
               </Button>
 
               <div className="text-center">
                 <p className="text-sm text-gray-600">
                   Don't have an account?{' '}
-                  <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                  <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
+                    <UserPlus className="h-4 w-4" />
                     Sign up for free
                   </Link>
                 </p>

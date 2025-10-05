@@ -4,6 +4,9 @@ import ReportViewerModal from './ui/ReportViewerModal'
 import EnterTitleModal from './ui/EnterTitleModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
+import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
+import { UploadCloud, CheckCircle2, FileText, AlertTriangle, Lightbulb, BarChart, FileSearch, Star as LucideStar, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck } from 'lucide-react'
+import InsufficientCreditsModal from './ui/InsufficientCreditsModal'
 
 export default function PolicyAnalysis() {
   const { isAuthenticated, loading, refreshUser } = useAuth()
@@ -21,6 +24,7 @@ export default function PolicyAnalysis() {
   const [modalFilename, setModalFilename] = useState<string | null>(null)
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [titleModalInitial, setTitleModalInitial] = useState<string>('')
+  const [insufficientOpen, setInsufficientOpen] = useState(false)
   const saveProgressIntervalRef = useRef<number | null>(null)
 
   // If progress hits 100 (for any reason) ensure we hide the bar after a short delay
@@ -176,8 +180,30 @@ export default function PolicyAnalysis() {
       } catch {
         console.warn('refresh reports after generate failed')
       }
+      // Refresh user (credits) and notify transactions/navbar to reload so
+      // the top-right credits update immediately after generation.
+      try {
+        await refreshUser()
+      } catch (e) {
+        console.warn('refreshUser after generate failed', e)
+      }
+      try {
+        window.dispatchEvent(new CustomEvent('payment:refresh-user'))
+        window.dispatchEvent(new CustomEvent('transactions:refresh'))
+      } catch (e) {
+        console.warn('dispatch refresh events after generate failed', e)
+      }
     } catch (e) {
       console.warn('generate report failed', e)
+      // Show insufficient credits modal for 402
+      try {
+        const anyErr = e as any
+        if (anyErr && anyErr.status === 402) {
+          setInsufficientOpen(true)
+        }
+      } catch {
+        // ignore
+      }
       setMessage(e instanceof Error ? e.message : 'Generate failed')
     } finally {
       stop()
@@ -224,6 +250,14 @@ export default function PolicyAnalysis() {
       }
     } catch (e) {
       console.warn('save report failed', e)
+      try {
+        const anyErr = e as any
+        if (anyErr && anyErr.status === 402) {
+          setInsufficientOpen(true)
+        }
+      } catch {
+        // ignore
+      }
       setMessage(e instanceof Error ? e.message : 'Save failed')
     } finally {
       stop()
@@ -248,9 +282,9 @@ export default function PolicyAnalysis() {
                 setModalFilename(reportFilename)
                 setIsModalOpen(true)
               }}
-              className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+              className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
             >
-              Open
+              <ExternalLink className="h-4 w-4"/>Open
             </button>
 
             <button
@@ -263,9 +297,9 @@ export default function PolicyAnalysis() {
                   console.warn('download failed', e)
                 }
               }}
-              className="px-3 py-1 bg-gray-100 rounded disabled:opacity-50"
+              className="px-3 py-1 bg-gray-100 rounded disabled:opacity-50 flex items-center gap-2"
             >
-              Download
+              <DownloadCloud className="h-4 w-4"/>Download
             </button>
 
             <button
@@ -279,9 +313,9 @@ export default function PolicyAnalysis() {
                   console.warn('refresh reports failed', e)
                 }
               }}
-              className="px-3 py-1 bg-white border rounded"
+              className="px-3 py-1 bg-white border rounded flex items-center gap-2"
             >
-              Refresh
+              <RefreshCcw className="h-4 w-4"/>Refresh
             </button>
 
             <button
@@ -290,8 +324,9 @@ export default function PolicyAnalysis() {
                 // Generate a report from the current analysis result
                 await handleGenerateReport()
               }}
-              className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
+              className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
             >
+              <FileCheck className="h-4 w-4" />
               Full Report
             </button>
 
@@ -303,13 +338,15 @@ export default function PolicyAnalysis() {
                 setTitleModalInitial(reportFilename)
                 setTitleModalOpen(true)
               }}
-              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
+              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
             >
+              <Save className="h-4 w-4" />
               {isFullReportGenerated ? 'Save Full Report' : 'Save Report (costs credits)'}
             </button>
           </div>
         ) : null}
       </div>
+  <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
 
       {/* Two-column layout: controls (filters) on left, main result on right */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -345,8 +382,9 @@ export default function PolicyAnalysis() {
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click() }}
-                  className="bg-white border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50"
+                  className="bg-white border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50 flex items-center"
                 >
+                  <UploadCloud className="h-4 w-4 mr-2" />
                   Browse files
                 </button>
                 {file ? (
@@ -371,7 +409,7 @@ export default function PolicyAnalysis() {
           </div>
 
           <div className="mb-4">
-            <button onClick={handleAnalyze} className="w-full bg-blue-600 text-white px-4 py-2 rounded">Analyze</button>
+            <button onClick={handleAnalyze} className="w-full bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center"><BarChart className="h-4 w-4 mr-2"/>Analyze</button>
           </div>
           <div className="mb-2 text-xs text-gray-500">Quick analysis is free. Saving a quick report will cost credits.</div>
 
@@ -417,8 +455,8 @@ export default function PolicyAnalysis() {
                   {result?.findings && result.findings.length > 0 ? (
                     <ul className="list-disc pl-5 space-y-2">
                       {result.findings.map((f, idx) => (
-                        <li key={idx} className="text-sm">
-                          <span className="font-medium">Article {f.article}:</span> {f.issue}
+                        <li key={idx} className="text-sm break-words whitespace-normal">
+                          <span className="font-medium">Article {f.article}:</span> <span className="break-words whitespace-normal">{f.issue}</span>
                         </li>
                       ))}
                     </ul>
@@ -453,7 +491,163 @@ export default function PolicyAnalysis() {
           </div>
 
             <div className="h-full flex-1 min-h-0">
-              <pre className="bg-gray-100 p-4 rounded h-full min-h-0 overflow-auto w-full">{JSON.stringify(result, null, 2)}</pre>
+              {result ? (
+                <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
+                  <div className="flex items-start justify-between gap-6">
+                    <div>
+                      <div className="text-sm text-gray-500 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-600" />Verdict</div>
+                      <div className="mt-1 flex items-center gap-3">
+                        <div className="text-lg font-semibold">{String(result.verdict).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</div>
+                        <div className="text-sm text-gray-500">Confidence: {(result.confidence * 100).toFixed(0)}%</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="text-sm text-gray-500 flex items-center gap-2"><LucideStar className="h-4 w-4 text-yellow-500" />Score</div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1">
+                          {(() => {
+                            const score = typeof result.score === 'number' ? Math.max(0, Math.min(100, result.score)) : 0
+                            const stars = (score / 100) * 5
+                            const full = Math.floor(stars)
+                            const half = stars - full >= 0.5 ? 1 : 0
+                            const empty = 5 - full - half
+                            const icons: JSX.Element[] = []
+                            for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={18} weight="fill" className="text-yellow-500" />)
+                            if (half) icons.push(<StarHalf key={`h`} size={18} className="text-yellow-500" />)
+                            for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={18} weight="duotone" className="text-gray-300" />)
+                            return <div className="flex items-center">{icons}</div>
+                          })()}
+                        </div>
+                        <div className="text-sm text-gray-600">{result.score}%</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2">
+                      <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><FileText className="h-4 w-4 text-gray-600"/>Summary</div>
+                      <div className="mt-2 text-sm text-gray-800 whitespace-pre-wrap">{result.summary}</div>
+
+                      <div className="mt-4">
+                        <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-500"/>Top Findings</div>
+                        <div className="mt-2 space-y-3">
+                          {result.findings && result.findings.length > 0 ? (
+                            // Show up to 5 findings per severity, grouped by severity with colored cards
+                            ['high', 'medium', 'low'].map((sev) => {
+                              const items = result.findings.filter(f => f.severity === sev)
+                              if (items.length === 0) return null
+                              const bg = sev === 'high' ? 'bg-red-600' : sev === 'medium' ? 'bg-yellow-600' : 'bg-green-600'
+                              const pill = sev === 'high' ? 'bg-red-700' : sev === 'medium' ? 'bg-yellow-700' : 'bg-green-700'
+                              return (
+                                <div key={sev}>
+                                  <div className="flex items-center gap-2">
+                                    <div className={`px-2 py-0.5 rounded text-xs font-semibold text-white ${pill}`}>{sev.toUpperCase()}</div>
+                                    <div className="text-xs text-gray-500">{items.length} issue{items.length !== 1 ? 's' : ''}</div>
+                                  </div>
+                                  <div className="mt-2 space-y-2">
+                                    {items.slice(0, 5).map((f, idx) => (
+                                      <div key={idx} className={`${bg} p-3 rounded shadow`}>
+                                        <div className="flex items-start gap-3">
+                                          <div className="p-2 rounded bg-white/10 flex-shrink-0">
+                                            <FileText className="h-5 w-5 text-white" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <div className="font-semibold text-sm text-white break-words">{f.article}</div>
+                                            <div className="text-sm text-white mt-1 break-words whitespace-pre-wrap">{f.issue}</div>
+                                            <div className="text-xs text-white/90 mt-1">Confidence: {(f.confidence * 100).toFixed(0)}%</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            })
+                          ) : (
+                            <div className="text-sm text-gray-500">No findings detected.</div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-yellow-600"/>Recommendations</div>
+                        <ul className="mt-2 list-disc list-inside text-sm text-gray-800">
+                          {result.recommendations && result.recommendations.length > 0 ? (
+                            result.recommendations.map((r, i) => (
+                              <li key={i}>{r.suggestion} <span className="text-xs text-gray-500">({r.article})</span></li>
+                            ))
+                          ) : (
+                            <li className="text-sm text-gray-500">No recommendations</li>
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <aside className="md:col-span-1">
+                      <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><BarChart className="h-4 w-4 text-blue-600"/>Metrics</div>
+                      <div className="mt-2 space-y-2 text-sm text-gray-700">
+                        <div>Total Violations: <span className="font-semibold">{result.metrics?.total_violations ?? 0}</span></div>
+                        <div>Requirements Met: <span className="font-semibold">{result.metrics?.total_fulfills ?? 0}</span></div>
+                        <div>Critical Violations: <span className="font-semibold text-red-600">{result.metrics?.critical_violations ?? 0}</span></div>
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <FileSearch className="h-4 w-4 text-gray-600"/>
+                          <span>Evidence</span>
+                          <div className="px-2 py-0.5 rounded text-xs text-gray-500 bg-gray-100">{`(${result.evidence?.length ?? 0})`}</div>
+                        </div>
+                        <div className="mt-2 space-y-2 text-sm text-gray-700">
+                            {result.evidence && result.evidence.length > 0 ? (
+                            result.evidence.slice(0, 6).map((e, i) => (
+                              <div key={i} className="p-3 rounded shadow bg-green-700 text-white">
+                                <div className="flex items-start gap-3">
+                                  <div className="p-2 rounded bg-white/10 flex-shrink-0">
+                                    <FileText className="h-5 w-5 text-white" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-semibold break-words">{e.article}</div>
+                                    <div className="text-xs mt-1 whitespace-pre-wrap break-words">{e.policy_excerpt}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-sm text-gray-500">No evidence excerpts</div>
+                          )}
+                        </div>
+                      </div>
+                    </aside>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-full w-full flex items-center justify-center">
+                  <div className="text-center p-6">
+                    <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-gray-100">
+                      <UploadCloud className="h-10 w-10 text-gray-500" />
+                    </div>
+                    <div className="mt-4 text-lg font-semibold">No analysis yet</div>
+                    <div className="mt-2 text-sm text-gray-500">Upload a policy file and click <span className="font-medium">Analyze</span> to run a quick analysis. Once complete you can generate a full report or save results.</div>
+                    <div className="mt-4 flex items-center justify-center gap-3">
+                      <button
+                        className="px-4 py-2 bg-white border rounded flex items-center gap-2"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <UploadCloud className="h-4 w-4" />
+                        Upload File
+                      </button>
+                      <button
+                        disabled={!file}
+                        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
+                        onClick={handleAnalyze}
+                      >
+                        <BarChart className="h-4 w-4" />
+                        Analyze
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
         </main>
 
@@ -488,15 +682,16 @@ export default function PolicyAnalysis() {
           initial={titleModalInitial}
           onClose={() => setTitleModalOpen(false)}
           onConfirm={async (title) => {
+            // Delegate save behavior to handleSaveReport so the save/save-refresh
+            // logic is centralized and the function is actually used (avoids unused-var warnings).
             if (!reportFilename) return
             try {
-              await policyService.saveReport(reportFilename as string, title, { is_quick: !isFullReportGenerated })
-              setTitleModalOpen(false)
-              setReportFilename(reportFilename)
-              try { await refreshUser() } catch (err) { console.warn('refreshUser after save failed', err) }
-              try { window.dispatchEvent(new CustomEvent('transactions:refresh')) } catch (err) { console.warn('dispatch transactions refresh failed', err) }
+              await handleSaveReport(reportFilename as string, title)
             } catch (e) {
               console.warn('save from title modal failed', e)
+            } finally {
+              setTitleModalOpen(false)
+              try { window.dispatchEvent(new CustomEvent('transactions:refresh')) } catch (err) { console.warn('dispatch transactions refresh failed', err) }
             }
           }}
         />

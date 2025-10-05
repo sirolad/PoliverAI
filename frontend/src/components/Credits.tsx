@@ -6,6 +6,7 @@ import PaymentsService from '@/services/payments'
 import EnterCreditsModal from '@/components/ui/EnterCreditsModal'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
 import type { Transaction } from '@/services/transactions'
+import { X, ChevronLeft, ChevronRight, RefreshCcw, Shield, CreditCard, DollarSign } from 'lucide-react'
 
 export default function Credits() {
   const { user, isAuthenticated, loading, refreshUser } = useAuth()
@@ -26,18 +27,7 @@ export default function Credits() {
   const [totalPages, setTotalPages] = useState<number>(1)
   const [totalSpentCredits, setTotalSpentCredits] = useState<number>(0)
 
-  const fetchTxCb = useCallback(async () => { await fetchTx() }, [page, limit])
-  useEffect(() => { fetchTxCb() }, [fetchTxCb])
-  useEffect(() => {
-    const h = () => {
-      fetchTx().catch((e) => console.error('Failed to refresh transactions', e))
-      if (refreshUser) {
-        refreshUser().catch((e) => console.error('Failed to refresh user from transactions event', e))
-      }
-    }
-    window.addEventListener('transactions:refresh', h)
-    return () => window.removeEventListener('transactions:refresh', h)
-  }, [refreshUser])
+  
   
 
   // Animate a simple loading progress bar while isLoading is true
@@ -76,6 +66,22 @@ export default function Credits() {
       setIsLoading(false)
     }
   }, [page, limit])
+  // Call fetchTx initially and when page/limit change
+  useEffect(() => {
+    fetchTx()
+  }, [fetchTx])
+
+  // Listen for external refresh events (transactions refreshed elsewhere in the app)
+  useEffect(() => {
+    const h = () => {
+      fetchTx().catch((e) => console.error('Failed to refresh transactions', e))
+      if (refreshUser) {
+        refreshUser().catch((e) => console.error('Failed to refresh user from transactions event', e))
+      }
+    }
+    window.addEventListener('transactions:refresh', h)
+    return () => window.removeEventListener('transactions:refresh', h)
+  }, [refreshUser, fetchTx])
   const getTxStatus = (t: Transaction) => {
     const s = (t as unknown as Record<string, unknown>)['status'] as string | undefined
     const et = (t.event_type || '').toString().toLowerCase()
@@ -159,7 +165,7 @@ export default function Credits() {
   if (!isAuthenticated) return <Navigate to="/login" replace />
 
   return (
-    <div className="h-screen p-8 flex flex-col">
+    <div className="p-8 flex flex-col flex-1 min-h-0">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Transaction History</h1>
 
@@ -171,32 +177,46 @@ export default function Credits() {
             const total = subscriptionCredits + purchasedCredits
             const subscriptionUsd = (subscriptionCredits / 10)
             const purchasedUsd = (purchasedCredits / 10)
-            // compute total spent credits from transactions (negative credit events)
-            const spentCredits = items.reduce((acc, t) => {
-              const c = typeof t.credits === 'number' ? t.credits : Number(t.credits || 0)
-              return acc + (c < 0 ? -c : 0)
-            }, 0)
+            // Use server-provided total spent credits when available (keeps consistent
+            // cross-page totals); fallback to 0 if not set yet.
+            const spentCredits = totalSpentCredits ?? 0
             const spentUsd = spentCredits / 10
 
             return (
               <div className="flex items-center gap-6">
-                <div className="bg-white p-3 rounded shadow text-sm">
-                  <div className="text-gray-600">Subscription Credits</div>
-                  <div className="font-semibold text-lg">{subscriptionCredits} credits</div>
-                  <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)} USD equivalent</div>
-                </div>
+                    <div className="bg-white p-3 rounded shadow text-sm flex items-center gap-4">
+                      <div className="flex-shrink-0 bg-blue-50 rounded-md p-3 flex items-center justify-center">
+                        <Shield className="h-10 w-10 text-blue-600" />
+                      </div>
+                      <div>
+                        <div className="text-gray-600">Subscription Credits</div>
+                        <div className="font-semibold text-lg">{subscriptionCredits} credits</div>
+                        <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)} USD equivalent</div>
+                      </div>
+                    </div>
 
-                <div className="bg-white p-3 rounded shadow text-sm">
-                  <div className="text-gray-600">Purchased Credits</div>
-                  <div className="font-semibold text-lg">{purchasedCredits} credits</div>
-                  <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)} USD equivalent</div>
-                </div>
+                    <div className="bg-white p-3 rounded shadow text-sm flex items-center gap-4">
+                      <div className="flex-shrink-0 bg-gray-50 rounded-md p-3 flex items-center justify-center">
+                        <CreditCard className="h-10 w-10 text-gray-700" />
+                      </div>
+                      <div>
+                        <div className="text-gray-600">Purchased Credits</div>
+                        <div className="font-semibold text-lg">{purchasedCredits} credits</div>
+                        <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)} USD equivalent</div>
+                        <div className="text-xs text-gray-500">Total available: {total} credits</div>
+                      </div>
+                    </div>
 
-                <div className="bg-white p-3 rounded shadow text-sm">
-                  <div className="text-gray-600">Total Spent</div>
-                  <div className="font-semibold text-lg">{spentCredits} credits</div>
-                  <div className="text-xs text-gray-500">${spentUsd.toFixed(2)} USD spent</div>
-                </div>
+                    <div className="bg-white p-3 rounded shadow text-sm flex items-center gap-4">
+                      <div className="flex-shrink-0 bg-red-50 rounded-md p-3 flex items-center justify-center">
+                        <DollarSign className="h-10 w-10 text-red-600" />
+                      </div>
+                      <div>
+                        <div className="text-gray-600">Total Spent</div>
+                        <div className="font-semibold text-lg">{spentCredits} credits</div>
+                        <div className="text-xs text-gray-500">${spentUsd.toFixed(2)} USD spent</div>
+                      </div>
+                    </div>
               </div>
             )
           })()}
@@ -249,7 +269,10 @@ export default function Credits() {
             ))}
           </div>
           <div>
-            <button className="w-full bg-gray-100 px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }}>Clear</button>
+            <button className="w-full bg-gray-100 px-3 py-1 rounded flex items-center justify-center" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }}><X className="h-4 w-4 mr-2"/>Clear</button>
+          </div>
+          <div className="mt-2">
+            <button className="w-full bg-white border px-3 py-1 rounded flex items-center justify-center" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }}><RefreshCcw className="h-4 w-4 mr-2"/>Refresh</button>
           </div>
 
           {/* Progress bar for loading transactions */}
@@ -282,9 +305,9 @@ export default function Credits() {
               </select>
               <div className="text-sm text-gray-600">Page</div>
               <div className="inline-flex items-center gap-2">
-                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded">Prev</button>
+                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/>Prev</button>
                 <div className="px-2 py-1">{page} / {totalPages}</div>
-                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded">Next</button>
+                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center">Next<ChevronRight className="h-4 w-4 ml-1"/></button>
               </div>
             </div>
           </div>

@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Shield, Zap, Clock, FileCheck, BarChart } from 'lucide-react'
+import { CheckCircle2, Shield, Zap, Clock, FileCheck, BarChart, CreditCard } from 'lucide-react'
+import Footer from './Footer'
 import PaymentsService from '@/services/payments'
 
 interface FeatureCardProps {
@@ -95,8 +96,9 @@ export default function LandingPage() {
                 <Button
                   onClick={() => navigate('/signup')}
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
                 >
+                  <Clock className="h-5 w-5" />
                   Start Free Analysis
                 </Button>
                 <Button
@@ -116,7 +118,7 @@ export default function LandingPage() {
                     }
                   }}
                 >
-                  {isProcessing ? 'Processing...' : 'Upgrade to Pro'}
+                  {isProcessing ? 'Processing...' : <><CreditCard className="h-5 w-5 mr-2" />Upgrade to Pro</>}
                 </Button>
               </>
             ) : (
@@ -249,6 +251,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <Button className="w-full mt-6" variant="outline" onClick={() => navigate('/signup')}>
+                <Clock className="h-4 w-4 mr-2" />
                 Get Started Free
               </Button>
             </CardContent>
@@ -288,7 +291,7 @@ export default function LandingPage() {
                 </li>
               </ul>
               <Button 
-                className="w-full mt-6 bg-blue-600 hover:bg-blue-700" 
+                className="w-full mt-6 bg-blue-600 hover:bg-blue-700 flex items-center gap-2" 
                 onClick={async () => {
                   setIsProcessing(true)
                   try {
@@ -302,6 +305,7 @@ export default function LandingPage() {
                     setIsProcessing(false)
                   }
               }}>
+                <CreditCard className="h-4 w-4" />
                 Upgrade to Pro
               </Button>
             </CardContent>
@@ -317,12 +321,15 @@ export default function LandingPage() {
           <p className="text-xl mb-8 text-blue-100">
             Join thousands of organizations using PoliverAI to maintain privacy compliance
           </p>
-          <Button size="lg" variant="secondary" onClick={() => navigate('/signup')}>
+          <Button size="lg" variant="secondary" onClick={() => navigate('/signup')} className="flex items-center gap-2 justify-center mx-auto w-fit">
+            <BarChart className="h-5 w-5" />
             Start Your Free Analysis Today
           </Button>
         </div>
       </div>
       )}
+      {/* Footer specifically for the landing page: match CTA section's background */}
+      <Footer hasBackground={true} />
     </div>
   )
 }
