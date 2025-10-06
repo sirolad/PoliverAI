@@ -28,7 +28,7 @@ if [ -z "${PROJECT_ID:-}" ]; then
 fi
 
 REGION=${REGION:-us-central1}
-IMAGE_NAME=${IMAGE_NAME:-poliverai-backend}
+IMAGE_NAME=${IMAGE_NAME:-poliverai-app}
 TAG=${TAG:-latest}
 IMAGE_FULL="gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG}"
 
@@ -83,10 +83,10 @@ if [ -f "${KEY_FILE}" ]; then
   USE_KEY_SECRET=true
 fi
 
-FAST_DEV=${FAST_DEV:-false}
+FAST_DEV=${FAST_DEV:-true}
 echo "Building Docker image ${IMAGE_FULL} (FAST_DEV=${FAST_DEV})"
-# Build using the Dockerfile.backend; pass FAST_DEV build arg so heavy deps can be skipped when needed.
-docker build --progress=plain --build-arg FAST_DEV=${FAST_DEV} --tag "${IMAGE_FULL}" -f Dockerfile.backend .
+# Build using the Dockerfile.deployer; pass FAST_DEV build arg so heavy deps can be skipped when needed.
+docker build --progress=plain --build-arg FAST_DEV=${FAST_DEV} --tag "${IMAGE_FULL}" -f Dockerfile.deployer .
 
 echo "Pushing image to Google Container Registry"
 # Ensure you ran: gcloud auth configure-docker
@@ -98,12 +98,12 @@ if [ -z "${MONGO_URI:-}" ]; then
   echo "Warning: MONGO_URI is not set in the environment; the deployed service will not have a DB connection."
 fi
 echo "Checking for accidental inclusion of .env or key.json in the build context..."
-if docker build --no-cache -f Dockerfile.backend --target final -q . >/dev/null 2>&1; then
+if docker build --no-cache -f Dockerfile.deployer --target final -q . >/dev/null 2>&1; then
   echo "Quick check build succeeded (no cache). Proceeding with push & deploy."
 else
   echo "Quick verification build failed. Printing the last 200 lines of a verbose no-cache build to help debug:" >&2
   # Run a verbose build and show the last 200 lines to help debugging
-  if ! docker build --no-cache -f Dockerfile.backend --target final . 2>&1 | tail -n 200 >&2; then
+  if ! docker build --no-cache -f Dockerfile.deployer --target final . 2>&1 | tail -n 200 >&2; then
     echo "Verbose build also failed (see output above)." >&2
   fi
   echo "Please inspect the Dockerfile and build context." >&2

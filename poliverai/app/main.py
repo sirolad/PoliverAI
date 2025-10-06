@@ -20,6 +20,8 @@ def create_app() -> FastAPI:
             "http://localhost:3000",
             "http://localhost:8080",
             "http://127.0.0.1:8080",
+            # Cloud Run frontend URL (also allow the 'app' service hostname)
+            "https://poliverai-app-492258765757.us-central1.run.app",
         ],  # React dev servers and proxy
         allow_credentials=True,
         allow_methods=["*"],
