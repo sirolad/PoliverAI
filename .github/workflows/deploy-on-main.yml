@@ -1,0 +1,107 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+
+      - name: Configure Docker credential helper
+        run: gcloud --quiet auth configure-docker
+
+      - name: Write key.json if provided (supports raw JSON or base64)
+        run: |
+          set -euo pipefail
+          if [ -n "${{ secrets.GCP_KEY_JSON }}" ]; then
+            printf '%s' "${{ secrets.GCP_KEY_JSON }}" > ./key.json
+            chmod 600 ./key.json
+            echo "Wrote key.json from GCP_KEY_JSON"
+          elif [ -n "${{ secrets.KEY_JSON_BASE64 }}" ]; then
+            echo "${{ secrets.KEY_JSON_BASE64 }}" | base64 --decode > ./key.json
+            chmod 600 ./key.json
+            echo "Wrote key.json from KEY_JSON_BASE64"
+          else
+            echo "No key.json secret provided"
+          fi
+
+      - name: Create .env.ci from GitHub Secrets (explicit list)
+        run: |
+          set -euo pipefail
+          # Required
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env.ci
+          echo "MONGO_URI='${{ secrets.MONGO_URI }}'" >> .env.ci
+          echo "POLIVERAI_OPENAI_API_KEY=${{ secrets.POLIVERAI_OPENAI_API_KEY }}" >> .env.ci
+
+          # Stripe
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env.ci
+          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> .env.ci
+          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> .env.ci
+
+          # Additional vars from your list (add as Secrets to override)
+          echo "ENVIRONMENT=${{ secrets.ENVIRONMENT }}" >> .env.ci
+          echo "LOG_LEVEL=${{ secrets.LOG_LEVEL }}" >> .env.ci
+          echo "API_PREFIX=${{ secrets.API_PREFIX }}" >> .env.ci
+          echo "EMBEDDING_MODEL=${{ secrets.EMBEDDING_MODEL }}" >> .env.ci
+          echo "REPORTS_DIR=${{ secrets.REPORTS_DIR }}" >> .env.ci
+
+          echo "POLIVERAI_ENVIRONMENT=${{ secrets.POLIVERAI_ENVIRONMENT }}" >> .env.ci
+          echo "POLIVERAI_LOG_LEVEL=${{ secrets.POLIVERAI_LOG_LEVEL }}" >> .env.ci
+          echo "POLIVERAI_API_PREFIX=${{ secrets.POLIVERAI_API_PREFIX }}" >> .env.ci
+          echo "POLIVERAI_REPORTS_DIR=${{ secrets.POLIVERAI_REPORTS_DIR }}" >> .env.ci
+
+          echo "POLIVERAI_CHROMA_PERSIST_DIR=${{ secrets.POLIVERAI_CHROMA_PERSIST_DIR }}" >> .env.ci
+          echo "POLIVERAI_CHROMA_COLLECTION=${{ secrets.POLIVERAI_CHROMA_COLLECTION }}" >> .env.ci
+
+          echo "POLIVERAI_OPENAI_BASE_URL=${{ secrets.POLIVERAI_OPENAI_BASE_URL }}" >> .env.ci
+          echo "POLIVERAI_OPENAI_CHAT_MODEL=${{ secrets.POLIVERAI_OPENAI_CHAT_MODEL }}" >> .env.ci
+          echo "POLIVERAI_OPENAI_EMBEDDING_MODEL=${{ secrets.POLIVERAI_OPENAI_EMBEDDING_MODEL }}" >> .env.ci
+
+          echo "POLIVERAI_GCS_CREDENTIALS_JSON=${{ secrets.POLIVERAI_GCS_CREDENTIALS_JSON }}" >> .env.ci
+          echo "POLIVERAI_CHROMA_GCS_BUCKET=${{ secrets.POLIVERAI_CHROMA_GCS_BUCKET }}" >> .env.ci
+          echo "POLIVERAI_REPORTS_GCS_BUCKET=${{ secrets.POLIVERAI_REPORTS_GCS_BUCKET }}" >> .env.ci
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" >> .env.ci
+
+          echo "DEV_DEBUG_USERS=${{ secrets.DEV_DEBUG_USERS }}" >> .env.ci
+          echo "MONGO_DEBUG_CONN=${{ secrets.MONGO_DEBUG_CONN }}" >> .env.ci
+          echo "ENABLE_ADMIN_PASSWORD_UPDATE=${{ secrets.ENABLE_ADMIN_PASSWORD_UPDATE }}" >> .env.ci
+
+          echo "IMAGE_NAME=${{ secrets.IMAGE_NAME }}" >> .env.ci
+          echo "SKIP_NGINX=${{ secrets.SKIP_NGINX }}" >> .env.ci
+
+          # Tell deploy script to use this env file
+          echo "ENV_FILE=.env.ci" >> $GITHUB_ENV
+          echo "FAST_DEV=${{ secrets.FAST_DEV }}" >> $GITHUB_ENV
+
+      - name: Make deploy script executable
+        run: chmod +x ./scripts/deploy_to_gcp.sh
+
+      - name: Run deploy script
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+          REGION: ${{ secrets.GCP_REGION }}
+        run: |
+          set -x
+          ./scripts/deploy_to_gcp.sh
+
+          set -x
+          ./scripts/deploy_to_gcp.sh
