@@ -103,6 +103,17 @@ vitest.config.*.timestamp*
 apps/*/.env
 !.env.example
 apps/*/.env.example
+.env.local
+**/.env.local
+apps/*/.env.local
+!.env.example.local
+apps/*/.env.example.local
+.env.dev
+**/.env.dev
+apps/*/.env.dev
+!.env.example.dev
+apps/*/.env.example.dev
+
 
 # History / misc
 .history/
