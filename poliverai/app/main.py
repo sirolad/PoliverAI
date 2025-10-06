@@ -60,6 +60,8 @@ def create_app() -> FastAPI:
     try_mount(".api.routes.reports", "/api/v1")
     try_mount(".api.routes.ingest", "/api/v1")
     try_mount(".api.routes.payments", "/api/v1")
+    # Lightweight health endpoints used by the frontend and probes. Mount as /api/health
+    try_mount(".api.routes.health", "/api")
 
 
     @app.get("/health")
