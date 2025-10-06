@@ -1,5 +1,8 @@
 import * as React from 'react'
 import { Button } from './Button'
+import IconButton from './IconButton'
+import { getInputClassName } from '@/lib/ui/inputHelpers'
+import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
 import { X } from 'lucide-react'
 
 type Props = {
@@ -35,17 +38,17 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose}></div>
-      <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
+  <div className={getModalBackdropClass()} onClick={onClose}></div>
+  <div className={getModalContainerClass()}>
         <div className="p-4 border-b flex items-center justify-between">
           <div className="text-lg font-semibold">Save Report</div>
-          <button className="p-2" onClick={onClose}><X /></button>
+          <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
         </div>
         <div className="p-4">
           <p className="text-sm text-gray-600 mb-4">Enter a title for the report. This will be shown in your Reports list.</p>
           <div className="flex items-center gap-2">
             <input
-              className="border rounded px-3 py-2 w-full"
+              className={getInputClassName('border rounded px-3 py-2 w-full')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               type="text"

@@ -1,10 +1,11 @@
+import { getCurrentYear, footerClasses } from '@/lib/uiHelpers'
+
 type FooterProps = {
   hasBackground?: boolean
 }
 
 export default function Footer({ hasBackground = true }: FooterProps) {
-  const bgClass = hasBackground ? 'bg-blue-600 text-white' : 'bg-transparent text-gray-700'
-  const subtitleClass = hasBackground ? 'text-blue-100' : 'text-gray-500'
+  const { bgClass, subtitleClass } = footerClasses(hasBackground)
 
   return (
     <footer className={`${bgClass} py-6`}>
@@ -18,7 +19,7 @@ export default function Footer({ hasBackground = true }: FooterProps) {
         </div>
 
         <div className={`${subtitleClass} text-sm mt-2`}>
-          &copy; {new Date().getFullYear()} PoliverAI &trade;. All rights reserved.
+          &copy; {getCurrentYear()} PoliverAI &trade;. All rights reserved.
         </div>
 
         <div className={hasBackground ? 'bg-white p-3 rounded-lg shadow-sm' : 'p-3'}>

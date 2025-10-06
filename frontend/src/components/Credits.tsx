@@ -6,8 +6,14 @@ import PaymentsService from '@/services/payments'
 import EnterCreditsModal from '@/components/ui/EnterCreditsModal'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
 import type { Transaction } from '@/services/transactions'
+import type { TransactionStatus, StatusFilter } from '@/types/transaction'
 import { X, ChevronLeft, ChevronRight, RefreshCcw, Shield, CreditCard, DollarSign, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import MetaLine from '@/components/ui/MetaLine'
+import StatusFilterItem from '@/components/ui/StatusFilterItem'
+import TransactionRow from '@/components/ui/TransactionRow'
+import { store } from '@/store/store'
+import { clearPendingCheckout } from '@/store/paymentsSlice'
 
 export default function Credits() {
   const { user, isAuthenticated, loading, refreshUser } = useAuth()
@@ -18,7 +24,7 @@ export default function Credits() {
   const [search, setSearch] = useState('')
   const [dateFrom, setDateFrom] = useState<string | null>(null)
   const [dateTo, setDateTo] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<Record<string, boolean>>({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true })
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true })
   const [progress, setProgress] = useState<number>(0)
   const [showBar, setShowBar] = useState<boolean>(false)
   const paymentResult = usePaymentResult()
@@ -102,19 +108,19 @@ export default function Credits() {
     window.addEventListener('transactions:refresh', h)
     return () => window.removeEventListener('transactions:refresh', h)
   }, [refreshUser, fetchTx])
-  const getTxStatus = (t: Transaction) => {
-    const s = (t as unknown as Record<string, unknown>)['status'] as string | undefined
+  const getTxStatus = (t: Transaction): TransactionStatus => {
+    const s = t.status
     const et = (t.event_type || '').toString().toLowerCase()
     const desc = (t.description || '').toString().toLowerCase()
     if (s === 'pending' || et.includes('pending')) return 'pending'
-  if (s === 'completed' || et.includes('completed') || (typeof t.credits === 'number' && t.credits !== 0)) return 'success'
+    if (s === 'completed' || et.includes('completed') || (typeof t.credits === 'number' && t.credits !== 0)) return 'success'
     if (et.includes('failed') || desc.includes('failed') || desc.includes('declined') || desc.includes('payment_failed')) return 'failed'
     if (desc.includes('insufficient') || desc.includes('insufficient_funds') || desc.includes('insufficient_fund')) return 'insufficient_funds'
     if (et.includes('processing') || desc.includes('processing')) return 'processing'
     return 'task'
   }
 
-  const statusBadge = (status: string) => {
+  const statusBadge = (status: TransactionStatus) => {
     switch (status) {
       case 'pending':
         return <span className="inline-block text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">Pending</span>
@@ -144,13 +150,13 @@ export default function Credits() {
     return (
       <div className="mt-2">
         <span className="inline-block text-xs px-2 py-1 rounded-full bg-red-50 text-red-700">{label}</span>
-        {failure_message ? <div className="text-xs text-gray-500 mt-1">{failure_message}</div> : null}
+        <MetaLine>{failure_message}</MetaLine>
       </div>
     )
   }
 
-  const filtered = useMemo(() => {
-    const sfKeys = Object.keys(statusFilter).filter((k) => statusFilter[k])
+  const filtered = useMemo<Transaction[]>(() => {
+    const sfKeys = (Object.keys(statusFilter) as TransactionStatus[]).filter((k) => statusFilter[k])
     return items.filter((t) => {
       // status filter
       const st = getTxStatus(t)
@@ -346,12 +352,13 @@ export default function Credits() {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Status</label>
-                {Object.keys(statusFilter).map((k) => (
-                  <div key={k} className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" checked={statusFilter[k]} onChange={() => setStatusFilter((s) => ({ ...s, [k]: !s[k] }))} />
-                    <label className="text-sm capitalize">{k.replace('_', ' ')}</label>
-                  </div>
-                ))}
+                {(Object.keys(statusFilter) as TransactionStatus[]).map((key) => {
+                  return (
+                    <div key={key} className="mb-1">
+                      <StatusFilterItem name={key} checked={!!statusFilter[key]} onChange={(n) => setStatusFilter((s) => ({ ...s, [n]: !s[n] }))} />
+                    </div>
+                  )
+                })}
               </div>
               <div>
                 <Button className="w-full bg-gray-100 text-black px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }} icon={<X className="h-4 w-4" />} collapseToIcon>
@@ -397,12 +404,13 @@ export default function Credits() {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Status</label>
-              {Object.keys(statusFilter).map((k) => (
-                <div key={k} className="flex items-center gap-2 mb-1">
-                  <input type="checkbox" checked={statusFilter[k]} onChange={() => setStatusFilter((s) => ({ ...s, [k]: !s[k] }))} />
-                  <label className="text-sm capitalize">{k.replace('_', ' ')}</label>
-                </div>
-              ))}
+              {(Object.keys(statusFilter) as TransactionStatus[]).map((key) => {
+                return (
+                  <div key={key} className="mb-1">
+                    <StatusFilterItem name={key} checked={!!statusFilter[key]} onChange={(n) => setStatusFilter((s) => ({ ...s, [n]: !s[n] }))} />
+                  </div>
+                )
+              })}
             </div>
             <div>
               <Button className="w-full bg-gray-100 text-black px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }} icon={<X className="h-4 w-4" />} collapseToIcon>
@@ -446,9 +454,9 @@ export default function Credits() {
               </select>
               {!isMobile && <div className="text-sm text-gray-600">Page</div>}
               <div className="inline-flex items-center gap-2">
-                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4"/>{!isMobile && <span className="ml-1">Prev</span>}</button>
+                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="flex items-center"><ChevronLeft className="h-4 w-4"/>{!isMobile && <span className="ml-1">Prev</span>}</Button>
                 <div className="px-2 py-1">{page} / {totalPages}</div>
-                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center">{!isMobile && <span className="mr-1">Next</span>}<ChevronRight className="h-4 w-4"/></button>
+                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="flex items-center">{!isMobile && <span className="mr-1">Next</span>}<ChevronRight className="h-4 w-4"/></Button>
               </div>
             </div>
           </div>
@@ -461,89 +469,76 @@ export default function Credits() {
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex-1">
                       <div className="flex items-center justify-between gap-4">
-                        <div className="font-medium">{t.description || t.event_type || 'Payment'}</div>
-                        <div>{t.failure_code ? statusBadge(t.failure_code) : statusBadge(st)}</div>
+                        <TransactionRow
+                          date={t.timestamp ? new Date(t.timestamp).toLocaleString() : '-'}
+                          amount={t.amount_usd ?? ''}
+                          description={t.description || t.event_type || 'Payment'}
+                        />
+                        <div>{t.failure_code ? statusBadge(t.failure_code as TransactionStatus) : statusBadge(st)}</div>
                       </div>
                       <div className="text-sm text-gray-600">{t.user_email ?? ''} • {t.session_id ?? ''}</div>
-                      <div className="text-sm text-gray-600">{t.timestamp ? new Date(t.timestamp).toLocaleString() : '-'}</div>
                     </div>
                     <div className="text-right">
                       <div className="font-semibold">{t.credits ?? 0} credits</div>
-                        <div className="text-sm">
-                          {(() => {
-                            const et = (t.event_type || '').toString().toLowerCase()
-                            const amt = typeof t.amount_usd === 'number' ? t.amount_usd : 0
-                            const credits = typeof t.credits === 'number' ? t.credits : 0
-                            // Zero-usage (no credits, no USD) -> yellow
-                            if (credits === 0 && (!amt || amt === 0)) {
-                              return <span className="text-yellow-600 font-medium">${Math.abs(amt).toFixed(2)}</span>
-                            }
-                            // Positive events (purchases, credit top-ups, subscriptions)
-                            const positiveEvents = ['manual_credit', 'checkout_session_completed', 'credit', 'subscription', 'subscription_update', 'tier_update']
-                            const isPositive = positiveEvents.some((p) => et.includes(p)) || amt > 0 || credits > 0
-                            // Charge/operation events (analysis/report/ingest/charge) are negative
-                            const negativeEvents = ['charge', 'analysis', 'charge_ingest', 'charge_report', 'ingest', 'report']
-                            const isNegative = negativeEvents.some((n) => et.includes(n)) || amt < 0 || credits < 0
-
-                            if (isNegative && !isPositive) {
-                              return <span className="text-red-600 font-medium">−${Math.abs(amt).toFixed(2)}</span>
-                            }
-
-                            // Default to positive display
-                            return <span className="text-green-600 font-medium">+${Math.abs(amt).toFixed(2)}</span>
-                          })()}
-                        </div>
+                      <div className="text-sm">
+                        {(() => {
+                          const et = (t.event_type || '').toString().toLowerCase()
+                          const amt = typeof t.amount_usd === 'number' ? t.amount_usd : 0
+                          const credits = typeof t.credits === 'number' ? t.credits : 0
+                          if (credits === 0 && (!amt || amt === 0)) {
+                            return <span className="text-yellow-600 font-medium">${Math.abs(amt).toFixed(2)}</span>
+                          }
+                          const positiveEvents = ['manual_credit', 'checkout_session_completed', 'credit', 'subscription', 'subscription_update', 'tier_update']
+                          const isPositive = positiveEvents.some((p) => et.includes(p)) || amt > 0 || credits > 0
+                          const negativeEvents = ['charge', 'analysis', 'charge_ingest', 'charge_report', 'ingest', 'report']
+                          const isNegative = negativeEvents.some((n) => et.includes(n)) || amt < 0 || credits < 0
+                          if (isNegative && !isPositive) {
+                            return <span className="text-red-600 font-medium">−${Math.abs(amt).toFixed(2)}</span>
+                          }
+                          return <span className="text-green-600 font-medium">+${Math.abs(amt).toFixed(2)}</span>
+                        })()}
+                      </div>
                       {t.session_id && (
                         <div className="mt-2">
-                          <button
-                            className="text-sm text-blue-600 underline"
-                            onClick={async () => {
-                              try {
-                                const sid = t.session_id
-                                if (!sid) {
-                                  paymentResult.show('failed', 'Check Failed', 'Missing session id')
-                                  return
-                                }
-                                const resp = await transactionsService.getTransaction(sid)
-                                const tx = resp.transaction
-                                paymentResult.show('pending', 'Transaction Status', `Pending transaction: ${tx.event_type} - ${tx.amount_usd ?? 0}$`)
-                                // refresh list to pick up any changes
-                                await fetchTx()
-                                // if transaction finalized, clear any cached pending_checkout to avoid repeated checks
-                                try {
-                                  const updated = await transactionsService.getTransaction(sid)
-                                  const status = (updated.transaction as Transaction | undefined)?.status
-                                  if (status && status !== 'pending') {
-                                    if (typeof window !== 'undefined' && window.localStorage) {
-                                      try {
-                                        localStorage.removeItem('poliverai:pending_checkout')
-                                      } catch (e) {
-                                        console.warn('Failed to remove pending_checkout from localStorage', e)
-                                      }
-                                    }
-                                  }
-                                } catch (e) {
-                                  console.warn('Failed to refresh transaction status', e)
-                                }
-                                // refresh current user so balance updates
-                                try { await refreshUser() } catch { /* ignore errors */ }
-                              } catch (err: unknown) {
-                                const msg = err instanceof Error ? err.message : String(err)
-                                paymentResult.show('failed', 'Check Failed', msg)
+                          <button className="text-sm text-blue-600 underline" onClick={async () => {
+                            try {
+                              const sid = t.session_id
+                              if (!sid) {
+                                paymentResult.show('failed', 'Check Failed', 'Missing session id')
+                                return
                               }
-                            }}
-                          >
-                            Check status
-                          </button>
+                              const resp = await transactionsService.getTransaction(sid)
+                              const tx = resp.transaction
+                              paymentResult.show('pending', 'Transaction Status', `Pending transaction: ${tx.event_type} - ${tx.amount_usd ?? 0}$`)
+                              await fetchTx()
+                              try {
+                                const updated = await transactionsService.getTransaction(sid)
+                                const status = (updated.transaction as Transaction | undefined)?.status
+                                if (status && status !== 'pending') {
+                                  try {
+                                    store.dispatch(clearPendingCheckout())
+                                  } catch (e) {
+                                    console.warn('Failed to clear pending_checkout via store', e)
+                                  }
+                                }
+                              } catch (e) {
+                                console.warn('Failed to refresh transaction status', e)
+                              }
+                              try { await refreshUser() } catch { /* ignore errors */ }
+                            } catch (err: unknown) {
+                              const msg = err instanceof Error ? err.message : String(err)
+                              paymentResult.show('failed', 'Check Failed', msg)
+                            }
+                          }}>Check status</button>
                         </div>
                       )}
                     </div>
                   </div>
                   {t.failure_code ? (
-                        <div className="mt-2">
-                          {failureBadge(t.failure_code, t.failure_message)}
-                        </div>
-                      ) : null}
+                    <div className="mt-2">
+                      {failureBadge(t.failure_code, t.failure_message)}
+                    </div>
+                  ) : null}
                 </div>
               )
             })}

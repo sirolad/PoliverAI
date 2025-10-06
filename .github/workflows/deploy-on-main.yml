@@ -51,6 +51,15 @@ jobs:
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env.ci
           echo "MONGO_URI='${{ secrets.MONGO_URI }}'" >> .env.ci
           echo "POLIVERAI_OPENAI_API_KEY=${{ secrets.POLIVERAI_OPENAI_API_KEY }}" >> .env.ci
+          # Frontend build-time API base. Prefer a secret override in GitHub if set,
+          # otherwise use the known production Cloud Run domain so the built client
+          # points at the service origin. In local dev use the value in your local
+          # .env which defaults to http://localhost:8000.
+          if [ -n "${{ secrets.VITE_API_URL }}" ]; then
+            echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env.ci
+          else
+            echo "VITE_API_URL=https://poliverai-app-492258765757.us-central1.run.app" >> .env.ci
+          fi
 
           # Stripe
           echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> .env.ci

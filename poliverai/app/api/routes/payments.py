@@ -642,7 +642,19 @@ async def list_transactions(request: Request):
 
     try:
         # Fetch transactions (may be in-memory or Mongo-backed)
-        items = transactions.list_for_user(email) or []
+        try:
+            # If the transactions backend is unavailable (e.g. Mongo TLS issues),
+            # treat it as an empty list so new users without transactions or
+            # temporary DB connectivity problems do not cause a 500 error.
+            items = transactions.list_for_user(email) or []
+        except Exception as db_err:
+            # Non-fatal: log for diagnostics and continue with empty items
+            logger.warning('Transactions backend unavailable for email=%s: %s', email, db_err)
+            try:
+                logger.debug(traceback.format_exc())
+            except Exception:
+                pass
+            items = []
 
         # total spent credits (negative credit events)
         total_spent_credits = sum((-(int(i.get('credits', 0) or 0)) if (int(i.get('credits', 0) or 0) < 0) else 0) for i in items)

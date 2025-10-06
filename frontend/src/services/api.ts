@@ -1,16 +1,32 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+import { store } from '@/store/store'
+import { extractErrorMessage } from '@/lib/errorHelpers'
+import { getApiBaseOrigin } from '@/lib/paymentsHelpers'
+
+// Resolve API base using centralized helper: dev -> http://localhost:8000, otherwise VITE_API_URL or window origin.
+const API_BASE_URL = getApiBaseOrigin() ?? ''
+
 export interface ApiError {
   message: string
   status: number
   details?: unknown
 }
+
+function getTokenFromStore(): string | null {
+  try {
+    const s = store.getState()?.auth?.token
+    return s || null
+  } catch {
+    return null
+  }
+}
+
 class ApiService {
   private baseUrl: string
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl
   }
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('token')
+    const token = getTokenFromStore()
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
   private async handleResponse<T>(response: Response): Promise<T> {
@@ -19,8 +35,14 @@ class ApiService {
       let errorDetails = null
       try {
         const errorData = await response.json()
-        errorMessage = errorData.detail?.message || errorData.detail || errorData.message || errorMessage
-        errorDetails = errorData.detail
+        const msg = extractErrorMessage(errorData)
+        if (msg) errorMessage = msg
+        // preserve raw detail when available
+        if (typeof errorData === 'object' && errorData !== null && 'detail' in (errorData as Record<string, unknown>)) {
+          errorDetails = (errorData as Record<string, unknown>).detail
+        } else {
+          errorDetails = errorData
+        }
       } catch {
         // If we can't parse JSON, use the status text
         errorMessage = response.statusText || errorMessage
@@ -28,7 +50,7 @@ class ApiService {
       const error: ApiError = {
         message: errorMessage,
         status: response.status,
-        details: errorDetails
+        details: errorDetails,
       }
       throw error
     }
@@ -127,13 +149,14 @@ class ApiService {
           let errorMessage = `HTTP error! status: ${xhr.status}`
           try {
             const errorData = JSON.parse(xhr.responseText)
-            errorMessage = errorData.detail?.message || errorData.detail || errorData.message || errorMessage
+            const msg = extractErrorMessage(errorData)
+            if (msg) errorMessage = msg
           } catch {
             errorMessage = xhr.statusText || errorMessage
           }
           const error: ApiError = {
             message: errorMessage,
-            status: xhr.status
+            status: xhr.status,
           }
           reject(error)
         }
@@ -142,8 +165,8 @@ class ApiService {
         reject(new Error('Network error occurred'))
       })
       xhr.open('POST', `${this.baseUrl}${endpoint}`)
-      // Add auth headers
-      const token = localStorage.getItem('token')
+      // Add auth headers (store-only)
+      const token = getTokenFromStore()
       if (token) {
         xhr.setRequestHeader('Authorization', `Bearer ${token}`)
       }
@@ -153,3 +176,7 @@ class ApiService {
 }
 export const apiService = new ApiService()
 export default apiService
+
+export function getToken(): string | null {
+  return getTokenFromStore()
+}

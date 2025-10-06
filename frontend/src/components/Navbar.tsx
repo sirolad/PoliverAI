@@ -4,8 +4,11 @@ import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
 import { User, LogOut, CreditCard, ChevronRight, LogIn, UserPlus, Clock, BarChart2, Grid, List, Menu } from 'lucide-react'
 import PaymentsService from '@/services/payments'
+import { buildPendingCheckoutFromResponse, getCreditsTotal, normalizePaymentResult } from '@/lib/paymentsHelpers'
 import { useState } from 'react'
 import PaymentResultModal from './ui/PaymentResultModal'
+import { store } from '@/store/store'
+import { setPendingCheckout, clearPaymentResult } from '@/store/paymentsSlice'
 import EnterCreditsModal from './ui/EnterCreditsModal'
 
 export function Navbar() {
@@ -27,7 +30,8 @@ export function Navbar() {
   const menuRef = React.useRef<HTMLDivElement | null>(null)
   const menuButtonRef = React.useRef<HTMLButtonElement | null>(null)
 
-  const showResult = (success: boolean, title: string, message?: string) => {
+  const showResult = (status: string | boolean, title: string, message?: string) => {
+    const success = typeof status === 'boolean' ? status : String(status).toLowerCase() === 'success'
     setModalSuccess(success)
     setModalTitle(title)
     setModalMessage(message)
@@ -50,21 +54,17 @@ export function Navbar() {
 
     const checkPersisted = () => {
       try {
-        const raw = localStorage.getItem('poliverai:payment_result')
-        if (raw) {
-          const parsed = JSON.parse(raw)
-          if (parsed) {
-            // refresh current user to pick up potential tier changes
-            (async () => { try { await refreshUser() } catch (err) { console.warn('refreshUser failed', err) } })()
-            showResult(parsed.status || (parsed.success ? 'success' : 'failed'), parsed.title, parsed.message)
-            // clear so it doesn't show repeatedly
-            console.log('clearing persisted payment result', parsed)
-            localStorage.removeItem('poliverai:payment_result')
-          }
+        const state = store.getState()
+        const pr = state?.payments?.paymentResult
+          if (pr) {
+          (async () => { try { await refreshUser() } catch (err) { console.warn('refreshUser failed', err) } })()
+          const normalized = normalizePaymentResult(pr)
+          showResult(normalized.status || 'failed', normalized.title, normalized.message)
+          // clear via store so it doesn't show repeatedly
+          try { store.dispatch(clearPaymentResult()) } catch { /* noop */ }
         }
       } catch (err) {
-        // ignore parse errors
-        console.warn('Failed to read persisted payment_result', err)
+        console.warn('Failed to read persisted payment_result from store', err)
       }
     }
 
@@ -117,12 +117,14 @@ export function Navbar() {
             // transaction status check endpoint when the user returns from
             // Stripe. PaymentsService already attempts to cache pending checkout
             // before redirect, but persist the actual response here to be sure.
-            try {
-              const r = res as unknown as Record<string, unknown> | null
-              const sid = r ? (r['id'] || r['sessionId'] || r['session_id'] || null) : null
-              const pending = { session_id: sid, type: 'credits', amount_usd }
-              localStorage.setItem('poliverai:pending_checkout', JSON.stringify(pending))
-              console.log('persisted pending checkout after purchaseCredits', pending, res)
+              try {
+                const pending = buildPendingCheckoutFromResponse(res, amount_usd)
+                try {
+                  store.dispatch(setPendingCheckout(pending))
+                  console.log('persisted pending checkout after purchaseCredits', pending, res)
+                } catch (e) {
+                  console.warn('Failed to persist pending checkout to store', e)
+                }
             } catch (e) {
               // Non-fatal: continue even if localStorage fails
               console.warn('Failed to persist pending checkout after purchaseCredits', e)
@@ -190,8 +192,8 @@ export function Navbar() {
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs px-2 py-1 rounded-full ${isPro ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>{isPro ? 'PRO' : 'FREE'}</span>
-                <div title={`Total: ${(user?.subscription_credits ?? 0) + (user?.credits ?? 0)} credits`} className="text-sm px-2 py-1 rounded bg-gray-100">
-                  Credits: {(user?.subscription_credits ?? 0) + (user?.credits ?? 0)}
+                <div title={`Total: ${getCreditsTotal(user)} credits`} className="text-sm px-2 py-1 rounded bg-gray-100">
+                  Credits: {getCreditsTotal(user)}
                 </div>
               </div>
 
@@ -276,20 +278,20 @@ export function Navbar() {
                         <span>Transaction History</span>
                       </Link>
                       {!isPro && (
-                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={async () => { setMenuOpen(false); try { await PaymentsService.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, 'Payment Failed', msg) } }}>
+                        <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={async () => { setMenuOpen(false); try { await PaymentsService.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, 'Payment Failed', msg) } }}>
                           <ChevronRight className="h-4 w-4 text-gray-600" />
                           <span>Upgrade to Pro</span>
-                        </button>
+                        </Button>
                       )}
-                      <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); setCreditsModalOpen(true) }}>
+                      <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); setCreditsModalOpen(true) }}>
                         <CreditCard className="h-4 w-4 text-gray-600" />
                         <span>Buy Credits</span>
-                      </button>
+                      </Button>
                       <hr className="my-1 border-t border-gray-100" />
-                      <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); handleLogout() }}>
+                      <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); handleLogout() }}>
                         <LogOut className="h-4 w-4 text-gray-600" />
                         <span>Logout</span>
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>

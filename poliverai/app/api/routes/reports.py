@@ -627,6 +627,11 @@ async def generate_verification_report(
                         "user_id": user_id,
                         "document_name": req.document_name,
                         "analysis_mode": req.analysis_mode,
+                        # persist structured analysis so frontend can rebuild the report
+                        "findings": getattr(req, 'findings', None),
+                        "recommendations": getattr(req, 'recommendations', None),
+                        "evidence": getattr(req, 'evidence', None),
+                        "metrics": getattr(req, 'metrics', None),
                         # mark generated verification reports as full reports so we
                         # don't double-charge if the user later clicks Save
                         "is_full_report": True,
@@ -1018,8 +1023,34 @@ async def get_detailed_report(filename: str, current_user: User = CURRENT_USER_D
             coll = mdb.db.get_collection('reports')
             doc = coll.find_one({'user_id': current_user.id, 'filename': filename})
             if doc:
-                # Prefer stored content (generated verification reports)
-                content = doc.get('content')
+                # Prefer returning the full stored document so the frontend can
+                # render a structured report view without extra requests.
+                # Convert datetime to ISO strings and ObjectId to str where needed.
+                response_doc = {
+                    'filename': doc.get('filename'),
+                    'content': doc.get('content'),
+                    'score': doc.get('score'),
+                    'verdict': doc.get('verdict'),
+                    'findings': doc.get('findings'),
+                    'recommendations': doc.get('recommendations'),
+                    'evidence': doc.get('evidence'),
+                    'metrics': doc.get('metrics'),
+                    'document_name': doc.get('document_name') or doc.get('document_name'),
+                    'gcs_url': doc.get('gcs_url'),
+                    'is_full_report': doc.get('is_full_report'),
+                    'type': doc.get('type'),
+                    'file_size': doc.get('file_size'),
+                    'created_at': None,
+                }
+                created = doc.get('created_at')
+                try:
+                    if created is not None:
+                        # datetime -> ISO, ObjectId etc handled safely
+                        response_doc['created_at'] = created.isoformat() if hasattr(created, 'isoformat') else str(created)
+                except Exception:
+                    response_doc['created_at'] = str(created)
+
+                return JSONResponse(response_doc)
     except Exception:
         # Non-fatal: continue to file fallback
         import logging

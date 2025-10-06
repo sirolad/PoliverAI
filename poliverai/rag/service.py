@@ -229,6 +229,10 @@ def ingest_paths(paths: list[str]) -> dict[str, Any]:
     chunks_ingested = 0
     skipped: list[tuple[str, str]] = []
 
+    # Ensure small cache directory exists to track previously-ingested file SHA hashes
+    cache_dir = Path(s.chroma_persist_dir) / '.ingest_cache'
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
     for p in paths:
         ext = Path(p).suffix.lower()
         if ext not in supported_ext:
@@ -279,6 +283,23 @@ def ingest_paths(paths: list[str]) -> dict[str, Any]:
 
             files_ingested += 1
             chunks_ingested += len(chunks)
+            # Record sha cache so future identical files are skipped
+            try:
+                # compute sha of the original file path
+                import hashlib
+
+                def _file_sha(path: str) -> str:
+                    h = hashlib.sha256()
+                    with open(path, 'rb') as fh:
+                        for chunk in iter(lambda: fh.read(8192), b''):
+                            h.update(chunk)
+                    return h.hexdigest()
+
+                sha = _file_sha(p)
+                (cache_dir / sha).write_text(f"{Path(p).name}\n{sha}\n")
+            except Exception:
+                # best-effort cache write; ignore failures
+                pass
         except Exception as e:
             skipped.append((p, f"error: {e}"))
             continue
@@ -296,7 +317,12 @@ def ingest_paths(paths: list[str]) -> dict[str, Any]:
         try:
             if not gcs_object:
                 gcs_object = f"{get_settings().chroma_collection}.tar.gz"
-            _gcs_upload_persist(gcs_bucket, gcs_object, get_settings().chroma_persist_dir)
+            # Use upload helper that skips upload if tarball checksum unchanged
+            from ..storage.gcs_reports import upload_report_if_changed
+
+            uploaded, gcs_url = upload_report_if_changed(gcs_bucket, gcs_object, get_settings().chroma_persist_dir + "/")
+            if not uploaded:
+                logger.info("Chroma persist tarball unchanged; skipped GCS upload for %s", gcs_object)
         except Exception as e:
             logger.warning("Failed to upload chroma persist to GCS after ingest: %s", e)
 

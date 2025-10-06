@@ -4,8 +4,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
+import LoadingLabel from '@/components/ui/LoadingLabel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
+import FormField from '@/components/ui/FormField'
 import useAuth from '@/contexts/useAuth'
 import { Mail, Lock, AlertCircle, LogIn, UserPlus } from 'lucide-react'
 
@@ -89,50 +91,24 @@ export function Login() {
                 </div>
               )}
 
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    className="pl-10"
-                    {...register('email')}
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-sm text-red-600">{errors.email.message}</p>
-                )}
-              </div>
+              <FormField id="email" label="Email address" icon={<Mail />} error={errors.email?.message}>
+                <Input id="email" type="email" placeholder="Enter your email" className="pl-10" {...register('email')} />
+              </FormField>
 
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    className="pl-10"
-                    {...register('password')}
-                  />
-                </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password.message}</p>
-                )}
-              </div>
+              <FormField id="password" label="Password" icon={<Lock />} error={errors.password?.message}>
+                <Input id="password" type="password" placeholder="Enter your password" className="pl-10" {...register('password')} />
+              </FormField>
 
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? <><LogIn className="h-4 w-4"/> Signing in...</> : <><LogIn className="h-4 w-4"/> Sign In</>}
+                <LoadingLabel
+                  loading={isSubmitting}
+                  loadingNode={<><LogIn className="h-4 w-4"/> Signing in...</>}
+                  normalNode={<><LogIn className="h-4 w-4"/> Sign In</>}
+                />
               </Button>
 
               <div className="text-center">

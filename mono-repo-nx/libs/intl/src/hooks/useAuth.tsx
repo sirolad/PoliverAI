@@ -31,30 +31,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Resolve API base URL from a variety of environments without referencing
 // globals that may be absent in secure runtimes (SES) or other sandboxes.
 const resolveApiBaseUrl = (): string | undefined => {
-  // Try Vite's import.meta.env when available (compile-time, may be inlined).
   try {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) {
-      // @ts-ignore
-      return (import.meta as any).env.VITE_API_BASE_URL;
-    }
-  } catch (e) {
-    // ignore
+    const meta = import.meta as unknown as { env?: Record<string, unknown> }
+    const viteEnv = meta?.env ?? {}
+    const mode = (viteEnv.MODE ?? viteEnv.VITE_ENVIRONMENT ?? viteEnv.ENVIRONMENT) as string | undefined
+    const apiUrl = viteEnv.VITE_API_BASE_URL as string | undefined
+    if (mode === 'development') return 'http://localhost:8000'
+    if (apiUrl && apiUrl.trim() !== '') return apiUrl
+  } catch (err) {
+    void err
   }
 
-  // Check for a window-level override (useful in some runtimes / test harnesses)
   if (typeof window !== 'undefined' && (window as any).__env__ && (window as any).__env__.VITE_API_BASE_URL) {
-    return (window as any).__env__.VITE_API_BASE_URL;
+    return (window as any).__env__.VITE_API_BASE_URL
   }
 
-  // Only access process.env when `process` exists in this environment.
-  if (typeof process !== 'undefined' && (process as any).env && (process as any).env.VITE_API_BASE_URL) {
-    return (process as any).env.VITE_API_BASE_URL;
-  }
-
-  return undefined;
-};
+  return undefined
+}
 
 const API_BASE_URL = resolveApiBaseUrl();
 axios.defaults.baseURL = API_BASE_URL || 'http://localhost:8000';

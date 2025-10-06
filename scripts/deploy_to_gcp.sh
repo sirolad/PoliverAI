@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Deploy script for building the backend Docker image and deploying to Cloud Run.
+# Deploy script for building the app Docker image and deploying to Cloud Run.
 # This script does NOT include credentials. Run locally where you have gcloud auth
 # already configured (gcloud auth login && gcloud auth configure-docker).
 #
 # Usage:
 #   export PROJECT_ID=my-gcp-project
 #   export REGION=us-central1
-#   export IMAGE_NAME=poliverai-backend
+#   export IMAGE_NAME=poliverai-app
 #   export TAG=latest
 #   export MONGO_URI='mongodb+srv://user:pass@cluster...'
 #   ./scripts/deploy_to_gcp.sh
@@ -66,6 +66,36 @@ else
   echo "Env file ${ENV_FILE} not found; proceeding without file-sourced env vars."
 fi
 
+# If ENV_PAIRS is still empty, attempt to build it from environment variables
+# This is useful for CI (GitHub Actions) where secrets are injected as env vars
+if [ -z "${ENV_PAIRS}" ]; then
+  echo "No env file provided; assembling env vars from environment for CI..."
+  # Whitelist of environment variables to include in Cloud Run service
+  VARS=(SECRET_KEY MONGO_URI POLIVERAI_OPENAI_API_KEY POLIVERAI_OPENAI_BASE_URL \
+    POLIVERAI_OPENAI_CHAT_MODEL POLIVERAI_OPENAI_EMBEDDING_MODEL \
+    STRIPE_SECRET_KEY STRIPE_PUBLISHABLE_KEY STRIPE_WEBHOOK_SECRET \
+    POLIVERAI_GCS_CREDENTIALS_JSON POLIVERAI_CHROMA_GCS_BUCKET POLIVERAI_REPORTS_GCS_BUCKET \
+    GOOGLE_APPLICATION_CREDENTIALS DEV_DEBUG_USERS MONGO_DEBUG_CONN ENABLE_ADMIN_PASSWORD_UPDATE \
+    IMAGE_NAME SKIP_NGINX FAST_DEV)
+
+  for v in "${VARS[@]}"; do
+    val="${!v:-}"
+    if [ -n "$val" ]; then
+      # Escape any commas in the value
+      safe_val=$(printf '%s' "$val" | sed 's/,/\\,/g')
+      if [ -z "${ENV_PAIRS}" ]; then
+        ENV_PAIRS="${v}=${safe_val}"
+      else
+        ENV_PAIRS="${ENV_PAIRS},${v}=${safe_val}"
+      fi
+      echo "Will pass env var: ${v} (value masked)"
+    fi
+  done
+  if [ -z "${ENV_PAIRS}" ]; then
+    echo "No environment variables found to pass to Cloud Run."
+  fi
+fi
+
 # If a key.json exists in the repo root, offer to upload it to Secret Manager and pass it to Cloud Run.
 KEY_FILE=${KEY_FILE:-key.json}
 SECRET_NAME=${SECRET_NAME:-poliverai-key-json}
@@ -97,6 +127,7 @@ echo "Deploying to Cloud Run in project ${PROJECT_ID} (${REGION})"
 if [ -z "${MONGO_URI:-}" ]; then
   echo "Warning: MONGO_URI is not set in the environment; the deployed service will not have a DB connection."
 fi
+
 echo "Checking for accidental inclusion of .env or key.json in the build context..."
 if docker build --no-cache -f Dockerfile.deployer --target final -q . >/dev/null 2>&1; then
   echo "Quick check build succeeded (no cache). Proceeding with push & deploy."

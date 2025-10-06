@@ -1,5 +1,8 @@
 import policyService from '@/services/policyService'
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
+import { safeDispatch } from '@/lib/eventHelpers'
+import { extractErrorStatus } from '@/lib/errorHelpers'
 import EnterTitleModal from './EnterTitleModal'
 import ConfirmDeleteModal from './ConfirmDeleteModal'
 import InsufficientCreditsModal from './InsufficientCreditsModal'
@@ -26,38 +29,23 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
         <div className="flex items-center justify-between px-4 py-2 border-b">
           <div className="font-semibold">{title || filename || 'Report'}</div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={async () => {
+            <Button variant="outline" size="sm" onClick={async () => {
                 if (!filename) return
                 try {
                   await policyService.downloadReport(filename)
                 } catch (e) {
                   console.warn('modal download failed', e)
                 }
-              }}
-              className="px-3 py-1 bg-gray-100 rounded"
-            >
-              Download
-            </button>
-            <button
-              onClick={() => {
+              }}>Download</Button>
+            <Button variant="default" size="sm" onClick={() => {
                 // open title modal to collect document title before saving
                 setPendingTitle(title || filename || '')
                 setTitleModalOpen(true)
-              }}
-              className="px-3 py-1 bg-green-600 text-white rounded"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
+              }}>Save</Button>
+            <Button variant="destructive" size="sm" onClick={() => {
                 setConfirmDeleteOpen(true)
-              }}
-              className="px-3 py-1 bg-red-600 text-white rounded"
-            >
-              Delete
-            </button>
-            <button onClick={onClose} className="px-3 py-1 bg-white border rounded">Close</button>
+              }}>Delete</Button>
+            <Button variant="ghost" size="sm" onClick={onClose}>Close</Button>
           </div>
         </div>
         <div className="h-[80vh]">
@@ -67,26 +55,20 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
           open={titleModalOpen}
           initial={pendingTitle ?? ''}
           onClose={() => setTitleModalOpen(false)}
-            onConfirm={async (docTitle: string) => {
+          onConfirm={async (docTitle: string) => {
             if (!filename) return
             try {
               const resp = await policyService.saveReport(filename, docTitle, { is_quick: !!isQuick })
               if (onSaved) onSaved(resp.filename)
             } catch (err) {
               console.warn('save with title failed', err)
-                try {
-                  const unknownErr = err as unknown
-                  const maybeErr = unknownErr as { status?: number }
-                  if (maybeErr && maybeErr.status === 402) {
-                    setInsufficientOpen(true)
-                    if (typeof onInsufficient === 'function') onInsufficient()
-                  } else {
-                    throw err
-                  }
-                } catch (innerErr) {
-                  // If it's not a 402 we still log it; other consumers may handle it
-                  console.warn('save with title unexpected error', innerErr)
-                }
+              const status = extractErrorStatus(err)
+              if (status === 402) {
+                setInsufficientOpen(true)
+                if (typeof onInsufficient === 'function') onInsufficient()
+              } else {
+                console.warn('save with title unexpected error', err)
+              }
             }
           }}
         />
@@ -101,7 +83,7 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
               if (onDeleted) onDeleted(filename)
               // Emit a global event so other UI (Dashboard) can track deletions
               try {
-                window.dispatchEvent(new CustomEvent('reports:deleted', { detail: { filenames: [filename] } }))
+                safeDispatch('reports:deleted', { filenames: [filename] })
               } catch (e) {
                 console.warn('Failed to dispatch reports:deleted event', e)
               }

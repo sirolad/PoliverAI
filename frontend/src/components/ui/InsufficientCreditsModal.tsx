@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { XCircle } from 'lucide-react'
 import { Button } from './Button'
+import MetaLine from './MetaLine'
 import EnterCreditsModal from './EnterCreditsModal'
 import PaymentsService from '@/services/payments'
 
@@ -39,7 +40,7 @@ export default function InsufficientCreditsModal({
               </div>
               <div>
                 <div className="font-semibold text-sm">{title}</div>
-                {message && <div className="text-sm text-muted-foreground">{message}</div>}
+                <MetaLine>{message}</MetaLine>
               </div>
             </div>
             <div className="p-4 flex justify-end gap-2">

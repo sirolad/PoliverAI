@@ -14,8 +14,15 @@ streamlit==1.37.1
 
 # LLM & NLP
 openai==1.40.0
-transformers==4.44.0
-sentence-transformers==3.0.1
+
+# Optional: sentence-transformers is required for some embedding/semantic search features.
+# Note: this may pull in heavy dependencies (torch). If you want a CPU-only install, consider
+# pinning a cpu build of torch or installing sentence-transformers inside a separate dev venv.
+# dev should turn comment it out for speed build speed
+# transformers==4.44.0
+# sentence-transformers==3.0.1
+# ###
+
 tiktoken==0.7.0
 
 
@@ -34,6 +41,9 @@ beautifulsoup4==4.12.3 # for scraping GDPR text
 python-docx>=1.1 # provides `docx` module used by ingestion
 
 pdfplumber>=0.11
+
+# CA bundle helper for TLS (used to avoid SSL handshake failures when connecting to Atlas)
+certifi>=2024.9.0
 
 # protobuf constraint to satisfy google-cloud-aiplatform
 # google-cloud-aiplatform requires protobuf>=3.19.5 and <5.0.0dev

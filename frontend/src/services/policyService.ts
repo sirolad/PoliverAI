@@ -1,7 +1,25 @@
-import apiService from './api'
+import apiService, { getToken } from './api'
 import streamingService from './streamingService'
 import type { ComplianceResult, AnalysisResultForUI } from '@/types/api'
+import { downloadFileFromApi, buildApiUrl } from '@/lib/fileHelpers'
 export type AnalysisMode = 'fast' | 'balanced' | 'detailed'
+
+export type ReportDetail = {
+  filename: string
+  content?: string
+  score?: number
+  verdict?: string
+  findings?: Array<Record<string, unknown>>
+  recommendations?: Array<Record<string, unknown>>
+  evidence?: Array<Record<string, unknown>>
+  metrics?: Record<string, unknown>
+  document_name?: string
+  gcs_url?: string
+  is_full_report?: boolean
+  type?: string
+  file_size?: number
+  created_at?: string | null
+}
 class PolicyService {
   async analyzePolicy(
     file: File,
@@ -56,9 +74,9 @@ class PolicyService {
   }
   async generatePolicyRevision(
     original: string,
-    findings: Array<Record<string, any>>,
-    recommendations: Array<Record<string, any>>,
-    evidence: Array<Record<string, any>>,
+  findings: Array<Record<string, unknown>>,
+  recommendations: Array<Record<string, unknown>>,
+  evidence: Array<Record<string, unknown>>,
     documentName?: string,
     revisionMode: 'comprehensive' | 'minimal' | 'targeted' = 'comprehensive'
   ): Promise<{ filename: string; download_url: string }> {
@@ -73,35 +91,34 @@ class PolicyService {
     return apiService.post<{ filename: string; download_url: string }>('/api/v1/generate-revision', payload)
   }
   async downloadReport(filename: string): Promise<void> {
-    const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(filename)}`
     try {
-      const token = localStorage.getItem('token')
-      const headers: Record<string, string> = {}
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`
-      }
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${downloadUrl}`, {
-        method: 'GET',
-        headers
-      })
-      if (!response.ok) {
-        throw new Error(`Failed to download report: ${response.statusText}`)
-      }
-      const blob = await response.blob()
-      const blobUrl = window.URL.createObjectURL(blob)
-      // Create a temporary link element to trigger download
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      // Clean up the blob URL
-      window.URL.revokeObjectURL(blobUrl)
+      const token = getToken()
+      await downloadFileFromApi(`/api/v1/reports/download/${encodeURIComponent(filename)}`, filename, token)
     } catch (error) {
       console.error('Download failed:', error)
       throw error
     }
+  }
+
+  async getDetailedReport(filename: string): Promise<ReportDetail> {
+    type ReportDetail = {
+      filename: string
+      content?: string
+      score?: number
+      verdict?: string
+      findings?: Array<Record<string, unknown>>
+      recommendations?: Array<Record<string, unknown>>
+      evidence?: Array<Record<string, unknown>>
+      metrics?: Record<string, unknown>
+      document_name?: string
+      gcs_url?: string
+      is_full_report?: boolean
+      type?: string
+      file_size?: number
+      created_at?: string | null
+    }
+    const url = `/api/v1/reports/detailed/${encodeURIComponent(filename)}`
+    return apiService.get<ReportDetail>(url)
   }
   
   async saveReport(
@@ -203,9 +220,8 @@ class PolicyService {
         // open it directly. Prefer opening the app download endpoint which
         // will stream the file (and handle auth/signed URLs).
         if (typeof report.gcs_url === 'string' && report.gcs_url.startsWith('gs://')) {
-          const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(report.filename)}`
-          const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${downloadUrl}`
-          window.open(url, '_blank')
+          const downloadUrl = buildApiUrl(`/api/v1/reports/download/${encodeURIComponent(report.filename)}`)
+          window.open(downloadUrl, '_blank')
           return
         }
         // If it's an http(s) URL, open directly
@@ -214,15 +230,13 @@ class PolicyService {
           return
         }
         // Unknown scheme: fall back to download endpoint
-        const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(report.filename)}`
-        const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${downloadUrl}`
-        window.open(url, '_blank')
+        const downloadUrl = buildApiUrl(`/api/v1/reports/download/${encodeURIComponent(report.filename)}`)
+        window.open(downloadUrl, '_blank')
         return
       }
       // fallback to download endpoint
-      const downloadUrl = `/api/v1/reports/download/${encodeURIComponent(report.filename)}`
-      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${downloadUrl}`
-      window.open(url, '_blank')
+      const downloadUrl = buildApiUrl(`/api/v1/reports/download/${encodeURIComponent(report.filename)}`)
+      window.open(downloadUrl, '_blank')
     } catch (e) {
       console.error('Failed to open report', e)
       throw e

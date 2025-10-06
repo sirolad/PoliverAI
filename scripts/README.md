@@ -16,4 +16,4 @@ Examples:
 
 deploy_to_gcp.sh
 -----------------
-Builds the backend Docker image (using Dockerfile.backend), pushes it to Google Container Registry and deploys it to Cloud Run. Requires local gcloud authentication and PROJECT_ID environment variable. The script expects MONGO_URI to be present in the environment when deploying so the service can connect to MongoDB Atlas.
+Builds the backend Docker image (using Dockerfile.deployer), pushes it to Google Container Registry and deploys it to Cloud Run. Requires local gcloud authentication and PROJECT_ID environment variable. The script expects MONGO_URI to be present in the environment when deploying so the service can connect to MongoDB Atlas.

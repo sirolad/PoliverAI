@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import authService from '../services/authService'
+import { store } from '@/store/store'
+import { clearToken } from '@/store/authSlice'
 import type { ApiError } from '../services/api'
+import { extractErrorStatus } from '@/lib/errorHelpers'
+import { setAuthHeader, clearAuthHeader, applyUserUpdate, isProUser } from '@/lib/authHelpers'
 import type { User } from '@/types/api'
 import { AuthContext } from './auth-context'
 import type { AuthContextType } from './auth-context'
 
-// Configure axios defaults (use the same VITE_API_URL as other services)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-axios.defaults.baseURL = API_BASE_URL
+// Configure axios defaults (use shared helper so dev uses localhost and prod uses VITE_API_URL)
+import { getApiBaseOrigin } from '@/lib/paymentsHelpers'
+axios.defaults.baseURL = getApiBaseOrigin() || 'http://localhost:8000'
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -19,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = authService.getStoredToken()
     if (token) {
       // Ensure axios sends the Authorization header for subsequent requests
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      setAuthHeader(token)
       fetchUser()
     } else {
       setLoading(false)
@@ -37,10 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const detail = (ev as CustomEvent<Record<string, unknown>>)?.detail
         if (detail && typeof detail === 'object') {
-          setUser((prev) => {
-            const prevObj = (prev ?? {}) as Record<string, unknown>
-            return ({ ...prevObj, ...detail } as unknown as User)
-          })
+          setUser((prev) => applyUserUpdate(prev, detail))
         }
       } catch (err) {
         console.error('Failed to apply user update event', err)
@@ -64,11 +65,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // OAuth/checkout redirect), keep the token so the app can retry and
       // avoid logging the user out unexpectedly.
       console.error('Failed to fetch user:', error)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const maybeStatus = (error as any)?.status || (error as any)?.response?.status
-      if (maybeStatus === 401 || maybeStatus === 403) {
-        localStorage.removeItem('token')
-        delete axios.defaults.headers.common['Authorization']
+  const maybeStatus = extractErrorStatus(error)
+  if (maybeStatus === 401 || maybeStatus === 403) {
+        try { store.dispatch(clearToken()) } catch { /* noop */ }
+        clearAuthHeader()
         authService.logout()
       } else {
         // transient error: keep token and allow background retries
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await authService.login({ email, password })
       // Set the axios Authorization header before fetching the current user
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
+      setAuthHeader(response.access_token)
       setUser(await authService.getCurrentUser())
     } catch (error) {
       const apiError = error as ApiError
@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await authService.register({ name, email, password })
       // Ensure header is set before fetching user info
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.access_token}`
+      setAuthHeader(response.access_token)
       setUser(await authService.getCurrentUser())
     } catch (error) {
       const apiError = error as ApiError
@@ -113,8 +113,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
-    delete axios.defaults.headers.common['Authorization']
+    try { store.dispatch(clearToken()) } catch { /* noop */ }
+    clearAuthHeader()
     authService.logout()
     setUser(null)
   }
@@ -127,22 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser,
     loading,
     isAuthenticated: !!user,
-    isPro: (() => {
-      try {
-        if (!user) return false
-        if (user.tier === 'pro') {
-          // if subscription_expires present, ensure it's still in the future
-          if (user.subscription_expires) {
-            const exp = new Date(user.subscription_expires)
-            return exp > new Date()
-          }
-          return true
-        }
-        return false
-      } catch {
-        return false
-      }
-    })(),
+    isPro: isProUser(user),
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

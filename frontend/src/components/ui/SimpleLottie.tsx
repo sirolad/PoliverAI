@@ -1,5 +1,5 @@
 import React from 'react'
-import lottie from 'lottie-web'
+import { makeLottieOptions, loadLottieAnimation, attachLottieComplete, destroyLottie } from '@/lib/lottieHelpers'
 
 type SimpleLottieProps = {
   src: string
@@ -24,33 +24,15 @@ export default function SimpleLottie({
   React.useEffect(() => {
     let anim: unknown = null
     try {
-      const opts: unknown = {
-        container: ref.current as Element,
-        renderer: 'svg',
-        loop,
-        autoplay,
-        path: src,
-        useWebWorker,
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      anim = lottie.loadAnimation(opts as any)
-
-      try {
-        // prefer Lottie's event system when available
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ;(anim as any)?.addEventListener?.('complete', () => {
-          try { onComplete?.() } catch (e) { console.debug('SimpleLottie onComplete handler failed', e) }
-        })
-      } catch (e) {
-        console.debug('SimpleLottie: failed to attach complete listener', e)
-      }
+      const opts = makeLottieOptions(ref.current as Element | null, src, loop, autoplay, useWebWorker)
+      anim = loadLottieAnimation(opts)
+      attachLottieComplete(anim, onComplete)
     } catch (e) {
       console.error('SimpleLottie: failed to load animation', e)
     }
 
     return () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      try { (anim as any)?.destroy?.() } catch (e) { console.debug('SimpleLottie destroy failed', e) }
+      destroyLottie(anim)
     }
   }, [src, loop, autoplay, onComplete, useWebWorker])
 

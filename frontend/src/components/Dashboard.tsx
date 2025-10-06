@@ -11,7 +11,7 @@ import {
   Zap,
   Upload,
   Star,
-  Lock,
+  
   CreditCard,
   Trash2
 } from 'lucide-react'
@@ -20,19 +20,16 @@ import PaymentsService from '@/services/payments'
 import policyService from '@/services/policyService'
 import type { ReportMetadata } from '@/types/api'
 import transactionsService from '@/services/transactions'
-import Splash from '@/components/ui/Splash'
+import ConditionalSplash from '@/components/ui/ConditionalSplash'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { pushEvent, addToLegacy, computeDeletedCountsForRange } from '@/store/deletedReportsSlice'
+import FeatureItem from '@/components/ui/FeatureItem'
+import type { Feature } from '@/types/feature'
+import { getDefaultMonthRange, getCost, getCostForReport, computeSavedTotals, computeDerivedFree, formatRangeLabel } from '@/lib/dashboardHelpers'
+import { computeTransactionTotals, isTransactionSuccess } from '@/lib/transactionHelpers'
+import { safeDispatch } from '@/lib/eventHelpers'
 
-// Pricing accessor (server must enforce; this view is only for display).
-// Use a runtime lookup to avoid module cyclic/TDZ issues when modules import each other.
-const getCost = (key: string | undefined): { credits: number; usd: number } | undefined => {
-  const MAP: Record<string, { credits: number; usd: number }> = {
-    analysis: { credits: 5, usd: 0.5 },
-    report: { credits: 5, usd: 0.5 },
-    ingest: { credits: 2, usd: 0.2 },
-  }
-  if (!key) return undefined
-  return MAP[key]
-}
+  // pricing helpers live in dashboardHelpers
 
 export function Dashboard() {
   const { user, isAuthenticated, isPro, loading, refreshUser } = useAuth()
@@ -49,13 +46,10 @@ export function Dashboard() {
   // Keep a server-driven count for free reports (faster when dataset large). Fallback to client computed value.
   // (removed server-driven free count; derive on the fly)
   // Date range state per-section (default to current month)
-  const toIso = (d: Date) => d.toISOString().slice(0, 10)
-  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-  const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
-
-  const [reportsRange, setReportsRange] = React.useState<{ from: string | null; to: string | null }>({ from: toIso(startOfMonth), to: toIso(endOfMonth) })
-  const [completedRange, setCompletedRange] = React.useState<{ from: string | null; to: string | null }>({ from: toIso(startOfMonth), to: toIso(endOfMonth) })
-  const [txRange, setTxRange] = React.useState<{ from: string | null; to: string | null }>({ from: toIso(startOfMonth), to: toIso(endOfMonth) })
+  const { from: defaultFrom, to: defaultTo } = getDefaultMonthRange()
+  const [reportsRange, setReportsRange] = React.useState<{ from: string | null; to: string | null }>({ from: defaultFrom, to: defaultTo })
+  const [completedRange, setCompletedRange] = React.useState<{ from: string | null; to: string | null }>({ from: defaultFrom, to: defaultTo })
+  const [txRange, setTxRange] = React.useState<{ from: string | null; to: string | null }>({ from: defaultFrom, to: defaultTo })
 
   const [txTotals, setTxTotals] = React.useState<{ total_bought_credits?: number; total_spent_credits?: number; total_subscription_usd?: number; total_subscription_credits?: number } | null>(null)
 
@@ -77,19 +71,7 @@ export function Dashboard() {
     return () => { mounted = false }
   }, [reportsRange.from, reportsRange.to])
 
-  const getCostForReport = (r: ReportMetadata) => {
-    if (r.type === 'revision') return getCost('ingest') ?? { credits: 0, usd: 0 }
-    if (r.is_full_report) return getCost('report') ?? { credits: 0, usd: 0 }
-    return getCost('analysis') ?? { credits: 0, usd: 0 }
-  }
-
-  const totalSavedFiles = userReports ? userReports.length : null
-  const fullReportsSaved = userReports ? userReports.filter((r) => !!r.is_full_report).length : null
-  const revisedDocsSaved = userReports ? userReports.filter((r) => r.type === 'revision').length : null
-
-  const totalSavedCredits = userReports ? userReports.reduce((acc, r) => acc + (getCostForReport(r).credits || 0), 0) : null
-  const totalSavedUsd = userReports ? userReports.reduce((acc, r) => acc + (getCostForReport(r).usd || 0), 0) : null
-
+  const { totalSavedFiles, fullReportsSaved, revisedDocsSaved, totalSavedCredits, totalSavedUsd, freeReportsSaved } = computeSavedTotals(userReports)
   const hasStatusField = !!(userReports && userReports.find((r) => typeof r.status !== 'undefined'))
   const fullReportsDone = userReports
     ? (hasStatusField ? userReports.filter((r) => r.is_full_report && (r.status === 'completed')).length : fullReportsSaved)
@@ -97,42 +79,15 @@ export function Dashboard() {
   const revisedCompleted = userReports
     ? (hasStatusField ? userReports.filter((r) => r.type === 'revision' && (r.status === 'completed')).length : revisedDocsSaved)
     : null
-  const freeReportsSaved = userReports ? userReports.filter((r) => (r.analysis_mode || '').toString() === 'fast').length : null
-  // Derived free reports: total saved files minus full reports minus revised docs
-  const derivedFreeReportsSaved = ((): number | null => {
-    if (totalSavedFiles === null || fullReportsSaved === null || revisedDocsSaved === null) return null
-    const val = (totalSavedFiles || 0) - (fullReportsSaved || 0) - (revisedDocsSaved || 0)
-    return Math.max(0, val)
-  })()
+  const derivedFreeReportsSaved = computeDerivedFree(totalSavedFiles, fullReportsSaved, revisedDocsSaved)
+  const freeReportsSavedDisplay = derivedFreeReportsSaved !== null ? derivedFreeReportsSaved : freeReportsSaved
   const freeReportsCompleted = userReports
     ? (hasStatusField ? userReports.filter((r) => (r.analysis_mode || '').toString() === 'fast' && (r.status === 'completed')).length : freeReportsSaved)
     : null
 
-  // Deleted files tracking
-  // New behavior: persist an event log of deletions with timestamps so we can
-  // compute date-scoped totals. Keep legacy cumulative counts as a fallback
-  // for older installs.
-  type DeletedEvent = { ts: number; counts: { full: number; revision: number; free: number }; filenames?: string[] }
-
-  const [deletedEvents, setDeletedEvents] = React.useState<DeletedEvent[]>(() => {
-    try {
-      const raw = localStorage.getItem('poliverai.deleted_report_events')
-      if (raw) return JSON.parse(raw)
-      return []
-    } catch {
-      return []
-    }
-  })
-
-  // legacy cumulative counts (kept for backward compatibility)
-  const [legacyDeletedCounts, setLegacyDeletedCounts] = React.useState<{ full: number; revision: number; free: number }>(() => {
-    try {
-      const raw = localStorage.getItem('poliverai.deleted_report_counts')
-      return raw ? JSON.parse(raw) : { full: 0, revision: 0, free: 0 }
-    } catch {
-      return { full: 0, revision: 0, free: 0 }
-    }
-  })
+  // Deleted files tracking moved to Redux slice
+  const dispatch = useAppDispatch()
+  const deletedState = useAppSelector((s) => s.deletedReports)
 
   React.useEffect(() => {
     const handler = (ev: Event) => {
@@ -141,83 +96,33 @@ export function Dashboard() {
         const counts = (ce.detail && (ce.detail.counts as { full?: number; revision?: number; free?: number }))
         const filenames = (ce.detail && (ce.detail.filenames as string[])) || undefined
 
-        // Normalize counts
         const eventCounts = counts ? {
           full: counts.full || 0,
           revision: counts.revision || 0,
           free: counts.free || 0,
         } : (filenames ? { full: 0, revision: 0, free: filenames.length } : { full: 0, revision: 0, free: 0 })
 
-        const evObj: DeletedEvent = { ts: Date.now(), counts: eventCounts, filenames }
-
-        // Append to event log
-        setDeletedEvents((prev) => {
-          const next = [...prev, evObj]
-          try { localStorage.setItem('poliverai.deleted_report_events', JSON.stringify(next)) } catch { console.debug('Failed to persist deleted_report_events') }
-          return next
-        })
-
-        // Also update legacy cumulative counts for older UI/consumers
-        setLegacyDeletedCounts((prev) => {
-          const next = {
-            full: (prev.full || 0) + (eventCounts.full || 0),
-            revision: (prev.revision || 0) + (eventCounts.revision || 0),
-            free: (prev.free || 0) + (eventCounts.free || 0),
-          }
-          try { localStorage.setItem('poliverai.deleted_report_counts', JSON.stringify(next)) } catch { console.debug('Failed to persist deleted_report_counts') }
-          return next
-        })
+        const evObj = { ts: Date.now(), counts: eventCounts, filenames }
+        dispatch(pushEvent(evObj))
+        dispatch(addToLegacy(eventCounts))
       } catch (e) {
         console.warn('Failed to handle reports:deleted event', e)
       }
     }
     window.addEventListener('reports:deleted', handler as EventListener)
     return () => window.removeEventListener('reports:deleted', handler as EventListener)
-  }, [])
+  }, [dispatch])
 
-  // Compute deleted counts scoped to the saved-files date range. If we have
-  // event logs use them; otherwise fall back to legacy cumulative counts.
-  const computeDeletedCountsForRange = (range: { from: string | null; to: string | null }) => {
-    // If no events recorded, fallback to legacy totals (all-time only)
-    if (!deletedEvents || deletedEvents.length === 0) return legacyDeletedCounts
-
-    const fromTs = range && range.from ? new Date(range.from).setHours(0, 0, 0, 0) : null
-    const toTs = range && range.to ? new Date(range.to).setHours(23, 59, 59, 999) : null
-
-    const selected = deletedEvents.filter((e) => {
-      if (fromTs && e.ts < fromTs) return false
-      if (toTs && e.ts > toTs) return false
-      return true
-    })
-
-    return selected.reduce((acc, e) => ({
-      full: acc.full + (e.counts.full || 0),
-      revision: acc.revision + (e.counts.revision || 0),
-      free: acc.free + (e.counts.free || 0),
-    }), { full: 0, revision: 0, free: 0 })
-  }
-
-  const displayedDeletedCounts = computeDeletedCountsForRange(reportsRange)
+  const displayedDeletedCounts = computeDeletedCountsForRange(deletedState.events, deletedState.legacyCounts, reportsRange)
 
   // Prefer server-provided free count; fall back to derived value, then client-filtered free count
   // Prefer derived value, then client-filtered free count
-  const freeReportsSavedDisplay = derivedFreeReportsSaved !== null ? derivedFreeReportsSaved : freeReportsSaved
-
   React.useEffect(() => {
     // derived free reports are computed from totals; no server call needed
     return undefined
   }, [reportsRange.from, reportsRange.to])
 
-  // Helper to format range labels for UI
-  const formatRangeLabel = (range: { from: string | null; to: string | null } | null) => {
-    if (!range || (!range.from && !range.to)) return 'Showing: all time'
-    const defFrom = toIso(startOfMonth)
-    const defTo = toIso(endOfMonth)
-    if (range.from === defFrom && range.to === defTo) return `Showing: this month (${defFrom} → ${defTo})`
-    if (range.from && range.to) return `Showing: ${range.from} → ${range.to}`
-    if (range.from) return `Showing from ${range.from}`
-    return `Showing up to ${range.to}`
-  }
+  // use formatRangeLabel from dashboardHelpers
 
   // Fetch transactions totals for Transaction Status panel when txRange changes
   React.useEffect(() => {
@@ -228,39 +133,7 @@ export function Dashboard() {
         const resp = await transactionsService.listTransactions({ page: 1, limit: 1000, date_from: txRange.from ?? undefined, date_to: txRange.to ?? undefined })
         if (!mounted) return
         const txs = resp.transactions ?? []
-        // helper to detect successful payments
-        const isSuccess = (t: typeof txs[number]) => {
-          const s = (t.status || '').toString().toLowerCase()
-          if (s === 'completed' || s === 'success') return true
-          const et = (t.event_type || '').toString().toLowerCase()
-          if (et.includes('completed') || et.includes('success')) return true
-          return false
-        }
-
-        // Compute total credits bought (exclude subscription/task events per UX decision)
-        const total_bought_credits = txs.reduce((acc, t) => {
-          const credits = typeof t.credits === 'number' ? t.credits : 0
-          const et = (t.event_type || '').toString().toLowerCase()
-          // Exclude subscription and task-type transactions from 'bought credits' total
-          if (et.includes('subscription') || et.includes('subs') || et.includes('task')) return acc
-          return acc + (credits > 0 && isSuccess(t) ? credits : 0)
-        }, 0)
-
-        // Compute subscription credits (if any) separately so we can inspect why they're not showing
-        const total_subscription_credits = txs.reduce((acc, t) => {
-          const credits = typeof t.credits === 'number' ? t.credits : 0
-          const et = (t.event_type || '').toString().toLowerCase()
-          if (et.includes('subscription') && isSuccess(t) && credits > 0) return acc + credits
-          return acc
-        }, 0)
-
-        const total_spent_credits = resp.total_spent_credits ?? undefined
-
-        const total_subscription_usd = txs.reduce((acc, t) => {
-          const et = (t.event_type || '').toString().toLowerCase()
-          const amount = typeof t.amount_usd === 'number' ? t.amount_usd : 0
-          return acc + (et.includes('subscription') && isSuccess(t) ? amount : 0)
-        }, 0)
+        const { total_bought_credits, total_spent_credits, total_subscription_usd, total_subscription_credits } = computeTransactionTotals(txs, resp)
 
         // Detailed debug logging to trace why subscription-credits might be missing
         try {
@@ -271,7 +144,7 @@ export function Dashboard() {
             const status = (t.status || '').toString()
             const credits = typeof t.credits === 'number' ? t.credits : 0
             const amount = typeof t.amount_usd === 'number' ? t.amount_usd : 0
-            const success = isSuccess(t)
+            const success = isTransactionSuccess(t)
             const excludedFromBought = et.includes('subscription') || et.includes('subs') || et.includes('task')
             console.debug(`[Dashboard] tx[${i}] id=${t.id ?? '(no-id)'} event_type=${et} status=${status} credits=${credits} amount_usd=${amount} success=${success} excludedFromBought=${excludedFromBought}`)
           })
@@ -329,7 +202,7 @@ export function Dashboard() {
     return <Navigate to="/login" replace />
   }
 
-  const freeFeatures = [
+  const freeFeatures: Feature[] = [
     {
       icon: FileCheck,
       title: 'Policy Verification',
@@ -350,7 +223,7 @@ export function Dashboard() {
     },
   ]
 
-  const proFeatures = [
+  const proFeatures: Feature[] = [
     {
       icon: Zap,
       title: 'AI-Powered Analysis',
@@ -378,7 +251,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {showSplash ? <Splash onFinish={() => setShowSplash(false)} delayMs={200} durationMs={1200} /> : null}
+  <ConditionalSplash show={showSplash} onFinish={() => setShowSplash(false)} delayMs={200} durationMs={1200} />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -419,12 +292,12 @@ export function Dashboard() {
                       onClick={async () => {
                         try {
                           await PaymentsService.purchaseUpgrade(29)
-                          window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' } }))
+                          safeDispatch('payment:result', { success: true, title: 'Upgrade Successful', message: 'Your account is now PRO' })
                           window.location.reload()
                         } catch (err: unknown) {
                           console.error(err)
                           const msg = err instanceof Error ? err.message : String(err)
-                          window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
+                          safeDispatch('payment:result', { success: false, title: 'Payment Failed', message: msg })
                         }
                       }}
                       icon={<ArrowRight className="h-4 w-4" />}
@@ -542,7 +415,7 @@ export function Dashboard() {
                 <strong>How limit results by date:</strong> Use the "Saved Files" date picker at the top of this card to narrow the Saved Files and Deleted Files counts to a specific range. The dashboard filters deletion events recorded in this browser. If no per-event data is available (older installs), the dashboard falls back to legacy all-time totals stored locally.
               </div>
               <div className="mt-3 text-sm text-gray-600">Estimated cost: <span className="font-semibold">{totalSavedCredits !== null ? `${totalSavedCredits} credits` : '—'}</span> (<span className="font-semibold">{totalSavedUsd !== null ? `$${totalSavedUsd.toFixed(2)}` : '—'}</span>)</div>
-              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(reportsRange)}</div>
+              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(reportsRange, defaultFrom, defaultTo)}</div>
             </div>
 
             {/* New layer: Completed reports */}
@@ -595,7 +468,7 @@ export function Dashboard() {
                   }</span>)
                 </div>
               ) : null}
-              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(completedRange)}</div>
+              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(completedRange, defaultFrom, defaultTo)}</div>
             </div>
 
             {/* Transaction Status (credits bought/spent/subscriptions) */}
@@ -624,7 +497,7 @@ export function Dashboard() {
                   <div className="text-lg font-semibold">{txTotals?.total_subscription_usd ? `$${txTotals.total_subscription_usd.toFixed(2)}` : '—'}</div>
                 </div>
               </div>
-              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(txRange)}</div>
+              <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(txRange, defaultFrom, defaultTo)}</div>
             </div>
           </CardContent>
         </Card>
@@ -683,14 +556,8 @@ export function Dashboard() {
               {freeFeatures.map((feature, index) => (
                 <Card key={index} className="h-full">
                   <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <feature.icon className="h-5 w-5 text-green-600" />
-                      <CardTitle className="text-base">{feature.title}</CardTitle>
-                    </div>
+                    <FeatureItem feature={feature} />
                   </CardHeader>
-                  <CardContent>
-                    <CardDescription>{feature.description}</CardDescription>
-                  </CardContent>
                 </Card>
               ))}
             </div>
@@ -704,44 +571,10 @@ export function Dashboard() {
             </h3>
             <div className="grid md:grid-cols-3 gap-4">
               {proFeatures.map((feature, index) => (
-                <Card
-                  key={index}
-                  className={`h-full ${
-                    !feature.available ? 'opacity-60 bg-gray-50' : 'border-blue-200'
-                  }`}
-                >
+                <Card key={index} className="h-full">
                   <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <feature.icon
-                        className={`h-5 w-5 ${
-                          feature.available ? 'text-blue-600' : 'text-gray-400'
-                        }`}
-                      />
-                      <CardTitle className="text-base flex items-center gap-2">
-                        {feature.title}
-                        {!feature.available && <Lock className="h-4 w-4 text-gray-400" />}
-                      </CardTitle>
-                    </div>
+                    <FeatureItem feature={feature} getCost={getCost} />
                   </CardHeader>
-                  <CardContent>
-                    <CardDescription>{feature.description}</CardDescription>
-                      <div className="mt-2">
-                        {(() => {
-                          const k = (feature as unknown as { key?: string }).key
-                          const c = getCost(k)
-                          return (
-                            <div className="text-sm text-gray-700">Cost: <span className="font-semibold">{c ? `$${c.usd.toFixed(2)} / ${c.credits} credits` : '—'}</span></div>
-                          )
-                        })()}
-                      </div>
-                    {!feature.available && (
-                      <div className="mt-2">
-                        <Button size="sm" variant="outline" disabled>
-                          Upgrade Required
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
                 </Card>
               ))}
             </div>

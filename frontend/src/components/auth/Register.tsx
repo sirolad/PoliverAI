@@ -4,8 +4,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
+import LoadingLabel from '@/components/ui/LoadingLabel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
+import FormField from '@/components/ui/FormField'
 import useAuth from '@/contexts/useAuth'
 import { Mail, Lock, User, AlertCircle, UserPlus, LogIn } from 'lucide-react'
 
@@ -94,81 +96,21 @@ export function Register() {
                 </div>
               )}
 
-              <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    className="pl-10"
-                    {...register('name')}
-                  />
-                </div>
-                {errors.name && (
-                  <p className="text-sm text-red-600">{errors.name.message}</p>
-                )}
-              </div>
+              <FormField id="name" label="Full Name" icon={<User />} error={errors.name?.message}>
+                <Input id="name" type="text" placeholder="Enter your full name" className="pl-10" {...register('name')} />
+              </FormField>
 
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    className="pl-10"
-                    {...register('email')}
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-sm text-red-600">{errors.email.message}</p>
-                )}
-              </div>
+              <FormField id="email" label="Email address" icon={<Mail />} error={errors.email?.message}>
+                <Input id="email" type="email" placeholder="Enter your email" className="pl-10" {...register('email')} />
+              </FormField>
 
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Create a password"
-                    className="pl-10"
-                    {...register('password')}
-                  />
-                </div>
-                {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password.message}</p>
-                )}
-              </div>
+              <FormField id="password" label="Password" icon={<Lock />} error={errors.password?.message}>
+                <Input id="password" type="password" placeholder="Create a password" className="pl-10" {...register('password')} />
+              </FormField>
 
-              <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    className="pl-10"
-                    {...register('confirmPassword')}
-                  />
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
-                )}
-              </div>
+              <FormField id="confirmPassword" label="Confirm Password" icon={<Lock />} error={errors.confirmPassword?.message}>
+                <Input id="confirmPassword" type="password" placeholder="Confirm your password" className="pl-10" {...register('confirmPassword')} />
+              </FormField>
 
               <div className="text-xs text-gray-600">
                 By creating an account, you agree to our{' '}
@@ -182,7 +124,11 @@ export function Register() {
                 className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? <><UserPlus className="h-4 w-4"/> Creating account...</> : <><UserPlus className="h-4 w-4"/> Create Account</>}
+                <LoadingLabel
+                  loading={isSubmitting}
+                  loadingNode={<><UserPlus className="h-4 w-4"/> Creating account...</>}
+                  normalNode={<><UserPlus className="h-4 w-4"/> Create Account</>}
+                />
               </Button>
 
               <div className="text-center">

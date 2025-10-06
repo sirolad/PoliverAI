@@ -1,4 +1,8 @@
 import type { ComplianceResult } from '@/types/api'
+import { getToken } from './api'
+import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
+import { buildApiUrl } from '@/lib/fileHelpers'
+import { getAuthHeader } from '@/lib/authHelpers'
 
 export interface StreamingUpdate {
   status: 'starting' | 'processing' | 'completed' | 'error'
@@ -24,17 +28,15 @@ class StreamingService {
   // and emit corresponding events.
   formData.append('ingest', 'true')
   formData.append('generate_report', 'true')
-      // Get API base URL
-      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const url = `${apiBaseUrl}/api/v1/verify-stream`
+  const url = buildApiUrl('/api/v1/verify-stream')
       // Create EventSource-like functionality with fetch
       const controller = new AbortController()
-      fetch(url, {
+  const token = getToken()
+  const headers = getAuthHeader(token)
+  fetch(url, {
         method: 'POST',
         body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-        },
+        headers,
         signal: controller.signal,
       })
       .then(async response => {
@@ -87,10 +89,7 @@ class StreamingService {
                       onUpdate({ status: 'completed', progress: 100, message: 'completed', result })
                       // Notify app to refresh user/transactions (but don't resolve yet)
                       try {
-                        if (typeof window !== 'undefined' && window.dispatchEvent) {
-                          window.dispatchEvent(new CustomEvent('payment:refresh-user'))
-                          window.dispatchEvent(new CustomEvent('transactions:refresh'))
-                        }
+                        safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }])
                       } catch (e) {
                         console.warn('Failed to dispatch refresh events from streamingService', e)
                       }
@@ -98,9 +97,7 @@ class StreamingService {
                       // Server generated a report; payload should include a path
                       const reportPath = (payload['path'] as string) || (payload['filename'] as string) || null
                       try {
-                        if (typeof window !== 'undefined' && window.dispatchEvent) {
-                          window.dispatchEvent(new CustomEvent('report:generated', { detail: { path: reportPath } }))
-                        }
+                        safeDispatch('report:generated', { path: reportPath })
                       } catch (e) {
                         console.warn('Failed to dispatch report:generated event', e)
                       }
@@ -123,10 +120,7 @@ class StreamingService {
                     // Special: transaction event (backend recorded a tx)
                     if (ev === 'transaction') {
                       try {
-                        if (typeof window !== 'undefined' && window.dispatchEvent) {
-                          window.dispatchEvent(new CustomEvent('transactions:refresh'))
-                          window.dispatchEvent(new CustomEvent('payment:refresh-user'))
-                        }
+                        safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }])
                       } catch (e) {
                         console.warn('Failed to dispatch transaction refresh event', e)
                       }

@@ -7,9 +7,17 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Security configuration
+# SECRET_KEY should be provided via environment variable. For developer
+# convenience we fall back to a known default but log a warning so operators
+# don't accidentally run production with the development secret.
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production")
+if SECRET_KEY == "your-secret-key-change-this-in-production":
+    logger.warning("Using default SECRET_KEY; set SECRET_KEY in environment for production.")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24  # 30 days
 
@@ -19,15 +27,34 @@ ph = PasswordHasher()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its hash."""
+    # If a SECRET_KEY is configured, the application may have seeded the
+    # password with SECRET_KEY before hashing (i.e., hash(SECRET_KEY + password)).
+    # Try verification both ways to remain backward-compatible with older
+    # hashes that didn't include the seed.
+    seed = os.getenv("SECRET_KEY")
     try:
+        # First, try direct verification (covers current and legacy unhashed seed)
         ph.verify(hashed_password, plain_password)
         return True
     except VerifyMismatchError:
+        # If a seed exists, try verify against seeded password
+        if seed:
+            try:
+                ph.verify(hashed_password, f"{seed}{plain_password}")
+                return True
+            except VerifyMismatchError:
+                return False
         return False
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password."""
+    # If SECRET_KEY is configured, seed the password to add an application-level
+    # pepper. This ensures hashes generated here match those created by the
+    # admin scripts that also prepend SECRET_KEY.
+    seed = os.getenv("SECRET_KEY")
+    if seed:
+        return ph.hash(f"{seed}{password}")
     return ph.hash(password)
 
 

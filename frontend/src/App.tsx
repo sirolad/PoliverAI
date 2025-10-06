@@ -1,5 +1,10 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { store } from './store/store'
+import { apiService } from './services/api'
+import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
+import { setPaymentResult, clearPendingCheckout } from './store/paymentsSlice'
+import type { PaymentResult } from './store/paymentsSlice'
 import { AuthProvider } from './contexts/AuthContext'
 import PaymentResultProvider from './components/ui/PaymentResultProvider'
 import LandingPage from './components/LandingPage'
@@ -25,61 +30,57 @@ function App() {
 
       ;(async () => {
         try {
-          const api = await import('./services/api')
-          const txResp = await api.apiService.get(`/api/v1/transactions/${sessionId}`)
+          const txResp = await apiService.get(`/api/v1/transactions/${sessionId}`)
 
           if (txResp && typeof txResp === 'object' && 'user' in (txResp as Record<string, unknown>)) {
             try {
               const resp = txResp as Record<string, unknown>
-              window.dispatchEvent(new CustomEvent('payment:user-update', { detail: resp['user'] }))
-            } catch (err) {
-              // ignore dispatch errors
-              // eslint-disable-next-line no-console
-              console.debug('CheckoutFinalizer: failed to dispatch user update', err)
+              safeDispatch('payment:user-update', resp['user'])
+            } catch (e) {
+              console.debug('CheckoutFinalizer: event dispatch failed', e)
             }
           }
 
           const result = { success: true, title: 'Purchase Complete', message: 'Your credits have been added' }
-          try {
-            window.dispatchEvent(new CustomEvent('payment:result', { detail: result }))
-            window.dispatchEvent(new Event('payment:refresh-user'))
-          } catch (err) {
-            // ignore
-            console.debug('CheckoutFinalizer: event dispatch failed', err)
-          }
+            try {
+              safeDispatchMultiple([
+                { name: 'payment:result', detail: result },
+                { name: 'payment:refresh-user' },
+              ])
+            } catch (e) {
+              console.debug('CheckoutFinalizer: event dispatch failed', e)
+            }
 
-          try {
-            localStorage.setItem('poliverai:payment_result', JSON.stringify(result))
-            localStorage.removeItem('poliverai:pending_checkout')
-          } catch (err) {
-            // ignore
-            console.debug('CheckoutFinalizer: localStorage access failed', err)
+            try {
+            // Persist via payments slice (store subscription writes to localStorage for backward compat)
+            store.dispatch(setPaymentResult(result as PaymentResult))
+            store.dispatch(clearPendingCheckout())
+          } catch (_err) {
+            console.debug('CheckoutFinalizer: store dispatch failed', _err)
           }
 
           try {
             nav('/credits', { replace: true })
-          } catch (err) {
+          } catch {
             // Fallback to full reload if SPA navigation fails
-            // use a direct navigation if SPA navigation fails
-            // allow direct global navigation here as a fallback
             window.location.href = '/credits'
           }
-        } catch (e) {
-          // Finalize failed: notify user and request refresh of user info
-          console.error('Failed to finalize checkout session', e)
-          const result = { success: false, title: 'Finalize Failed', message: String(e) }
-          try {
-            window.dispatchEvent(new CustomEvent('payment:result', { detail: result }))
-            window.dispatchEvent(new Event('payment:refresh-user'))
-          } catch (err) {
-            console.debug('CheckoutFinalizer: event dispatch failed on error path', err)
+          } catch (e) {
+            // Finalize failed: notify user and request refresh of user info
+            console.error('Failed to finalize checkout session', e)
+            const result = { success: false, title: 'Finalize Failed', message: String(e) }
+              try {
+                safeDispatch('payment:result', result)
+                safeDispatch('payment:refresh-user')
+              } catch (_err) {
+                console.debug('CheckoutFinalizer: event dispatch failed on error path', _err)
+              }
+            try {
+              store.dispatch(setPaymentResult(result as PaymentResult))
+            } catch (_err) {
+              console.debug('CheckoutFinalizer: store dispatch failed on error path', _err)
+            }
           }
-          try {
-            localStorage.setItem('poliverai:payment_result', JSON.stringify(result))
-          } catch (err) {
-            console.debug('CheckoutFinalizer: localStorage set failed on error path', err)
-          }
-        }
       })()
     }, [location, nav])
 

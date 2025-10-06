@@ -3,9 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Shield, Zap, Clock, FileCheck, BarChart, CreditCard } from 'lucide-react'
+import { CheckCircle2, Zap, Clock, BarChart, CreditCard } from 'lucide-react'
 import Footer from './Footer'
-import Splash from './ui/Splash'
+import ConditionalSplash from './ui/ConditionalSplash'
+import { getFreeFeatures, getProFeatures } from '@/lib/landingHelpers'
 
 interface FeatureCardProps {
   icon: React.ElementType
@@ -39,48 +40,12 @@ export default function LandingPage() {
   const [isProcessing] = React.useState(false)
   const [showSplash, setShowSplash] = React.useState(true)
 
-  const freeFeatures = [
-    {
-      icon: FileCheck,
-      title: 'Basic Policy Verification',
-      description: 'Upload and analyze privacy policies for basic GDPR compliance checks using rule-based detection.'
-    },
-    {
-      icon: Shield,
-      title: 'Essential Compliance Checks',
-      description: 'Detect fundamental GDPR violations and get basic recommendations for improvement.'
-    },
-    {
-      icon: Clock,
-      title: 'Fast Analysis',
-      description: 'Quick compliance screening using our optimized rule-based analysis engine.'
-    }
-  ]
-
-  const proFeatures = [
-    {
-      icon: Zap,
-      title: 'AI-Powered Deep Analysis',
-      description: 'Advanced AI analysis that detects nuanced privacy violations and complex compliance issues.',
-      isPro: true
-    },
-    {
-      icon: BarChart,
-      title: 'Comprehensive Reporting',
-      description: 'Detailed compliance reports with confidence scores, evidence, and actionable recommendations.',
-      isPro: true
-    },
-    {
-      icon: FileCheck,
-      title: 'Policy Generation & Revision',
-      description: 'Generate revised policies automatically based on detected compliance gaps.',
-      isPro: true
-    }
-  ]
+  const freeFeatures = getFreeFeatures()
+  const proFeatures = getProFeatures()
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {showSplash ? <Splash onFinish={() => setShowSplash(false)} delayMs={200} durationMs={1600} /> : null}
+  <ConditionalSplash show={showSplash} onFinish={() => setShowSplash(false)} delayMs={200} durationMs={1600} />
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">

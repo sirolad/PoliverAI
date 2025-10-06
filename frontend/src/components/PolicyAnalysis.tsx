@@ -1,13 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react'
-import policyService from '@/services/policyService'
-import ReportViewerModal from './ui/ReportViewerModal'
+import policyService, { type ReportDetail } from '@/services/policyService'
 import EnterTitleModal from './ui/EnterTitleModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
-import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
-import { UploadCloud, CheckCircle2, FileText, AlertTriangle, Lightbulb, BarChart, FileSearch, Star as LucideStar, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck, X } from 'lucide-react'
+import { UploadCloud, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck, X, Bot, Lightbulb } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import FindingCard from '@/components/ui/FindingCard'
+import SidebarFindingItem from '@/components/ui/SidebarFindingItem'
 import InsufficientCreditsModal from './ui/InsufficientCreditsModal'
+import { formatVerdictLabel, formatFileMeta, getReportDownloadUrl } from '@/lib/policyHelpers'
+import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { setState as setPolicyState, resetState as resetPolicyState } from '@/store/policyAnalysisSlice'
+import type { RootState } from '@/store/store'
+
+type FindingLike = { article?: string | number; issue?: string; confidence?: number; severity?: string }
+type RecommendationLike = { article?: string | number; suggestion?: string }
+type EvidenceLike = { article?: string | number; policy_excerpt?: string; score?: number; rationale?: string }
 
 export default function PolicyAnalysis() {
   const { isAuthenticated, loading, refreshUser } = useAuth()
@@ -18,51 +27,71 @@ export default function PolicyAnalysis() {
   const [reportFilename, setReportFilename] = useState<string | null>(null)
   const [isFullReportGenerated, setIsFullReportGenerated] = useState<boolean>(false)
   const [userReportsCount, setUserReportsCount] = useState<number | null>(null)
-  const [showBar, setShowBar] = useState<boolean>(false)
+  // progress bar visibility is derived from `progress` value
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-  const [modalUrl, setModalUrl] = useState<string | null>(null)
-  const [modalFilename, setModalFilename] = useState<string | null>(null)
+
+  // tabs
+  const [activeTab, setActiveTab] = useState<'free' | 'full' | 'revised'>('free')
+  const [detailedContent, setDetailedContent] = useState<string | null>(null)
+  const [detailedReport, setDetailedReport] = useState<ReportDetail | null>(null)
+  const [loadingDetailed, setLoadingDetailed] = useState<boolean>(false)
+
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [titleModalInitial, setTitleModalInitial] = useState<string>('')
   const [insufficientOpen, setInsufficientOpen] = useState(false)
-  const saveProgressIntervalRef = useRef<number | null>(null)
 
-  // If progress hits 100 (for any reason) ensure we hide the bar after a short delay
+  const saveProgressIntervalRef = useRef<number | null>(null)
+  const dispatch = useAppDispatch()
+  const persisted = useAppSelector((s: RootState) => s.policyAnalysis)
+
+  // hydrate persisted UI
+  useEffect(() => {
+    if (persisted && persisted.fileName) {
+      if (typeof persisted.progress === 'number') setProgress(persisted.progress)
+      if (persisted.message) setMessage(persisted.message)
+      if (persisted.result) setResult(persisted.result)
+      if (persisted.reportFilename) setReportFilename(persisted.reportFilename)
+      if (typeof persisted.isFullReportGenerated === 'boolean') setIsFullReportGenerated(persisted.isFullReportGenerated)
+    }
+  }, [persisted])
+
+  // persist UI
+  useEffect(() => {
+    dispatch(
+      setPolicyState({
+        fileName: file ? file.name : null,
+        progress,
+        message,
+        result,
+        reportFilename,
+        isFullReportGenerated,
+      })
+    )
+  }, [file, progress, message, result, reportFilename, isFullReportGenerated, dispatch])
+
   useEffect(() => {
     if (progress >= 100) {
-      const t = setTimeout(() => setShowBar(false), 800)
+      const t = setTimeout(() => {/* progress settled */}, 800)
       return () => clearTimeout(t)
     }
     return undefined
   }, [progress])
 
-  // Clear any running progress interval on unmount
-  useEffect(() => {
-    return () => {
-      if (saveProgressIntervalRef.current) {
-        window.clearInterval(saveProgressIntervalRef.current)
-        saveProgressIntervalRef.current = null
-      }
-    }
-  }, [])
-
-  // Fetch initial reports count when component mounts or user authenticates
   useEffect(() => {
     if (!isAuthenticated) return
     let mounted = true
-    policyService.getUserReportsCount().then((n) => {
-      if (mounted) setUserReportsCount(n ?? 0)
-    }).catch(() => {})
-    return () => { mounted = false }
+    policyService
+      .getUserReportsCount()
+      .then((n) => {
+        if (mounted) setUserReportsCount(n ?? 0)
+      })
+      .catch((err) => console.debug('getUserReportsCount failed', err))
+    return () => {
+      mounted = false
+    }
   }, [isAuthenticated])
 
-  // Listen for report generation events from the streaming service and open the report
   useEffect(() => {
-    // When a report is generated by the backend streaming endpoint it will
-    // emit a `report_completed` event which the streamingService maps to a
-    // `report:generated` DOM event. Capture that and update local state so
-    // the right-side panel can show a link / download option.
     const handler = (e: Event) => {
       try {
         const detail = (e as CustomEvent).detail || {}
@@ -70,7 +99,7 @@ export default function PolicyAnalysis() {
         if (path) {
           const filename = typeof path === 'string' ? path.split('/').pop() as string : String(path)
           setReportFilename(filename)
-          // Refresh the user's reports list count so Reports UI stays up-to-date
+          setActiveTab('full')
           policyService.getUserReportsCount().then((n) => setUserReportsCount(n ?? 0)).catch(() => {})
         }
       } catch (err) {
@@ -88,51 +117,8 @@ export default function PolicyAnalysis() {
     if (e.target.files && e.target.files.length > 0) setFile(e.target.files[0])
   }
 
-  const handleAnalyze = async () => {
-    if (!file) return
-    setProgress(0)
-    setMessage('Starting...')
-    setShowBar(true)
-    try {
-      // any new analysis resets full-report state (it's a quick analysis)
-      setIsFullReportGenerated(false)
-      const res = await policyService.analyzePolicyStreaming(file, 'balanced', (progressVal, msg) => {
-        setProgress(progressVal ?? 0)
-        setMessage(msg ?? '')
-      })
-      setResult(res)
-      setMessage('Completed')
-      // ensure the bar fills to 100% on completion and then hide shortly after
-      setProgress(100)
-      // Refresh user so navbar and credits update
-      try {
-        await refreshUser()
-      } catch (e) {
-        console.warn('Failed to refresh user after analysis', e)
-      }
-      // Notify other parts of the app (transactions, navbar) to refresh
-      try {
-        if (typeof window !== 'undefined' && window.dispatchEvent) {
-          window.dispatchEvent(new CustomEvent('payment:refresh-user'))
-          window.dispatchEvent(new CustomEvent('transactions:refresh'))
-        }
-      } catch (e) {
-        console.warn('Failed to dispatch refresh events', e)
-      }
-      setTimeout(() => setShowBar(false), 700)
-    } catch (err: unknown) {
-      if (err instanceof Error) setMessage(err.message)
-      else if (typeof err === 'string') setMessage(err)
-      else setMessage('Analysis failed')
-      // hide bar on error after a short pause so user can see failure state
-      setTimeout(() => setShowBar(false), 700)
-    }
-  }
-
-  // Animate a progress bar while an async operation is pending. The returned
-  // stop function should be called when the operation completes (success/fail)
   const startIndeterminateProgress = (startMessage = 'Working...') => {
-    setShowBar(true)
+  /* progress UI shown via progress value */
     setMessage(startMessage)
     setProgress(5)
     if (saveProgressIntervalRef.current) {
@@ -141,7 +127,6 @@ export default function PolicyAnalysis() {
     }
     saveProgressIntervalRef.current = window.setInterval(() => {
       setProgress((cur) => {
-        // increase quickly at first, then slow down; never exceed 90
         const inc = cur < 50 ? Math.floor(Math.random() * 6) + 5 : Math.floor(Math.random() * 3) + 1
         return Math.min(90, cur + inc)
       })
@@ -154,61 +139,66 @@ export default function PolicyAnalysis() {
     }
   }
 
+  const handleAnalyze = async () => {
+    if (!file) return
+    // show quick/free analysis and clear any loaded detailed report
+    setActiveTab('free')
+    setDetailedReport(null)
+    setDetailedContent(null)
+    setProgress(0)
+    setMessage('Starting...')
+    // progress shown by progress value
+    try {
+      setIsFullReportGenerated(false)
+      const res = await policyService.analyzePolicyStreaming(file, 'balanced', (progressVal, msg) => {
+        setProgress(progressVal ?? 0)
+        setMessage(msg ?? '')
+      })
+      setResult(res)
+      setMessage('Completed')
+      setProgress(100)
+      // ensure free tab displays final quick result
+      setActiveTab('free')
+      try { await refreshUser() } catch (e) { console.warn('Failed to refresh user after analysis', e) }
+      try { safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
+      setTimeout(() => {/* progress settled */}, 700)
+    } catch (err: unknown) {
+      if (err instanceof Error) setMessage(err.message)
+      else if (typeof err === 'string') setMessage(err)
+      else setMessage('Analysis failed')
+      setTimeout(() => {/* progress settled */}, 700)
+    }
+  }
+
   const handleGenerateReport = async () => {
-    if (!result || !file) return
+    if (!result) return
     const stop = startIndeterminateProgress('Generating report...')
     try {
-      // call backend to generate a verification report
-      const resp = await policyService.generateVerificationReport(result, file.name, 'balanced')
-      // set filename returned by backend
+      const documentName = file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy'
+      const resp = await policyService.generateVerificationReport(result, documentName, 'balanced')
       if (resp?.filename) {
         setReportFilename(resp.filename)
-        // mark that a true full report was generated
         setIsFullReportGenerated(true)
-        // notify other listeners (streaming path expects this event)
-        try {
-          window.dispatchEvent(new CustomEvent('report:generated', { detail: { path: resp.filename, download_url: resp.download_url } }))
-        } catch (e) {
-          console.warn('dispatch report:generated failed', e)
-        }
+  try { safeDispatch('report:generated', { path: resp.filename, download_url: resp.download_url }) } catch (err) { console.debug('safeDispatch failed', err) }
       }
       setMessage('Report generated')
       setProgress(100)
-      // refresh user's reports list count
+    try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
+    try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
+    try { safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
+    } catch (e: unknown) {
+      // if payment required
       try {
-        const n = await policyService.getUserReportsCount()
-        setUserReportsCount(n ?? 0)
-      } catch {
-        console.warn('refresh reports after generate failed')
-      }
-      // Refresh user (credits) and notify transactions/navbar to reload so
-      // the top-right credits update immediately after generation.
-      try {
-        await refreshUser()
-      } catch (e) {
-        console.warn('refreshUser after generate failed', e)
-      }
-      try {
-        window.dispatchEvent(new CustomEvent('payment:refresh-user'))
-        window.dispatchEvent(new CustomEvent('transactions:refresh'))
-      } catch (e) {
-        console.warn('dispatch refresh events after generate failed', e)
-      }
-    } catch (e) {
-      console.warn('generate report failed', e)
-      // Show insufficient credits modal for 402
-      try {
-        const anyErr = e as any
-        if (anyErr && anyErr.status === 402) {
-          setInsufficientOpen(true)
+        const maybe = e as unknown as Record<string, unknown>
+        if (maybe && 'status' in maybe) {
+          const st = (maybe as unknown as Record<string, unknown>)['status']
+          if (typeof st === 'number' && st === 402) setInsufficientOpen(true)
         }
-      } catch {
-        // ignore
-      }
+      } catch (err) { console.debug('inspect error status failed', err) }
       setMessage(e instanceof Error ? e.message : 'Generate failed')
     } finally {
       stop()
-      setTimeout(() => setShowBar(false), 700)
+      setTimeout(() => {/* progress settled */}, 700)
     }
   }
 
@@ -216,93 +206,100 @@ export default function PolicyAnalysis() {
     if (!filename) return
     const stop = startIndeterminateProgress('Saving report...')
     try {
-      // If we didn't generate a full report, this is a quick-save and should charge credits
       const isQuick = !isFullReportGenerated
       const resp = await policyService.saveReport(filename, documentName, { is_quick: isQuick })
-      // backend may return normalized filename / download_url
       if (resp?.filename) setReportFilename(resp.filename)
       setMessage('Saved')
       setProgress(100)
-      // Refresh count after successful save
+  try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
+  try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
+  try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
+  try { safeDispatch('reports:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
+    } catch (e: unknown) {
       try {
-        const n = await policyService.getUserReportsCount()
-        setUserReportsCount(n ?? 0)
-      } catch (e) {
-        console.warn('refresh after save failed', e)
-      }
-        // Refresh user (credits) and notify transactions UI to reload
-        try {
-          await refreshUser()
-        } catch (e) {
-          console.warn('refreshUser after save failed', e)
-        }
-        try {
-          window.dispatchEvent(new CustomEvent('transactions:refresh'))
-          window.dispatchEvent(new CustomEvent('payment:refresh-user'))
-          window.dispatchEvent(new CustomEvent('reports:refresh'))
-        } catch {
-          // best-effort
-        }
-      // Inform other UI parts
-      try {
-        window.dispatchEvent(new CustomEvent('reports:refresh'))
-      } catch {
-        // ignore
-      }
-    } catch (e) {
-      console.warn('save report failed', e)
-      try {
-        const anyErr = e as any
-        if (anyErr && anyErr.status === 402) {
-          setInsufficientOpen(true)
-        }
-      } catch {
-        // ignore
-      }
+        const maybe = e as unknown as Record<string, unknown>
+        if (maybe && 'status' in maybe && maybe.status === 402) setInsufficientOpen(true)
+      } catch (err) { console.debug('inspect save error failed', err) }
       setMessage(e instanceof Error ? e.message : 'Save failed')
     } finally {
       stop()
-      setTimeout(() => setShowBar(false), 700)
+  setTimeout(() => {/* progress settled */}, 700)
     }
   }
 
+  const handleGenerateRevision = async () => {
+    if (!result) return
+    const stop = startIndeterminateProgress('Generating revised policy...')
+    try {
+      const original = (file ? await file.text() : '') || ''
+      const resp = await policyService.generatePolicyRevision(
+        original,
+        (result.findings || []) as unknown as Record<string, unknown>[],
+        (result.recommendations || []) as unknown as Record<string, unknown>[],
+        (result.evidence || []) as unknown as Record<string, unknown>[],
+        file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy',
+        'comprehensive'
+      )
+      if (resp?.filename) {
+        setReportFilename(resp.filename)
+        setMessage('Revised policy generated')
+        try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
+        try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
+        try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
+      }
+    } catch (e: unknown) {
+      try {
+        const maybe = e as unknown as Record<string, unknown>
+        if (maybe && 'status' in maybe && maybe.status === 402) setInsufficientOpen(true)
+      } catch (err) { console.debug('inspect revision error failed', err) }
+      setMessage(e instanceof Error ? e.message : 'Revision failed')
+    } finally {
+      stop()
+      setTimeout(() => {/* progress settled */}, 700)
+    }
+  }
+
+  const loadDetailed = async (filename?: string) => {
+    const fn = filename ?? reportFilename
+    if (!fn) return
+    setLoadingDetailed(true)
+    try {
+      const resp = await policyService.getDetailedReport(fn)
+      setDetailedReport(resp ?? null)
+      setDetailedContent(resp?.content ?? null)
+    } catch (e) {
+      console.warn('getDetailedReport failed', e)
+      setDetailedReport(null)
+      setDetailedContent(null)
+    } finally {
+      setLoadingDetailed(false)
+    }
+  }
+
+  const escapeHtml = (s: string) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const renderMarkdownToHtml = (md: string) => {
+    if (!md) return ''
+    let html = escapeHtml(md)
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+    html = html.replace(/(^|\n)- (.*?)(?=\n|$)/gim, '$1<li>$2</li>')
+    html = html.replace(/(?:<li>.*?<\/li>\s*)+/gms, (m) => `<ul>${m}</ul>`)
+    html = html.replace(/\n/g, '<br/>')
+    return html
+  }
 
   return (
-    // Use a column flex layout so a footer placed after the grow area will sit
-    // at the bottom of the screen on mobile (push-to-bottom behavior).
     <div className="p-8 flex flex-col min-h-screen">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Policy Analysis</h1>
+
         {(result || reportFilename) ? (
           <div className="flex items-center gap-2">
             <Button
               disabled={!reportFilename}
-              onClick={() => {
-                if (!reportFilename) return
-                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-                const url = `${apiBase}/api/v1/reports/download/${encodeURIComponent(reportFilename as string)}`
-                setModalUrl(url)
-                setModalFilename(reportFilename)
-                setIsModalOpen(true)
-              }}
-              className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
-              icon={<ExternalLink className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
-            >
-              Open
-            </Button>
-
-            <Button
-              disabled={!reportFilename}
-              onClick={async () => {
-                if (!reportFilename) return
-                try {
-                  await policyService.downloadReport(reportFilename as string)
-                } catch (e) {
-                  console.warn('download failed', e)
-                }
-              }}
+              onClick={() => { if (!reportFilename) return; const url = getReportDownloadUrl(reportFilename as string); window.open(url, '_blank') }}
               className="px-3 py-1 bg-yellow-500 text-white rounded disabled:opacity-50"
               icon={<DownloadCloud className="h-4 w-4" />}
               iconColor="text-white"
@@ -311,531 +308,331 @@ export default function PolicyAnalysis() {
               Download
             </Button>
 
-            <Button
-              onClick={async () => {
-                try {
-                  const r = await policyService.getUserReports()
-                  // r may be legacy array or paged object
-                  if (Array.isArray(r)) setUserReportsCount(r.length)
-                  else setUserReportsCount(r?.total ?? (r?.reports?.length ?? 0))
-                } catch (e) {
-                  console.warn('refresh reports failed', e)
-                }
-              }}
-              className="px-3 py-1 bg-white border rounded text-black"
-              icon={<RefreshCcw className="h-4 w-4" />}
-              iconColor="text-black"
-              collapseToIcon
-            >
-              Refresh
-            </Button>
-
-            <Button
-              disabled={!result}
-              onClick={async () => {
-                // Generate a report from the current analysis result
-                await handleGenerateReport()
-              }}
-              className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
-              icon={<FileCheck className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
-            >
-              Full Report
-            </Button>
-
-            <Button
-              disabled={!reportFilename}
-              onClick={() => {
-                if (!reportFilename) return
-                // open title modal so user can provide a document title before saving
-                setTitleModalInitial(reportFilename)
-                setTitleModalOpen(true)
-              }}
-              className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
-              icon={<Save className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
-            >
-              {isFullReportGenerated ? 'Save Full Report' : 'Save Report (costs credits)'}
-            </Button>
-            {/* Generate revised policy button - visible only after full report generated */}
-            {isFullReportGenerated && (
-              <Button
-                disabled={!isFullReportGenerated || !result}
-                onClick={async () => {
-                  if (!result) return
-                  const stop = startIndeterminateProgress('Generating revised policy...')
-                  try {
-                    // Call backend to generate a revised policy; this endpoint charges credits server-side
-                    const original = (file ? await file.text() : '') || ''
-                    const resp = await policyService.generatePolicyRevision(
-                      original,
-                      result.findings || [],
-                      result.recommendations || [],
-                      result.evidence || [],
-                      file?.name || 'policy',
-                      'comprehensive'
-                    )
-                    if (resp?.filename) {
-                      // mark that a revised policy exists and allow saving
-                      setReportFilename(resp.filename)
-                      // change the save button label to indicate saving revised policy
-                      // (we rely on filename prefix to indicate revision)
-                      setMessage('Revised policy generated')
-                      // Refresh reports count and user credits
-                      try {
-                        const n = await policyService.getUserReportsCount()
-                        setUserReportsCount(n ?? 0)
-                      } catch (e) {
-                        console.warn('refresh reports after revision failed', e)
-                      }
-                      try {
-                        await refreshUser()
-                      } catch (e) {
-                        console.warn('refreshUser after revision failed', e)
-                      }
-                      try {
-                        window.dispatchEvent(new CustomEvent('transactions:refresh'))
-                        window.dispatchEvent(new CustomEvent('payment:refresh-user'))
-                        window.dispatchEvent(new CustomEvent('reports:refresh'))
-                      } catch {}
-                    }
-                  } catch (e) {
+                <Button
+                  onClick={async () => {
+                    try { dispatch(resetPolicyState()) } catch (err) { console.warn('failed to reset persisted policy state', err) }
+                    setFile(null); setResult(null); setReportFilename(null); setIsFullReportGenerated(false); setProgress(0); setMessage('')
                     try {
-                      const anyErr = e as any
-                      if (anyErr && anyErr.status === 402) setInsufficientOpen(true)
-                    } catch {}
-                    console.warn('generate revision failed', e)
-                    setMessage('Revision failed')
-                  } finally {
-                    stop()
-                    setTimeout(() => setShowBar(false), 700)
-                  }
-                }}
-                className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50"
-                icon={<Lightbulb className="h-4 w-4" />}
-                iconColor="text-white"
-                collapseToIcon
-              >
-                Generate Revised Policy
-              </Button>
+                      const r = await policyService.getUserReports()
+                      if (Array.isArray(r)) setUserReportsCount(r.length)
+                      else if (r && typeof r === 'object') {
+                        const maybe = r as Record<string, unknown>
+                        const total = typeof maybe.total === 'number' ? maybe.total : (Array.isArray(maybe.reports) ? maybe.reports.length : 0)
+                        setUserReportsCount(total)
+                      }
+                    } catch (err) { console.debug('refresh reports after reset failed', err) }
+                  }}
+                  className="px-3 py-1 bg-red-600 text-white rounded disabled:opacity-50"
+                  icon={<RefreshCcw className="h-4 w-4" />}
+                  iconColor="text-white"
+                  collapseToIcon
+                >
+                  Reset
+                </Button>
+
+            <Button disabled={!result} onClick={handleGenerateReport} className="px-3 py-1 bg-black text-white rounded disabled:opacity-50" icon={<FileCheck className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Full Report</Button>
+
+            <Button disabled={!reportFilename} onClick={() => { if (!reportFilename) return; setTitleModalInitial(reportFilename); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
+
+            {isFullReportGenerated && (
+              <Button disabled={!isFullReportGenerated || !result} onClick={handleGenerateRevision} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Generate Revised</Button>
             )}
           </div>
         ) : null}
       </div>
-  <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
 
-      {/* Two-column layout: controls (filters) on left, main result on right */}
-      {/* Growable main area. Footer placed after this will be pushed to screen bottom. */}
+      <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
+
       <div className="flex-1 flex flex-col">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left: Main controls / filters */}
-        <aside className="md:col-span-1 bg-white p-4 rounded shadow">
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Upload policy</label>
+        {persisted && persisted.fileName ? (
+          <div className="mb-2 w-40 px-3 py-1 text-center rounded bg-yellow-100 text-yellow-500 font-medium">Work In Progress</div>
+        ) : null}
 
-            {/* Drag & drop area */}
-            <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault()
-                const f = e.dataTransfer?.files?.[0]
-                if (f) setFile(f)
-              }}
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-2 h-48 w-full rounded-lg border-2 border-dashed border-blue-200 bg-gradient-to-b from-white/50 to-blue-50 flex flex-col items-center justify-center text-center px-4 cursor-pointer hover:shadow-md transition-shadow"
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                onChange={handleFileChange}
-                className="hidden"
-                accept=".pdf,.docx,.html,.htm,.txt"
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16v-4a4 4 0 014-4h2a4 4 0 014 4v4m-6 4v-4m0 0l-2 2m2-2l2 2" />
-              </svg>
-              <div className="text-sm font-medium text-gray-700">Drag & drop a policy file here, or click to browse</div>
-              <div className="text-xs text-gray-500 mt-1">Supports PDF, DOCX, HTML, TXT</div>
-              <div className="mt-3 flex items-center gap-3">
-                <Button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click() }}
-                  className="bg-white border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50"
-                  icon={<UploadCloud className="h-4 w-4" />}
-                  collapseToIcon
-                  canCollapse={false}
-                >
-                  Browse files
-                </Button>
-                {file ? (
-                  <Button type="button" onClick={(e) => { e.stopPropagation(); setFile(null) }} className="text-sm text-red-600" icon={<X className="h-4 w-4" />} iconColor="text-red-600" collapseToIcon canCollapse={false} hasBackground={false} textUnderline={false}>
-                    Remove
-                  </Button>
-                ) : null}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <aside className="md:col-span-1 bg-white p-4 rounded shadow">
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Upload policy</label>
+
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if (f) setFile(f) }}
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-2 h-48 w-full rounded-lg border-2 border-dashed border-blue-200 bg-gradient-to-b from-white/50 to-blue-50 flex flex-col items-center justify-center text-center px-4 cursor-pointer hover:shadow-md transition-shadow"
+              >
+                <input ref={fileInputRef} type="file" onChange={handleFileChange} className="hidden" accept=".pdf,.docx,.html,.htm,.txt" />
+                <UploadCloud className="h-10 w-10 text-blue-500 mb-3" />
+                <div className="text-sm font-medium text-gray-700">Drag & drop a policy file here, or click to browse</div>
+                <div className="text-xs text-gray-500 mt-1">Supports PDF, DOCX, HTML, TXT</div>
+                <div className="mt-3 flex items-center gap-3">
+                  <Button type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click() }} className="border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50" icon={<UploadCloud className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Browse files</Button>
+                  {file ? (
+                    <Button type="button" onClick={(e) => { e.stopPropagation(); setFile(null) }} className="text-sm text-red-600" icon={<X className="h-4 w-4" />} iconColor="text-red-600" collapseToIcon>Remove</Button>
+                  ) : null}
+                </div>
               </div>
             </div>
 
-            {/* File meta display */}
             {file && (
               <div className="mt-3 text-sm text-gray-700">
                 <div className="font-medium">Selected file</div>
-                <div className="text-xs text-gray-500">{file.name} • {Math.round((file.size || 0) / 1024)} KB • {file.type || 'n/a'}</div>
-              </div>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <Button onClick={handleAnalyze} className="w-full bg-blue-600 text-white px-4 py-2 rounded" icon={<BarChart className="h-4 w-4" />} collapseToIcon canCollapse={false}>
-              Analyze
-            </Button>
-          </div>
-          <div className="mb-2 text-xs text-gray-500">Quick analysis is free. Saving a quick report will cost credits.</div>
-
-          <div className="mb-4">
-            <div className="text-sm font-medium">Progress: {progress}%</div>
-
-            {/* Inline bar directly beneath the progress label */}
-            {showBar && (
-              <div className="mt-2 w-full">
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-500 ease-out ${
-                      progress < 5 ? 'opacity-90 animate-pulse' : ''
-                    }`}
-                    style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
-                    role="progressbar"
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={Math.min(100, Math.max(0, progress))}
-                  />
-                </div>
+                <div className="text-xs text-gray-500">{formatFileMeta(file)}</div>
               </div>
             )}
 
-            <div className="text-sm text-gray-600 mt-2">{message}</div>
-          </div>
-
-          {/* Additional controls / filters can go here to match transaction history layout */}
-          <div className="mt-4 text-xs text-gray-500">Tip: You first need to upload a policy document before analyzing.</div>
-
-
-
-          <div className="mt-4">
-            <h3 className="font-semibold">Summary</h3>
-            <div className="text-sm text-gray-700 mt-2">{result?.summary || 'No result yet'}</div>
-          </div>
-
-
-
-              <div className="mb-4">
-                <h3 className="font-semibold">Findings ({result?.findings?.length ?? 0})</h3>
-                <div className="text-sm text-gray-700 mt-2 max-h-40 overflow-auto">
-                  {result?.findings && result.findings.length > 0 ? (
-                    <ul className="list-disc pl-5 space-y-2">
-                      {result.findings.map((f, idx) => (
-                        <li key={idx} className="text-sm break-words whitespace-normal">
-                          <span className="font-medium">Article {f.article}:</span> <span className="break-words whitespace-normal">{f.issue}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="text-sm text-gray-500">No findings</div>
-                  )}
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <h3 className="font-semibold">Total Saved Past Reports {userReportsCount !== null ? `(${userReportsCount} total)` : ''}</h3>
-                <div className="mt-2">
-                  {reportFilename ? (
-                    <div className="space-y-2">
-                      <div className="text-sm">Generated: <span className="font-medium">{reportFilename}</span></div>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-gray-500">No report generated yet</div>
-                  )}
-                </div>
-              </div>
-        </aside>
-
-  {/* Right: Main result area */}
-  <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold">Analysis Result</h2>
-              <div className="text-sm text-gray-600">Result Broken Down / Report Preview</div>
+            <div className="mt-3">
+              <Button disabled={!file} onClick={handleAnalyze} className="w-full px-3 py-2 bg-indigo-600 text-white rounded">Analyze</Button>
             </div>
-            <div className="text-sm text-gray-600">{result ? `${result.verdict} • Score ${result.score}` : ''}</div>
-          </div>
+
+            <div className="mb-4 mt-4"><h3 className="font-semibold">Summary</h3><div className="text-sm text-gray-700 mt-2">{result?.summary || 'No result yet'}</div></div>
+
+            <div className="mb-4 mt-4"><h3 className="font-semibold">Findings ({result?.findings?.length ?? 0})</h3>
+              <div className="text-sm text-gray-700 mt-2 max-h-40 overflow-auto">
+                {result?.findings && result.findings.length > 0 ? (
+                  <ul className="list-disc pl-5 space-y-2">
+                    {result.findings.map((f, idx) => (
+                      <li key={idx}><SidebarFindingItem article={f.article} issue={f.issue} /></li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-sm text-gray-500">No findings</div>
+                )}
+              </div>
+            </div>
+
+            <div className="mb-4"><h3 className="font-semibold">Total Saved Past Reports {userReportsCount !== null ? `(${userReportsCount} total)` : ''}</h3>
+              <div className="mt-2">
+                {reportFilename ? (
+                  <div className="space-y-2"><div className="text-sm">Generated: <span className="font-medium">{reportFilename}</span></div></div>
+                ) : (
+                  <div className="text-sm text-gray-500">No report generated yet</div>
+                )}
+              </div>
+            </div>
+          </aside>
+
+          <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">Analysis Result</h2>
+                <div className="text-sm text-gray-600">Result Broken Down / Report Preview</div>
+              </div>
+              <div className="text-sm text-gray-600">{result ? `${result.verdict} • Score ${result.score}` : ''}</div>
+            </div>
+
+            <div className="mb-3">
+              <div className="flex items-center">
+                <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'free' ? 'bg-blue-600 text-white border-blue-600 rounded-l' : 'bg-white text-gray-700 border-gray-200 rounded-l'}`} onClick={() => setActiveTab('free')}>
+                  <Lightbulb className="h-4 w-4 mr-2" /> Free
+                </button>
+                <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'full' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200'}`} onClick={async () => { setActiveTab('full'); await loadDetailed() }}>
+                  <FileCheck className="h-4 w-4 mr-2" /> Full
+                </button>
+                <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'revised' ? 'bg-blue-600 text-white border-blue-600 rounded-r' : 'bg-white text-gray-700 border-gray-200 rounded-r'}`} onClick={async () => { setActiveTab('revised'); await loadDetailed() }}>
+                  <Bot className="h-4 w-4 mr-2" /> Revised
+                </button>
+
+                <div className="ml-auto">
+                  <Button
+                    disabled={!reportFilename}
+                    onClick={() => {
+                      if (!reportFilename) return
+                      try {
+                        const url = getReportDownloadUrl(reportFilename)
+                        window.open(url, '_blank')
+                      } catch {
+                        if (detailedContent) {
+                          const w = window.open('', '_blank')
+                          if (w) {
+                            w.document.write(`<html><head><title>${reportFilename}</title></head><body><pre style="white-space:pre-wrap; font-family:inherit">${String(detailedContent)}</pre></body></html>`)
+                            w.document.close()
+                            w.print()
+                          }
+                        }
+                      }
+                    }}
+                    className="px-3 py-1 bg-yellow-500 text-white rounded"
+                    icon={<DownloadCloud className="h-4 w-4" />}
+                    iconColor="text-white"
+                    collapseToIcon
+                  >
+                    Download view
+                  </Button>
+                </div>
+              </div>
+            </div>
 
             <div className="h-full flex-1 min-h-0">
-              {result ? (
-                <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
-                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-6">
-                    <div className="w-full md:w-auto">
-                      <div className="text-sm text-gray-500 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-600" />Verdict</div>
-                      <div className="mt-1 flex items-center gap-3">
-                        <div className="text-lg font-semibold">{String(result.verdict).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</div>
+              {activeTab === 'free' ? (
+                result ? (
+                  <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm text-gray-500">Verdict</div>
+                        <div className="text-lg font-semibold">{formatVerdictLabel(result.verdict)}</div>
                         <div className="text-sm text-gray-500">Confidence: {(result.confidence * 100).toFixed(0)}%</div>
                       </div>
-                    </div>
-                    <div className="w-full md:w-auto flex items-center gap-6 mt-1 md:mt-0 mb-2 md:mb-0">
-                      <div className="text-sm text-gray-500 flex items-center gap-2"><LucideStar className="h-4 w-4 text-yellow-500" />Score</div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1">
+                      <div>
+                        <div className="text-sm text-gray-500">Score</div>
+                        <div className="flex items-center">
                           {(() => {
-                            const score = typeof result.score === 'number' ? Math.max(0, Math.min(100, result.score)) : 0
-                            const stars = (score / 100) * 5
-                            const full = Math.floor(stars)
-                            const half = stars - full >= 0.5 ? 1 : 0
-                            const empty = 5 - full - half
-                            const icons: React.ReactElement[] = []
-                            for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={18} weight="fill" className="text-yellow-500" />)
-                            if (half) icons.push(<StarHalf key={`h`} size={18} className="text-yellow-500" />)
-                            for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={18} weight="duotone" className="text-gray-300" />)
-                            return <div className="flex items-center">{icons}</div>
+                            const stars = Math.round(((result.score ?? 0) / 100) * 5)
+                            return Array.from({ length: 5 }).map((_, idx) => (
+                              <svg key={idx} className={`h-5 w-5 ${idx < stars ? 'text-yellow-400' : 'text-gray-300'}`} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.462a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.39-2.462a1 1 0 00-1.176 0l-3.39 2.462c-.784.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.047 9.393c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.966z" />
+                              </svg>
+                            ))
                           })()}
+                          <div className="ml-3 text-sm text-gray-600">{result.score}%</div>
                         </div>
-                        <div className="text-sm text-gray-600">{result.score}%</div>
+                      </div>
+                    </div>
+                    <div className="mt-4 text-sm text-gray-800 whitespace-pre-wrap">{result.summary}</div>
+                    <div className="mt-4">
+                      <h4 className="font-medium">Top Findings</h4>
+                      <div className="mt-2 space-y-2">
+                        {result.findings && result.findings.length > 0 ? result.findings.slice(0, 6).map((f, i) => (
+                          <FindingCard key={i} finding={f} />
+                        )) : <div className="text-sm text-gray-500">No findings detected.</div>}
                       </div>
                     </div>
                   </div>
-
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="md:col-span-2">
-                      <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><FileText className="h-4 w-4 text-gray-600"/>Summary</div>
-                      <div className="mt-2 text-sm text-gray-800 whitespace-pre-wrap">{result.summary}</div>
-
-                      <div className="mt-4">
-                        <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-500"/>Top Findings</div>
-                        <div className="mt-2 space-y-3">
-                          {result.findings && result.findings.length > 0 ? (
-                            // Show up to 5 findings per severity, grouped by severity with colored cards
-                            ['high', 'medium', 'low'].map((sev) => {
-                              const items = result.findings.filter(f => f.severity === sev)
-                              if (items.length === 0) return null
-                              const bg = sev === 'high' ? 'bg-red-600' : sev === 'medium' ? 'bg-yellow-600' : 'bg-green-600'
-                              const pill = sev === 'high' ? 'bg-red-700' : sev === 'medium' ? 'bg-yellow-700' : 'bg-green-700'
-                              return (
-                                <div key={sev}>
-                                  <div className="flex items-center gap-2">
-                                    <div className={`px-2 py-0.5 rounded text-xs font-semibold text-white ${pill}`}>{sev.toUpperCase()}</div>
-                                    <div className="text-xs text-gray-500">{items.length} issue{items.length !== 1 ? 's' : ''}</div>
-                                  </div>
-                                  <div className="mt-2 space-y-2">
-                                    {items.slice(0, 5).map((f, idx) => (
-                                      <div key={idx} className={`${bg} p-3 rounded shadow`}>
-                                        <div className="flex items-start gap-3">
-                                          <div className="p-2 rounded bg-white/10 flex-shrink-0">
-                                            <FileText className="h-5 w-5 text-white" />
-                                          </div>
-                                          <div className="flex-1 min-w-0">
-                                            <div className="font-semibold text-sm text-white break-words">{f.article}</div>
-                                            <div className="text-sm text-white mt-1 break-words whitespace-pre-wrap">{f.issue}</div>
-                                            <div className="text-xs text-white/90 mt-1">Confidence: {(f.confidence * 100).toFixed(0)}%</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )
-                            })
-                          ) : (
-                            <div className="text-sm text-gray-500">No findings detected.</div>
-                          )}
-                        </div>
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <div className="text-center p-6">
+                      <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-gray-100">
+                        <UploadCloud className="h-10 w-10 text-gray-500" />
                       </div>
-
-                      <div className="mt-4">
-                        <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-yellow-600"/>Recommendations</div>
-                        <ul className="mt-2 list-disc list-inside text-sm text-gray-800">
-                          {result.recommendations && result.recommendations.length > 0 ? (
-                            result.recommendations.map((r, i) => (
-                              <li key={i}>{r.suggestion} <span className="text-xs text-gray-500">({r.article})</span></li>
-                            ))
-                          ) : (
-                            <li className="text-sm text-gray-500">No recommendations</li>
-                          )}
-                        </ul>
-                      </div>
+                      <div className="mt-4 text-lg font-semibold">No analysis yet</div>
+                      <div className="mt-2 text-sm text-gray-500">Upload a policy file and click <span className="font-medium">Analyze</span> to run a quick analysis.</div>
                     </div>
-
-                    <aside className="md:col-span-1">
-                      <div className="text-sm font-medium text-gray-700 flex items-center gap-2"><BarChart className="h-4 w-4 text-blue-600"/>Metrics</div>
-                      <div className="mt-2 space-y-2 text-sm text-gray-700">
-                        <div>Total Violations: <span className="font-semibold">{result.metrics?.total_violations ?? 0}</span></div>
-                        <div>Requirements Met: <span className="font-semibold">{result.metrics?.total_fulfills ?? 0}</span></div>
-                        <div>Critical Violations: <span className="font-semibold text-red-600">{result.metrics?.critical_violations ?? 0}</span></div>
-                      </div>
-
-                      <div className="mt-4">
-                        <div className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                          <FileSearch className="h-4 w-4 text-gray-600"/>
-                          <span>Evidence</span>
-                          <div className="px-2 py-0.5 rounded text-xs text-gray-500 bg-gray-100">{`(${result.evidence?.length ?? 0})`}</div>
-                        </div>
-                        <div className="mt-2 space-y-2 text-sm text-gray-700">
-                            {result.evidence && result.evidence.length > 0 ? (
-                            result.evidence.slice(0, 6).map((e, i) => (
-                              <div key={i} className="p-3 rounded shadow bg-green-700 text-white">
-                                <div className="flex items-start gap-3">
-                                  <div className="p-2 rounded bg-white/10 flex-shrink-0">
-                                    <FileText className="h-5 w-5 text-white" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="font-semibold break-words">{e.article}</div>
-                                    <div className="text-xs mt-1 whitespace-pre-wrap break-words">{e.policy_excerpt}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="text-sm text-gray-500">No evidence excerpts</div>
-                          )}
-                        </div>
-                      </div>
-                    </aside>
                   </div>
-                </div>
+                )
               ) : (
-                <div className="h-full w-full flex items-center justify-center">
-                  <div className="text-center p-6">
-                    <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-gray-100">
-                      <UploadCloud className="h-10 w-10 text-gray-500" />
+                <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
+                  {loadingDetailed ? (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-white shadow">
+                          <svg className="animate-spin h-12 w-12 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                          </svg>
+                        </div>
+                        <div className="mt-4 text-lg font-semibold">Loading report…</div>
+                        <div className="mt-2 text-sm text-gray-500">This may take a moment — fetching the detailed report.</div>
+                      </div>
                     </div>
-                    <div className="mt-4 text-lg font-semibold">No analysis yet</div>
-                    <div className="mt-2 text-sm text-gray-500">Upload a policy file and click <span className="font-medium">Analyze</span> to run a quick analysis. Once complete you can generate a full report or save results.</div>
-                    <div className="mt-4 flex items-center justify-center gap-3">
-                      <button
-                        className="px-4 py-2 bg-white border rounded flex items-center gap-2"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <UploadCloud className="h-4 w-4" />
-                        Upload File
-                      </button>
-                      <button
-                        disabled={!file}
-                        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50 flex items-center gap-2"
-                        onClick={handleAnalyze}
-                      >
-                        <BarChart className="h-4 w-4" />
-                        Analyze
-                      </button>
+                  ) : detailedReport ? (
+                    <div className="prose max-w-none text-sm">
+                      <h1>{detailedReport.document_name ?? detailedReport.filename}</h1>
+                      <div className="text-sm text-gray-600">Verdict: {detailedReport.verdict}</div>
+                      <div className="text-sm text-gray-600">Score: {detailedReport.score ?? ''}%</div>
+                      {detailedReport.content ? (
+                        <div className="mt-4" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(detailedReport.content) }} />
+                      ) : (
+                        <>
+                          {detailedReport.findings && detailedReport.findings.length > 0 && (
+                            <div className="mt-4">
+                              <h3 className="font-medium">Findings</h3>
+                              <div className="mt-2 space-y-2">
+                                {detailedReport.findings.map((f: FindingLike, i: number) => (
+                                  <FindingCard key={i} finding={f} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {detailedReport.recommendations && detailedReport.recommendations.length > 0 && (
+                            <div className="mt-4">
+                              <h3 className="font-medium">Recommendations</h3>
+                              <ul className="list-disc pl-5 mt-2 text-sm text-gray-800">
+                                {detailedReport.recommendations.map((r: RecommendationLike, i: number) => {
+                                  const maybe = r as unknown as Record<string, unknown>
+                                  const suggestion = typeof maybe.suggestion === 'string' ? maybe.suggestion : JSON.stringify(r)
+                                  return (<li key={i}>{suggestion}</li>)
+                                })}
+                              </ul>
+                            </div>
+                          )}
+                          {detailedReport.evidence && detailedReport.evidence.length > 0 && (
+                            <div className="mt-4">
+                              <h3 className="font-medium">Evidence</h3>
+                              <div className="mt-2 space-y-2 text-sm text-gray-800">
+                                {detailedReport.evidence.map((e: EvidenceLike, i: number) => (
+                                  <div key={i} className="p-2 bg-white rounded shadow-sm">{e.policy_excerpt ?? JSON.stringify(e)}</div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
-                  </div>
+                  ) : detailedContent ? (
+                    <div className="prose max-w-none text-sm" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(detailedContent) }} />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <div className="text-center p-6">
+                        <div className="mx-auto w-40 h-40 flex items-center justify-center rounded-full bg-gray-100">
+                          <svg className="h-20 w-20 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <div className="mt-4 text-xl font-semibold">No detailed content yet</div>
+                        <div className="mt-2 text-sm text-gray-500">This report has not been generated or persisted yet. Try generating the Full Report or refresh later.</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-        </main>
+          </main>
         </div>
+      </div>
 
-        {/* Modal viewer for reports */}
-      {isModalOpen && modalUrl ? (
-        <ReportViewerModal
-          reportUrl={modalUrl}
-          filename={modalFilename}
-          title={isFullReportGenerated ? 'Full Report' : (modalFilename || 'Report')}
-          isQuick={!isFullReportGenerated}
-          onClose={() => setIsModalOpen(false)}
-          onSaved={(fn) => {
-            setIsModalOpen(false)
-            setReportFilename(fn)
-            policyService.getUserReportsCount().then((n) => setUserReportsCount(n ?? 0)).catch(() => {})
-            // Refresh user so credits reflect any deduction
-            try { refreshUser().catch(() => {}) } catch { /* ignore */ }
-          }}
-          onDeleted={(fn) => {
-            setIsModalOpen(false)
-            // Refresh list count and clear filename if deleted
-            setReportFilename((cur) => (cur === fn ? null : cur))
-            policyService.getUserReportsCount().then((n) => setUserReportsCount(n ?? 0)).catch(() => {})
-          }}
-          onInsufficient={() => setInsufficientOpen(true)}
-        />
-      ) : null}
-
-      {/* Title modal for saving directly from analysis view */}
-      {titleModalOpen ? (
+      {titleModalOpen && (
         <EnterTitleModal
           open={titleModalOpen}
           initial={titleModalInitial}
           onClose={() => setTitleModalOpen(false)}
-          onConfirm={async (title) => {
-            // Delegate save behavior to handleSaveReport so the save/save-refresh
-            // logic is centralized and the function is actually used (avoids unused-var warnings).
+            onConfirm={async (title) => {
             if (!reportFilename) return
-            try {
-              await handleSaveReport(reportFilename as string, title)
-            } catch (e) {
-              console.warn('save from title modal failed', e)
-            } finally {
-              setTitleModalOpen(false)
-              try { window.dispatchEvent(new CustomEvent('transactions:refresh')) } catch (err) { console.warn('dispatch transactions refresh failed', err) }
-            }
+            try { await handleSaveReport(reportFilename, title) } catch (e) { console.warn('save from title modal failed', e) }
+            setTitleModalOpen(false)
+            try { safeDispatch('transactions:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
           }}
         />
-      ) : null}
+      )}
 
-      </div>
-
-      {/* Mobile-only footer: mirror key actions and anchor to bottom on small screens. Hidden on md+ where top controls are visible. */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t p-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Button
               disabled={!reportFilename}
-              onClick={() => {
-                if (!reportFilename) return
-                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-                const url = `${apiBase}/api/v1/reports/download/${encodeURIComponent(reportFilename as string)}`
-                setModalUrl(url)
-                setModalFilename(reportFilename)
-                setIsModalOpen(true)
-              }}
+              onClick={() => { if (!reportFilename) return; const url = getReportDownloadUrl(reportFilename); window.open(url, '_blank') }}
               className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
               icon={<ExternalLink className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
             />
             <Button
               disabled={!reportFilename}
-              onClick={async () => {
-                if (!reportFilename) return
-                try {
-                  await policyService.downloadReport(reportFilename as string)
-                } catch (e) { console.warn('download failed', e) }
-              }}
+              onClick={async () => { if (!reportFilename) return; try { await policyService.downloadReport(reportFilename) } catch (e) { console.warn('download failed', e) } }}
               className="px-3 py-1 bg-yellow-500 text-white rounded disabled:opacity-50"
               icon={<DownloadCloud className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
             />
           </div>
 
           <div className="flex items-center gap-2">
             <Button
-              disabled={!result}
-              onClick={async () => { await handleGenerateReport() }}
+              disabled={!file}
+              onClick={() => { void handleAnalyze() }}
               className="px-3 py-1 bg-indigo-600 text-white rounded disabled:opacity-50"
               icon={<FileCheck className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
             />
             <Button
               disabled={!reportFilename}
               onClick={() => { if (!reportFilename) return; setTitleModalInitial(reportFilename); setTitleModalOpen(true) }}
               className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
               icon={<Save className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
             />
           </div>
         </div>
       </div>
-
     </div>
   )
 }

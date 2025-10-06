@@ -1,6 +1,9 @@
 import * as React from 'react'
 import { Button } from './Button'
 import { X } from 'lucide-react'
+import IconButton from './IconButton'
+import { getInputClassName } from '@/lib/ui/inputHelpers'
+import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
 
 type Props = {
   open: boolean
@@ -30,17 +33,17 @@ export default function EnterCreditsModal({ open, onClose, onConfirm }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose}></div>
-      <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
+  <div className={getModalBackdropClass()} onClick={onClose}></div>
+  <div className={getModalContainerClass()}>
         <div className="p-4 border-b flex items-center justify-between">
           <div className="text-lg font-semibold">Buy Credits</div>
-          <button className="p-2" onClick={onClose}><X /></button>
+          <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
         </div>
         <div className="p-4">
           <p className="text-sm text-gray-600 mb-4">Enter the amount in USD to purchase credits (1 USD = 10 credits)</p>
           <div className="flex items-center gap-2">
             <input
-              className="border rounded px-3 py-2 w-full"
+              className={getInputClassName('border rounded px-3 py-2 w-full')}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               type="number"

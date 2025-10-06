@@ -2,23 +2,31 @@ import { useState, useEffect, useCallback } from 'react'
 import { Navigate } from 'react-router-dom'
 import useAuth from '@/contexts/useAuth'
 import policyService from '@/services/policyService'
+import { getApiBaseOrigin } from '@/lib/paymentsHelpers'
 import ReportViewerModal from './ui/ReportViewerModal'
 import PaymentResultModal from './ui/PaymentResultModal'
 import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
-import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
-import { RefreshCcw, Trash2, DownloadCloud, ExternalLink, ChevronLeft, ChevronRight, X, SlidersHorizontal } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { classifyDeletedDetails } from '@/lib/reportHelpers'
+import ReportCard from '@/components/ui/ReportCard'
 import { Button } from '@/components/ui/Button'
+import ErrorText from '@/components/ui/ErrorText'
+import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
 // local small responsive overrides
 import '@/styles/responsive.css'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { pushEvent, addToLegacy } from '@/store/deletedReportsSlice'
+import Filters from './reports/Filters'
+import BulkActions from './reports/BulkActions'
 
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
+  const dispatch = useAppDispatch()
   // showFilters: controls whether the filter sidebar is visible.
   // Default: visible when viewport > 700px, hidden when <= 700px. If the user
   // manually toggles, their preference persists across resizes.
   const [showFilters, setShowFilters] = useState<boolean>(true)
-  const [filtersUserToggled, setFiltersUserToggled] = useState<boolean>(false)
   // When true the filters are rendered above the reports list (stacked)
   // instead of in a left sidebar. This kicks in for widths <= 1276px.
   const [isMobile1276, setIsMobile1276] = useState<boolean>(() => (typeof window !== 'undefined' ? window.innerWidth <= 1276 : false))
@@ -30,15 +38,10 @@ export default function Reports() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>({})
-  const [progress, setProgress] = useState<number>(0)
-  const [showBar, setShowBar] = useState<boolean>(false)
-  const [selected, setSelected] = useState<string | null>(() => {
-    try {
-      return localStorage.getItem('selected_report')
-    } catch {
-      return null
-    }
-  })
+  // progress was part of the old in-file filters UI and has been removed.
+  // progress indicator removed; filters component handles its own loading UI.
+  const selectedFromStore = useAppSelector((s) => s.ui.selectedReport)
+  const [selected, setSelected] = useState<string | null>(() => selectedFromStore || null)
 
   const fetchReports = useCallback(async () => {
     setIsLoading(true)
@@ -76,14 +79,14 @@ export default function Reports() {
   useEffect(() => {
     const onResize = () => {
       const isMobile = window.innerWidth <= 700
-      if (!filtersUserToggled) setShowFilters(!isMobile)
+    setShowFilters(!isMobile)
       // when the viewport is 1276px or less, stack filters on top of the list
       setIsMobile1276(window.innerWidth <= 1276)
     }
     onResize()
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
-  }, [filtersUserToggled])
+  }, [])
   const [query, setQuery] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [verdictOptions, setVerdictOptions] = useState<string[]>([])
@@ -139,22 +142,7 @@ export default function Reports() {
 
   // Animate small progress while loading reports
   useEffect(() => {
-    let interval: number | undefined
-    let timeout: number | undefined
-    if (isLoading) {
-      setShowBar(true)
-      setProgress(12)
-      interval = window.setInterval(() => {
-        setProgress((p) => Math.min(90, Math.round(p + Math.random() * 10)))
-      }, 400) as unknown as number
-    } else {
-      setProgress(100)
-      timeout = window.setTimeout(() => setShowBar(false), 700) as unknown as number
-    }
-    return () => {
-      if (interval) clearInterval(interval)
-      if (timeout) clearTimeout(timeout)
-    }
+  // Loading progress indicator was moved out with Filters; no local animation needed here.
   }, [isLoading])
 
   // selection is handled by checkboxes; persisted "selected" (single) remains for modal/view
@@ -162,7 +150,7 @@ export default function Reports() {
   const onOpen = async (report: ReportMetadata) => {
     try {
       // Instead of opening a new tab, show modal viewer for a smoother UX
-      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const apiBase = getApiBaseOrigin() ?? 'http://localhost:8000'
       // Always use our download endpoint inside the modal iframe so external gs:// or signed URLs
       // don't break iframe rendering. Use a separate Open action to open the best URL in a new tab.
       const url = `${apiBase}/api/v1/reports/download/${encodeURIComponent(report.filename)}`
@@ -220,7 +208,7 @@ export default function Reports() {
   })
 
   // selection summary for UI labels
-  const allOnPageSelected = filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])
+  // selection summary for UI labels
 
   return (
     <div className="min-h-screen p-8">
@@ -228,33 +216,7 @@ export default function Reports() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Your Reports</h1>
         <div className="flex items-center gap-2">
-          {/* Filter toggle button (shows/hides left filter column on small screens) */}
-          <Button variant="ghost" size="sm" className="flex items-center" icon={<SlidersHorizontal className="h-4 w-4" />} collapseToIcon onClick={() => { setFiltersUserToggled(true); setShowFilters((s) => !s) }}>
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
-          </Button>
-          
-          <Button
-            onClick={fetchReports}
-            className="px-3 py-1 bg-white border rounded text-black"
-            icon={<RefreshCcw className="h-4 w-4" />}
-            collapseToIcon
-          >
-            Refresh
-          </Button>
-          <Button
-            disabled={deleting}
-            onClick={async () => {
-              const fns = Object.keys(selectedFiles).filter((k) => selectedFiles[k])
-              if (fns.length === 0) return
-              // open confirmation modal and perform delete on confirm
-              setBulkDeleteOpen(true)
-            }}
-            className="px-3 py-1 bg-red-600 text-white rounded"
-            icon={<Trash2 className="h-4 w-4" />}
-            collapseToIcon
-          >
-            {allOnPageSelected ? 'Delete All' : 'Delete Selected'}
-          </Button>
+          <BulkActions deleting={deleting} onRefresh={fetchReports} onDeleteOpen={() => setBulkDeleteOpen(true)} />
           <ConfirmBulkDeleteModal
             open={bulkDeleteOpen}
             filenames={Object.keys(selectedFiles).filter((k) => selectedFiles[k])}
@@ -262,20 +224,11 @@ export default function Reports() {
             onConfirm={async () => {
               setBulkDeleteOpen(false)
               setDeleting(true)
-              // run the original bulk-delete logic
+              // original bulk-delete logic (unchanged)
               const fns = Object.keys(selectedFiles).filter((k) => selectedFiles[k])
-              let interval: number | undefined
               try {
-                setShowBar(true)
-                setProgress(10)
-                interval = window.setInterval(() => {
-                  setProgress((p) => Math.min(90, Math.round(p + Math.random() * 10)))
-                }, 300) as unknown as number
-
+                // start of bulk-delete
                 const resp = await policyService.bulkDeleteReports(fns)
-                if (interval) { clearInterval(interval); interval = undefined }
-                setProgress(100)
-                window.setTimeout(() => setShowBar(false), 600)
 
                 type BulkRes = { filename: string; deleted: boolean; error?: string }
                 const results = resp.results as BulkRes[]
@@ -290,33 +243,28 @@ export default function Reports() {
                 // Classify deleted files by type using the reports array we just updated
                 try {
                   const deletedMeta = results.filter((r) => r.deleted).map((r) => r.filename)
-                  const deletedDetails = deletedMeta.map((fn) => {
-                    const found = reports.find((x) => x.filename === fn)
-                    return {
-                      filename: fn,
-                      is_full_report: !!(found && found.is_full_report),
-                      is_revision: !!(found && found.type === 'revision'),
-                      is_free: !!(found && ((found.analysis_mode || '').toString() === 'fast')),
-                    }
-                  })
+                  const deletedDetails = classifyDeletedDetails(reports, deletedMeta)
 
-                  // Increment local counters (persisted) so the Dashboard can show a running track record
+                  // Use Redux slice to persist deletion events and update legacy totals
                   try {
-                    const key = 'poliverai.deleted_report_counts'
-                    const existingRaw = localStorage.getItem(key)
-                    const existing = existingRaw ? JSON.parse(existingRaw) : { full: 0, revision: 0, free: 0 }
-                    let { full, revision, free } = existing
+                    let full = 0, revision = 0, free = 0
                     deletedDetails.forEach((d) => {
                       if (d.is_full_report) full += 1
                       if (d.is_revision) revision += 1
                       if (d.is_free) free += 1
                     })
-                    const updated = { full, revision, free }
-                    localStorage.setItem(key, JSON.stringify(updated))
-                    // dispatch a global event with the breakdown
-                    window.dispatchEvent(new CustomEvent('reports:deleted', { detail: { counts: updated, filenames: deletedMeta } }))
+                    const counts = { full, revision, free }
+                    const ev = { ts: Date.now(), counts, filenames: deletedMeta }
+                    dispatch(pushEvent(ev))
+                    dispatch(addToLegacy(counts))
+                    // Keep compatibility: emit the same global event so other listeners still work
+                    try {
+                      safeDispatch('reports:deleted', { counts, filenames: deletedMeta })
+                    } catch (e) {
+                      console.warn('Failed to dispatch reports:deleted', e)
+                    }
                   } catch (e) {
-                    console.warn('Failed to persist deleted report counts', e)
+                    console.warn('Failed to dispatch deleted report counts to store', e)
                   }
                 } catch (e) {
                   console.warn('Failed to classify deleted reports', e)
@@ -338,9 +286,7 @@ export default function Reports() {
                 setModalOpen(true)
               } catch (err) {
                 const e = err as unknown
-                if (interval) clearInterval(interval)
-                setProgress(100)
-                window.setTimeout(() => setShowBar(false), 600)
+                // finished bulk-delete
                 console.error('Bulk delete failed', e)
                 setModalSuccess(false)
                 setModalTitle('Bulk delete failed')
@@ -358,143 +304,43 @@ export default function Reports() {
             }}
           />
         </div>
-      </div>
-      {error && <div className="text-red-600 mb-4">{error}</div>}
+  <ErrorText error={error} />
 
   <div className="grid gap-6" style={{ gridTemplateColumns: isMobile1276 ? '1fr' : '320px 1fr' }}>
-        {/* When stacking is enabled we render the filters first so they appear on top */}
-      {isMobile1276 ? (
-          <aside className={`bg-white p-4 rounded shadow ${showFilters ? '' : 'hidden'}`}>
-            <div className="mb-4">
-              <div className="flex items-center justify-between">
-                <div className="text-lg font-medium">Filters</div>
-                <button
-                  onClick={() => {
-                    setQuery('')
-                    setStatusFilter('all')
-                    setStartDate('')
-                    setEndDate('')
-                    setSelectedFiles({})
-                  }}
-                  className="text-sm text-blue-600 flex items-center gap-2"
-                >
-                  <X className="h-4 w-4" />
-                  Clear filters
-                </button>
-              </div>
-            </div>
+    {/* When stacking is enabled we render the filters first so they appear on top */}
+    {isMobile1276 ? (
+      <div className={`${showFilters ? '' : 'hidden'}`}>
+        <Filters
+          query={query}
+          setQuery={setQuery}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          verdictOptions={verdictOptions}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          clearAll={() => { setQuery(''); setStatusFilter('all'); setStartDate(''); setEndDate(''); setSelectedFiles({}) }}
+        />
+      </div>
+    ) : (
+      <div className={`${showFilters ? '' : 'hidden'}`}>
+        <Filters
+          query={query}
+          setQuery={setQuery}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          verdictOptions={verdictOptions}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          clearAll={() => { setQuery(''); setStatusFilter('all'); setStartDate(''); setEndDate(''); setSelectedFiles({}) }}
+        />
+      </div>
+    )}
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Search</label>
-              <input value={query} onChange={(e) => setQuery(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="file name or title" />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Verdict / Status</label>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full border rounded px-3 py-2">
-                <option value="all">All</option>
-                <option value="compliant">Compliance Reports</option>
-                {verdictOptions.filter(v => v !== 'compliant').map((v) => (
-                  <option key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>
-                ))}
-                <option value="full">Full Reports</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Date range</label>
-              <div className="flex gap-2">
-                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-1/2 border rounded px-2 py-1" />
-                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-1/2 border rounded px-2 py-1" />
-              </div>
-            </div>
-
-            {/* Loading progress bar: always visible even if filters hidden on small screens */}
-            <div className="mt-4">
-              {showBar && (
-                <div className="w-full">
-                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
-                      style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
-                      role="progressbar"
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={Math.min(100, Math.max(0, progress))}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </aside>
-        ) : (
-      /* Left: filters / controls for desktop (sidebar) */
-      <aside className={`bg-white p-4 rounded shadow ${showFilters ? '' : 'hidden'}`}>
-          <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <div className="text-lg font-medium">Filters</div>
-              <button
-                onClick={() => {
-                  setQuery('')
-                  setStatusFilter('all')
-                  setStartDate('')
-                  setEndDate('')
-                  setSelectedFiles({})
-                }}
-                className="text-sm text-blue-600 flex items-center gap-2"
-              >
-                <X className="h-4 w-4" />
-                Clear filters
-              </button>
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Search</label>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} className="w-full border rounded px-3 py-2" placeholder="file name or title" />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Verdict / Status</label>
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full border rounded px-3 py-2">
-              <option value="all">All</option>
-              <option value="compliant">Compliance Reports</option>
-              {verdictOptions.filter(v => v !== 'compliant').map((v) => (
-                <option key={v} value={v}>{v.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>
-              ))}
-              <option value="full">Full Reports</option>
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Date range</label>
-            <div className="flex gap-2">
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-1/2 border rounded px-2 py-1" />
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-1/2 border rounded px-2 py-1" />
-            </div>
-          </div>
-
-          {/* count is shown in the header next to the select-all control */}
-
-          {/* Loading progress bar: always visible even if filters hidden on small screens */}
-          <div className="mt-4">
-            {showBar && (
-              <div className="w-full">
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
-                    style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}
-                    role="progressbar"
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={Math.min(100, Math.max(0, progress))}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-    </aside>
-  )}
+    </div>
 
   {/* Right: reports list */}
   <main className={'bg-white p-4 rounded shadow'}>
@@ -528,106 +374,24 @@ export default function Reports() {
                 <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1 hide-below-700">
                   {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
                 </select>
-                <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="px-2 py-1 border rounded flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/><span className="hide-below-700">Prev</span></button>
+                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/><span className="hide-below-700">Prev</span></Button>
                 <div className="px-2 py-1 text-sm">{page} / {totalPages}</div>
-                <button disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="px-2 py-1 border rounded flex items-center"><span className="hide-below-700">Next</span><ChevronRight className="h-4 w-4 ml-1"/></button>
+                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="flex items-center"><span className="hide-below-700">Next</span><ChevronRight className="h-4 w-4 ml-1"/></Button>
               </div>
             </div>
           </div>
 
           <div className="space-y-3 max-h-[70vh] overflow-auto">
-            {filtered.map((r) => {
-              const score = typeof r.score === 'number' ? Math.max(0, Math.min(100, r.score)) : undefined
-              const hasStars = score != null
-              const isFull = Boolean(r.is_full_report || (r.type && String(r.type).toLowerCase() === 'verification'))
-              const vnorm = (r.verdict || '').toString().trim().toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
-              const hasVerdict = Boolean(r.verdict)
-              // When an item has no stars/full/verdict, give the card a small
-              // minimum height on mobile so the action buttons can be anchored
-              // to the bottom using `self-end`. Relying on large top margins
-              // doesn't work reliably because the row height is determined by
-              // the tallest content column; a min-height creates predictable
-              // vertical spacing.
-              // If the card has a lot of visible content (stars, full badge,
-              // verdict, file size, or a document name), use a longer mobile
-              // min-height so controls anchor nicely. Otherwise use a shorter
-              // mobile min-height to keep list density.
-              const hasExtraContent = hasStars || isFull || hasVerdict || Boolean(r.file_size) || Boolean(r.document_name)
-              const cardMinHeightClass = hasExtraContent ? 'card-min-h-mobile-long md:min-h-0' : 'card-min-h-mobile md:min-h-0'
-
-              return (
-              <div key={r.filename} className={`${cardMinHeightClass} p-4 border rounded grid grid-cols-12 gap-4 items-start md:flex md:items-center ${selectedFiles[r.filename] ? 'border-blue-600 bg-blue-50' : ''}`}>
-                <div className="col-span-1 flex items-center h-full">
-                  <input
-                    type="checkbox"
-                    checked={!!selectedFiles[r.filename]}
-                    onChange={() => setSelectedFiles((prev) => ({ ...prev, [r.filename]: !prev[r.filename] }))}
-                    className="w-4 h-4"
-                    aria-label={`Select report ${r.filename}`}
-                  />
-                </div>
-                <div className="col-span-10 flex-1">
-                  <div className="font-semibold">{r.title || r.document_name}</div>
-                  <div className="text-sm text-gray-600">{r.document_name}</div>
-                  <div className="text-sm text-gray-500 mt-1">{new Date(r.created_at).toLocaleString()}</div>
-                  {/* Filename line: shown above the size, styled like the size text */}
-                  <div className="text-sm text-gray-500 truncate">filename: <span className="font-mono">{r.filename}</span></div>
-                  {r.file_size ? (
-                    <div className="text-sm text-gray-500">Size: {(r.file_size / 1024).toFixed(1)} KB</div>
-                  ) : null}
-                  {/* Rating: map score (0-100) to 0-5 stars and display percent beside verdict badges */}
-                  <div className="mt-2 ml-2 mr-2 flex items-center gap-2">
-                    {(() => {
-                      if (score == null) return null
-                      const stars = (score / 100) * 5
-                      const full = Math.floor(stars)
-                      const half = stars - full >= 0.5 ? 1 : 0
-                      const empty = 5 - full - half
-                      const icons: React.ReactElement[] = []
-                      for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={16} weight="fill" className="text-yellow-500" />)
-                      if (half) icons.push(<StarHalf key={`h`} size={16} weight="fill" className="text-yellow-500" />)
-                      for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={16} weight="duotone" className="text-gray-300" />)
-                      return (
-                        <div className="flex items-center text-sm text-gray-700">
-                          <div className="flex items-center gap-0.5">{icons}</div>
-                          <div className="ml-2 text-xs text-gray-500">{score}%</div>
-                        </div>
-                      )
-                    })()}
-                  </div>
-                  {/* Badge group: Full/Compliance label and verdict badge share height and touch borders */}
-                  {(() => {
-                    if (!isFull && !hasVerdict) return null
-                    return (
-                      <div className="inline-flex items-center mt-2 text-xs font-medium rounded overflow-hidden">
-                        {isFull ? (
-                          <div className="px-2 py-1 bg-green-100 text-green-700 border border-r-0 border-green-200">Full</div>
-                        ) : null}
-                        {hasVerdict ? (
-                          <div className={`px-2 py-1 border ${vnorm === 'compliant' ? 'bg-green-100 text-green-700 border-green-200' : vnorm === 'partially_compliant' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
-                            {String(r.verdict).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
-                          </div>
-                        ) : null}
-                      </div>
-                    )
-                  })()}
-                </div>
-                <div className={`col-span-1 flex-shrink-0 ml-0 md:ml-4 flex items-center space-x-2 w-full md:w-auto justify-end self-end`}>
-                  {r.gcs_url ? (
-                    <Button onClick={() => policyService.openReport(r)} className="text-sm bg-gray-700 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
-                      Open
-                    </Button>
-                  ) : null}
-                  <Button onClick={() => onOpen(r)} className="text-sm bg-blue-600 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} collapseToIcon>
-                    View
-                  </Button>
-                  <Button onClick={() => onDownload(r)} className="bg-green-600 text-white px-3 py-1 rounded" icon={<DownloadCloud className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
-                    Download
-                  </Button>
-                </div>
-              </div>
-              )
-            })}
+            {filtered.map((r) => (
+              <ReportCard
+                key={r.filename}
+                report={r}
+                selected={!!selectedFiles[r.filename]}
+                onToggleSelect={(fn: string) => setSelectedFiles((prev) => ({ ...prev, [fn]: !prev[fn] }))}
+                onOpen={onOpen}
+                onDownload={onDownload}
+              />
+            ))}
           </div>
           {modalUrl ? (
             <ReportViewerModal
@@ -652,9 +416,11 @@ export default function Reports() {
                 }
                 try {
                   // refresh user and transactions so credits and tx list update
-                  window.dispatchEvent(new CustomEvent('payment:refresh-user'))
-                  window.dispatchEvent(new CustomEvent('transactions:refresh'))
-                  window.dispatchEvent(new CustomEvent('reports:refresh'))
+                  safeDispatchMultiple([
+                    { name: 'payment:refresh-user' },
+                    { name: 'transactions:refresh' },
+                    { name: 'reports:refresh' },
+                  ])
                 } catch (e) {
                   console.warn('dispatch refresh events failed', e)
                 }

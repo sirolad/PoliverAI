@@ -28,7 +28,12 @@ google-cloud-storage==2.11.0
 protobuf
 pymongo>=4.0
 pyflakes
+certifi
+
 # Optional: sentence-transformers is required for some embedding/semantic search features.
 # Note: this may pull in heavy dependencies (torch). If you want a CPU-only install, consider
 # pinning a cpu build of torch or installing sentence-transformers inside a separate dev venv.
-# sentence-transformers
+# dev should turn comment it out for speed build speed
+# transformers==4.44.0
+# sentence-transformers==3.0.1
+# ###

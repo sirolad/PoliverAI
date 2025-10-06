@@ -124,6 +124,68 @@ async def read_users_me(current_user: User = CURRENT_USER_DEPENDENCY):
     return current_user
 
 
+# Dev-only: allow updating the current user's display name when DEV_DEBUG_USERS=1
+import os
+if os.getenv('DEV_DEBUG_USERS') == '1':
+    from pydantic import BaseModel
+
+    class NameUpdate(BaseModel):
+        name: str
+
+    @router.patch("/me", response_model=User)
+    async def update_me_name(payload: NameUpdate, current_user: User = CURRENT_USER_DEPENDENCY):
+        """Dev-only: update the current user's name in the underlying user_db.
+
+        This updates the in-memory user DB or the Mongo-backed collection depending
+        on which backend is active. It's intentionally gated by DEV_DEBUG_USERS
+        to avoid exposing a profile update endpoint accidentally in production.
+        """
+        try:
+            # Best-effort: if the underlying user_db exposes a dict of users (in-memory), mutate it
+            from ....db import users as users_module
+
+            udb = users_module.user_db
+            # In-memory implementation: users is a dict of id->UserInDB
+            if hasattr(udb, 'users') and isinstance(getattr(udb, 'users'), dict):
+                u = udb.get_user_by_email(current_user.email)
+                if u:
+                    try:
+                        u.name = payload.name
+                    except Exception:
+                        pass
+            else:
+                # Mongo-like backend: try to update the collection directly
+                try:
+                    coll = getattr(udb, 'users', None)
+                    if coll is not None:
+                        coll.update_one({'email': current_user.email}, {'$set': {'name': payload.name}})
+                except Exception:
+                    # Non-fatal for dev route
+                    pass
+
+            # Return the fresh user (best-effort)
+            refreshed = udb.get_user_by_email(current_user.email)
+            if refreshed is None:
+                raise HTTPException(status_code=404, detail='user not found after update')
+
+            return User(
+                id=refreshed.id,
+                name=refreshed.name,
+                email=refreshed.email,
+                tier=refreshed.tier,
+                credits=refreshed.credits,
+                subscription_credits=getattr(refreshed, 'subscription_credits', 0),
+                subscription_expires=refreshed.subscription_expires,
+                created_at=refreshed.created_at,
+                is_active=refreshed.is_active,
+            )
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.exception('Failed to update user name via dev route: %s', e)
+            raise HTTPException(status_code=500, detail='Failed to update user') from e
+
+
 # Dev-only: list users for debugging when DEV_DEBUG_USERS=1
 import os
 if os.getenv('DEV_DEBUG_USERS') == '1':
@@ -161,6 +223,77 @@ if os.getenv('DEV_DEBUG_USERS') == '1':
         except Exception:
             pass
         return {'users': out}
+
+
+# Dev-only: admin route to update a user's hashed password in the backing store.
+# This route is intentionally gated by two environment variables:
+#  - DEV_DEBUG_USERS=1 (already required for other dev routes in this file)
+#  - ENABLE_ADMIN_PASSWORD_UPDATE=1 (extra opt-in to avoid accidental exposure)
+# The route exists so operators can temporarily enable it in a running deployment
+# to fix authentication issues (for example, migrating plaintext passwords to
+# Argon2 hashes). It should remain commented out or disabled in production.
+if os.getenv('DEV_DEBUG_USERS') == '1' and os.getenv('ENABLE_ADMIN_PASSWORD_UPDATE') == '1':
+    from pydantic import BaseModel
+    from ....core.auth import get_password_hash
+
+    class AdminPasswordUpdate(BaseModel):
+        email: str
+        new_password: str
+
+    @router.post('/admin/update-password')
+    async def admin_update_password(payload: AdminPasswordUpdate):
+        """Dev-only: update the stored hashed_password for a given user email.
+
+        This uses the existing `user_db` instance. When `MONGO_URI` is present
+        the underlying implementation will be `MongoUserDB` and we will try to
+        update the Mongo collection directly. Otherwise we mutate the in-memory
+        UserDatabase. The route is intentionally minimal and guarded by two
+        env vars; enable only briefly to perform fixes and then disable it.
+        """
+        try:
+            udb = user_db
+            hashed = get_password_hash(payload.new_password)
+
+            # If underlying backend exposes a pymongo Collection, update via update_one
+            coll = getattr(udb, 'users', None)
+            if coll is not None and hasattr(coll, 'update_one'):
+                res = coll.update_one({'email': payload.email}, {'$set': {'hashed_password': hashed}})
+                if res.matched_count == 0:
+                    raise HTTPException(status_code=404, detail='user not found')
+                # Return the new hashed value so operators can copy it into Atlas UI if desired
+                return {
+                    'status': 'ok',
+                    'matched': int(res.matched_count),
+                    'modified': int(res.modified_count),
+                    'hashed_password': hashed,
+                }
+
+            # Fallback: in-memory mutation
+            if hasattr(udb, 'get_user_by_email'):
+                u = udb.get_user_by_email(payload.email)
+                if not u:
+                    raise HTTPException(status_code=404, detail='user not found')
+                try:
+                    # Some implementations store as attribute, others as dict
+                    if hasattr(u, 'hashed_password'):
+                        u.hashed_password = hashed
+                    elif isinstance(u, dict):
+                        u['hashed_password'] = hashed
+                    else:
+                        # Try best-effort setattr
+                        setattr(u, 'hashed_password', hashed)
+                except Exception:
+                    logger.exception('Failed to set hashed_password on in-memory user object')
+                # Return the new hashed value so operators can copy it into Atlas UI if desired
+                return {'status': 'ok', 'updated': True, 'hashed_password': hashed}
+
+            # If we get here, we couldn't update
+            raise HTTPException(status_code=500, detail='No supported user backend found')
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.exception('admin_update_password failed: %s', e)
+            raise HTTPException(status_code=500, detail='Failed to update password') from e
 
 
 @router.post("/upgrade")

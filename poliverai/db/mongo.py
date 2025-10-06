@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+import os
+import ssl
+import socket
 from typing import Optional
 
 import logging
@@ -22,61 +25,102 @@ class MongoUserDB:
         # Initialize client and perform a quick server_info() call to validate connection.
         # This will raise an exception if the URI is invalid or the network/connectivity fails,
         # which will cause the application to fall back to the in-memory DB in `db/users.py`.
-        self.client = MongoClient(uri)
+        # Emit some diagnostics helpful when debugging TLS issues to Atlas.
+        # These do not change behavior unless MONGO_DEBUG_CONN=1 is set, but
+        # we always attempt to report basic runtime SSL info and whether
+        # certifi is present so operators can spot missing CA bundles.
         try:
-            # Force a connection/check to surface problems early during startup
-            self.client.server_info()
+            logger.info("python OpenSSL version: %s", ssl.OPENSSL_VERSION)
+        except Exception:
+            logger.debug("Failed to read OpenSSL version")
 
-            # Try to parse the URI to surface useful, non-sensitive details
+
+        # Create a MongoClient using the provided URI. We rely on the URI
+        # (which should include username/password) for authentication. Do
+        # not attempt to perform cert-based auth or manually inject CA
+        # bundles here; Atlas connections should work using the default
+        # system trust store when possible. Use short connection timeouts so
+        # failures surface quickly instead of hanging application startup.
+
+        # Debug-only network checks: when MONGO_DEBUG_CONN=1, attempt to
+        # resolve and create a small TCP connection to each host in the URI
+        # so we can detect DNS/firewall issues prior to the MongoClient TLS
+        # handshake. This is best-effort and will not raise on failure.
+        debug_conn = os.getenv("MONGO_DEBUG_CONN") == "1"
+        if debug_conn:
             try:
                 from pymongo.uri_parser import parse_uri
 
                 parsed = parse_uri(uri)
-                username = parsed.get("username")
-                nodelist = parsed.get("nodelist")
-                options = parsed.get("options")
-                authsource = parsed.get("authsource") or options.get("authsource") if options else None
+                nodelist = parsed.get("nodelist") or []
             except Exception:
-                # Fallback to urllib parsing for basic fields
                 u = urllib.parse.urlparse(uri)
-                username = u.username
-                # mongodb+srv may contain SRV records; represent host roughly
                 nodelist = [(u.hostname or "") + (f":{u.port}" if u.port else "")]
-                qs = urllib.parse.parse_qs(u.query or "")
-                authsource = qs.get("authSource", [None])[0]
 
-            masked_user = None
-            if username:
+            for host_port in nodelist:
                 try:
-                    masked_user = username[0] + "***" + username[-1]
+                    host, port = (host_port[0], host_port[1]) if isinstance(host_port, tuple) else (host_port.split(":")[0], int(host_port.split(":")[1]) if ":" in host_port else 27017)
                 except Exception:
-                    masked_user = "***"
+                    try:
+                        hp = str(host_port)
+                        parts = hp.split(":")
+                        host = parts[0]
+                        port = int(parts[1]) if len(parts) > 1 else 27017
+                    except Exception:
+                        host = str(host_port)
+                        port = 27017
+                try:
+                    s = socket.create_connection((host, port), timeout=5)
+                    s.close()
+                    logger.info("Connection test OK to %s:%s", host, port)
+                except Exception as e:
+                    logger.warning("Connection test FAILED to %s:%s: %s", host, port, e)
 
-            logger.info(
-                "MongoDB connected: user=%s hosts=%s authSource=%s uri_prefix=%s",
-                masked_user,
-                nodelist,
-                authsource,
-                (uri[:60] + "...") if uri else None,
-            )
-        except Exception as e:  # keep broad except so initialization doesn't crash without logging
-            # Log detailed diagnostics (without secrets)
-            logger.error("MongoDB connection failed: %s (%s)", e, type(e).__name__)
-            logger.debug("Traceback:\n%s", traceback.format_exc())
-            # Try to provide parsed URI hints for debugging
-            try:
-                from pymongo.uri_parser import parse_uri
-
-                parsed = parse_uri(uri)
-                logger.debug(
-                    "Parsed URI (masked): username=%s, nodelist=%s, options=%s",
-                    (parsed.get("username")[:1] + "***" + parsed.get("username")[-1]) if parsed.get("username") else None,
-                    parsed.get("nodelist"),
-                    {k: v for k, v in (parsed.get("options") or {}).items() if k.lower() != "password"},
-                )
-            except Exception as ee:
-                logger.debug("Failed to parse URI for extra details: %s", ee)
+        try:
+            # Build a client with short timeouts so failures are fast and do
+            # not cause long blocking during import/startup. We do not set
+            # explicit TLS/CA options here; the MONGO_URI should carry the
+            # auth details (username/password) and the environment should
+            # provide a valid trust store.
+            self.client = MongoClient(uri, serverSelectionTimeoutMS=2000, connectTimeoutMS=2000)
+        except Exception:
+            # If client construction itself fails, re-raise after logging.
+            logger.exception("Failed to construct MongoClient (pre-server_info)")
             raise
+        # Do not force a blocking server_info() call at import time. Some
+        # environments (local dev or restricted network) may trigger TLS
+        # handshake errors that would otherwise crash startup. Instead, try
+        # to parse and log non-sensitive URI details for diagnostics and
+        # continue — runtime DB operations will surface connectivity issues.
+        try:
+            from pymongo.uri_parser import parse_uri
+
+            parsed = parse_uri(uri)
+            username = parsed.get("username")
+            nodelist = parsed.get("nodelist")
+            options = parsed.get("options")
+            authsource = parsed.get("authsource") or options.get("authsource") if options else None
+        except Exception:
+            u = urllib.parse.urlparse(uri)
+            username = u.username
+            nodelist = [(u.hostname or "") + (f":{u.port}" if u.port else "")]
+            qs = urllib.parse.parse_qs(u.query or "")
+            authsource = qs.get("authSource", [None])[0]
+
+        masked_user = None
+        if username:
+            try:
+                masked_user = username[0] + "***" + username[-1]
+            except Exception:
+                masked_user = "***"
+
+        logger.info(
+            "MongoDB client created: user=%s hosts=%s authSource=%s uri_prefix=%s",
+            masked_user,
+            nodelist,
+            authsource,
+            (uri[:60] + "...") if uri else None,
+        )
 
         self.db = self.client[db_name]
         self.users: Collection = self.db.get_collection("users")

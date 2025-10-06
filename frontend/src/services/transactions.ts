@@ -1,4 +1,6 @@
 import api from '@/services/api'
+import { buildUrl } from '@/lib/urlHelpers'
+import { safeDebug } from '@/lib/logHelpers'
 
 export type Transaction = {
   id: string
@@ -25,19 +27,14 @@ type TxListResp = {
 }
 
 const listTransactions = async (opts?: { page?: number; limit?: number; date_from?: string | null; date_to?: string | null }): Promise<TxListResp> => {
-  let url = '/api/v1/transactions'
-  const qs: string[] = []
-  if (opts?.page && opts?.limit) qs.push(`page=${opts.page}`, `limit=${opts.limit}`)
-  if (opts?.date_from) qs.push(`date_from=${encodeURIComponent(opts.date_from)}`)
-  if (opts?.date_to) qs.push(`date_to=${encodeURIComponent(opts.date_to)}`)
-  if (qs.length) url += `?${qs.join('&')}`
+  const url = buildUrl('/api/v1/transactions', {
+    page: opts?.page,
+    limit: opts?.limit,
+    date_from: opts?.date_from ?? undefined,
+    date_to: opts?.date_to ?? undefined,
+  })
   const res = await api.get<TxListResp>(url)
-  try {
-    // emit a debug log so callers can inspect the raw payload shape in browser console
-    console.debug('[transactions] listTransactions response', { url, payload: res })
-  } catch {
-    // swallow logging errors
-  }
+  safeDebug('[transactions] listTransactions response', { url, payload: res })
   return res as TxListResp
 }
 

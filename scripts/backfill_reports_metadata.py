@@ -71,7 +71,16 @@ def main():
         print("MONGO_URI not set, defaulting to mongodb://localhost:27017/poliverai")
         mongo_uri = "mongodb://localhost:27017"
 
-    client = MongoClient(mongo_uri)
+    # Prefer using certifi CA bundle to avoid TLS/SSL handshake failures in containers
+    try:
+        import certifi  # type: ignore
+
+        ca_file = certifi.where()
+        client = MongoClient(mongo_uri, tls=True, tlsCAFile=ca_file)
+        print(f"MongoClient configured to use certifi ca_file={ca_file}")
+    except Exception:
+        print("certifi not available; creating MongoClient without explicit tlsCAFile")
+        client = MongoClient(mongo_uri)
     # Use the same DB name as MongoUserDB default
     db = client.get_database("poliverai")
     coll = db.get_collection("reports")
