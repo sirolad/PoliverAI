@@ -215,6 +215,14 @@ export default function Credits() {
 
           {/* On wide screens (>1276) show a compact credits summary inline */}
           {isWide1276 && (() => {
+            const subscriptionCredits = user?.subscription_credits ?? 0
+            const purchasedCredits = user?.credits ?? 0
+            const total = subscriptionCredits + purchasedCredits
+            const subscriptionUsd = (subscriptionCredits / 10)
+            const purchasedUsd = (purchasedCredits / 10)
+            const spentCredits = totalSpentCredits ?? 0
+            const spentUsd = spentCredits / 10
+
             return (
               <div className="flex items-center gap-4">
                 <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
@@ -222,26 +230,32 @@ export default function Credits() {
                     <Shield className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-blue-600`} />
                   </div>
                   <div>
-                    <div className="text-gray-600">Subscription</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.subscriptionCredits : null}</div>
+                    <div className="text-gray-600">Subscription Credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.subscriptionCredits : null} credits</div>
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)} USD equivalent</div>}
                   </div>
                 </div>
+
                 <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
                   <div className={`flex-shrink-0 bg-gray-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
                     <CreditCard className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-gray-700`} />
                   </div>
                   <div>
-                    <div className="text-gray-600">Purchased</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.purchasedCredits : null}</div>
+                    <div className="text-gray-600">Purchased Credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.purchasedCredits : null} credits</div>
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)} USD equivalent</div>}
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">Total available: {total} credits</div>}
                   </div>
                 </div>
+
                 <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
                   <div className={`flex-shrink-0 bg-red-50 rounded-md flex items-center justify-center ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
                     <DollarSign className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-red-600`} />
                   </div>
                   <div>
                     <div className="text-gray-600">Total Spent</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.totalSpent : null}</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.totalSpent : null} credits</div>
+                    {!isCompactUnderHeader && <div className="text-xs text-gray-500">${spentUsd.toFixed(2)} USD spent</div>}
                   </div>
                 </div>
               </div>
@@ -262,6 +276,47 @@ export default function Credits() {
             const spentCredits = totalSpentCredits ?? 0
             const spentUsd = spentCredits / 10
 
+            // For smallest screens (isMobile) render a compact horizontal bar with smaller icons/text
+            if (isMobile) {
+              return (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-shrink-0 bg-blue-50 rounded-md flex items-center justify-center p-2`}> 
+                      <Shield className={`h-6 w-6 text-blue-600`} />
+                    </div>
+                    <div className="text-sm">
+                      <div className="text-gray-600">Subscription</div>
+                      <div className="font-semibold text-sm">{statsLoaded ? animatedTop.subscriptionCredits : null} credits</div>
+                      <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-shrink-0 bg-gray-50 rounded-md flex items-center justify-center p-2`}>
+                      <CreditCard className={`h-6 w-6 text-gray-700`} />
+                    </div>
+                    <div className="text-sm">
+                      <div className="text-gray-600">Purchased</div>
+                      <div className="font-semibold text-sm">{statsLoaded ? animatedTop.purchasedCredits : null} credits</div>
+                      <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-shrink-0 bg-red-50 rounded-md flex items-center justify-center p-2`}>
+                      <DollarSign className={`h-6 w-6 text-red-600`} />
+                    </div>
+                    <div className="text-sm">
+                      <div className="text-gray-600">Total Spent</div>
+                      <div className="font-semibold text-sm">{statsLoaded ? animatedTop.totalSpent : null} credits</div>
+                      <div className="text-xs text-gray-500">${spentUsd.toFixed(2)}</div>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            // For narrow-but-not-mobile layouts keep the previous stacked layout
             return (
               <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                 <div className={`bg-white rounded shadow text-sm flex items-center gap-4 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
