@@ -1,4 +1,5 @@
 import policyService from '@/services/policyService'
+import { X } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { safeDispatch } from '@/lib/eventHelpers'
@@ -16,9 +17,10 @@ type Props = {
   onDeleted?: (filename: string) => void
   isQuick?: boolean
   onInsufficient?: () => void
+  icon?: React.ReactNode
 }
 
-export default function ReportViewerModal({ reportUrl, filename, title, onClose, onSaved, onDeleted, isQuick, onInsufficient }: Props) {
+export default function ReportViewerModal({ reportUrl, filename, title, onClose, onSaved, onDeleted, isQuick, onInsufficient, icon }: Props) {
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [pendingTitle, setPendingTitle] = useState<string | null>(null)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
@@ -27,7 +29,10 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
     <div className="fixed inset-0 z-50 flex items-start justify-center p-6 bg-black/50">
       <div className="w-full max-w-5xl bg-white rounded shadow-lg overflow-hidden">
         <div className="flex items-center justify-between px-4 py-2 border-b">
-          <div className="font-semibold">{title || filename || 'Report'}</div>
+          <div className="flex items-center gap-3">
+            {typeof icon !== 'undefined' ? <div className="text-gray-700">{icon}</div> : null}
+            <div className="font-semibold">{title || filename || 'Report'}</div>
+          </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={async () => {
                 if (!filename) return
@@ -75,6 +80,7 @@ export default function ReportViewerModal({ reportUrl, filename, title, onClose,
         <ConfirmDeleteModal
           open={confirmDeleteOpen}
           filename={filename}
+          icon={<X className="h-5 w-5 text-red-600" />}
           onClose={() => setConfirmDeleteOpen(false)}
           onConfirm={async () => {
             if (!filename) return

@@ -115,6 +115,7 @@ export function Navbar() {
       <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
       <EnterCreditsModal
         open={creditsModalOpen}
+        icon={<CreditCard className="h-5 w-5 text-gray-700" />}
         onClose={() => setCreditsModalOpen(false)}
         onConfirm={async (amount_usd: number) => {
           try {

@@ -7,7 +7,7 @@ import ReportViewerModal from './ui/ReportViewerModal'
 import PaymentResultModal from './ui/PaymentResultModal'
 import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
-import { ChevronLeft, ChevronRight, Filter } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Filter, Trash2, Eye } from 'lucide-react'
 import { classifyDeletedDetails } from '@/lib/reportHelpers'
 import ReportCard from '@/components/ui/ReportCard'
 import { Button } from '@/components/ui/Button'
@@ -231,6 +231,7 @@ export default function Reports() {
             open={bulkDeleteOpen}
             filenames={Object.keys(selectedFiles).filter((k) => selectedFiles[k])}
             onClose={() => setBulkDeleteOpen(false)}
+            icon={<Trash2 className="h-5 w-5 text-gray-700" />}
             onConfirm={async () => {
               setBulkDeleteOpen(false)
               setDeleting(true)
@@ -441,6 +442,7 @@ export default function Reports() {
                 reportUrl={modalUrl}
                 filename={selected}
                 title={selected || 'Report'}
+                icon={<Eye className="h-5 w-5 text-gray-700" />}
                 isQuick={false}
                 onClose={() => setModalUrl('')}
                 onDeleted={(fn) => {

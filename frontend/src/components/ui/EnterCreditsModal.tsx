@@ -9,9 +9,10 @@ type Props = {
   open: boolean
   onClose: () => void
   onConfirm: (amount_usd: number) => Promise<void>
+  icon?: React.ReactNode
 }
 
-export default function EnterCreditsModal({ open, onClose, onConfirm }: Props) {
+export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Props) {
   const [amount, setAmount] = React.useState<string>('1.00')
   const [isProcessing, setIsProcessing] = React.useState(false)
 
@@ -36,7 +37,11 @@ export default function EnterCreditsModal({ open, onClose, onConfirm }: Props) {
   <div className={getModalBackdropClass()} onClick={onClose}></div>
   <div className={getModalContainerClass()}>
         <div className="p-4 border-b flex items-center justify-between">
-          <div className="text-lg font-semibold">Buy Credits</div>
+          <div className="flex items-center gap-3">
+            {/** optional icon shown left of title */}
+            {typeof icon !== 'undefined' ? <div className="text-gray-700">{icon}</div> : null}
+            <div className="text-lg font-semibold">Buy Credits</div>
+          </div>
           <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
         </div>
         <div className="p-4">

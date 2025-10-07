@@ -5,8 +5,8 @@ type Props = {
 
 export default function SidebarFindingItem({ article, issue }: Props) {
   return (
-    <li className="text-sm break-words whitespace-normal">
+    <div className="text-sm break-words whitespace-normal">
       <span className="font-medium">Article {article}:</span> <span className="break-words whitespace-normal">{issue}</span>
-    </li>
+    </div>
   )
 }

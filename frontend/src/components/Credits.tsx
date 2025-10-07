@@ -483,6 +483,26 @@ export default function Credits() {
           <div className="flex-1 overflow-auto space-y-4">
             {filtered.map((t) => {
               const st = getTxStatus(t)
+              // If a transaction is marked completed/success and has no failure_code,
+              // force any percentage fragments in the description to show 100%.
+              const formatDescription = (tx: Transaction, status: TransactionStatus) => {
+                const raw = (tx.description || tx.event_type || 'Payment').toString()
+                if (tx.failure_code) return raw
+                const rawLower = raw.toString().toLowerCase()
+                const etLower = (tx.event_type || '').toString().toLowerCase()
+                // Consider a transaction completed if its status is 'completed', the
+                // normalized status is 'success', or the description/event_type
+                // explicitly includes the word 'completed' (some backends flip the
+                // description to "Completed" before updating the status field).
+                const isCompleted = (tx.status || '').toString().toLowerCase() === 'completed'
+                  || status === 'success'
+                  || rawLower.includes('completed')
+                  || etLower.includes('completed')
+                if (!isCompleted) return raw
+                // Replace any numeric percent like '90%' or '90 %' with '100%'
+                return raw.replace(/(\d{1,3})\s*%/g, '100%')
+              }
+
               return (
                 <div key={t.id} className="p-4 border rounded bg-white">
                   <div className="flex justify-between items-start gap-4">
@@ -491,7 +511,7 @@ export default function Credits() {
                         <TransactionRow
                           date={t.timestamp ? new Date(t.timestamp).toLocaleString() : '-'}
                           amount={t.amount_usd ?? ''}
-                          description={t.description || t.event_type || 'Payment'}
+                          description={formatDescription(t, st)}
                         />
                         <div>{t.failure_code ? statusBadge(t.failure_code as TransactionStatus) : statusBadge(st)}</div>
                       </div>

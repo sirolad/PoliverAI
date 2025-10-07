@@ -12,9 +12,10 @@ type Props = {
   filenames: string[]
   onClose: () => void
   onConfirm: () => Promise<void>
+  icon?: React.ReactNode
 }
 
-export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onConfirm }: Props) {
+export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onConfirm, icon }: Props) {
   const [isProcessing, setIsProcessing] = React.useState(false)
 
   if (!open) return null
@@ -36,7 +37,10 @@ export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onCon
       <div className={getModalBackdropClass()} onClick={onClose}></div>
       <div className={getModalContainerClass().replace('max-w-md', 'max-w-lg')}>
         <div className="p-4 border-b flex items-center justify-between">
-          <div className="text-lg font-semibold">{filenames.length === 1 ? 'Confirm Delete' : 'Confirm Bulk Delete'}</div>
+          <div className="flex items-center gap-3">
+            {typeof icon !== 'undefined' ? <div className="text-gray-700">{icon}</div> : null}
+            <div className="text-lg font-semibold">{filenames.length === 1 ? 'Confirm Delete' : 'Confirm Bulk Delete'}</div>
+          </div>
           <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
         </div>
         <div className="p-4">
