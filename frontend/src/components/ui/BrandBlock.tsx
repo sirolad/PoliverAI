@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { getCurrentYear } from '@/lib/uiHelpers'
 
 type Props = {

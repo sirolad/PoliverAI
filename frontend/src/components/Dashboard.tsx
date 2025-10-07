@@ -20,7 +20,6 @@ import PaymentsService from '@/services/payments'
 import policyService from '@/services/policyService'
 import type { ReportMetadata } from '@/types/api'
 import transactionsService from '@/services/transactions'
-import ConditionalSplash from '@/components/ui/ConditionalSplash'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { pushEvent, addToLegacy, computeDeletedCountsForRange } from '@/store/deletedReportsSlice'
 import FeatureItem from '@/components/ui/FeatureItem'
@@ -29,12 +28,12 @@ import { getDefaultMonthRange, getCost, getCostForReport, computeSavedTotals, co
 import useRampedCounters from '@/hooks/useRampedCounters'
 import { computeTransactionTotals, isTransactionSuccess } from '@/lib/transactionHelpers'
 import { safeDispatch } from '@/lib/eventHelpers'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
   // pricing helpers live in dashboardHelpers
 
 export function Dashboard() {
   const { user, isAuthenticated, isPro, loading, refreshUser } = useAuth()
-  const [showSplash, setShowSplash] = React.useState(false)
   const subscriptionCredits = (user?.subscription_credits ?? 0)
   const purchasedCredits = (user?.credits ?? 0)
   const effectiveCredits = subscriptionCredits + purchasedCredits
@@ -230,19 +229,12 @@ export function Dashboard() {
   }, [refreshUser])
 
   // Show a short splash after authentication to give a friendly transition.
-  React.useEffect(() => {
-    if (!loading && isAuthenticated) {
-      setShowSplash(true)
-      const t = window.setTimeout(() => setShowSplash(false), 1400)
-      return () => clearTimeout(t)
-    }
-    return undefined
-  }, [loading, isAuthenticated])
+  // Dashboard no longer uses the full-screen splash component — the Landing page controls that.
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <LoadingSpinner message={"Loading your dashboard…"} size="lg" />
       </div>
     )
   }
@@ -300,7 +292,6 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-  <ConditionalSplash show={showSplash} onFinish={() => setShowSplash(false)} delayMs={200} durationMs={1200} />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">

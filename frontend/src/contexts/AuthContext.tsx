@@ -9,6 +9,7 @@ import { setAuthHeader, clearAuthHeader, applyUserUpdate, isProUser } from '@/li
 import type { User } from '@/types/api'
 import { AuthContext } from './auth-context'
 import type { AuthContextType } from './auth-context'
+import { resetState as resetPolicyState } from '@/store/policyAnalysisSlice'
 
 // Configure axios defaults (use shared helper so dev uses localhost and prod uses VITE_API_URL)
 import { getApiBaseOrigin } from '@/lib/paymentsHelpers'
@@ -114,6 +115,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     try { store.dispatch(clearToken()) } catch { /* noop */ }
+    // Clear any in-progress policy analysis state on logout so a new user doesn't see WIP data
+    try { store.dispatch(resetPolicyState()) } catch { /* noop */ }
     clearAuthHeader()
     authService.logout()
     setUser(null)
