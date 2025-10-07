@@ -422,7 +422,7 @@ export default function Credits() {
                 })}
               </div>
               <div>
-                <Button className="w-full bg-gray-100 text-black px-3 py-1 rounded" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }} icon={<X className="h-4 w-4" />} collapseToIcon>
+                <Button className="w-full bg-gray-100 text-white px-3 py-1 rounded" iconColor="text-white" onClick={() => { setSearch(''); setDateFrom(null); setDateTo(null); setStatusFilter({ pending: true, success: true, failed: true, processing: true, insufficient_funds: true, unknown: true, task: true }) }} icon={<X className="h-4 w-4" />} collapseToIcon>
                   Clear
                 </Button>
               </div>
