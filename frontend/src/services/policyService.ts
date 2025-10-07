@@ -78,7 +78,8 @@ class PolicyService {
   recommendations: Array<Record<string, unknown>>,
   evidence: Array<Record<string, unknown>>,
     documentName?: string,
-    revisionMode: 'comprehensive' | 'minimal' | 'targeted' = 'comprehensive'
+    revisionMode: 'comprehensive' | 'minimal' | 'targeted' = 'comprehensive',
+    instructions?: string
   ): Promise<{ filename: string; download_url: string }> {
     const payload = {
       original_document: original,
@@ -87,6 +88,7 @@ class PolicyService {
       evidence,
       document_name: documentName,
       revision_mode: revisionMode,
+      instructions: instructions || undefined,
     }
     return apiService.post<{ filename: string; download_url: string }>('/api/v1/generate-revision', payload)
   }

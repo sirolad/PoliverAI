@@ -3,7 +3,7 @@ import { Button } from './Button'
 import IconButton from './IconButton'
 import { getInputClassName } from '@/lib/ui/inputHelpers'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
-import { X } from 'lucide-react'
+import { X, Save } from 'lucide-react'
 
 type Props = {
   open: boolean
@@ -38,10 +38,18 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-  <div className={getModalBackdropClass()} onClick={onClose}></div>
-  <div className={getModalContainerClass()}>
+      <div className={getModalBackdropClass()} onClick={onClose}></div>
+      <div className={getModalContainerClass()}>
         <div className="p-4 border-b flex items-center justify-between">
-          <div className="text-lg font-semibold">Save Report</div>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-full bg-green-50 text-green-600">
+              <Save className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-lg font-semibold">Save Report</div>
+              <div className="text-sm text-gray-600">Enter a title that will appear in your Reports list</div>
+            </div>
+          </div>
           <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
         </div>
         <div className="p-4">
@@ -54,7 +62,7 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
               type="text"
               placeholder="Document title"
             />
-            <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()}>
+            <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()} icon={<Save className="h-4 w-4" />} iconColor="text-white">
               {isProcessing ? 'Saving...' : 'Save'}
             </Button>
           </div>

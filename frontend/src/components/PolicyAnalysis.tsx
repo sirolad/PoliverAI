@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import policyService, { type ReportDetail } from '@/services/policyService'
 import EnterTitleModal from './ui/EnterTitleModal'
+import EnterInstructionsModal from './ui/EnterInstructionsModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
 import { UploadCloud, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck, X, Bot, Lightbulb, CheckCircle2, FileText, AlertTriangle, BarChart, FileSearch, Star as LucideStar } from 'lucide-react'
@@ -49,8 +50,11 @@ export default function PolicyAnalysis() {
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [titleModalInitial, setTitleModalInitial] = useState<string>('')
   const [insufficientOpen, setInsufficientOpen] = useState(false)
+  const [instructionsModalOpen, setInstructionsModalOpen] = useState(false)
+  const [instructionsInitial] = useState<string>('')
 
   const saveProgressIntervalRef = useRef<number | null>(null)
+  const analysisFinishedRef = useRef<boolean>(false)
   const dispatch = useAppDispatch()
   const persisted = useAppSelector((s: RootState) => s.policyAnalysis)
 
@@ -164,6 +168,9 @@ export default function PolicyAnalysis() {
 
   const handleAnalyze = async () => {
     if (!file) return
+    // mark as in-progress
+    analysisFinishedRef.current = false
+
     // show quick/free analysis and clear any loaded detailed report
     setActiveTab('free')
     setDetailedReport(null)
@@ -175,24 +182,36 @@ export default function PolicyAnalysis() {
     try {
       setIsFullReportGenerated(false)
       const res = await policyService.analyzePolicyStreaming(file, 'balanced', (progressVal, msg) => {
+        // Ignore any late/straggler callbacks after we've marked the run finished
+        if (analysisFinishedRef.current) return
         setProgress(progressVal ?? 0)
         setMessage(msg ?? '')
       })
       setResult(res)
       setMessage('Completed')
       setProgress(100)
+      // stop the indeterminate progress updater immediately so it cannot
+      // later overwrite the final 100% with a value capped at 90.
+      try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
+      // mark finished so further streaming updates are ignored
+      analysisFinishedRef.current = true
       // ensure free tab displays final quick result
       setActiveTab('free')
       try { await refreshUser() } catch (e) { console.warn('Failed to refresh user after analysis', e) }
       try { safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
       setTimeout(() => {/* progress settled */}, 700)
     } catch (err: unknown) {
+      // mark finished on error too so we stop accepting callbacks
+      analysisFinishedRef.current = true
+      try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
       if (err instanceof Error) setMessage(err.message)
       else if (typeof err === 'string') setMessage(err)
       else setMessage('Analysis failed')
       setTimeout(() => {/* progress settled */}, 700)
     } finally {
       if (typeof stop === 'function') stop()
+      // defensive: ensure finished flag set in finally as well
+      analysisFinishedRef.current = true
       setTimeout(() => {/* progress settled */}, 700)
     }
   }
@@ -208,8 +227,13 @@ export default function PolicyAnalysis() {
         setIsFullReportGenerated(true)
   try { safeDispatch('report:generated', { path: resp.filename, download_url: resp.download_url }) } catch (err) { console.debug('safeDispatch failed', err) }
       }
-      setMessage('Report generated')
-      setProgress(100)
+  setMessage('Full Report Generated')
+  setProgress(100)
+  // stop the indeterminate progress updater immediately so it cannot
+  // later overwrite the final 100% with a value capped at 90.
+  try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
+  // mark finished so further interval/streaming updates are ignored
+  analysisFinishedRef.current = true
     try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
     try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
     try { safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
@@ -224,7 +248,7 @@ export default function PolicyAnalysis() {
       } catch (err) { console.debug('inspect error status failed', err) }
       setMessage(e instanceof Error ? e.message : 'Generate failed')
     } finally {
-  try { stop() } catch { /* ignore */ }
+  try { stop() } catch (err) { console.debug('stop() failed', err) }
       setTimeout(() => {/* progress settled */}, 700)
     }
   }
@@ -254,7 +278,7 @@ export default function PolicyAnalysis() {
     }
   }
 
-  const handleGenerateRevision = async () => {
+  const handleGenerateRevision = async (instructions?: string) => {
     if (!result) return
     const stop = startIndeterminateProgress('Generating revised policy...')
     try {
@@ -266,6 +290,7 @@ export default function PolicyAnalysis() {
         (result.evidence || []) as unknown as Record<string, unknown>[],
         file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy',
         'comprehensive'
+        , instructions
       )
       if (resp?.filename) {
         setRevisedReportFilename(resp.filename)
@@ -273,6 +298,8 @@ export default function PolicyAnalysis() {
         try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
         try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
         try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
+        // load the revised report into the revised tab so the user can view it
+        try { await loadDetailed(resp.filename, 'revised') } catch (err) { console.debug('loadDetailed revised failed', err) }
       }
     } catch (e: unknown) {
       try {
@@ -333,6 +360,9 @@ export default function PolicyAnalysis() {
   // coming either from a fetched detailedReport or the streaming `result`.
   const fullReportSource = (detailedReport ?? result) as (Record<string, unknown> | null)
 
+  // Dynamic header based on active tab
+  const headerTitle = activeTab === 'free' ? 'Free Analysis Result' : activeTab === 'full' ? 'Full Analysis Result' : 'Revised Policy Result'
+
   return (
     <div className="p-8 flex flex-col min-h-screen">
       <div className="flex items-center justify-between mb-6">
@@ -378,7 +408,7 @@ export default function PolicyAnalysis() {
             <Button disabled={!reportFilename} onClick={() => { if (!reportFilename) return; setTitleModalInitial(reportFilename); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
 
             {isFullReportGenerated && (
-              <Button disabled={!isFullReportGenerated || !result} onClick={handleGenerateRevision} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Revised Policy</Button>
+              <Button disabled={!isFullReportGenerated || !result} onClick={() => setInstructionsModalOpen(true)} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Revised Policy</Button>
             )}
           </div>
         ) : null}
@@ -467,14 +497,14 @@ export default function PolicyAnalysis() {
           <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold">Analysis Result</h2>
+                <h2 className="text-xl font-semibold">{headerTitle}</h2>
                 <div className="text-sm text-gray-600">Result Broken Down / Report Preview</div>
               </div>
               <div className="text-sm text-gray-600">{result ? `${result.verdict} • Score ${result.score}` : ''}</div>
             </div>
 
             {/* Progress bar and message shown during streaming analysis */}
-            {(progress > 0 && progress < 100) && (
+            {(progress > 0) && (
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm text-gray-700">{message || 'Analyzing...'}</div>
@@ -711,15 +741,15 @@ export default function PolicyAnalysis() {
                                     </div>
                                     <div className="mt-2 space-y-2 text-sm text-gray-700">
                                         {(evidence || []).length > 0 ? (
-                                        (evidence || []).slice(0, 6).map((e, i) => (
+                                        (evidence || []).slice(0, 6).map((ev, i) => (
                                           <div key={i} className="p-3 rounded shadow bg-green-700 text-white">
                                             <div className="flex items-start gap-3">
                                               <div className="p-2 rounded bg-white/10 flex-shrink-0">
                                                 <FileText className="h-5 w-5 text-white" />
                                               </div>
                                               <div className="flex-1 min-w-0">
-                                                <div className="font-semibold break-words">{String(e['article'] ?? '')}</div>
-                                                <div className="text-xs mt-1 whitespace-pre-wrap break-words">{String(e['policy_excerpt'] ?? '')}</div>
+                                                <div className="font-semibold break-words">{String(ev['article'] ?? '')}</div>
+                                                <div className="text-xs mt-1 whitespace-pre-wrap break-words">{String(ev['policy_excerpt'] ?? '')}</div>
                                               </div>
                                             </div>
                                           </div>
@@ -738,19 +768,40 @@ export default function PolicyAnalysis() {
                         <NoDataView />
                       )
                     ) : (
-                      // revised tab: uses saved file content (markdown)
+                      // revised tab: uses saved file content (markdown) or a persisted file (PDF)
                       detailedContent ? (
                         <div className="prose max-w-none text-sm" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(detailedContent) }} />
                       ) : (
-                        <div className="h-full w-full flex items-center justify-center">
-                          <div className="text-center p-6">
-                            <div className="mx-auto w-40 h-40 flex items-center justify-center rounded-full bg-gray-100">
-                              <svg className="h-20 w-20 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        // If we have a persisted detailedReport but no textual content
+                        // (common for PDFs), attempt to embed the PDF via the download
+                        // endpoint so users can preview the revised policy inline.
+                        (detailedReport && (
+                          // prefer an explicit download_url returned by the backend
+                          ((detailedReport as any).download_url && ((detailedReport as any).download_url as string)) ||
+                          // otherwise build the local download endpoint from filename
+                          (detailedReport.filename ? getReportDownloadUrl(detailedReport.filename) : null)
+                        )) ? (
+                          <div className="h-full w-full min-h-0">
+                            <div className="mb-2 text-sm text-gray-600">Revised policy (preview)</div>
+                            <div className="h-[70vh]">
+                              <iframe
+                                title={detailedReport?.filename ?? 'revised-policy'}
+                                src={(detailedReport && ((detailedReport as any).download_url ? (detailedReport as any).download_url : getReportDownloadUrl(detailedReport.filename))) as string}
+                                className="w-full h-full border rounded"
+                              />
                             </div>
-                            <div className="mt-4 text-xl font-semibold">No detailed content yet</div>
-                            <div className="mt-2 text-sm text-gray-500">This report has not been generated or persisted yet. Try generating the Full Report or refresh later.</div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center">
+                            <div className="text-center p-6">
+                              <div className="mx-auto w-40 h-40 flex items-center justify-center rounded-full bg-gray-100">
+                                <svg className="h-20 w-20 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                              </div>
+                              <div className="mt-4 text-xl font-semibold">No detailed content yet</div>
+                              <div className="mt-2 text-sm text-gray-500">This report has not been generated or persisted yet. Try generating the Full Report or refresh later.</div>
+                            </div>
+                          </div>
+                        )
                       )
                     )
                   )}
@@ -771,6 +822,22 @@ export default function PolicyAnalysis() {
             try { await handleSaveReport(reportFilename, title) } catch (e) { console.warn('save from title modal failed', e) }
             setTitleModalOpen(false)
             try { safeDispatch('transactions:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
+          }}
+        />
+      )}
+      {instructionsModalOpen && (
+        <EnterInstructionsModal
+          open={instructionsModalOpen}
+          initial={instructionsInitial}
+          onClose={() => setInstructionsModalOpen(false)}
+          onConfirm={async (instructions) => {
+            // If empty string, backend will use default guidance
+            try {
+              await handleGenerateRevision(instructions || undefined)
+              setActiveTab('revised')
+            } catch (err) {
+              console.debug('generate revision failed', err)
+            }
           }}
         />
       )}

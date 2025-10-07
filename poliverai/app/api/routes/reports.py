@@ -65,6 +65,11 @@ class PolicyRevisionRequest(BaseModel):
     evidence: list[dict[str, Any]]
     document_name: str | None = "Policy Document"
     revision_mode: str = "comprehensive"  # comprehensive, minimal, or targeted
+    # Optional free-form instructions from the user to guide the revision model.
+    # If omitted, the system will use default revision guidance generated from
+    # findings and recommendations. Clients can pass custom instructions to
+    # request tone, level of detail, or other preferences.
+    instructions: str | None = None
 
 
 class ReportResponse(BaseModel):
@@ -438,6 +443,13 @@ Provide the complete revised policy document below:
     # Use OpenAI to generate the revision
     init = _init()
 
+    # If the caller supplied free-form instructions, include them so the
+    # chat model receives both the structured revision guidance and any
+    # additional natural-language instructions the user provided.
+    instructions_text = ''
+    if getattr(req, 'instructions', None):
+        instructions_text = f"\n\nADDITIONAL INSTRUCTIONS:\n{req.instructions}\n\n"
+
     messages = [
         {
             "role": "system",
@@ -450,7 +462,7 @@ Provide the complete revised policy document below:
         {
             "role": "user",
             "content": (
-                f"{revision_instructions}\n\nORIGINAL POLICY DOCUMENT:\n{req.original_document}"
+                f"{revision_instructions}{instructions_text}\n\nORIGINAL POLICY DOCUMENT:\n{req.original_document}"
             ),
         },
     ]
@@ -578,15 +590,11 @@ async def generate_verification_report(
                 transactions.add(tx)
                 charged = True
             except Exception:
-                import logging
-
                 logging.exception('Failed to record transaction for pre-charge of report generation')
         except HTTPException:
             # Propagate auth/insufficient errors before doing heavy work
             raise
         except Exception:
-            import logging
-
             logging.exception('Unexpected error while attempting to pre-charge for verification report')
             raise HTTPException(status_code=500, detail='Failed to charge for verification report')
 
@@ -616,8 +624,6 @@ async def generate_verification_report(
                     uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, filepath)
             except Exception:
                 # Log upload errors so we can diagnose why GCS upload failed
-                import logging
-
                 logging.exception('Failed to upload report to GCS')
                 gcs_url = None
 
@@ -667,8 +673,6 @@ async def generate_verification_report(
                     inserted_id = inserted.inserted_id
             except Exception:
                 # Do not hard-fail report creation if DB logging fails, but log details
-                import logging
-
                 logging.exception('Failed to persist verification report record to Mongo')
 
             # If we successfully pre-charged earlier, mark the report doc as charged
@@ -792,8 +796,6 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
             charged = True
         except Exception:
             # log but continue; credits were already deducted
-            import logging
-
             logging.exception('Failed to record transaction for revised policy pre-charge')
 
         # Perform the AI revision
@@ -903,8 +905,6 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
                 }
                 coll.insert_one(report_doc)
         except Exception:
-            import logging
-
             logging.exception('Failed to persist revised policy record to Mongo or upload to GCS (post-export)')
 
         logging.info(f"generate_policy_revision: successfully exported report {filename}")
@@ -957,8 +957,6 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
                 }
                 coll.insert_one(report_doc)
         except Exception:
-            import logging
-
             logging.exception('Failed to persist revised policy record to Mongo or upload to GCS')
 
     logging.info(f"generate_policy_revision: fallback persisted text report {filename}")
@@ -1158,8 +1156,6 @@ async def get_detailed_report(filename: str, current_user: User = CURRENT_USER_D
                 return JSONResponse(response_doc)
     except Exception:
         # Non-fatal: continue to file fallback
-        import logging
-
         logging.exception('Failed to fetch stored report content from Mongo; falling back to file')
 
     # File fallback: try .md, .txt, or any file with the filename
@@ -1237,8 +1233,6 @@ async def delete_user_report(filename: str, current_user: User = CURRENT_USER_DE
                     deleted_from_gcs = delete_object(bucket, object_path)
             except Exception:
                 # log and continue with DB deletion
-                import logging
-
                 logging.exception("Failed to delete object from GCS for report %s", filename)
 
         # Delete DB record
@@ -1263,7 +1257,6 @@ async def bulk_delete_reports(req: BulkDeleteRequest, current_user: User = CURRE
         raise HTTPException(status_code=404, detail="No persistent report storage configured")
 
     try:
-        import logging
         logging.info("bulk_delete_reports called for user %s with filenames: %s", getattr(current_user, 'id', None), req.filenames)
         mdb = MongoUserDB(mongo_uri)
         coll = mdb.db.get_collection("reports")
@@ -1366,14 +1359,11 @@ async def save_report(
                 uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, str(filepath))
         except Exception:
             # don't fail if upload not possible; continue to insert DB record
-            import logging
-
             logging.exception('Failed to upload report to GCS on save')
             gcs_url = None
 
         # Insert into Mongo 'reports' collection if available
         try:
-            import logging
             logger = logging.getLogger(__name__)
             logger.info('save_report called user=%s filename=%s is_quick=%s', getattr(current_user, 'email', None), req.filename, getattr(req, 'is_quick', None))
             mongo_uri = os.getenv("MONGO_URI")
@@ -1508,8 +1498,6 @@ async def save_report(
                     logger.exception('Error while attempting to charge for saved report')
         except Exception:
             # Swallow DB errors but log them so persistence issues are visible in logs
-            import logging
-
             logging.exception('Failed to persist saved report record to Mongo')
 
         return ReportResponse(filename=req.filename, path=str(filepath), download_url=gcs_url or f"/api/v1/reports/download/{req.filename}")
