@@ -104,7 +104,9 @@ if [ "$FORCE" -ne 1 ]; then
     echo "NOTE: This will not drop existing collections (merging behavior)."
   fi
   read -rp "Proceed? (yes/no): " ans
-  if [ "$(echo "$ans" | tr '[:upper:]' '[:lower:]')" != "yes" ]; then
+  # accept 'yes' or short 'y' (case-insensitive) as confirmation
+  ans_lc=$(echo "$ans" | tr '[:upper:]' '[:lower:]')
+  if [ "$ans_lc" != "yes" ] && [ "$ans_lc" != "y" ]; then
     echo "Aborting restore."; exit 0
   fi
 fi

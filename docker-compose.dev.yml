@@ -26,14 +26,14 @@ services:
     volumes:
       - ./:/app
 
-  mongo:
-    image: mongo:6.0
-    container_name: poliverai-mongo
-    restart: unless-stopped
-    volumes:
-      - poliverai-mongo-data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=poliverai
+  # mongo:
+  #   image: mongo:6.0
+  #   container_name: poliverai-mongo
+  #   restart: unless-stopped
+  #   volumes:
+  #     - poliverai-mongo-data:/data/db
+  #   environment:
+  #     - MONGO_INITDB_DATABASE=poliverai
 
   frontend_dev:
     image: node:20-alpine
@@ -65,5 +65,5 @@ services:
 
 # Usage: docker compose -f docker-compose.dev.yml up --build
 
-volumes:
-  poliverai-mongo-data:
+# volumes:
+#   poliverai-mongo-data:

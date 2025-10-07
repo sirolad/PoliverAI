@@ -123,11 +123,12 @@ export function Register() {
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
                 disabled={isSubmitting}
+                icon={<UserPlus className="h-4 w-4" />}
               >
                 <LoadingLabel
                   loading={isSubmitting}
-                  loadingNode={<><UserPlus className="h-4 w-4"/> Creating account...</>}
-                  normalNode={<><UserPlus className="h-4 w-4"/> Create Account</>}
+                  loadingNode={"Creating account..."}
+                  normalNode={"Create Account"}
                 />
               </Button>
 

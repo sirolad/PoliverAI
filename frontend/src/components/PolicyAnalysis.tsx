@@ -5,6 +5,7 @@ import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
 import { UploadCloud, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck, X, Bot, Lightbulb } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { Progress } from '@/components/ui/progress'
 import FindingCard from '@/components/ui/FindingCard'
 import SidebarFindingItem from '@/components/ui/SidebarFindingItem'
 import InsufficientCreditsModal from './ui/InsufficientCreditsModal'
@@ -45,7 +46,11 @@ export default function PolicyAnalysis() {
   const persisted = useAppSelector((s: RootState) => s.policyAnalysis)
 
   // hydrate persisted UI
+  const hydratedRef = useRef(false)
+  // hydrate persisted UI
   useEffect(() => {
+    // Only hydrate once on initial mount to avoid overwriting live progress/state
+    if (hydratedRef.current) return
     if (persisted && persisted.fileName) {
       if (typeof persisted.progress === 'number') setProgress(persisted.progress)
       if (persisted.message) setMessage(persisted.message)
@@ -53,10 +58,13 @@ export default function PolicyAnalysis() {
       if (persisted.reportFilename) setReportFilename(persisted.reportFilename)
       if (typeof persisted.isFullReportGenerated === 'boolean') setIsFullReportGenerated(persisted.isFullReportGenerated)
     }
+    // mark hydration complete so the persist effect doesn't immediately write back
+    hydratedRef.current = true
   }, [persisted])
 
-  // persist UI
+  // persist UI (but skip initial hydration to avoid write loop)
   useEffect(() => {
+    if (!hydratedRef.current) return
     dispatch(
       setPolicyState({
         fileName: file ? file.name : null,
@@ -147,6 +155,7 @@ export default function PolicyAnalysis() {
     setDetailedContent(null)
     setProgress(0)
     setMessage('Starting...')
+    const stop = startIndeterminateProgress('Analyzing...')
     // progress shown by progress value
     try {
       setIsFullReportGenerated(false)
@@ -166,6 +175,9 @@ export default function PolicyAnalysis() {
       if (err instanceof Error) setMessage(err.message)
       else if (typeof err === 'string') setMessage(err)
       else setMessage('Analysis failed')
+      setTimeout(() => {/* progress settled */}, 700)
+    } finally {
+      if (typeof stop === 'function') stop()
       setTimeout(() => {/* progress settled */}, 700)
     }
   }
@@ -197,7 +209,7 @@ export default function PolicyAnalysis() {
       } catch (err) { console.debug('inspect error status failed', err) }
       setMessage(e instanceof Error ? e.message : 'Generate failed')
     } finally {
-      stop()
+  try { stop() } catch { /* ignore */ }
       setTimeout(() => {/* progress settled */}, 700)
     }
   }
@@ -267,10 +279,16 @@ export default function PolicyAnalysis() {
       const resp = await policyService.getDetailedReport(fn)
       setDetailedReport(resp ?? null)
       setDetailedContent(resp?.content ?? null)
+      // When detailed content is available, ensure the progress UI reflects completion
+      setMessage('Loaded')
+      setProgress(100)
     } catch (e) {
       console.warn('getDetailedReport failed', e)
       setDetailedReport(null)
       setDetailedContent(null)
+      // on failure, reset progress/message so UI doesn't hang at an in-between state
+      setMessage('Failed to load report')
+      setProgress(0)
     } finally {
       setLoadingDetailed(false)
     }
@@ -366,8 +384,8 @@ export default function PolicyAnalysis() {
                 <div className="mt-3 flex items-center gap-3">
                   <Button type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click() }} className="border border-blue-200 text-blue-700 px-3 py-1 rounded-md shadow-sm hover:bg-blue-50" icon={<UploadCloud className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Browse files</Button>
                   {file ? (
-                    <Button type="button" onClick={(e) => { e.stopPropagation(); setFile(null) }} className="text-sm text-red-600" icon={<X className="h-4 w-4" />} iconColor="text-red-600" collapseToIcon>Remove</Button>
-                  ) : null}
+                      <Button type="button" onClick={(e) => { e.stopPropagation(); setFile(null) }} className="px-3 py-1 bg-red-600 text-white rounded-md" icon={<X className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Remove</Button>
+                    ) : null}
                 </div>
               </div>
             </div>
@@ -418,6 +436,17 @@ export default function PolicyAnalysis() {
               </div>
               <div className="text-sm text-gray-600">{result ? `${result.verdict} • Score ${result.score}` : ''}</div>
             </div>
+
+            {/* Progress bar and message shown during streaming analysis */}
+            {(progress > 0 && progress < 100) && (
+              <div className="mb-3">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm text-gray-700">{message || 'Analyzing...'}</div>
+                  <div className="text-sm text-gray-500">{Math.min(100, Math.max(0, progress))}%</div>
+                </div>
+                <Progress value={Math.min(100, Math.max(0, progress))} className="h-2" />
+              </div>
+            )}
 
             <div className="mb-3">
               <div className="flex items-center">

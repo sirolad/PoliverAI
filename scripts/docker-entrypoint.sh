@@ -9,6 +9,15 @@ set -euo pipefail
 PORT=${PORT:-8080}
 NGINX_CONF=/etc/nginx/conf.d/default.conf
 
+# If we're running inside Cloud Run, the platform sets K_SERVICE. In that case
+# prefer to run uvicorn directly on $PORT (SKIP_NGINX=1) unless explicitly
+# overridden. This ensures the main process listens on the container's $PORT
+# which Cloud Run expects for health checks.
+if [ -n "${K_SERVICE:-}" ] && [ -z "${SKIP_NGINX+x}" ]; then
+    echo "Detected Cloud Run (K_SERVICE=${K_SERVICE:-}); defaulting SKIP_NGINX=1"
+    SKIP_NGINX=1
+fi
+
 cat > ${NGINX_CONF} <<'NGINX'
 server {
     listen       PORT_PLACEHOLDER default_server;
@@ -91,6 +100,11 @@ NGINX
 # Substitute the runtime PORT into the generated nginx config
 sed -i "s/PORT_PLACEHOLDER/${PORT}/g" ${NGINX_CONF}
 
+# Print the generated nginx config to the container stdout so it appears in Cloud Run logs
+echo "===== GENERATED NGINX CONFIG (${NGINX_CONF}) ====="
+cat ${NGINX_CONF} || true
+echo "===== END NGINX CONFIG ====="
+
 # Start uvicorn in the background on 127.0.0.1:8000
 # Ensure the application package is importable from the application root
 export PYTHONPATH="/app:${PYTHONPATH:-}"
@@ -102,16 +116,36 @@ if [ "${SKIP_NGINX:-0}" = "1" ] ; then
     exec /opt/venv/bin/uvicorn poliverai.app.main:app --host 0.0.0.0 --port ${PORT} --app-dir /app
 else
     # Run uvicorn bound to loopback and start nginx as the front-facing server
-    /opt/venv/bin/uvicorn poliverai.app.main:app --host 127.0.0.1 --port 8000 --app-dir /app &
+    # Redirect uvicorn stdout/stderr to a logfile so we can surface startup errors
+    UVICORN_LOG=/tmp/uvicorn.log
+    rm -f ${UVICORN_LOG}
+    echo "Starting uvicorn; logs -> ${UVICORN_LOG}"
+    /opt/venv/bin/uvicorn poliverai.app.main:app --host 127.0.0.1 --port 8000 --app-dir /app > ${UVICORN_LOG} 2>&1 &
+    UVICORN_PID=$!
+
+    # Give uvicorn a short moment to begin initializing
+    sleep 1
 
     # Wait for uvicorn to warm up and respond on the local /api/health endpoint
     # This avoids nginx returning 502 while the backend initializes.
-    WAIT_RETRIES=${WAIT_RETRIES:-20}
-    WAIT_SLEEP=${WAIT_SLEEP:-0.5}
+    # Increase retries/sleep to accommodate slower startups (DB connections, warmups)
+    WAIT_RETRIES=${WAIT_RETRIES:-60}
+    WAIT_SLEEP=${WAIT_SLEEP:-1}
     attempt=1
     echo "Waiting for uvicorn to become healthy on http://127.0.0.1:8000/api/health (max ${WAIT_RETRIES} attempts)"
     while [ $attempt -le ${WAIT_RETRIES} ]; do
-        if curl -sS --max-time 1 http://127.0.0.1:8000/api/health >/dev/null 2>&1; then
+        # If uvicorn process exited, dump the log and exit (fail fast)
+        if ! kill -0 ${UVICORN_PID} >/dev/null 2>&1; then
+            echo "uvicorn process (pid ${UVICORN_PID}) has exited unexpectedly. Dumping log to stdout:" >&2
+            sed -n '1,200p' ${UVICORN_LOG} || true
+            echo "--- end uvicorn log ---" >&2
+            exit 5
+        fi
+
+        echo "[startup-diagnostics] curl -sS -D - --max-time 2 http://127.0.0.1:8000/api/health || true"
+        # Show headers and body when possible; don't fail the script if curl errors
+        curl -sS -D - --max-time 2 http://127.0.0.1:8000/api/health || true
+        if curl -sS --max-time 2 http://127.0.0.1:8000/api/health >/dev/null 2>&1; then
             echo "uvicorn is up (attempt ${attempt})"
             break
         fi
@@ -119,7 +153,16 @@ else
         sleep ${WAIT_SLEEP}
     done
     if [ $attempt -gt ${WAIT_RETRIES} ]; then
-        echo "Warning: uvicorn did not respond within ${WAIT_RETRIES} attempts; starting nginx anyway"
+        echo "Error: uvicorn did not respond within ${WAIT_RETRIES} attempts; dumping ${UVICORN_LOG} and exiting" >&2
+        sed -n '1,400p' ${UVICORN_LOG} || true
+        echo "--- end uvicorn log ---" >&2
+        # Fail the container so Cloud Run restarts it instead of running nginx and returning 502s.
+        exit 6
+    fi
+
+    # If uvicorn is healthy, start a background tail so its logs appear in container logs
+    if [ -f ${UVICORN_LOG} ]; then
+      tail -n +1 -F ${UVICORN_LOG} &
     fi
 
     nginx -g 'daemon off;'

@@ -11,11 +11,11 @@ import {
   Zap,
   Upload,
   Star,
-  
   CreditCard,
-  Trash2
+  Trash2,
+  ArrowRight,
+  RefreshCcw
 } from 'lucide-react'
-import { ArrowRight, RefreshCcw } from 'lucide-react'
 import PaymentsService from '@/services/payments'
 import policyService from '@/services/policyService'
 import type { ReportMetadata } from '@/types/api'
@@ -26,6 +26,7 @@ import { pushEvent, addToLegacy, computeDeletedCountsForRange } from '@/store/de
 import FeatureItem from '@/components/ui/FeatureItem'
 import type { Feature } from '@/types/feature'
 import { getDefaultMonthRange, getCost, getCostForReport, computeSavedTotals, computeDerivedFree, formatRangeLabel } from '@/lib/dashboardHelpers'
+import useRampedCounters from '@/hooks/useRampedCounters'
 import { computeTransactionTotals, isTransactionSuccess } from '@/lib/transactionHelpers'
 import { safeDispatch } from '@/lib/eventHelpers'
 
@@ -39,6 +40,7 @@ export function Dashboard() {
   const effectiveCredits = subscriptionCredits + purchasedCredits
   const hasCredits = effectiveCredits > 0
   const navigate = useNavigate()
+  
   
 
   // Report state: fetch user reports and compute counts/costs for dashboard
@@ -114,6 +116,53 @@ export function Dashboard() {
   }, [dispatch])
 
   const displayedDeletedCounts = computeDeletedCountsForRange(deletedState.events, deletedState.legacyCounts, reportsRange)
+
+  // When a dashboard "load" is complete: userReports and txTotals have been fetched
+  const dashboardLoaded = !loading && (userReports !== null) && (txTotals !== null)
+
+  // Saved files / totals (driven by userReports)
+  const savedTargets = {
+    totalSavedFiles: Number(totalSavedFiles ?? 0),
+    fullReportsSaved: Number(fullReportsSaved ?? 0),
+    revisedDocsSaved: Number(revisedDocsSaved ?? 0),
+    freeReportsSaved: Number(freeReportsSavedDisplay ?? 0),
+    totalSavedCredits: Number(totalSavedCredits ?? 0),
+    totalSavedUsd: Number(totalSavedUsd ?? 0),
+  }
+  const animatedSaved = useRampedCounters(savedTargets, dashboardLoaded, { durationMs: 1400, maxSteps: 6, minIntervalMs: 60 })
+
+  // Deleted files (from deleted state)
+  const deletedTargets = {
+    deletedFull: Number(displayedDeletedCounts.full ?? 0),
+    deletedRevision: Number(displayedDeletedCounts.revision ?? 0),
+    deletedFree: Number(displayedDeletedCounts.free ?? 0),
+    deletedTotal: Number((displayedDeletedCounts.full || 0) + (displayedDeletedCounts.revision || 0) + (displayedDeletedCounts.free || 0)),
+  }
+  const animatedDeleted = useRampedCounters(deletedTargets, dashboardLoaded, { durationMs: 1200, maxSteps: 6, minIntervalMs: 60 })
+
+  // Completed reports counts
+  const completedTargets = {
+    fullReportsDone: Number(fullReportsDone ?? 0),
+    revisedCompleted: Number(revisedCompleted ?? 0),
+    freeReportsCompleted: Number(freeReportsCompleted ?? 0),
+  }
+  const animatedCompleted = useRampedCounters(completedTargets, dashboardLoaded, { durationMs: 1200, maxSteps: 6, minIntervalMs: 60 })
+
+  // Transaction totals
+  const txTargets = {
+    total_bought_credits: Number(txTotals?.total_bought_credits ?? 0),
+    total_spent_credits: Number(txTotals?.total_spent_credits ?? 0),
+    total_subscription_usd: Number(txTotals?.total_subscription_usd ?? 0),
+  }
+  const animatedTx = useRampedCounters(txTargets, dashboardLoaded, { durationMs: 1400, maxSteps: 6, minIntervalMs: 80 })
+
+  // Animate the top credit numbers once the dashboard is loaded
+  const creditsTargets = {
+    subscriptionCredits: subscriptionCredits,
+    purchasedCredits: purchasedCredits,
+    effectiveCredits: effectiveCredits,
+  }
+  const animatedCredits = useRampedCounters(creditsTargets, dashboardLoaded, { durationMs: 1600, maxSteps: 6, minIntervalMs: 80 })
 
   // Prefer server-provided free count; fall back to derived value, then client-filtered free count
   // Prefer derived value, then client-filtered free count
@@ -334,8 +383,9 @@ export function Dashboard() {
                       window.dispatchEvent(new CustomEvent('payment:result', { detail: { success: false, title: 'Payment Failed', message: msg } }))
                     }
                   }}
+                  icon={<ArrowRight className="h-4 w-4" />}
                 >
-                  <><ArrowRight className="h-4 w-4 mr-2" />Learn More</>
+                  Learn More
                 </Button>
               </div>
             </CardContent>
@@ -344,15 +394,15 @@ export function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-gray-600">Subscription credits</div>
-                <div className="text-xl font-semibold">{subscriptionCredits}</div>
+                <div className="text-xl font-semibold">{dashboardLoaded ? animatedCredits.subscriptionCredits : null}</div>
               </div>
               <div>
                 <div className="text-sm text-gray-600">Purchased credits</div>
-                <div className="text-xl font-semibold">{purchasedCredits}</div>
+                <div className="text-xl font-semibold">{dashboardLoaded ? animatedCredits.purchasedCredits : null}</div>
               </div>
               <div>
                 <div className="text-sm text-gray-600">Total available</div>
-                <div className="text-xl font-semibold">{effectiveCredits}</div>
+                <div className="text-xl font-semibold">{dashboardLoaded ? animatedCredits.effectiveCredits : null}</div>
               </div>
             </div>
             {user?.subscription_expires && (
@@ -373,19 +423,19 @@ export function Dashboard() {
               <div className="grid grid-cols-4 gap-4">
                 <div>
                   <div className="text-sm text-gray-600">Total files saved</div>
-                  <div className="text-lg font-semibold">{totalSavedFiles !== null ? totalSavedFiles : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedSaved.totalSavedFiles : null}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">Total full reports saved</div>
-                  <div className="text-lg font-semibold">{fullReportsSaved !== null ? fullReportsSaved : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedSaved.fullReportsSaved : null}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">Total revised policies saved</div>
-                  <div className="text-lg font-semibold">{revisedDocsSaved !== null ? revisedDocsSaved : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedSaved.revisedDocsSaved : null}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">Total free reports saved</div>
-                  <div className="text-lg font-semibold">{freeReportsSavedDisplay !== null ? freeReportsSavedDisplay : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedSaved.freeReportsSaved : null}</div>
                 </div>
               </div>
 
@@ -395,19 +445,19 @@ export function Dashboard() {
                 <div className="grid grid-cols-4 gap-4">
                   <div>
                     <div className="text-sm text-gray-600">Deleted full reports</div>
-                    <div className="text-lg font-semibold">{displayedDeletedCounts.full}</div>
+                    <div className="text-lg font-semibold">{dashboardLoaded ? animatedDeleted.deletedFull : null}</div>
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Deleted revised policies</div>
-                    <div className="text-lg font-semibold">{displayedDeletedCounts.revision}</div>
+                    <div className="text-lg font-semibold">{dashboardLoaded ? animatedDeleted.deletedRevision : null}</div>
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Deleted free reports</div>
-                    <div className="text-lg font-semibold">{displayedDeletedCounts.free}</div>
+                    <div className="text-lg font-semibold">{dashboardLoaded ? animatedDeleted.deletedFree : null}</div>
                   </div>
                   <div>
                     <div className="text-sm text-gray-600">Total deleted files</div>
-                    <div className="text-lg font-semibold">{(displayedDeletedCounts.full || 0) + (displayedDeletedCounts.revision || 0) + (displayedDeletedCounts.free || 0)}</div>
+                    <div className="text-lg font-semibold">{dashboardLoaded ? animatedDeleted.deletedTotal : null}</div>
                   </div>
                 </div>
               </div>
@@ -427,19 +477,19 @@ export function Dashboard() {
                   <input type="date" value={completedRange.to ?? ''} onChange={(e) => setCompletedRange({ ...completedRange, to: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                 <div>
                   <div className="text-sm text-gray-600">Full reports completed</div>
-                  <div className="text-lg font-semibold">{fullReportsDone !== null ? fullReportsDone : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedCompleted.fullReportsDone : null}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">Revised policies completed</div>
-                  <div className="text-lg font-semibold">{revisedCompleted !== null ? revisedCompleted : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedCompleted.revisedCompleted : null}</div>
                 </div>
 
                 <div>
                   <div className="text-sm text-gray-600">Free reports completed</div>
-                  <div className="text-lg font-semibold">{freeReportsCompleted !== null ? freeReportsCompleted : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedCompleted.freeReportsCompleted : null}</div>
                   <div className="text-xs text-gray-500">Cost per free report: 0 credits</div>
                 </div>
               </div>
@@ -484,17 +534,17 @@ export function Dashboard() {
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <div className="text-sm text-gray-600">Total credits bought</div>
-                  <div className="text-lg font-semibold">{txTotals?.total_bought_credits ?? '—'}</div>
-                  <div className="text-sm text-gray-500">{txTotals?.total_bought_credits ? `${txTotals.total_bought_credits} credits` : ''}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedTx.total_bought_credits : null}</div>
+                  <div className="text-sm text-gray-500">{dashboardLoaded && txTotals?.total_bought_credits ? `${txTotals.total_bought_credits} credits` : ''}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">Total credits spent</div>
-                  <div className="text-lg font-semibold">{txTotals?.total_spent_credits ?? '—'}</div>
-                  <div className="text-sm text-gray-500">{txTotals?.total_spent_credits ? `${txTotals.total_spent_credits} credits` : ''}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedTx.total_spent_credits : null}</div>
+                  <div className="text-sm text-gray-500">{dashboardLoaded && txTotals?.total_spent_credits ? `${txTotals.total_spent_credits} credits` : ''}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">Total subscription payments (USD)</div>
-                  <div className="text-lg font-semibold">{txTotals?.total_subscription_usd ? `$${txTotals.total_subscription_usd.toFixed(2)}` : '—'}</div>
+                  <div className="text-lg font-semibold">{dashboardLoaded && txTotals?.total_subscription_usd ? `$${animatedTx.total_subscription_usd.toFixed(2)}` : null}</div>
                 </div>
               </div>
               <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(txRange, defaultFrom, defaultTo)}</div>

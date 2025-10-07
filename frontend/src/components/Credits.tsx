@@ -4,6 +4,7 @@ import useAuth from '@/contexts/useAuth'
 import transactionsService from '@/services/transactions'
 import PaymentsService from '@/services/payments'
 import EnterCreditsModal from '@/components/ui/EnterCreditsModal'
+import useRampedCounters from '@/hooks/useRampedCounters'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
 import type { Transaction } from '@/services/transactions'
 import type { TransactionStatus, StatusFilter } from '@/types/transaction'
@@ -108,6 +109,13 @@ export default function Credits() {
     window.addEventListener('transactions:refresh', h)
     return () => window.removeEventListener('transactions:refresh', h)
   }, [refreshUser, fetchTx])
+  
+  // Ramped counters for top totals: wait until auth and transactions have finished loading
+  const subscriptionCreditsTop = user?.subscription_credits ?? 0
+  const purchasedCreditsTop = user?.credits ?? 0
+  const totalSpentTop = totalSpentCredits ?? 0
+  const statsLoaded = !loading && !isLoading
+  const animatedTop = useRampedCounters({ subscriptionCredits: subscriptionCreditsTop, purchasedCredits: purchasedCreditsTop, totalSpent: totalSpentTop }, statsLoaded, { durationMs: 1400, maxSteps: 6, minIntervalMs: 60 })
   const getTxStatus = (t: Transaction): TransactionStatus => {
     const s = t.status
     const et = (t.event_type || '').toString().toLowerCase()
@@ -205,9 +213,6 @@ export default function Credits() {
 
           {/* On wide screens (>1276) show a compact credits summary inline */}
           {isWide1276 && (() => {
-            const subscriptionCredits = user?.subscription_credits ?? 0
-            const purchasedCredits = user?.credits ?? 0
-            const spentCredits = totalSpentCredits ?? 0
             return (
               <div className="flex items-center gap-4">
                 <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
@@ -216,7 +221,7 @@ export default function Credits() {
                   </div>
                   <div>
                     <div className="text-gray-600">Subscription</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{subscriptionCredits} credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.subscriptionCredits : null}</div>
                   </div>
                 </div>
                 <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
@@ -225,7 +230,7 @@ export default function Credits() {
                   </div>
                   <div>
                     <div className="text-gray-600">Purchased</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{purchasedCredits} credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.purchasedCredits : null}</div>
                   </div>
                 </div>
                 <div className={`bg-white rounded shadow text-sm flex items-center gap-3 ${isCompactUnderHeader ? 'p-2' : 'p-3'}`}>
@@ -234,7 +239,7 @@ export default function Credits() {
                   </div>
                   <div>
                     <div className="text-gray-600">Total Spent</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{spentCredits} credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.totalSpent : null}</div>
                   </div>
                 </div>
               </div>
@@ -262,8 +267,8 @@ export default function Credits() {
                     <Shield className={`${isCompactUnderHeader ? 'h-8 w-8' : 'h-10 w-10'} text-blue-600`} />
                   </div>
                   <div>
-                    <div className="text-gray-600">Subscription Credits</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{subscriptionCredits} credits</div>
+              <div className="text-gray-600">Subscription Credits</div>
+              <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.subscriptionCredits : null} credits</div>
                     {!isCompactUnderHeader && <div className="text-xs text-gray-500">${subscriptionUsd.toFixed(2)} USD equivalent</div>}
                   </div>
                 </div>
@@ -274,7 +279,7 @@ export default function Credits() {
                   </div>
                   <div>
                     <div className="text-gray-600">Purchased Credits</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{purchasedCredits} credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.purchasedCredits : null} credits</div>
                     {!isCompactUnderHeader && <div className="text-xs text-gray-500">${purchasedUsd.toFixed(2)} USD equivalent</div>}
                     {!isCompactUnderHeader && <div className="text-xs text-gray-500">Total available: {total} credits</div>}
                   </div>
@@ -286,7 +291,7 @@ export default function Credits() {
                   </div>
                   <div>
                     <div className="text-gray-600">Total Spent</div>
-                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{spentCredits} credits</div>
+                    <div className={`${isCompactUnderHeader ? 'font-semibold' : 'font-semibold text-lg'}`}>{statsLoaded ? animatedTop.totalSpent : null} credits</div>
                     {!isCompactUnderHeader && <div className="text-xs text-gray-500">${spentUsd.toFixed(2)} USD spent</div>}
                   </div>
                 </div>
@@ -329,8 +334,7 @@ export default function Credits() {
           }
         }}
       />
-      {isLoading && <div>Loading...</div>}
-      {error && <div className="text-red-600">{error}</div>}
+  {error && <div className="text-red-600">{error}</div>}
 
       <div className={`flex-1 ${isMobile ? 'flex flex-col' : 'flex gap-6'}`}>
         {/* Sidebar filters: render as sidebar on desktop, as collapsible block above list on mobile */}
@@ -366,7 +370,7 @@ export default function Credits() {
                 </Button>
               </div>
               <div className="mt-2">
-                <Button className="w-full bg-white border text-black px-3 py-1 rounded" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }} icon={<RefreshCcw className="h-4 w-4" />} collapseToIcon>
+                <Button className="w-full bg-green-600 text-white px-3 py-1 rounded" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }} icon={<RefreshCcw className="h-4 w-4" />} collapseToIcon>
                   Refresh
                 </Button>
               </div>
@@ -418,7 +422,7 @@ export default function Credits() {
               </Button>
             </div>
             <div className="mt-2">
-              <Button className="w-full bg-white border text-black px-3 py-1 rounded" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }} icon={<RefreshCcw className="h-4 w-4" />} collapseToIcon>
+              <Button className="w-full bg-green-600 text-white px-3 py-1 rounded" onClick={async () => { try { await fetchTx(); try { await refreshUser() } catch { /* ignore */ } } catch (e) { console.error('refresh failed', e) } }} icon={<RefreshCcw className="h-4 w-4" />} collapseToIcon>
                 Refresh
               </Button>
             </div>
@@ -445,6 +449,21 @@ export default function Credits() {
 
         {/* List area */}
         <div className="flex-1 flex flex-col">
+          {isLoading ? (
+            <div className="h-full w-full flex items-center justify-center">
+              <div className="text-center">
+                <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-white shadow">
+                  <svg className="animate-spin h-12 w-12 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  </svg>
+                </div>
+                <div className="mt-4 text-lg font-semibold">Loading transactions…</div>
+                <div className="mt-2 text-sm text-gray-500">This may take a moment — fetching your transaction history.</div>
+              </div>
+            </div>
+          ) : (
+            <>
             <div className="mb-2 flex items-center justify-between">
             <div className="text-sm text-gray-600">Showing {filtered.length} of {total ?? items.length} transactions</div>
             <div className="flex items-center gap-3">
@@ -454,9 +473,9 @@ export default function Credits() {
               </select>
               {!isMobile && <div className="text-sm text-gray-600">Page</div>}
               <div className="inline-flex items-center gap-2">
-                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="flex items-center"><ChevronLeft className="h-4 w-4"/>{!isMobile && <span className="ml-1">Prev</span>}</Button>
+                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="flex items-center" icon={<ChevronLeft className="h-4 w-4"/>}>{!isMobile && <span className="ml-1">Prev</span>}</Button>
                 <div className="px-2 py-1">{page} / {totalPages}</div>
-                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="flex items-center">{!isMobile && <span className="mr-1">Next</span>}<ChevronRight className="h-4 w-4"/></Button>
+                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="flex items-center" icon={<ChevronRight className="h-4 w-4"/>}>{!isMobile && <span className="mr-1">Next</span>}</Button>
               </div>
             </div>
           </div>
@@ -543,6 +562,8 @@ export default function Credits() {
               )
             })}
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>

@@ -101,6 +101,18 @@ async def login(user_data: UserLogin):
     """Login user."""
     logger.info("Authentication attempt for email=%s", user_data.email)
     user = user_db.authenticate_user(user_data.email, user_data.password)
+    # Emit diagnostic info about the returned user object (masked)
+    try:
+        if user is None:
+            logger.info("auth.login: user_db.authenticate_user returned None for email=%s", user_data.email)
+        else:
+            try:
+                hp = (getattr(user, 'hashed_password', '') or '')[:12]
+            except Exception:
+                hp = 'unknown'
+            logger.info("auth.login: user found id=%s hashed_prefix=%s", getattr(user, 'id', None), hp)
+    except Exception:
+        logger.exception("auth.login: failed to emit diagnostic info for email=%s", user_data.email)
 
     if not user:
         logger.warning("Authentication failed for email=%s", user_data.email)

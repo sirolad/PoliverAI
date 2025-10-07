@@ -7,7 +7,7 @@ import ReportViewerModal from './ui/ReportViewerModal'
 import PaymentResultModal from './ui/PaymentResultModal'
 import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Filter } from 'lucide-react'
 import { classifyDeletedDetails } from '@/lib/reportHelpers'
 import ReportCard from '@/components/ui/ReportCard'
 import { Button } from '@/components/ui/Button'
@@ -171,7 +171,8 @@ export default function Reports() {
     }
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  // Don't block the whole page while auth/loading — show progress inside filters
+  if (!isAuthenticated && loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
   if (!isAuthenticated) return <Navigate to="/login" replace />
   // Allow access to Reports if user is PRO or has credits available
   const hasCredits = (user?.credits ?? 0) > 0
@@ -208,7 +209,6 @@ export default function Reports() {
   })
 
   // selection summary for UI labels
-  // selection summary for UI labels
 
   return (
     <div className="min-h-screen p-8">
@@ -216,6 +216,16 @@ export default function Reports() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Your Reports</h1>
         <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowFilters((s) => !s)}
+            aria-pressed={showFilters}
+            icon={<Filter className="h-4 w-4" />}
+            collapseToIcon
+          >
+            {showFilters ? 'Hide Filters' : 'Show Filters'}
+          </Button>
           <BulkActions deleting={deleting} onRefresh={fetchReports} onDeleteOpen={() => setBulkDeleteOpen(true)} />
           <ConfirmBulkDeleteModal
             open={bulkDeleteOpen}
@@ -303,13 +313,17 @@ export default function Reports() {
               }
             }}
           />
-        </div>
+    </div>
+  </div>
   <ErrorText error={error} />
 
-  <div className="grid gap-6" style={{ gridTemplateColumns: isMobile1276 ? '1fr' : '320px 1fr' }}>
+    <div
+      className="grid gap-6 items-start"
+      style={{ gridTemplateColumns: isMobile1276 ? '1fr' : (showFilters ? '320px 1fr' : '1fr') }}
+    >
     {/* When stacking is enabled we render the filters first so they appear on top */}
-    {isMobile1276 ? (
-      <div className={`${showFilters ? '' : 'hidden'}`}>
+      {isMobile1276 ? (
+      <div className={`${showFilters ? '' : 'hidden'} self-start`}>
         <Filters
           query={query}
           setQuery={setQuery}
@@ -320,11 +334,12 @@ export default function Reports() {
           endDate={endDate}
           setStartDate={setStartDate}
           setEndDate={setEndDate}
+          isLoading={isLoading}
           clearAll={() => { setQuery(''); setStatusFilter('all'); setStartDate(''); setEndDate(''); setSelectedFiles({}) }}
         />
       </div>
     ) : (
-      <div className={`${showFilters ? '' : 'hidden'}`}>
+      <div className={`${showFilters ? '' : 'hidden'} self-start`}>
         <Filters
           query={query}
           setQuery={setQuery}
@@ -335,15 +350,43 @@ export default function Reports() {
           endDate={endDate}
           setStartDate={setStartDate}
           setEndDate={setEndDate}
+          isLoading={isLoading}
           clearAll={() => { setQuery(''); setStatusFilter('all'); setStartDate(''); setEndDate(''); setSelectedFiles({}) }}
         />
       </div>
     )}
 
-    </div>
-
   {/* Right: reports list */}
   <main className={'bg-white p-4 rounded shadow'}>
+        {/* Loading state: show Analysis-style centered spinner when refreshing */}
+        {isLoading ? (
+          <div className="h-[60vh] flex items-center justify-center">
+            <div className="text-center">
+              <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-white shadow">
+                <svg className="animate-spin h-12 w-12 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+              </div>
+              <div className="mt-4 text-lg font-semibold">Loading reports…</div>
+              <div className="mt-2 text-sm text-gray-500">Refreshing the reports list — this may take a moment.</div>
+            </div>
+          </div>
+        ) : null}
+        {/* Empty state: no reports */}
+        {!isLoading && (!reports || reports.length === 0) ? (
+          <div className="h-[60vh] flex items-center justify-center">
+            <div className="text-center">
+              <div className="mx-auto w-32 h-32 flex items-center justify-center rounded-full bg-gray-100">
+                <svg className="h-12 w-12 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 13v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 13l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <div className="mt-4 text-lg font-semibold">No reports yet 🙂</div>
+              <div className="mt-2 text-sm text-gray-500">Run an analysis to create your first report.</div>
+            </div>
+          </div>
+        ) : null}
+          {!isLoading && (
+          <>
           <div className="mb-4 flex items-center justify-between">
             <div>
               <label className="inline-flex items-center gap-2 text-sm text-gray-700 ml-4">
@@ -374,9 +417,9 @@ export default function Reports() {
                 <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1 hide-below-700">
                   {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
                 </select>
-                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="flex items-center"><ChevronLeft className="h-4 w-4 mr-1"/><span className="hide-below-700">Prev</span></Button>
+                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="flex items-center" icon={<ChevronLeft className="h-4 w-4"/>}><span className="hide-below-700">Prev</span></Button>
                 <div className="px-2 py-1 text-sm">{page} / {totalPages}</div>
-                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="flex items-center"><span className="hide-below-700">Next</span><ChevronRight className="h-4 w-4 ml-1"/></Button>
+                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="flex items-center" icon={<ChevronRight className="h-4 w-4"/>}><span className="hide-below-700">Next</span></Button>
               </div>
             </div>
           </div>
@@ -393,40 +436,42 @@ export default function Reports() {
               />
             ))}
           </div>
-          {modalUrl ? (
-            <ReportViewerModal
-              reportUrl={modalUrl}
-              filename={selected}
-              title={selected || 'Report'}
-              isQuick={false}
-              onClose={() => setModalUrl('')}
-              onDeleted={(fn) => {
-                setModalUrl('')
-                // remove deleted from list
-                setReports((prev) => prev.filter((p) => p.filename !== fn))
-                setSelected((cur) => (cur === fn ? null : cur))
-              }}
-              onSaved={async () => {
-                setModalUrl('')
-                try {
-                  // re-fetch the current page of reports so pagination and counts stay accurate
-                  await fetchReports()
-                } catch (e) {
-                  console.warn('refresh reports after save failed', e)
-                }
-                try {
-                  // refresh user and transactions so credits and tx list update
-                  safeDispatchMultiple([
-                    { name: 'payment:refresh-user' },
-                    { name: 'transactions:refresh' },
-                    { name: 'reports:refresh' },
-                  ])
-                } catch (e) {
-                  console.warn('dispatch refresh events failed', e)
-                }
-              }}
-            />
-          ) : null}
+            {modalUrl ? (
+              <ReportViewerModal
+                reportUrl={modalUrl}
+                filename={selected}
+                title={selected || 'Report'}
+                isQuick={false}
+                onClose={() => setModalUrl('')}
+                onDeleted={(fn) => {
+                  setModalUrl('')
+                  // remove deleted from list
+                  setReports((prev) => prev.filter((p) => p.filename !== fn))
+                  setSelected((cur) => (cur === fn ? null : cur))
+                }}
+                onSaved={async () => {
+                  setModalUrl('')
+                  try {
+                    // re-fetch the current page of reports so pagination and counts stay accurate
+                    await fetchReports()
+                  } catch (e) {
+                    console.warn('refresh reports after save failed', e)
+                  }
+                  try {
+                    // refresh user and transactions so credits and tx list update
+                    safeDispatchMultiple([
+                      { name: 'payment:refresh-user' },
+                      { name: 'transactions:refresh' },
+                      { name: 'reports:refresh' },
+                    ])
+                  } catch (e) {
+                    console.warn('dispatch refresh events failed', e)
+                  }
+                }}
+              />
+            ) : null}
+          </>
+          )}
         </main>
       </div>
     </div>

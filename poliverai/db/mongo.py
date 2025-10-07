@@ -2,9 +2,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-import os
-import ssl
-import socket
 from typing import Optional
 
 import logging
@@ -25,102 +22,81 @@ class MongoUserDB:
         # Initialize client and perform a quick server_info() call to validate connection.
         # This will raise an exception if the URI is invalid or the network/connectivity fails,
         # which will cause the application to fall back to the in-memory DB in `db/users.py`.
-        # Emit some diagnostics helpful when debugging TLS issues to Atlas.
-        # These do not change behavior unless MONGO_DEBUG_CONN=1 is set, but
-        # we always attempt to report basic runtime SSL info and whether
-        # certifi is present so operators can spot missing CA bundles.
+        # Build explicit MongoClient kwargs to avoid implicit cert bundle preferences
+        import os
+
+        client_kwargs: dict = {}
         try:
-            logger.info("python OpenSSL version: %s", ssl.OPENSSL_VERSION)
+            client_kwargs["serverSelectionTimeoutMS"] = int(os.getenv("MONGO_SERVER_SELECTION_TIMEOUT_MS", "10000"))
         except Exception:
-            logger.debug("Failed to read OpenSSL version")
+            client_kwargs["serverSelectionTimeoutMS"] = 10000
 
+        # Respect an explicit MONGO_TLS_INSECURE env var (dev only) to allow invalid certs.
+        mongo_tls_insecure = os.getenv("MONGO_TLS_INSECURE", "0")
+        allow_invalid = str(mongo_tls_insecure).lower() in ("1", "true", "yes")
+        if allow_invalid:
+            # This relaxes TLS verification (dev/testing only)
+            client_kwargs["tlsAllowInvalidCertificates"] = True
 
-        # Create a MongoClient using the provided URI. We rely on the URI
-        # (which should include username/password) for authentication. Do
-        # not attempt to perform cert-based auth or manually inject CA
-        # bundles here; Atlas connections should work using the default
-        # system trust store when possible. Use short connection timeouts so
-        # failures surface quickly instead of hanging application startup.
+        # NOTE: Do NOT set tlsCAFile or prefer certifi here. Atlas SCRAM uses username/password
+        # in the URI for authentication (SCRAM); explicit CA bundles are not required for that.
 
-        # Debug-only network checks: when MONGO_DEBUG_CONN=1, attempt to
-        # resolve and create a small TCP connection to each host in the URI
-        # so we can detect DNS/firewall issues prior to the MongoClient TLS
-        # handshake. This is best-effort and will not raise on failure.
-        debug_conn = os.getenv("MONGO_DEBUG_CONN") == "1"
-        if debug_conn:
+        logger.info("Creating MongoClient with options: %s", {k: v for k, v in client_kwargs.items()})
+        self.client = MongoClient(uri, **client_kwargs)
+        try:
+            # Force a connection/check to surface problems early during startup
+            self.client.server_info()
+
+            # Try to parse the URI to surface useful, non-sensitive details
             try:
                 from pymongo.uri_parser import parse_uri
 
                 parsed = parse_uri(uri)
-                nodelist = parsed.get("nodelist") or []
+                username = parsed.get("username")
+                nodelist = parsed.get("nodelist")
+                options = parsed.get("options")
+                authsource = parsed.get("authsource") or options.get("authsource") if options else None
             except Exception:
+                # Fallback to urllib parsing for basic fields
                 u = urllib.parse.urlparse(uri)
+                username = u.username
+                # mongodb+srv may contain SRV records; represent host roughly
                 nodelist = [(u.hostname or "") + (f":{u.port}" if u.port else "")]
+                qs = urllib.parse.parse_qs(u.query or "")
+                authsource = qs.get("authSource", [None])[0]
 
-            for host_port in nodelist:
+            masked_user = None
+            if username:
                 try:
-                    host, port = (host_port[0], host_port[1]) if isinstance(host_port, tuple) else (host_port.split(":")[0], int(host_port.split(":")[1]) if ":" in host_port else 27017)
+                    masked_user = username[0] + "***" + username[-1]
                 except Exception:
-                    try:
-                        hp = str(host_port)
-                        parts = hp.split(":")
-                        host = parts[0]
-                        port = int(parts[1]) if len(parts) > 1 else 27017
-                    except Exception:
-                        host = str(host_port)
-                        port = 27017
-                try:
-                    s = socket.create_connection((host, port), timeout=5)
-                    s.close()
-                    logger.info("Connection test OK to %s:%s", host, port)
-                except Exception as e:
-                    logger.warning("Connection test FAILED to %s:%s: %s", host, port, e)
+                    masked_user = "***"
 
-        try:
-            # Build a client with short timeouts so failures are fast and do
-            # not cause long blocking during import/startup. We do not set
-            # explicit TLS/CA options here; the MONGO_URI should carry the
-            # auth details (username/password) and the environment should
-            # provide a valid trust store.
-            self.client = MongoClient(uri, serverSelectionTimeoutMS=2000, connectTimeoutMS=2000)
-        except Exception:
-            # If client construction itself fails, re-raise after logging.
-            logger.exception("Failed to construct MongoClient (pre-server_info)")
-            raise
-        # Do not force a blocking server_info() call at import time. Some
-        # environments (local dev or restricted network) may trigger TLS
-        # handshake errors that would otherwise crash startup. Instead, try
-        # to parse and log non-sensitive URI details for diagnostics and
-        # continue — runtime DB operations will surface connectivity issues.
-        try:
-            from pymongo.uri_parser import parse_uri
-
-            parsed = parse_uri(uri)
-            username = parsed.get("username")
-            nodelist = parsed.get("nodelist")
-            options = parsed.get("options")
-            authsource = parsed.get("authsource") or options.get("authsource") if options else None
-        except Exception:
-            u = urllib.parse.urlparse(uri)
-            username = u.username
-            nodelist = [(u.hostname or "") + (f":{u.port}" if u.port else "")]
-            qs = urllib.parse.parse_qs(u.query or "")
-            authsource = qs.get("authSource", [None])[0]
-
-        masked_user = None
-        if username:
+            logger.info(
+                "MongoDB connected: user=%s hosts=%s authSource=%s uri_prefix=%s",
+                masked_user,
+                nodelist,
+                authsource,
+                (uri[:60] + "...") if uri else None,
+            )
+        except Exception as e:  # keep broad except so initialization doesn't crash without logging
+            # Log detailed diagnostics (without secrets)
+            logger.error("MongoDB connection failed: %s (%s)", e, type(e).__name__)
+            logger.debug("Traceback:\n%s", traceback.format_exc())
+            # Try to provide parsed URI hints for debugging
             try:
-                masked_user = username[0] + "***" + username[-1]
-            except Exception:
-                masked_user = "***"
+                from pymongo.uri_parser import parse_uri
 
-        logger.info(
-            "MongoDB client created: user=%s hosts=%s authSource=%s uri_prefix=%s",
-            masked_user,
-            nodelist,
-            authsource,
-            (uri[:60] + "...") if uri else None,
-        )
+                parsed = parse_uri(uri)
+                logger.debug(
+                    "Parsed URI (masked): username=%s, nodelist=%s, options=%s",
+                    (parsed.get("username")[:1] + "***" + parsed.get("username")[-1]) if parsed.get("username") else None,
+                    parsed.get("nodelist"),
+                    {k: v for k, v in (parsed.get("options") or {}).items() if k.lower() != "password"},
+                )
+            except Exception as ee:
+                logger.debug("Failed to parse URI for extra details: %s", ee)
+            raise
 
         self.db = self.client[db_name]
         self.users: Collection = self.db.get_collection("users")
@@ -213,29 +189,49 @@ class MongoUserDB:
         )
 
     def authenticate_user(self, email: str, password: str):
+        logger.info("authenticate_user: attempt for email=%s", email)
         user = self.get_user_by_email(email)
         if not user:
+            logger.info("authenticate_user: no user found for email=%s", email)
             return None
+        # Masked hash prefix for diagnostics (avoid printing full hash)
+        try:
+            hp = (user.hashed_password or '')[:12]
+        except Exception:
+            hp = 'unknown'
+        logger.debug("authenticate_user: found user id=%s hashed_prefix=%s", getattr(user, 'id', None), hp)
         from ..core.auth import verify_password, get_password_hash
         try:
-            if verify_password(password, user.hashed_password):
-                logger.info("Argon2 verification passed for email=%s", email)
-                pass
-            else:
-                logger.info("Argon2 verification failed for email=%s; trying plaintext fallback", email)
-                raise ValueError("verify_failed")
-        except Exception:
+            # Try the secure verifier first
             try:
-                if user.hashed_password == password:
-                    logger.info("Plaintext password matched for email=%s; re-hashing and storing in Mongo", email)
-                    # update the stored hash
-                    self.users.update_one({"_id": user.id}, {"$set": {"hashed_password": get_password_hash(password)}})
-                else:
-                    logger.info("Plaintext fallback did not match for email=%s", email)
-                    return None
+                ok = verify_password(password, user.hashed_password)
             except Exception as e:
-                logger.error("Error updating Mongo password hash for email=%s: %s", email, e)
-                return None
+                logger.exception("verify_password raised for email=%s: %s", email, e)
+                ok = False
+
+            if ok:
+                logger.info("Argon2 verification passed for email=%s", email)
+            else:
+                logger.info("Argon2 verification failed for email=%s; attempting plaintext fallback", email)
+                # Plaintext fallback (legacy) — re-hash if it matches
+                try:
+                    if user.hashed_password == password:
+                        logger.info("Plaintext password matched for email=%s; re-hashing and storing in Mongo", email)
+                        # update the stored hash (best-effort)
+                        try:
+                            self.users.update_one({"_id": user.id}, {"$set": {"hashed_password": get_password_hash(password)}})
+                        except Exception as e:
+                            logger.exception("Failed to update hashed_password in Mongo for email=%s: %s", email, e)
+                        ok = True
+                    else:
+                        logger.info("Plaintext fallback did not match for email=%s", email)
+                        return None
+                except Exception as e:
+                    logger.exception("Error during plaintext fallback for email=%s: %s", email, e)
+                    return None
+        except Exception as e:
+            logger.exception("Unexpected error in authenticate_user for email=%s: %s", email, e)
+            return None
 
         # return public User (without hashed_password) by using UserInDB fields mapped elsewhere
         return user

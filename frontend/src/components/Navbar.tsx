@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
+import useRampedCounters from '@/hooks/useRampedCounters'
 import { User, LogOut, CreditCard, ChevronRight, LogIn, UserPlus, Clock, BarChart2, Grid, List, Menu } from 'lucide-react'
 import PaymentsService from '@/services/payments'
 import { buildPendingCheckoutFromResponse, getCreditsTotal, normalizePaymentResult } from '@/lib/paymentsHelpers'
@@ -12,7 +13,7 @@ import { setPendingCheckout, clearPaymentResult } from '@/store/paymentsSlice'
 import EnterCreditsModal from './ui/EnterCreditsModal'
 
 export function Navbar() {
-  const { user, logout, isAuthenticated, isPro, refreshUser } = useAuth()
+  const { user, logout, isAuthenticated, isPro, refreshUser, loading } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -29,6 +30,11 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
   const menuRef = React.useRef<HTMLDivElement | null>(null)
   const menuButtonRef = React.useRef<HTMLButtonElement | null>(null)
+
+  // Ramped credits for navbar: compute targets and call hook at top-level
+  const navCreditsTotal = getCreditsTotal(user)
+  const navRampEnabled = !!user && !loading
+  const animatedNavCredits = useRampedCounters({ total: navCreditsTotal }, navRampEnabled, { durationMs: 1400, maxSteps: 6, minIntervalMs: 80 })
 
   const showResult = (status: string | boolean, title: string, message?: string) => {
     const success = typeof status === 'boolean' ? status : String(status).toLowerCase() === 'success'
@@ -192,9 +198,12 @@ export function Navbar() {
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs px-2 py-1 rounded-full ${isPro ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>{isPro ? 'PRO' : 'FREE'}</span>
-                <div title={`Total: ${getCreditsTotal(user)} credits`} className="text-sm px-2 py-1 rounded bg-gray-100">
-                  Credits: {getCreditsTotal(user)}
-                </div>
+                {/* Hide credits until user data is loaded; then show and animate */}
+                {navRampEnabled ? (
+                  <div title={`Total: ${navCreditsTotal} credits`} className="text-sm px-2 py-1 rounded bg-gray-100">
+                    Credits: {animatedNavCredits.total}
+                  </div>
+                ) : null}
               </div>
 
               {/* Desktop: show full actions (name + buttons) */}
@@ -300,14 +309,12 @@ export function Navbar() {
           ) : (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                  <LogIn className="h-4 w-4" />
+                <Button variant="ghost" size="sm" className="flex items-center gap-2 whitespace-nowrap flex-shrink-0" icon={<LogIn className="h-4 w-4" />}>
                   Login
                 </Button>
               </Link>
               <Link to="/register">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2">
-                  <UserPlus className="h-4 w-4" />
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0" icon={<UserPlus className="h-4 w-4" />}>
                   Sign Up
                 </Button>
               </Link>

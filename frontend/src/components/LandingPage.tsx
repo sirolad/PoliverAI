@@ -3,10 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Zap, Clock, BarChart, CreditCard } from 'lucide-react'
+import { CheckCircle2, Zap, Clock, BarChart, CreditCard, Grid } from 'lucide-react'
 import Footer from './Footer'
 import ConditionalSplash from './ui/ConditionalSplash'
 import { getFreeFeatures, getProFeatures } from '@/lib/landingHelpers'
+import TeamCarousel from './team/TeamCarousel'
+import AppPlatforms from './AppPlatforms'
 
 interface FeatureCardProps {
   icon: React.ElementType
@@ -63,7 +65,7 @@ export default function LandingPage() {
                 <Button
                   onClick={() => navigate('/signup')}
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                  className="bg-blue-600 hover:bg-blue-700"
                   icon={<Clock className="h-5 w-5" />}
                   collapseToIcon
                 >
@@ -83,13 +85,24 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700"
+                icon={<Grid className="h-5 w-5" />}
                 onClick={() => navigate('/dashboard')}
               >
                 Go to Dashboard
               </Button>
             )}
           </div>
+
+          {/* Andela partnership badge */}
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <div className="text-lg text-gray-600">An </div><img src="/andela-logo-transparent.png" alt="Andela" className="h-10" /><div className="text-lg text-gray-600"> initiative — designed in partnership with Andela</div>
+          </div>
         </div>
+      </div>
+
+      {/* App platforms / download stats section */}
+      <div className="container mx-auto px-4">
+        <AppPlatforms />
       </div>
 
       {/* Features Section */}
@@ -250,8 +263,9 @@ export default function LandingPage() {
               <Button 
                 className="w-full mt-6 bg-blue-600 hover:bg-blue-700 flex items-center gap-2" 
                 onClick={() => navigate('/login')}
+                icon={<CreditCard className="h-4 w-4" />}
               >
-                <CreditCard className="h-4 w-4" />
+                
                 Upgrade to Pro
               </Button>
             </CardContent>
@@ -267,13 +281,35 @@ export default function LandingPage() {
           <p className="text-xl mb-8 text-blue-100">
             Join thousands of organizations using PoliverAI to maintain privacy compliance
           </p>
-          <Button size="lg" variant="secondary" onClick={() => navigate('/signup')} className="flex items-center gap-2 justify-center mx-auto w-fit">
-            <BarChart className="h-5 w-5" />
+          <Button size="lg" variant="secondary" onClick={() => navigate('/signup')} className="justify-center mx-auto w-fit" icon={<BarChart className="h-5 w-5" />} iconColor="text-black">
             Start Your Free Analysis Today
           </Button>
         </div>
       </div>
       )}
+
+      {/* Team carousel */}
+      <TeamCarousel />
+      {/* Decorative divider between write-up and carousel */}
+
+      <div className="flex justify-center">
+        <div className="w-36 h-1 rounded-full bg-gradient-to-r from-blue-400 to-green-400 my-6" />
+      </div>
+
+      {/* Team write-up */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center max-w-3xl mx-auto">
+          <h3 className="text-3xl font-bold text-gray-900 mb-4">Why We Love Building Poliver AI</h3>
+          <p className="text-lg text-gray-600">
+            Our team takes great pride in building PoliverAI. We collaborate openly, learn from
+            each other, and bring curiosity to solve privacy challenges that matter. Every
+            feature is crafted with care — to make compliance easier, more reliable, and
+            human-centered. Working together on this project isn't just a job for us — it's a
+            shared passion, and we hope that energy comes through for our users.
+          </p>
+        </div>
+      </div>
+
       {/* Footer specifically for the landing page: match CTA section's background */}
       <Footer hasBackground={true} />
     </div>

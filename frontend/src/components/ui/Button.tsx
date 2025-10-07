@@ -83,7 +83,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-  <IconSpan>{iconNode}</IconSpan>
+        <IconSpan>{iconNode}</IconSpan>
         <span className="btn-label">{props.children}</span>
       </Comp>
     )

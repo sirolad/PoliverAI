@@ -103,11 +103,12 @@ export function Login() {
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
                 disabled={isSubmitting}
+                icon={<LogIn className="h-4 w-4" />}
               >
                 <LoadingLabel
                   loading={isSubmitting}
-                  loadingNode={<><LogIn className="h-4 w-4"/> Signing in...</>}
-                  normalNode={<><LogIn className="h-4 w-4"/> Sign In</>}
+                  loadingNode={"Signing in..."}
+                  normalNode={"Sign In"}
                 />
               </Button>
 

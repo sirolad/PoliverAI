@@ -72,6 +72,22 @@ class ReportResponse(BaseModel):
     download_url: str
 
 
+class DetailedReportResponse(ReportResponse):
+    """Detailed report response that includes structured analysis for frontend rendering."""
+    content: str | None = None
+    findings: list[dict[str, Any]] | None = None
+    recommendations: list[dict[str, Any]] | None = None
+    evidence: list[dict[str, Any]] | None = None
+    metrics: dict[str, Any] | None = None
+    verdict: str | None = None
+    score: int | None = None
+    document_name: str | None = None
+    analysis_mode: str | None = None
+    gcs_url: str | None = None
+    is_full_report: bool | None = None
+    created_at: str | None = None
+
+
 router = APIRouter(tags=["reports"])
 
 
@@ -504,7 +520,7 @@ async def generate_report(req: ReportRequest) -> ReportResponse:
         raise HTTPException(status_code=500, detail=f"Failed to generate report: {str(e)}") from e
 
 
-@router.post("/verification-report", response_model=ReportResponse)
+@router.post("/verification-report", response_model=DetailedReportResponse)
 async def generate_verification_report(
     req: VerificationReportRequest,
     current_user: User | None = CURRENT_USER_OPTIONAL_DEPENDENCY,
@@ -662,8 +678,24 @@ async def generate_verification_report(
                 # don't block the response if marking charged fails
                 pass
 
-            return ReportResponse(
-                filename=filename, path=filepath, download_url=gcs_url or f"/api/v1/reports/download/{filename}"
+            # Build detailed response payload so frontend can render the full report
+            created_iso = datetime.utcnow().isoformat()
+            return DetailedReportResponse(
+                filename=filename,
+                path=str(filepath),
+                download_url=gcs_url or f"/api/v1/reports/download/{filename}",
+                content=content,
+                findings=getattr(req, 'findings', None),
+                recommendations=getattr(req, 'recommendations', None),
+                evidence=getattr(req, 'evidence', None),
+                metrics=getattr(req, 'metrics', None),
+                verdict=getattr(req, 'verdict', None),
+                score=getattr(req, 'score', None),
+                document_name=getattr(req, 'document_name', None),
+                analysis_mode=getattr(req, 'analysis_mode', None),
+                gcs_url=gcs_url,
+                is_full_report=True,
+                created_at=created_iso,
             )
         except HTTPException:
             # propagate known HTTP errors without trying to refund (they
@@ -791,17 +823,24 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
                     pass
             raise HTTPException(status_code=500, detail=f'Failed to generate revised policy: {e}') from e
 
-        # Save the revised policy to disk and persist metadata
-        reports_dir = Path('reports')
-        reports_dir.mkdir(parents=True, exist_ok=True)
-        ts = datetime.utcnow().strftime('%Y%m%d-%H%M%S')
+    except HTTPException:
+        # propagate known HTTP errors (e.g., auth/insufficient credits)
+        raise
+    except Exception as e:
+        # catch-all: wrap unexpected errors
+        raise HTTPException(status_code=500, detail=f"Failed to generate revised policy: {str(e)}") from e
 
-        clean_name = ''.join(c for c in (req.document_name or 'policy') if c.isalnum() or c in (' ', '-', '_')).rstrip()
-        clean_name = clean_name.replace(' ', '-') if clean_name else 'policy'
-        filename = f'revised-{clean_name}-{ts}.txt'
-        filepath = reports_dir / filename
+    # Save the revised policy to disk as a rendered PDF and persist metadata
+    reports_dir = Path('reports')
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    ts = datetime.utcnow().strftime('%Y%m%d-%H%M%S')
 
-        header = f"""
+    clean_name = ''.join(c for c in (req.document_name or 'policy') if c.isalnum() or c in (' ', '-', '_')).rstrip()
+    clean_name = clean_name.replace(' ', '-') if clean_name else 'policy'
+    filename = f'revised-{clean_name}-{ts}.pdf'
+    filepath = reports_dir / filename
+
+    header = f"""
 # REVISED PRIVACY POLICY
 # Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
 # Original: {req.document_name}
@@ -812,8 +851,20 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
 
 """
 
-        full_content = header + revised_policy
-        filepath.write_text(full_content, encoding='utf-8')
+    full_markdown = header + revised_policy
+
+    # Use the exporter to render markdown to PDF (keeps styling rather than raw markdown text)
+    try:
+        from ....reporting.exporter import export_report
+
+        out_path = export_report(full_markdown, str(reports_dir))
+        filepath = Path(out_path)
+        filename = filepath.name
+    except Exception:
+        # Fallback: write raw markdown as text file if PDF generation fails
+        filename = f'revised-{clean_name}-{ts}.txt'
+        filepath = reports_dir / filename
+        filepath.write_text(full_markdown, encoding='utf-8')
 
         # Try to persist a report document and upload to GCS
         try:
@@ -1058,19 +1109,43 @@ async def get_detailed_report(filename: str, current_user: User = CURRENT_USER_D
         logging.exception('Failed to fetch stored report content from Mongo; falling back to file')
 
     # File fallback: try .md, .txt, or any file with the filename
+    file_found = None
     if not content:
         try:
             reports_dir = Path('reports')
             candidates = [reports_dir / filename, reports_dir / f"{filename}.md", reports_dir / f"{filename}.txt"]
             for cand in candidates:
                 if cand.exists():
+                    file_found = cand
                     try:
+                        # Try to read as text; this will gracefully fail for binary files like PDFs
                         content = cand.read_text(encoding='utf-8', errors='ignore')
                         break
                     except Exception:
-                        continue
+                        # leave content as None but remember the path exists
+                        content = None
+                        break
         except Exception:
             pass
+
+    if not content and file_found:
+        # We found a file but couldn't read textual content (likely a binary such as PDF).
+        # Return a metadata response so the frontend can show the report (via download) instead
+        file_size = None
+        try:
+            file_size = file_found.stat().st_size
+        except Exception:
+            file_size = None
+
+        # Try to include a download_url (local) so frontend can fallback to download/view
+        download_url = f"/api/v1/reports/download/{file_found.name}"
+        return JSONResponse({
+            'filename': filename,
+            'content': None,
+            'path': str(file_found),
+            'file_size': file_size,
+            'download_url': download_url,
+        })
 
     if not content:
         raise HTTPException(status_code=404, detail='Detailed report content not found')
