@@ -12,6 +12,8 @@ import { classifyDeletedDetails } from '@/lib/reportHelpers'
 import ReportCard from '@/components/ui/ReportCard'
 import { Button } from '@/components/ui/Button'
 import ErrorText from '@/components/ui/ErrorText'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import NoDataView from '@/components/ui/NoDataView'
 import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
 // local small responsive overrides
 import '@/styles/responsive.css'
@@ -362,28 +364,13 @@ export default function Reports() {
         {/* Loading state: show Analysis-style centered spinner when refreshing */}
         {isLoading ? (
           <div className="h-[60vh] flex items-center justify-center">
-            <div className="text-center">
-              <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-white shadow">
-                <svg className="animate-spin h-12 w-12 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                </svg>
-              </div>
-              <div className="mt-4 text-lg font-semibold">Loading reports…</div>
-              <div className="mt-2 text-sm text-gray-500">Refreshing the reports list — this may take a moment.</div>
-            </div>
+            <LoadingSpinner message="Loading reports…" subtext="Refreshing the reports list — this may take a moment." size="lg" />
           </div>
         ) : null}
         {/* Empty state: no reports */}
         {!isLoading && (!reports || reports.length === 0) ? (
-          <div className="h-[60vh] flex items-center justify-center">
-            <div className="text-center">
-              <div className="mx-auto w-32 h-32 flex items-center justify-center rounded-full bg-gray-100">
-                <svg className="h-12 w-12 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 13v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 13l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </div>
-              <div className="mt-4 text-lg font-semibold">No reports yet 🙂</div>
-              <div className="mt-2 text-sm text-gray-500">Run an analysis to create your first report.</div>
-            </div>
+          <div className="h-[60vh]">
+            <NoDataView title="No reports yet 🙂" message="Run an analysis to create your first report." iconType="report" />
           </div>
         ) : null}
           {!isLoading && (

@@ -6,6 +6,7 @@ import os
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
+import logging
 
 from ....core.config import get_settings
 from ....rag.service import _init
@@ -745,6 +746,7 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
     Pre-charge the authenticated user (10 credits) before making the AI call.
     If generation or persistence fails, attempt to refund.
     """
+    logging.info(f"generate_policy_revision called for document={req.document_name} user_id={(current_user.id if current_user else 'anonymous')}")
     try:
         from ....db.users import user_db
         from ....db.transactions import transactions
@@ -856,10 +858,60 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
     # Use the exporter to render markdown to PDF (keeps styling rather than raw markdown text)
     try:
         from ....reporting.exporter import export_report
+        # ensure gcs_url variable exists even if upload/persist steps fail
+        gcs_url = None
 
         out_path = export_report(full_markdown, str(reports_dir))
         filepath = Path(out_path)
         filename = filepath.name
+        # Try to persist a report document and upload to GCS (best-effort)
+        try:
+            mongo_uri = os.getenv('MONGO_URI')
+            settings = get_settings()
+            gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv('POLIVERAI_REPORTS_GCS_BUCKET')
+            gcs_url = None
+            if gcs_bucket and upload_report_if_changed:
+                try:
+                    object_path = f"{current_user.id}/{filename}"
+                    uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, str(filepath))
+                except Exception:
+                    gcs_url = None
+
+            if mongo_uri and MongoUserDB:
+                mdb = MongoUserDB(mongo_uri)
+                file_size = None
+                try:
+                    file_size = filepath.stat().st_size
+                except Exception:
+                    file_size = None
+
+                coll = mdb.db.get_collection('reports')
+                report_doc = {
+                    'filename': filename,
+                    'path': str(filepath),
+                    'gcs_url': gcs_url,
+                    'user_id': current_user.id,
+                    'document_name': req.document_name,
+                    'analysis_mode': req.revision_mode,
+                    'is_full_report': False,
+                    'score': None,
+                    'verdict': None,
+                    'type': 'revision',
+                    'file_size': file_size,
+                    'created_at': datetime.utcnow(),
+                    'charged': bool(charged),
+                }
+                coll.insert_one(report_doc)
+        except Exception:
+            import logging
+
+            logging.exception('Failed to persist revised policy record to Mongo or upload to GCS (post-export)')
+
+        logging.info(f"generate_policy_revision: successfully exported report {filename}")
+        # Prefer returning a public GCS URL if we uploaded the report there,
+        # otherwise fall back to the local download endpoint.
+        download_url = gcs_url or f"/api/v1/reports/download/{filename}"
+        return ReportResponse(filename=filename, path=str(filepath), download_url=download_url)
     except Exception:
         # Fallback: write raw markdown as text file if PDF generation fails
         filename = f'revised-{clean_name}-{ts}.txt'
@@ -909,12 +961,14 @@ async def generate_policy_revision(req: PolicyRevisionRequest, current_user: Use
 
             logging.exception('Failed to persist revised policy record to Mongo or upload to GCS')
 
-        return ReportResponse(filename=filename, path=str(filepath), download_url=f'/api/v1/reports/download/{filename}')
+    logging.info(f"generate_policy_revision: fallback persisted text report {filename}")
+    # If we managed to upload the fallback text file to GCS, prefer that URL.
+    download_url = gcs_url if 'gcs_url' in locals() and gcs_url else f"/api/v1/reports/download/{filename}"
+    return ReportResponse(filename=filename, path=str(filepath), download_url=download_url)
 
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f'Failed to generate revised policy: {str(e)}') from e
+    # Defensive: if we somehow reach the end without returning, fail explicitly
+    logging.error('generate_policy_revision reached end of function without returning a ReportResponse')
+    raise HTTPException(status_code=500, detail='Internal server error: no report produced')
 
 
 @router.get("/reports/download/{filename}")

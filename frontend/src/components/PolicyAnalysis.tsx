@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/Button'
 import { Progress } from '@/components/ui/progress'
 import FindingCard from '@/components/ui/FindingCard'
 import SidebarFindingItem from '@/components/ui/SidebarFindingItem'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import NoDataView from '@/components/ui/NoDataView'
 // ReportCard intentionally not used here — full report uses custom layout
 // EvidenceItem unused in this view (detailed report uses markdown/content or simple blocks)
 import InsufficientCreditsModal from './ui/InsufficientCreditsModal'
@@ -131,8 +133,8 @@ export default function PolicyAnalysis() {
   // separate flags for full vs revised so their UIs can be distinct.
   const isLoadingForTab = activeTab === 'full' ? loadingDetailed : activeTab === 'revised' ? loadingRevised : false
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
-  if (!isAuthenticated) return <div className="min-h-screen flex items-center justify-center">Please login to analyze policies.</div>
+  if (loading) return <LoadingSpinner message="Loading..." size="lg" />
+  if (!isAuthenticated) return <NoDataView title="Not Authenticated" message="Please login to analyze policies." iconSize="lg" />
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) setFile(e.target.files[0])
@@ -197,7 +199,7 @@ export default function PolicyAnalysis() {
 
   const handleGenerateReport = async () => {
     if (!result) return
-    const stop = startIndeterminateProgress('Generating report...')
+    const stop = startIndeterminateProgress('Generating Full Report...')
     try {
       const documentName = file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy'
       const resp = await policyService.generateVerificationReport(result, documentName, 'balanced')
@@ -573,19 +575,8 @@ export default function PolicyAnalysis() {
               ) : (
                 <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
                   {isLoadingForTab ? (
-                    <div className="h-full w-full flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-white shadow">
-                          <svg className="animate-spin h-12 w-12 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                          </svg>
-                        </div>
-                        <div className="mt-4 text-lg font-semibold">Loading report…</div>
-                        <div className="mt-2 text-sm text-gray-500">This may take a moment — fetching the detailed report.</div>
-                      </div>
-                    </div>
-                  ) : (
+                        <LoadingSpinner message="Loading report…" subtext="This may take a moment — fetching the detailed report." size="lg" />
+                      ) : (
                     // Full uses structured JSON (detailedReport or streaming result),
                     // Revised uses stored file content (markdown). Favor fullReportSource
                     // for the dashboard UI when on the Full tab.
@@ -744,15 +735,7 @@ export default function PolicyAnalysis() {
                           )
                         })()
                       ) : (
-                        <div className="h-full w-full flex items-center justify-center">
-                          <div className="text-center p-6">
-                            <div className="mx-auto w-40 h-40 flex items-center justify-center rounded-full bg-gray-100">
-                              <svg className="h-20 w-20 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            </div>
-                            <div className="mt-4 text-xl font-semibold">No detailed content yet</div>
-                            <div className="mt-2 text-sm text-gray-500">This report has not been generated or persisted yet. Try generating the Full Report or refresh later.</div>
-                          </div>
-                        </div>
+                        <NoDataView />
                       )
                     ) : (
                       // revised tab: uses saved file content (markdown)

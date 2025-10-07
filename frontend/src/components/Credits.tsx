@@ -15,6 +15,8 @@ import StatusFilterItem from '@/components/ui/StatusFilterItem'
 import TransactionRow from '@/components/ui/TransactionRow'
 import { store } from '@/store/store'
 import { clearPendingCheckout } from '@/store/paymentsSlice'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import NoDataView from '@/components/ui/NoDataView'
 
 export default function Credits() {
   const { user, isAuthenticated, loading, refreshUser } = useAuth()
@@ -451,16 +453,7 @@ export default function Credits() {
         <div className="flex-1 flex flex-col">
           {isLoading ? (
             <div className="h-full w-full flex items-center justify-center">
-              <div className="text-center">
-                <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-white shadow">
-                  <svg className="animate-spin h-12 w-12 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                  </svg>
-                </div>
-                <div className="mt-4 text-lg font-semibold">Loading transactions…</div>
-                <div className="mt-2 text-sm text-gray-500">This may take a moment — fetching your transaction history.</div>
-              </div>
+              <LoadingSpinner message="Loading transactions…" subtext="This may take a moment — fetching your transaction history." size="lg" />
             </div>
           ) : (
             <>
@@ -481,13 +474,20 @@ export default function Credits() {
           </div>
 
           <div className="flex-1 overflow-auto space-y-4">
-            {filtered.map((t) => {
+            {filtered.length === 0 ? (
+              <NoDataView title="No transactions" message="No transactions match your filters." iconType="transactions" />
+            ) : filtered.map((t) => {
               const st = getTxStatus(t)
               // If a transaction is marked completed/success and has no failure_code,
               // force any percentage fragments in the description to show 100%.
               const formatDescription = (tx: Transaction, status: TransactionStatus) => {
                 const raw = (tx.description || tx.event_type || 'Payment').toString()
+                // If there's an explicit failure_code or failure_message that
+                // indicates an error, don't force-percent to 100%.
                 if (tx.failure_code) return raw
+                const failureMsg = (tx.failure_message || '').toString().toLowerCase()
+                if (failureMsg.includes('fail') || failureMsg.includes('error') || failureMsg.includes('declin')) return raw
+
                 const rawLower = raw.toString().toLowerCase()
                 const etLower = (tx.event_type || '').toString().toLowerCase()
                 // Consider a transaction completed if its status is 'completed', the
@@ -499,8 +499,10 @@ export default function Credits() {
                   || rawLower.includes('completed')
                   || etLower.includes('completed')
                 if (!isCompleted) return raw
-                // Replace any numeric percent like '90%' or '90 %' with '100%'
-                return raw.replace(/(\d{1,3})\s*%/g, '100%')
+
+                // Replace percent-like fragments (e.g. '90%', '90 %', '90.5%', '90 percent')
+                // with '100%'. Use a case-insensitive match for the word 'percent'.
+                return raw.replace(/(\d{1,3}(?:\.\d+)?)\s*(?:%|percent\b)/gi, '100%')
               }
 
               return (
