@@ -22,6 +22,7 @@ import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setState as setPolicyState, resetState as resetPolicyState } from '@/store/policyAnalysisSlice'
 import type { RootState } from '@/store/store'
+import BrandBlock from './ui/BrandBlock'
 
 // Local helper types removed (not used here). The detailed report shape is `ReportDetail` imported from policyService.
 
@@ -127,7 +128,12 @@ export default function PolicyAnalysis() {
         }
       } catch (err) {
         console.warn('report:generated handler error', err)
-      }
+  }
+      // Mark that a full report has been generated (persisted or inline)
+      // This enables the Revised Policy button to appear so the user can
+      // request a revision. Note: we do NOT auto-save the full report here;
+      // saving still requires an explicit user action.
+      setIsFullReportGenerated(true)
     }
     window.addEventListener('report:generated', handler as EventListener)
     return () => window.removeEventListener('report:generated', handler as EventListener)
@@ -137,7 +143,9 @@ export default function PolicyAnalysis() {
   // separate flags for full vs revised so their UIs can be distinct.
   const isLoadingForTab = activeTab === 'full' ? loadingDetailed : activeTab === 'revised' ? loadingRevised : false
 
-  if (loading) return <LoadingSpinner message="Loading..." size="lg" />
+  if (loading) return (<div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner message="Loading…" size="lg" />
+      </div>)
   if (!isAuthenticated) return <NoDataView title="Not Authenticated" message="Please login to analyze policies." iconSize="lg" iconType='locked' />
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,8 +203,9 @@ export default function PolicyAnalysis() {
       try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
       // mark finished so further streaming updates are ignored
       analysisFinishedRef.current = true
-      // ensure free tab displays final quick result
-      setActiveTab('free')
+      // ensure Full tab is visible after a completed quick analysis so the user
+      // can immediately click "Full Report" to persist or view the detailed report.
+      setActiveTab('full')
       try { await refreshUser() } catch (e) { console.warn('Failed to refresh user after analysis', e) }
       try { safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
       setTimeout(() => {/* progress settled */}, 700)
@@ -222,12 +231,35 @@ export default function PolicyAnalysis() {
     try {
       const documentName = file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy'
       const resp = await policyService.generateVerificationReport(result, documentName, 'balanced')
-      if (resp?.filename) {
-        // Store the generated filename so the user can preview or download it.
-        // Do NOT mark it as a persisted/saved full report — the user must
-        // explicitly click Save to persist. Also do not emit a global
-        // report:generated event here since persistence didn't occur.
-        setReportFilename(resp.filename)
+      // The backend may return either a persisted filename (and download_url)
+      // or an inline detailed report JSON (findings/recommendations/etc.).
+      // Handle both: if we get inline details, render them immediately; if we
+      // get a filename, fetch the persisted detailed report for the Full tab.
+      try {
+        const maybe = resp as unknown as Record<string, unknown>
+        const looksLikeDetail = maybe && (Array.isArray(maybe['findings']) || typeof maybe['verdict'] === 'string' || typeof maybe['content'] === 'string')
+        if (looksLikeDetail) {
+          // Inline detailed report returned directly from generation — render it
+          const detail = resp as unknown as ReportDetail
+          setDetailedReport(detail)
+          setDetailedContent(detail.content ?? null)
+          if (detail.filename) setReportFilename(detail.filename)
+          // Mark that a full report has been generated (persisted or inline).
+          // This enables the Revised Policy button to appear so the user can
+          // request a revision. Note: we do NOT auto-save the full report here;
+          // saving still requires an explicit user action.
+          setIsFullReportGenerated(true)
+        } else if (maybe && typeof maybe['filename'] === 'string') {
+          // Persisted filename returned — set it and attempt to load detailed data
+          const fn = String(maybe['filename'])
+          setReportFilename(fn)
+          // Persisted filename implies generation succeeded and the full report
+          // is now available — allow revisions to be requested.
+          setIsFullReportGenerated(true)
+          try { await loadDetailed(fn, 'full') } catch (err) { console.debug('loadDetailed after generate failed', err) }
+        }
+      } catch (err) {
+        console.debug('inspect generateVerificationReport response failed', err)
       }
   setMessage('Full Report Generated')
   setProgress(100)
@@ -266,8 +298,11 @@ export default function PolicyAnalysis() {
     // explicitly requested save. This enables the Full tab gating and
     // ensures other parts of the app treat it as a persisted report.
     setIsFullReportGenerated(true)
+    // Immediately mark saved state and finalize progress so the UI shows completion
     setMessage('Saved')
     setProgress(100)
+    try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
+    analysisFinishedRef.current = true
   try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
   try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
   try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
@@ -301,7 +336,10 @@ export default function PolicyAnalysis() {
       )
       if (resp?.filename) {
         setRevisedReportFilename(resp.filename)
-        setMessage('Revised policy generated')
+        setMessage('Revised Policy Generated')
+        setProgress(100)
+        try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
+        analysisFinishedRef.current = true
         try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
         try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
         try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
@@ -350,21 +388,41 @@ export default function PolicyAnalysis() {
 
   // Convenience wrappers that make intent explicit in the JSX
   const loadFull = async (filename?: string) => {
-    // Only load a persisted full report. Do not auto-convert the streaming
-    // quick analysis into a full report view. The user must explicitly
-    // generate a full report using the "Full Report" button.
+    // If a full report generation has completed (either inline detail or
+    // a persisted filename), allow rendering the JSON that was returned.
+    // We prefer inline `detailedReport` when present. Only fetch from the
+    // backend when we have a persisted filename and no inline detail.
     const fn = filename ?? reportFilename
-    if (!fn || !isFullReportGenerated) {
+    if (!isFullReportGenerated) {
       setMessage('Full report not ready — click the "Full Report" button at the top to generate it.')
       setProgress(0)
       return
     }
+
+    // If we have an inline detailed report already present in state and no
+    // filename was supplied, we can render immediately without fetching.
+    if (!fn && detailedReport) {
+      setMessage('Loaded')
+      setProgress(100)
+      return
+    }
+
+    // If we don't have inline detail, require a persisted filename to fetch.
+    if (!fn) {
+      setMessage('Full report generated but no persisted file available. Click "Full Report" to generate a persisted report.')
+      setProgress(0)
+      return
+    }
+
     await loadDetailed(fn, 'full')
     return
   }
 
   const loadRevised = async (filename?: string) => {
-    const fn = filename ?? revisedReportFilename ?? reportFilename
+    // Only load revised content from an explicit revised filename. We do
+    // not fall back to the main reportFilename so revises are only shown
+    // after the user has requested/received a revised report.
+    const fn = filename ?? revisedReportFilename
     if (!fn) return
     return loadDetailed(fn, 'revised')
   }
@@ -400,16 +458,7 @@ export default function PolicyAnalysis() {
 
         {(result || reportFilename) ? (
           <div className="flex items-center gap-2">
-            <Button
-              disabled={!reportFilename}
-              onClick={() => { if (!reportFilename) return; const url = getReportDownloadUrl(reportFilename as string); window.open(url, '_blank') }}
-              className="px-3 py-1 bg-yellow-500 text-white rounded disabled:opacity-50"
-              icon={<DownloadCloud className="h-4 w-4" />}
-              iconColor="text-white"
-              collapseToIcon
-            >
-              Download
-            </Button>
+            {/* Download button removed per UX update */}
 
                 <Button
                   onClick={async () => {
@@ -620,6 +669,7 @@ export default function PolicyAnalysis() {
                         )) : <div className="text-sm text-gray-500">No findings detected.</div>}
                       </div>
                     </div>
+                    <BrandBlock hasBackground showAndelaLogo={false} showPartnershipText={false} showCopyrightText={false} />
                   </div>
                 ) : (
                   <div className="h-full w-full flex items-center justify-center">
@@ -795,6 +845,7 @@ export default function PolicyAnalysis() {
                                   </div>
                                 </aside>
                               </div>
+                              <BrandBlock hasBackground showCopyrightText={false} showAndelaLogo={false} showPartnershipText={false} />
                             </div>
                           )
                         })()
@@ -822,6 +873,9 @@ export default function PolicyAnalysis() {
                         // If we have a persisted detailedReport but no textual content
                         // (common for PDFs), attempt to embed the PDF via the download
                         // endpoint so users can preview the revised policy inline.
+                        // If no revised report has been generated yet, show a clear
+                        // 'Nothing here' message so users know they must request a
+                        // revised policy first (via the Revised Policy button).
                         (detailedDownloadUrl) ? (
                           <div className="h-full w-full min-h-0">
                             <div className="mb-2 text-sm text-gray-600">Revised policy (preview)</div>
@@ -839,8 +893,8 @@ export default function PolicyAnalysis() {
                               <div className="mx-auto w-40 h-40 flex items-center justify-center rounded-full bg-gray-100">
                                 <svg className="h-20 w-20 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                               </div>
-                              <div className="mt-4 text-xl font-semibold">No detailed content yet</div>
-                              <div className="mt-2 text-sm text-gray-500">This report has not been generated or persisted yet. Try generating the Full Report or refresh later.</div>
+                              <div className="mt-4 text-xl font-semibold">Nothing is here — generate a Revised Policy first</div>
+                              <div className="mt-2 text-sm text-gray-500">Click the <span className="font-medium">Revised Policy</span> button above to ask the AI to generate a revised policy and save it.</div>
                             </div>
                           </div>
                         )

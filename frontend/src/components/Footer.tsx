@@ -1,4 +1,5 @@
-import { getCurrentYear, footerClasses } from '@/lib/uiHelpers'
+import { footerClasses } from '@/lib/uiHelpers'
+import BrandBlock from './ui/BrandBlock'
 
 type FooterProps = {
   hasBackground?: boolean
@@ -18,20 +19,8 @@ export default function Footer({ hasBackground = true }: FooterProps) {
           A quick, reliable privacy policy analysis — get results fast and act with confidence.
         </div>
 
-        <div className={`${subtitleClass} text-sm mt-2`}>
-          &copy; {getCurrentYear()} PoliverAI &trade;. All rights reserved.
-        </div>
-
-        <div className={`text-sm ${subtitleClass} mt-2`}>
-          Designed in partnership with Andela
-        </div>
-
-        <div className={hasBackground ? 'bg-white p-3 rounded-lg shadow-sm' : 'p-3'}>
-          <div className="flex items-center gap-3">
-            <img src="/poliverai-logo.svg" alt="PoliverAI" className="h-12 w-auto" />
-            <img src="/andela-logo-transparent.png" alt="Andela" className="h-10 w-auto" />
-          </div>
-        </div>
+        {/* Reusable brand block */}
+        <BrandBlock hasBackground={hasBackground} subtitleClass={subtitleClass} showAndelaLogo showPartnershipText/>
       </div>
     </footer>
   )
