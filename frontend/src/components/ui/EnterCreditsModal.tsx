@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { Button } from './Button'
-import { X } from 'lucide-react'
+import { X, CreditCard } from 'lucide-react'
 import IconButton from './IconButton'
 import { getInputClassName } from '@/lib/ui/inputHelpers'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
+import MetaLine from './MetaLine'
 
 type Props = {
   open: boolean
@@ -46,6 +47,7 @@ export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Pr
         </div>
         <div className="p-4">
           <p className="text-sm text-gray-600 mb-4">Enter the amount in USD to purchase credits (1 USD = 10 credits)</p>
+          <MetaLine>We'll process your payment securely and add credits to your account.</MetaLine>
           <div className="flex items-center gap-2">
             <input
               className={getInputClassName('border rounded px-3 py-2 w-full')}
@@ -55,7 +57,7 @@ export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Pr
               step="0.01"
               min="0"
             />
-            <Button onClick={handleConfirm} disabled={isProcessing}>
+            <Button onClick={handleConfirm} disabled={isProcessing} icon={<CreditCard className="h-4 w-4" />}>
               {isProcessing ? 'Processing...' : 'Buy'}
             </Button>
           </div>

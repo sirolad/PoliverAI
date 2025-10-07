@@ -607,88 +607,16 @@ async def generate_verification_report(
             filepath = export_report(content, str(reports_dir))
             filename = Path(filepath).name
 
-            # If GCS is configured, upload under user folder if we have a user id
-            settings = get_settings()
-            gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_REPORTS_GCS_BUCKET")
-            user_id = None
-            if current_user is not None:
-                user_id = current_user.id
-            else:
-                # fallback to environment variable for backward compatibility
-                user_id = os.getenv("POLIVERAI_DEFAULT_USER_ID")
-
+            # Do NOT persist or upload generated verification reports automatically.
+            # Users must explicitly call the /reports/save endpoint to persist a
+            # generated report. This avoids unexpected saves and charges; only the
+            # revised policy generation auto-saves by design.
             gcs_url = None
-            try:
-                if gcs_bucket and user_id and upload_report_if_changed:
-                    object_path = f"{user_id}/{filename}"
-                    uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, filepath)
-            except Exception:
-                # Log upload errors so we can diagnose why GCS upload failed
-                logging.exception('Failed to upload report to GCS')
-                gcs_url = None
-
-            # Insert a record into Mongo 'reports' collection if available
-            # Prepare placeholders in case Mongo persistence fails so later
-            # logic that references these variables doesn't raise UnboundLocalError.
-            mdb = None
-            inserted_id = None
-            try:
-                mongo_uri = os.getenv("MONGO_URI")
-                if mongo_uri and MongoUserDB:
-                    mdb = MongoUserDB(mongo_uri)
-                    # collect additional metadata
-                    file_size = None
-                    try:
-                        file_size = Path(filepath).stat().st_size
-                    except Exception:
-                        file_size = None
-
-                    report_doc = {
-                        "filename": filename,
-                        "path": str(filepath),
-                        "gcs_url": gcs_url,
-                        "user_id": user_id,
-                        "document_name": req.document_name,
-                        "analysis_mode": req.analysis_mode,
-                        # persist structured analysis so frontend can rebuild the report
-                        "findings": getattr(req, 'findings', None),
-                        "recommendations": getattr(req, 'recommendations', None),
-                        "evidence": getattr(req, 'evidence', None),
-                        "metrics": getattr(req, 'metrics', None),
-                        # mark generated verification reports as full reports so we
-                        # don't double-charge if the user later clicks Save
-                        "is_full_report": True,
-                        # numeric compliance score reported by the verification step
-                        "score": getattr(req, 'score', None),
-                        # persist the raw generated content so it can be rendered
-                        # inline later by the frontend (detailed view)
-                        "content": content,
-                        # store verdict and a simple type so the frontend can filter
-                        "verdict": getattr(req, 'verdict', None),
-                        "type": "verification",
-                        "file_size": file_size,
-                        "created_at": datetime.utcnow(),
-                    }
-                    inserted = mdb.db.get_collection("reports").insert_one(report_doc)
-                    inserted_id = inserted.inserted_id
-            except Exception:
-                # Do not hard-fail report creation if DB logging fails, but log details
-                logging.exception('Failed to persist verification report record to Mongo')
-
-            # If we successfully pre-charged earlier, mark the report doc as charged
-            try:
-                if charged and mdb is not None and inserted_id is not None:
-                    mdb.db.get_collection('reports').update_one({'_id': inserted_id}, {'$set': {'charged': True}})
-            except Exception:
-                # don't block the response if marking charged fails
-                pass
-
-            # Build detailed response payload so frontend can render the full report
             created_iso = datetime.utcnow().isoformat()
             return DetailedReportResponse(
                 filename=filename,
                 path=str(filepath),
-                download_url=gcs_url or f"/api/v1/reports/download/{filename}",
+                download_url=f"/api/v1/reports/download/{filename}",
                 content=content,
                 findings=getattr(req, 'findings', None),
                 recommendations=getattr(req, 'recommendations', None),
@@ -698,8 +626,10 @@ async def generate_verification_report(
                 score=getattr(req, 'score', None),
                 document_name=getattr(req, 'document_name', None),
                 analysis_mode=getattr(req, 'analysis_mode', None),
-                gcs_url=gcs_url,
-                is_full_report=True,
+                gcs_url=None,
+                # Mark as not persisted / not a saved full report so frontend
+                # can require an explicit Save action from the user.
+                is_full_report=False,
                 created_at=created_iso,
             )
         except HTTPException:

@@ -138,7 +138,7 @@ export default function PolicyAnalysis() {
   const isLoadingForTab = activeTab === 'full' ? loadingDetailed : activeTab === 'revised' ? loadingRevised : false
 
   if (loading) return <LoadingSpinner message="Loading..." size="lg" />
-  if (!isAuthenticated) return <NoDataView title="Not Authenticated" message="Please login to analyze policies." iconSize="lg" />
+  if (!isAuthenticated) return <NoDataView title="Not Authenticated" message="Please login to analyze policies." iconSize="lg" iconType='locked' />
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) setFile(e.target.files[0])
@@ -223,9 +223,11 @@ export default function PolicyAnalysis() {
       const documentName = file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy'
       const resp = await policyService.generateVerificationReport(result, documentName, 'balanced')
       if (resp?.filename) {
+        // Store the generated filename so the user can preview or download it.
+        // Do NOT mark it as a persisted/saved full report — the user must
+        // explicitly click Save to persist. Also do not emit a global
+        // report:generated event here since persistence didn't occur.
         setReportFilename(resp.filename)
-        setIsFullReportGenerated(true)
-  try { safeDispatch('report:generated', { path: resp.filename, download_url: resp.download_url }) } catch (err) { console.debug('safeDispatch failed', err) }
       }
   setMessage('Full Report Generated')
   setProgress(100)
@@ -259,13 +261,18 @@ export default function PolicyAnalysis() {
     try {
       const isQuick = !isFullReportGenerated
       const resp = await policyService.saveReport(filename, documentName, { is_quick: isQuick })
-      if (resp?.filename) setReportFilename(resp.filename)
-      setMessage('Saved')
-      setProgress(100)
+    if (resp?.filename) setReportFilename(resp.filename)
+    // Mark the report as a saved (persisted) full report now that the user
+    // explicitly requested save. This enables the Full tab gating and
+    // ensures other parts of the app treat it as a persisted report.
+    setIsFullReportGenerated(true)
+    setMessage('Saved')
+    setProgress(100)
   try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
   try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
   try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
   try { safeDispatch('reports:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
+  try { safeDispatch('report:generated', { path: resp?.filename, download_url: resp?.download_url }) } catch (err) { console.debug('safeDispatch failed', err) }
     } catch (e: unknown) {
       try {
         const maybe = e as unknown as Record<string, unknown>
@@ -343,8 +350,16 @@ export default function PolicyAnalysis() {
 
   // Convenience wrappers that make intent explicit in the JSX
   const loadFull = async (filename?: string) => {
-    // Prefer structured JSON; only fetch file-based detailed report if a filename is supplied.
-    if (filename) await loadDetailed(filename, 'full')
+    // Only load a persisted full report. Do not auto-convert the streaming
+    // quick analysis into a full report view. The user must explicitly
+    // generate a full report using the "Full Report" button.
+    const fn = filename ?? reportFilename
+    if (!fn || !isFullReportGenerated) {
+      setMessage('Full report not ready — click the "Full Report" button at the top to generate it.')
+      setProgress(0)
+      return
+    }
+    await loadDetailed(fn, 'full')
     return
   }
 
@@ -357,8 +372,23 @@ export default function PolicyAnalysis() {
   // helpers moved to lib/policyAnalysisHelpers
 
   // When rendering the Full dashboard prefer the structured JSON payload
-  // coming either from a fetched detailedReport or the streaming `result`.
-  const fullReportSource = (detailedReport ?? result) as (Record<string, unknown> | null)
+  // coming only from a fetched `detailedReport`. We intentionally do not
+  // fall back to the streaming `result` here so the Full tab only shows
+  // confirmed/persisted full reports.
+  const fullReportSource = (detailedReport ?? null) as (Record<string, unknown> | null)
+
+  // If we have a detailedReport record that doesn't include textual
+  // content (e.g., a PDF), the backend may provide a `download_url`. Build
+  // a stable download URL to embed or open in the UI.
+  const detailedDownloadUrl: string | null = (() => {
+    if (!detailedReport) return null
+    // prefer explicit download_url field if present. Use unknown->Record check
+    // to avoid casting to `any` which the linter flags.
+    const maybe = detailedReport as unknown as Record<string, unknown>
+    if (maybe.download_url && typeof maybe.download_url === 'string') return String(maybe.download_url)
+    if (typeof detailedReport.filename === 'string' && detailedReport.filename) return getReportDownloadUrl(detailedReport.filename)
+    return null
+  })()
 
   // Dynamic header based on active tab
   const headerTitle = activeTab === 'free' ? 'Free Analysis Result' : activeTab === 'full' ? 'Full Analysis Result' : 'Revised Policy Result'
@@ -605,7 +635,11 @@ export default function PolicyAnalysis() {
               ) : (
                 <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
                   {isLoadingForTab ? (
-                        <LoadingSpinner message="Loading report…" subtext="This may take a moment — fetching the detailed report." size="lg" />
+                        <LoadingSpinner
+                          message="Loading report…"
+                          subtext={activeTab === 'revised' ? 'This may take a moment — fetching your AI Generated Revised Policy.' : 'This may take a moment — fetching your detailed report.'}
+                          size="lg"
+                        />
                       ) : (
                     // Full uses structured JSON (detailedReport or streaming result),
                     // Revised uses stored file content (markdown). Favor fullReportSource
@@ -765,7 +799,20 @@ export default function PolicyAnalysis() {
                           )
                         })()
                       ) : (
-                        <NoDataView />
+                        // If there's no persisted full report we show a friendly
+                        // prompt guiding the user to generate the full report.
+                        <div className="h-full w-full flex items-center justify-center">
+                          <div className="text-center p-6">
+                            <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-gray-100">
+                              <FileCheck className="h-10 w-10 text-gray-500" />
+                            </div>
+                            <div className="mt-4 text-xl font-semibold">Full report not generated</div>
+                            <div className="mt-2 text-sm text-gray-500">Click the <span className="font-medium">Full Report</span> button above to generate a persisted, detailed report.</div>
+                            <div className="mt-4">
+                              <Button onClick={handleGenerateReport} disabled={!result} className="px-4 py-2 bg-black text-white rounded" icon={<FileCheck className="h-4 w-4" />}>Generate Full Report</Button>
+                            </div>
+                          </div>
+                        </div>
                       )
                     ) : (
                       // revised tab: uses saved file content (markdown) or a persisted file (PDF)
@@ -775,18 +822,13 @@ export default function PolicyAnalysis() {
                         // If we have a persisted detailedReport but no textual content
                         // (common for PDFs), attempt to embed the PDF via the download
                         // endpoint so users can preview the revised policy inline.
-                        (detailedReport && (
-                          // prefer an explicit download_url returned by the backend
-                          ((detailedReport as any).download_url && ((detailedReport as any).download_url as string)) ||
-                          // otherwise build the local download endpoint from filename
-                          (detailedReport.filename ? getReportDownloadUrl(detailedReport.filename) : null)
-                        )) ? (
+                        (detailedDownloadUrl) ? (
                           <div className="h-full w-full min-h-0">
                             <div className="mb-2 text-sm text-gray-600">Revised policy (preview)</div>
                             <div className="h-[70vh]">
                               <iframe
                                 title={detailedReport?.filename ?? 'revised-policy'}
-                                src={(detailedReport && ((detailedReport as any).download_url ? (detailedReport as any).download_url : getReportDownloadUrl(detailedReport.filename))) as string}
+                                src={detailedDownloadUrl as string}
                                 className="w-full h-full border rounded"
                               />
                             </div>

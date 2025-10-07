@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Button } from './Button'
-import { X } from 'lucide-react'
+import { X, Trash2 } from 'lucide-react'
 import IconButton from './IconButton'
 import FileList from './FileList'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
@@ -39,7 +39,10 @@ export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onCon
         <div className="p-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-3">
             {typeof icon !== 'undefined' ? <div className="text-gray-700">{icon}</div> : null}
-            <div className="text-lg font-semibold">{filenames.length === 1 ? 'Confirm Delete' : 'Confirm Bulk Delete'}</div>
+            <div>
+              <div className="text-lg font-semibold">{filenames.length === 1 ? 'Confirm Delete' : 'Confirm Bulk Delete'}</div>
+              <MetaLine>Delete the selected report{filenames.length !== 1 ? 's' : ''} permanently.</MetaLine>
+            </div>
           </div>
           <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
         </div>
@@ -60,7 +63,7 @@ export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onCon
           )}
           <div className="flex items-center gap-2 justify-end">
             <Button onClick={onClose} disabled={isProcessing}>Close</Button>
-            <Button onClick={handleYes} disabled={isProcessing} className={getDangerButtonClass()}>{getConfirmDeleteLabel(isProcessing)}</Button>
+            <Button onClick={handleYes} disabled={isProcessing} className={getDangerButtonClass()} icon={<Trash2 className="h-4 w-4" />} iconColor="text-white">{getConfirmDeleteLabel(isProcessing)}</Button>
           </div>
         </div>
       </div>

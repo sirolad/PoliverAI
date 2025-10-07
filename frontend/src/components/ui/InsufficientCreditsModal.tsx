@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { XCircle } from 'lucide-react'
+import { XCircle, CreditCard } from 'lucide-react'
 import { Button } from './Button'
 import MetaLine from './MetaLine'
 import EnterCreditsModal from './EnterCreditsModal'
@@ -47,7 +47,7 @@ export default function InsufficientCreditsModal({
               <Button variant="ghost" onClick={onClose}>
                 Close
               </Button>
-              <Button onClick={handleTopUp}>
+              <Button onClick={handleTopUp} icon={<CreditCard className="h-4 w-4" />}>
                 Top-Up Credits
               </Button>
             </div>

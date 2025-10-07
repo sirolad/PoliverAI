@@ -174,7 +174,11 @@ export default function Reports() {
   }
 
   // Don't block the whole page while auth/loading — show progress inside filters
-  if (!isAuthenticated && loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  if (!isAuthenticated && loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <LoadingSpinner message="Loading…" size="lg" />
+    </div>
+  )
   if (!isAuthenticated) return <Navigate to="/login" replace />
   // Allow access to Reports if user is PRO or has credits available
   const hasCredits = (user?.credits ?? 0) > 0
