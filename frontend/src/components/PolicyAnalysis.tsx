@@ -29,6 +29,7 @@ export default function PolicyAnalysis() {
   const [message, setMessage] = useState<string>('')
   const [result, setResult] = useState<ComplianceResult | null>(null)
   const [reportFilename, setReportFilename] = useState<string | null>(null)
+  const [revisedReportFilename, setRevisedReportFilename] = useState<string | null>(null)
   const [isFullReportGenerated, setIsFullReportGenerated] = useState<boolean>(false)
   const [userReportsCount, setUserReportsCount] = useState<number | null>(null)
   // progress bar visibility is derived from `progress` value
@@ -62,6 +63,7 @@ export default function PolicyAnalysis() {
       if (persisted.message) setMessage(persisted.message)
       if (persisted.result) setResult(persisted.result)
       if (persisted.reportFilename) setReportFilename(persisted.reportFilename)
+      if (persisted.revisedReportFilename) setRevisedReportFilename(persisted.revisedReportFilename)
       if (typeof persisted.isFullReportGenerated === 'boolean') setIsFullReportGenerated(persisted.isFullReportGenerated)
     }
     // mark hydration complete so the persist effect doesn't immediately write back
@@ -78,10 +80,11 @@ export default function PolicyAnalysis() {
         message,
         result,
         reportFilename,
+        revisedReportFilename,
         isFullReportGenerated,
       })
     )
-  }, [file, progress, message, result, reportFilename, isFullReportGenerated, dispatch])
+  }, [file, progress, message, result, reportFilename, revisedReportFilename, isFullReportGenerated, dispatch])
 
   useEffect(() => {
     if (progress >= 100) {
@@ -263,7 +266,7 @@ export default function PolicyAnalysis() {
         'comprehensive'
       )
       if (resp?.filename) {
-        setReportFilename(resp.filename)
+        setRevisedReportFilename(resp.filename)
         setMessage('Revised policy generated')
         try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
         try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
@@ -282,11 +285,14 @@ export default function PolicyAnalysis() {
   }
 
   const loadDetailed = async (filename?: string, mode: 'full' | 'revised' = 'full') => {
-    const fn = filename ?? reportFilename
-    if (!fn) return
+    // For 'full' mode filename is optional (we may render from streaming `result`).
+    // For 'revised' mode we need a saved filename (revisedReportFilename or reportFilename).
+    const fn = filename ?? (mode === 'revised' ? (revisedReportFilename ?? reportFilename) : reportFilename)
+    if (mode === 'revised' && !fn) return
     if (mode === 'full') setLoadingDetailed(true)
     else setLoadingRevised(true)
     try {
+      if (!fn) throw new Error('No filename provided for detailed report')
       const resp = await policyService.getDetailedReport(fn)
       setDetailedReport(resp ?? null)
       setDetailedContent(resp?.content ?? null)
@@ -308,11 +314,15 @@ export default function PolicyAnalysis() {
 
   // Convenience wrappers that make intent explicit in the JSX
   const loadFull = async (filename?: string) => {
-    return loadDetailed(filename, 'full')
+    // Prefer structured JSON; only fetch file-based detailed report if a filename is supplied.
+    if (filename) await loadDetailed(filename, 'full')
+    return
   }
 
   const loadRevised = async (filename?: string) => {
-    return loadDetailed(filename, 'revised')
+    const fn = filename ?? revisedReportFilename ?? reportFilename
+    if (!fn) return
+    return loadDetailed(fn, 'revised')
   }
 
   // helpers moved to lib/policyAnalysisHelpers
@@ -342,7 +352,7 @@ export default function PolicyAnalysis() {
                 <Button
                   onClick={async () => {
                     try { dispatch(resetPolicyState()) } catch (err) { console.warn('failed to reset persisted policy state', err) }
-                    setFile(null); setResult(null); setReportFilename(null); setIsFullReportGenerated(false); setProgress(0); setMessage('')
+                    setFile(null); setResult(null); setReportFilename(null); setRevisedReportFilename(null); setIsFullReportGenerated(false); setProgress(0); setMessage('')
                     try {
                       const r = await policyService.getUserReports()
                       if (Array.isArray(r)) setUserReportsCount(r.length)
@@ -366,7 +376,7 @@ export default function PolicyAnalysis() {
             <Button disabled={!reportFilename} onClick={() => { if (!reportFilename) return; setTitleModalInitial(reportFilename); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
 
             {isFullReportGenerated && (
-              <Button disabled={!isFullReportGenerated || !result} onClick={handleGenerateRevision} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Generate Revised</Button>
+              <Button disabled={!isFullReportGenerated || !result} onClick={handleGenerateRevision} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Revised Policy</Button>
             )}
           </div>
         ) : null}

@@ -8,6 +8,7 @@ export type PolicyAnalysisState = {
   message?: string
   result?: ComplianceResult | null
   reportFilename?: string | null
+  revisedReportFilename?: string | null
   isFullReportGenerated?: boolean
 }
 
@@ -17,6 +18,7 @@ const initialState: PolicyAnalysisState = {
   message: '',
   result: null,
   reportFilename: null,
+  revisedReportFilename: null,
   isFullReportGenerated: false,
 }
 
