@@ -10,7 +10,7 @@ import logging
 
 from ....core.config import get_settings
 from ....rag.service import _init
-from ....reporting.exporter import export_report, export_report_image
+from ....reporting.exporter import export_report, export_report_html
 try:
     from ....storage.gcs_reports import upload_report_if_changed, compute_sha256_for_file
     from ....storage.gcs_reports import delete_object
@@ -1298,7 +1298,7 @@ async def save_report(
                 if req.save_type == 'prettify' and req.image_base64:
                     import base64
                     img_bytes = base64.b64decode(req.image_base64)
-                    generated_path = export_report_image(img_bytes, str(reports_dir))
+                    generated_path = export_report_html(img_bytes, str(reports_dir))
                     gen_path = Path(generated_path)
                     # handle requested filename renaming similarly to markdown
                     if req.filename:

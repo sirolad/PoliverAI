@@ -152,8 +152,9 @@ class PolicyService {
       // Poliver AI Logo markdown snippet to the end of the content so the
       // exported PDF includes the logo. Keep content unchanged for other
       // save types (e.g. 'prettify').
-      const LOGO_MD = '![Poliver AI Logo](https://poliverai.com/poliverai-logo.svg "Poliver AI Logo"){height=80 align=center}'
-      const finalContent = (options?.save_type === 'markdown') ? `${content}\n\n${LOGO_MD}` : content
+      // const LOGO_MD = '![Poliver AI Logo](https://poliverai.com/poliverai-logo.svg "Poliver AI Logo"){height=80 align=center}'
+      // const finalContent = (options?.save_type === 'markdown') ? `${content}\n\n${LOGO_MD}` : content
+      const finalContent = (options?.save_type === 'markdown') ? `${content}` : content
       const payload: Record<string, unknown> = { content: finalContent }
       if (filename) payload.filename = filename
       if (documentName) payload.document_name = documentName

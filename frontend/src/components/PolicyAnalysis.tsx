@@ -256,6 +256,7 @@ export default function PolicyAnalysis() {
 
   const handleGenerateReport = async () => {
     if (!result) return
+    setActiveTab('full')
     const stop = startIndeterminateProgress('Generating Full Report...')
     try {
       const documentName = file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy'
@@ -352,6 +353,7 @@ export default function PolicyAnalysis() {
 
   const handleGenerateRevision = async (instructions?: string) => {
     if (!result) return
+    setActiveTab('revised')
     const stop = startIndeterminateProgress('Generating revised policy...')
     try {
       const original = (file ? await file.text() : '') || ''
@@ -417,6 +419,7 @@ export default function PolicyAnalysis() {
   }
 
   // Convenience wrappers that make intent explicit in the JSX
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const loadFull = async (filename?: string) => {
     // If a full report generation has completed (either inline detail or
     // a persisted filename), allow rendering the JSON that was returned.
@@ -449,6 +452,7 @@ export default function PolicyAnalysis() {
   }
 
   const loadRevised = async (filename?: string) => {
+  /* eslint-enable @typescript-eslint/no-unused-vars */
     // Only load revised content from an explicit revised filename. We do
     // not fall back to the main reportFilename so revises are only shown
     // after the user has requested/received a revised report.
@@ -664,10 +668,10 @@ export default function PolicyAnalysis() {
                 <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'free' ? 'bg-blue-600 text-white border-blue-600 rounded-l' : 'bg-white text-gray-700 border-gray-200 rounded-l'}`} onClick={() => setActiveTab('free')}>
                   <Lightbulb className="h-4 w-4 mr-2" /> Free
                 </button>
-                <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'full' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200'}`} onClick={async () => { setActiveTab('full'); await loadFull() }}>
+                <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'full' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200'}`} onClick={() => { setActiveTab('full'); setLoadingDetailed(true); window.setTimeout(() => setLoadingDetailed(false), 1200) }}>
                   <FileCheck className="h-4 w-4 mr-2" /> Full
                 </button>
-                <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'revised' ? 'bg-blue-600 text-white border-blue-600 rounded-r' : 'bg-white text-gray-700 border-gray-200 rounded-r'}`} onClick={async () => { setActiveTab('revised'); await loadRevised() }}>
+                <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'revised' ? 'bg-blue-600 text-white border-blue-600 rounded-r' : 'bg-white text-gray-700 border-gray-200 rounded-r'}`} onClick={() => { setActiveTab('revised'); setLoadingRevised(true); window.setTimeout(() => setLoadingRevised(false), 1200) }}>
                   <Bot className="h-4 w-4 mr-2" /> Revised
                 </button>
 

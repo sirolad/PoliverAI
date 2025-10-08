@@ -443,3 +443,17 @@ def simple_pdf_from_image(image_bytes: bytes, output_path: str) -> None:
 
     c.save()
 
+def simple_pdf_from_html(html: str, output_path: str) -> None:
+    """
+    Render an HTML string into a PDF at `output_path`.
+
+    Priority:
+      WeasyPrint (recommended): full HTML/CSS, SVG support.
+      xhtml2pdf (fallback): partial HTML/CSS.
+      Plain-text fallback: strips tags and uses simple_pdf_from_text.
+
+    Args:
+      html: HTML markup to render.
+      output_path: Target PDF path.
+    """
+    
