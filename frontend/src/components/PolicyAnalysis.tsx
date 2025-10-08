@@ -8,7 +8,7 @@ import type { ComplianceResult } from '@/types/api'
 import { UploadCloud, RefreshCcw, DownloadCloud, ExternalLink, Save, FileCheck, X, Bot, Lightbulb, CheckCircle2, FileText, AlertTriangle, BarChart, FileSearch, Star as LucideStar } from 'lucide-react'
 import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
 import useSavedReportsCounter from '@/hooks/useSavedReportsCounter'
-import { renderMarkdownToHtml } from '@/lib/policyAnalysisHelpers'
+import { renderMarkdownToHtml, htmlNodeToHtmlAndCss } from '@/lib/policyAnalysisHelpers'
 import { Button } from '@/components/ui/Button'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
 import { Progress } from '@/components/ui/progress'
@@ -53,10 +53,13 @@ export default function PolicyAnalysis() {
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [titleModalInitial, setTitleModalInitial] = useState<string>('')
   const [viewerOpen, setViewerOpen] = useState<boolean>(false)
-  const [viewerUrl, setViewerUrl] = useState<string | null>(null)
+  const [viewerUrl ] = useState<string | null>(null)
+  // const [viewerUrl, setViewerUrl] = useState<string | null>(null)
   const [viewerFilename, setViewerFilename] = useState<string | null>(null)
-  const [viewerTitle, setViewerTitle] = useState<string | null>(null)
-  const [viewerIsQuick, setViewerIsQuick] = useState<boolean | undefined>(undefined)
+  const [viewerTitle ] = useState<string | null>(null)
+  // const [viewerTitle, setViewerTitle] = useState<string | null>(null)
+  const [viewerIsQuick ] = useState<boolean | undefined>(undefined)
+  // const [viewerIsQuick, setViewerIsQuick] = useState<boolean | undefined>(undefined)
   const [insufficientOpen, setInsufficientOpen] = useState(false)
   const [instructionsModalOpen, setInstructionsModalOpen] = useState(false)
   const [instructionsInitial] = useState<string>('')
@@ -84,7 +87,7 @@ export default function PolicyAnalysis() {
       if (typeof persisted.isFullReportGenerated === 'boolean') setIsFullReportGenerated(persisted.isFullReportGenerated)
       // hydrate newly-persisted fields so Full/Revised tabs restore
       if (persisted.detailedContent) setDetailedContent(persisted.detailedContent)
-      if (persisted.detailedReport) setDetailedReport(persisted.detailedReport as any)
+  if (persisted.detailedReport) setDetailedReport(persisted.detailedReport as unknown as ReportDetail)
       if (persisted.activeTab) setActiveTab(persisted.activeTab)
       if (typeof persisted.loadingDetailed === 'boolean') setLoadingDetailed(persisted.loadingDetailed)
       if (typeof persisted.loadingRevised === 'boolean') setLoadingRevised(persisted.loadingRevised)
@@ -317,39 +320,39 @@ export default function PolicyAnalysis() {
     }
   }
 
-  const handleSaveReport = async (filename?: string, documentName?: string) => {
-    if (!filename) return
-    const stop = startIndeterminateProgress('Saving report...')
-    try {
-      const isQuick = !isFullReportGenerated
-      const resp = await policyService.saveReport(filename, documentName, { is_quick: isQuick })
-    if (resp?.filename) setReportFilename(resp.filename)
-    // Mark the report as a saved (persisted) full report now that the user
-    // explicitly requested save. This enables the Full tab gating and
-    // ensures other parts of the app treat it as a persisted report.
-    setIsFullReportGenerated(true)
-    // Immediately mark saved state and finalize progress so the UI shows completion
-    setMessage('Saved')
-    setProgress(100)
-    try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
-    analysisFinishedRef.current = true
-  try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
-  try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
-  try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
-  try { safeDispatch('reports:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
-  try { safeDispatch('report:generated', { path: resp?.filename, download_url: resp?.download_url }) } catch (err) { console.debug('safeDispatch failed', err) }
-      return resp
-    } catch (e: unknown) {
-      try {
-        const maybe = e as unknown as Record<string, unknown>
-        if (maybe && 'status' in maybe && maybe.status === 402) setInsufficientOpen(true)
-      } catch (err) { console.debug('inspect save error failed', err) }
-      setMessage(e instanceof Error ? e.message : 'Save failed')
-    } finally {
-      stop()
-  setTimeout(() => {/* progress settled */}, 700)
-    }
-  }
+  // const handleSaveReport = async (filename?: string, documentName?: string) => {
+  //   if (!filename) return
+  //   const stop = startIndeterminateProgress('Saving report...')
+  //   try {
+  //     const isQuick = !isFullReportGenerated
+  //     const resp = await policyService.saveReport(filename, documentName, { is_quick: isQuick })
+  //   if (resp?.filename) setReportFilename(resp.filename)
+  //   // Mark the report as a saved (persisted) full report now that the user
+  //   // explicitly requested save. This enables the Full tab gating and
+  //   // ensures other parts of the app treat it as a persisted report.
+  //   setIsFullReportGenerated(true)
+  //   // Immediately mark saved state and finalize progress so the UI shows completion
+  //   setMessage('Saved')
+  //   setProgress(100)
+  //   try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
+  //   analysisFinishedRef.current = true
+  // try { const n = await policyService.getUserReportsCount(); setUserReportsCount(n ?? 0) } catch (err) { console.debug('getUserReportsCount failed', err) }
+  // try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
+  // try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
+  // try { safeDispatch('reports:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
+  // try { safeDispatch('report:generated', { path: resp?.filename, download_url: resp?.download_url }) } catch (err) { console.debug('safeDispatch failed', err) }
+  //     return resp
+  //   } catch (e: unknown) {
+  //     try {
+  //       const maybe = e as unknown as Record<string, unknown>
+  //       if (maybe && 'status' in maybe && maybe.status === 402) setInsufficientOpen(true)
+  //     } catch (err) { console.debug('inspect save error failed', err) }
+  //     setMessage(e instanceof Error ? e.message : 'Save failed')
+  //   } finally {
+  //     stop()
+  // setTimeout(() => {/* progress settled */}, 700)
+  //   }
+  // }
 
   const handleGenerateRevision = async (instructions?: string) => {
     if (!result) return
@@ -519,7 +522,7 @@ export default function PolicyAnalysis() {
             <Button disabled={!result} onClick={handleGenerateReport} className="px-3 py-1 bg-black text-white rounded disabled:opacity-50" icon={<FileCheck className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Full Report</Button>
 
             {/* View button: shows the appropriate view depending on active tab */}
-            {activeTab !== 'revised' ? (
+            {/* {activeTab !== 'revised' ? (
               <Button
                 disabled={activeTab === 'free' ? !result : !reportFilename}
                 onClick={async () => {
@@ -552,7 +555,7 @@ export default function PolicyAnalysis() {
               >
                 View
               </Button>
-            ) : null}
+            ) : null} */}
 
             <Button disabled={!result} onClick={() => { const initial = reportFilename ?? file?.name ?? 'policy'; setTitleModalInitial(initial); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
 
@@ -712,7 +715,7 @@ export default function PolicyAnalysis() {
                     <LoadingSpinner message="Analyzing…" subtext="Running quick analysis" size="lg" />
                   </div>
                 ) : result ? (
-                  <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
+                  <div data-view="free" id="report-free-view" className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="text-sm text-gray-500 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-600" />Verdict</div>
@@ -780,7 +783,7 @@ export default function PolicyAnalysis() {
                           const evidence = (src['evidence'] ?? []) as Array<Record<string, unknown>>
                           const metrics = (src['metrics'] ?? {}) as Record<string, unknown>
                           return (
-                            <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
+                            <div data-view="full" id="report-full-view" className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
                               <div className="flex items-start justify-between gap-6">
                                 <div>
                                   <div className="text-sm text-gray-500 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-600" />Verdict</div>
@@ -982,72 +985,133 @@ export default function PolicyAnalysis() {
         </div>
       </div>
 
-      {titleModalOpen && (
+            {titleModalOpen && (
         <EnterTitleModal
           open={titleModalOpen}
           initial={titleModalInitial}
           onClose={() => setTitleModalOpen(false)}
-        onConfirm={async (title, saveType) => {
+          onConfirm={async (title, saveType) => {
             // If we have an existing persisted filename, use the normal save flow.
             // Otherwise persist inline content (prefer detailedContent then streaming result)
             try {
-                    if (reportFilename) {
-                      const resp = await handleSaveReport(reportFilename, title)
-                      // handleSaveReport will set state; return value may include filename
-                      if (resp && resp.filename) {
-                        // If backend returned a gs:// deep link, use the app download
-                        // endpoint instead so the iframe/modal can render the file.
-                        let url = resp.download_url || getReportDownloadUrl(resp.filename)
-                        if (typeof url === 'string' && url.startsWith('gs://')) {
-                          url = getReportDownloadUrl(resp.filename)
-                        }
-                        setViewerFilename(resp.filename)
-                        setViewerUrl(url)
-                        setViewerTitle(title)
-                        setViewerIsQuick(!isFullReportGenerated)
-                        setViewerOpen(true)
-                      }
-                    } else {
-                // Build a textual representation of the current result to persist.
-                // Prefer detailedContent when present, otherwise serialize the
-                // streaming `result` to markdown.
-                let content = detailedContent ?? null
-                if (!content && result) {
-                  // Simple markdown-ish serialization of result
-                  const sb: string[] = []
-                  sb.push(`# Compliance Report\n`)
-                  sb.push(`**Verdict:** ${result.verdict}\n`)
-                  sb.push(`**Score:** ${result.score}%\n`)
-                  sb.push(`**Confidence:** ${(result.confidence * 100).toFixed(0)}%\n\n`)
-                  sb.push(`## Summary\n${result.summary}\n\n`)
-                  if (result.findings && result.findings.length > 0) {
-                    sb.push('## Findings\n')
-                    result.findings.forEach((f) => {
-                      sb.push(`- Article ${f.article}: ${f.issue} (confidence ${(f.confidence*100).toFixed(0)}%)`)
-                    })
-                    sb.push('\n')
-                  }
-                  content = sb.join('\n')
-                }
-                const documentName = title ?? file?.name ?? persisted?.fileName
-                try {
-                  const resp = await policyService.saveReportInline(content ?? '', undefined, documentName, { is_quick: !isFullReportGenerated, save_type: saveType })
+
+              // if (reportFilename) {
+              //   const resp = await handleSaveReport(reportFilename, title)
+              //   // handleSaveReport will set state; return value may include filename
+              //   if (resp && resp.filename) {
+              //     // If backend returned a gs:// deep link, use the app download
+              //     // endpoint instead so the iframe/modal can render the file.
+              //     let url = resp.download_url || getReportDownloadUrl(resp.filename)
+              //     if (typeof url === 'string' && url.startsWith('gs://')) {
+              //       url = getReportDownloadUrl(resp.filename)
+              //     }
+              //     setViewerFilename(resp.filename)
+              //     setViewerUrl(url)
+              //     setViewerTitle(title)
+              //     setViewerIsQuick(!isFullReportGenerated)
+              //     // setViewerOpen(true)
+              //   }
+              // } else {}
+
+              
+              // If the user asked to save the current rendered view as HTML,
+              // capture the main panel DOM and inline computed styles so the
+              // backend receives a self-contained HTML document suitable for
+              // PDF rendering. Otherwise persist the textual/markdown content.
+              const documentName = title ?? file?.name ?? persisted?.fileName
+              try {
+                if (saveType === 'html') {
+                  // Map active tab → which view to capture
+                  const isFree = activeTab === 'free';
+                  const isFull = activeTab === 'full';
+                  const selector = isFree
+                    ? '[data-view="free"]'
+                    : isFull
+                      ? '[data-view="full"]'
+                      : '[data-view="revised"]';
+
+                  // Prefer the main rendered area inside <main>
+                  // let node = document.querySelector('main .h-full') as HTMLElement | null
+                  // if (!node) node = document.querySelector('main') as HTMLElement | null
+
+                  // Prefer the dedicated view root; fallback to main
+                  let node = document.querySelector(selector) as HTMLElement | null;
+                  if (!node) node = document.querySelector('main') as HTMLElement | null;
+                  
+                  // Build self-contained HTML from that node (inline computed + collect same-origin CSS)
+                  const { htmlDocument } = htmlNodeToHtmlAndCss(node, {
+                    title: documentName || 'Compliance Report',
+                    includeGlobalCss: true,
+                    inlineComputed: true,
+                  });
+
+                  // is_quick should map to the Free tab explicitly, else Full
+                  const isQuick = activeTab === 'free' || !isFullReportGenerated;
+
+                  // Send HTML to backend for HTML→PDF conversion
+                  const resp = await policyService.saveReportInline(
+                    htmlDocument,
+                    undefined,
+                    documentName,
+                    { is_quick: isQuick, save_type: 'html' }
+                  );
+
+                  // if (resp?.filename) {
+                  //   setReportFilename(resp.filename);
+                  //   try { paymentResult.show('success', 'Report Saved', `Saved as ${resp.filename}`) } catch (e) { console.warn('paymentResult.show failed', e); }
+                  // }
+
+                  try { paymentResult.show('success', 'Report Saved', `Saved as ${resp.filename}`) } catch (e) { console.warn('paymentResult.show failed', e); }
+
+                  // const htmlToSave = inlineComputedStylesForExport(node)
+                  // const resp = await policyService.saveReportInline(htmlToSave, undefined, documentName, { is_quick: !isFullReportGenerated, save_type: 'html' })
                   if (resp?.filename) {
                     setReportFilename(resp.filename)
-                    // notify user of success using the payment result UI (re-using existing payment modal)
                     try { paymentResult.show('success', 'Report Saved', `Saved as ${resp.filename}`) } catch (e) { console.warn('failed to show save success', e) }
                   }
-                } catch (err) {
-                  console.warn('save inline failed', err)
-                  try { paymentResult.show('failed', 'Save Failed', String(err)) } catch (e) { console.warn('failed to show save error', e) }
+                } else {
+                  console.log('saving inline report as text/markdown');
+                  // Build a textual representation of the current result to persist.
+                  // Prefer detailedContent when present, otherwise serialize the
+                  // streaming `result` to markdown.
+                  let content = detailedContent ?? null
+                  if (!content && result) {
+                    // Simple markdown-ish serialization of result
+                    const sb: string[] = []
+                    sb.push(`# Compliance Report\n`)
+                    sb.push(`**Verdict:** ${result.verdict}\n`)
+                    sb.push(`**Score:** ${result.score}%\n`)
+                    sb.push(`**Confidence:** ${(result.confidence * 100).toFixed(0)}%\n\n`)
+                    sb.push(`## Summary\n${result.summary}\n\n`)
+                    if (result.findings && result.findings.length > 0) {
+                      sb.push('## Findings\n')
+                      result.findings.forEach((f) => {
+                        sb.push(`- Article ${f.article}: ${f.issue} (confidence ${(f.confidence*100).toFixed(0)}%)`)
+                      })
+                      sb.push('\n')
+                    }
+                    content = sb.join('\n')
+                  }
+                  const resp = await policyService.saveReportInline(content ?? '', undefined, documentName, { is_quick: !isFullReportGenerated, save_type: saveType })
+                  
+                  // if (resp?.filename) {
+                  //   setReportFilename(resp.filename)
+                  //   try { paymentResult.show('success', 'Report Saved', `Saved as ${resp.filename}`) } catch (e) { console.warn('failed to show save success', e) }
+                  // }
+
+                  try { paymentResult.show('success', 'Report Saved', `Saved as ${resp.filename}`) } catch (e) { console.warn('failed to show save success', e) }
+                  
                 }
+              } catch (err) {
+                console.warn('save inline failed', err)
+                try { paymentResult.show('failed', 'Save Failed', String(err)) } catch (e) { console.warn('failed to show save error', e) }
               }
-            } catch (e) {
-              console.warn('save from title modal failed', e)
-            }
-            setTitleModalOpen(false)
-            try { safeDispatch('transactions:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
-          }}
+          } catch (e) {
+            console.warn('save from title modal failed', e)
+          }
+          setTitleModalOpen(false)
+          try { safeDispatch('transactions:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
+        }}
         />
       )}
         {viewerOpen && (

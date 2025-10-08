@@ -1271,13 +1271,15 @@ class SaveReportRequest(BaseModel):
     is_quick: bool | None = None
     # Optional inline content to write into the report file (plain text).
     content: str | None = None
-    # Optional save type: 'markdown' (render content to PDF) or 'prettify' (image)
+    # Optional save type: 'regular' (plain/markdown text) or 'html' (render
+    # the provided HTML into a PDF). When `save_type == 'html'` the client
+    # may provide `content` containing a full HTML document to render. For
+    # legacy/supporting image workflows the client may also supply
+    # base64-encoded image bytes in `image_base64` which will be placed on a
+    # single-page PDF.
     save_type: str | None = None
-    # Optional base64 image payload (data without data: prefix) for prettify saves
-    image_base64: str | None = None
-    # Optional save type: 'markdown' (default) or 'prettify' (image-based PDF)
-    save_type: str | None = None
-    # Optional base64-encoded image bytes (used when save_type == 'prettify')
+    # Optional base64-encoded image bytes (used when save_type == 'html' and
+    # an image payload is being sent)
     image_base64: str | None = None
 
 
@@ -1291,14 +1293,20 @@ async def save_report(
         reports_dir.mkdir(parents=True, exist_ok=True)
 
         # If inline content is provided, render/save it according to save_type.
-        if req.content is not None or (req.save_type == 'prettify' and req.image_base64):
+        # Also accept image_base64 when save_type == 'html' for single-image PDFs.
+        if req.content is not None or (getattr(req, 'save_type', None) == 'html' and req.image_base64):
             try:
                 final_name = None
-                # Handle image-based 'prettify' saves (client supplies base64 image)
-                if req.save_type == 'prettify' and req.image_base64:
+                # Handle image-based saves when the client provides base64 bytes
+                # (single-image PDF). This supports cases where the client wants
+                # to save a screenshot or rendered canvas.
+                if getattr(req, 'save_type', None) == 'html' and req.image_base64:
                     import base64
                     img_bytes = base64.b64decode(req.image_base64)
                     generated_path = export_report_html(img_bytes, str(reports_dir))
+                elif getattr(req, 'save_type', None) == 'html' and req.content:
+                    # 'html' carries captured HTML from the frontend preview DOM.
+                    generated_path = export_report_html(req.content, str(reports_dir))
                     gen_path = Path(generated_path)
                     # handle requested filename renaming similarly to markdown
                     if req.filename:
@@ -1320,8 +1328,13 @@ async def save_report(
                         filepath = gen_path
                         final_name = gen_path.name
                 else:
-                    # Default: render markdown/text to PDF
-                    generated_path = export_report(req.content or '', str(reports_dir))
+                    # If client explicitly sent HTML (full rendered HTML with styles),
+                    # use the HTML renderer which attempts WeasyPrint then xhtml2pdf.
+                    if getattr(req, 'save_type', None) == 'html':
+                        generated_path = export_report_html(req.content or '', str(reports_dir))
+                    else:
+                        # Default: render markdown/text to PDF
+                        generated_path = export_report(req.content or '', str(reports_dir))
                     gen_path = Path(generated_path)
                     if req.filename:
                         desired_name = req.filename

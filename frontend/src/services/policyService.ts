@@ -126,7 +126,7 @@ class PolicyService {
   async saveReport(
     filename: string,
     documentName?: string,
-    options?: { is_quick?: boolean; save_type?: 'markdown' | 'prettify'; image_base64?: string }
+    options?: { is_quick?: boolean; save_type?: 'regular' | 'html'; image_base64?: string }
   ): Promise<{ filename: string; download_url: string }> {
     try {
   const payload: Record<string, unknown> = { filename, document_name: documentName }
@@ -145,7 +145,7 @@ class PolicyService {
     content: string,
     filename?: string,
     documentName?: string,
-    options?: { is_quick?: boolean; save_type?: 'markdown' | 'prettify'; image_base64?: string }
+    options?: { is_quick?: boolean; save_type?: 'regular' | 'html'; image_base64?: string }
   ): Promise<{ filename: string; download_url: string }> {
     try {
       // If the client asked to save as rendered markdown, append the
@@ -153,8 +153,9 @@ class PolicyService {
       // exported PDF includes the logo. Keep content unchanged for other
       // save types (e.g. 'prettify').
       // const LOGO_MD = '![Poliver AI Logo](https://poliverai.com/poliverai-logo.svg "Poliver AI Logo"){height=80 align=center}'
-      // const finalContent = (options?.save_type === 'markdown') ? `${content}\n\n${LOGO_MD}` : content
-      const finalContent = (options?.save_type === 'markdown') ? `${content}` : content
+      // Treat 'regular' as the legacy markdown/text renderer
+      // const finalContent = (options?.save_type === 'regular') ? `${content}\n\n${LOGO_MD}` : content
+      const finalContent = (options?.save_type === 'regular') ? `${content}` : content
       const payload: Record<string, unknown> = { content: finalContent }
       if (filename) payload.filename = filename
       if (documentName) payload.document_name = documentName

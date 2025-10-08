@@ -73,3 +73,4 @@ pyflakes
 cairosvg
 svglib 
 lxml
+xhtml2pdf

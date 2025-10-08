@@ -13,9 +13,11 @@ def export_report(markdown: str, out_dir: str = "reports") -> str:
     return str(out_path)
 
 
-def export_report_html(image_bytes: bytes, out_dir: str = "reports") -> str:
+def export_report_html(html: str, out_dir: str = "reports") -> str:
+    """Render an HTML string into a PDF and return the generated path."""
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-    out_path = Path(out_dir) / f"compliance-image-{ts}.pdf"
-    simple_pdf_from_html(image_bytes, str(out_path))
+    out_path = Path(out_dir) / f"compliance-html-{ts}.pdf"
+    # simple_pdf_from_html will accept an HTML string and attempt WeasyPrint/xhtml2pdf
+    simple_pdf_from_html(html, str(out_path))
     return str(out_path)

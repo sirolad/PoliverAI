@@ -11,6 +11,48 @@ import ConfirmDeleteModal from './ConfirmDeleteModal'
 import InsufficientCreditsModal from './InsufficientCreditsModal'
 import MetaLine from './MetaLine'
 import { renderMarkdownToHtml } from '@/lib/policyAnalysisHelpers'
+import NoDataView from '@/components/ui/NoDataView'
+
+// Helper: walk a node and inline computed styles onto elements so the
+// exported HTML preserves appearance when rendered by a PDF engine.
+function inlineComputedStyles(root: HTMLElement): string {
+  // Clone node so we don't mutate the live DOM
+  const clone = root.cloneNode(true) as HTMLElement
+
+  const walker = document.createTreeWalker(clone, NodeFilter.SHOW_ELEMENT, null)
+  const nodes: Element[] = []
+  let cur = walker.nextNode()
+  while (cur) {
+    nodes.push(cur as Element)
+    cur = walker.nextNode()
+  }
+
+  nodes.forEach((el) => {
+    try {
+      const comp: CSSStyleDeclaration = window.getComputedStyle(el)
+      // Build style string from computed styles; include common properties
+      const props = [
+        'display','position','width','height','margin','padding','border','boxSizing',
+        'fontSize','fontFamily','fontWeight','lineHeight','color','backgroundColor',
+        'textAlign','verticalAlign','listStyleType','whiteSpace','overflow','wordBreak'
+      ]
+      const stylePairs: string[] = []
+      props.forEach((p) => {
+        const cssName = p.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase())
+        const v = (comp as unknown as Record<string, string | null>)[p] || comp.getPropertyValue(cssName)
+        if (v) stylePairs.push(`${cssName}:${v}`)
+      })
+      if (stylePairs.length) {
+        el.setAttribute('style', stylePairs.join(';'))
+      }
+    } catch {
+      // ignore computed style errors
+    }
+  })
+
+  // Wrap with minimal HTML skeleton and return
+  return `<!doctype html><html><head><meta charset="utf-8"></head><body>${clone.outerHTML}</body></html>`
+}
 
 type Props = {
   reportUrl: string
@@ -133,8 +175,8 @@ export default function ReportViewerModal({ reportUrl, filename, title, inlineCo
           ) : displayUrl ? (
             <iframe src={displayUrl} className="w-full h-full" title={filename || 'report-viewer'} />
           ) : (
-            <div className="p-6">
-              <div className="text-sm text-gray-700">Preview not available. You can download the report using the Download button.</div>
+            <div className="p-6 h-full">
+              <NoDataView title="Preview not available" message="You can download the report using the Download button." iconType="report" iconSize="md" />
             </div>
           )}
         </div>
@@ -142,7 +184,7 @@ export default function ReportViewerModal({ reportUrl, filename, title, inlineCo
           open={titleModalOpen}
           initial={pendingTitle ?? ''}
           onClose={() => setTitleModalOpen(false)}
-          onConfirm={async (docTitle: string, saveType?: 'markdown' | 'prettify') => {
+          onConfirm={async (docTitle: string, saveType?: 'regular' | 'html') => {
             try {
               if (filename) {
                 const resp = await policyService.saveReport(filename, docTitle, { is_quick: !!isQuick })
@@ -151,18 +193,41 @@ export default function ReportViewerModal({ reportUrl, filename, title, inlineCo
                 // No filename: save inline content. Use the provided title to
                 // build a friendly filename (slug) and persist as markdown so it
                 // can be rendered inline in the viewer.
-                const safeName = `${slugify(docTitle) || 'report'}-${Date.now()}.${saveType === 'prettify' ? 'pdf' : 'md'}`
+                // const safeName = `${slugify(docTitle) || 'report'}-${Date.now()}.${saveType === 'html' ? 'pdf' : 'md'}`
+                const safeName = `${slugify(docTitle) || 'report'}-${Date.now()}.pdf`
                 const contentToSave = detailedContent ?? `# ${docTitle}\n\n(Preview not available)`
                 setSavingInline(true)
                 try {
-                  if (saveType === 'prettify' && typeof inlineContent === 'string' && inlineContent.startsWith('data:image')) {
+                  if (saveType === 'html' && typeof inlineContent === 'string' && inlineContent.startsWith('data:image')) {
                     const base64 = inlineContent.split(',')[1]
-                    const resp = await policyService.saveReportInline('', safeName, docTitle, { is_quick: !!isQuick, save_type: 'prettify', image_base64: base64 })
+                    const resp = await policyService.saveReportInline('', safeName, docTitle, { is_quick: !!isQuick, save_type: 'html', image_base64: base64 })
                     if (onSaved) onSaved(resp.filename)
                   } else {
-                    const resp = await policyService.saveReportInline(contentToSave, safeName, docTitle, { is_quick: !!isQuick, save_type: saveType || 'markdown' })
-                    if (onSaved) onSaved(resp.filename)
-                  }
+                      if (saveType === 'html') {
+                        // Try to capture the preview DOM (the prose container) and
+                        // inline computed styles so the resulting HTML preserves
+                        // the current look for PDF rendering.
+                        let htmlToSave = contentToSave
+                        try {
+                          const previewEl = document.querySelector('.prose') as HTMLElement | null
+                          if (previewEl) {
+                            htmlToSave = inlineComputedStyles(previewEl)
+                          } else {
+                            // Fallback: render the markdown to HTML string
+                            htmlToSave = renderMarkdownToHtml(detailedContent ?? contentToSave)
+                          }
+                        } catch (e) {
+                          console.warn('Failed to capture styled HTML preview, falling back to raw content', e)
+                          htmlToSave = renderMarkdownToHtml(detailedContent ?? contentToSave)
+                        }
+                        // The API expects 'html' for HTML content saves
+                        const resp = await policyService.saveReportInline(htmlToSave, safeName, docTitle, { is_quick: !!isQuick, save_type: 'html' })
+                        if (onSaved) onSaved(resp.filename)
+                      } else {
+                        const resp = await policyService.saveReportInline(contentToSave, safeName, docTitle, { is_quick: !!isQuick, save_type: saveType || 'regular' })
+                        if (onSaved) onSaved(resp.filename)
+                      }
+                    }
                 } finally {
                   setSavingInline(false)
                 }

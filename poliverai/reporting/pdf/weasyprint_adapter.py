@@ -456,4 +456,54 @@ def simple_pdf_from_html(html: str, output_path: str) -> None:
       html: HTML markup to render.
       output_path: Target PDF path.
     """
-    
+    # Try WeasyPrint first (best CSS/HTML support). Use importlib so static
+    # analyzers (pylance) don't complain if the optional package isn't
+    # installed in the dev environment.
+    try:
+        import importlib
+        wp = importlib.import_module('weasyprint')
+        HTML = getattr(wp, 'HTML', None)
+        # CSS may not be required here but keep for future usage
+        CSS = getattr(wp, 'CSS', None)
+        if HTML is not None:
+            HTML(string=html).write_pdf(target=str(output_path))
+            return
+    except Exception as e:
+        logging.info("WeasyPrint not available or failed: %s", e)
+
+    # Fallback: try xhtml2pdf (pisa) for basic HTML/CSS. Import dynamically.
+    try:
+        import importlib
+        xhtml2pdf = importlib.import_module('xhtml2pdf')
+        pisa = getattr(xhtml2pdf, 'pisa', None) or getattr(xhtml2pdf, 'CreatePDF', None)
+        # xhtml2pdf exposes pisa.CreatePDF typically via xhtml2pdf.pisa
+        if pisa is None:
+            # try direct import path
+            pisa_mod = importlib.import_module('xhtml2pdf.pisa')
+            pisa = getattr(pisa_mod, 'CreatePDF', None) or getattr(pisa_mod, 'pisa', None)
+
+        if pisa is not None:
+            with open(output_path, 'wb') as out_f:
+                # pisa.CreatePDF accepts a bytes/str source and file-like dest
+                # If we found a CreatePDF function alias, call it appropriately
+                create_pdf = getattr(pisa, 'CreatePDF', None) or pisa
+                result = create_pdf(src=html.encode('utf-8'), dest=out_f)
+                if getattr(result, 'err', 0):
+                    logging.info('xhtml2pdf reported errors rendering HTML to PDF: %s', getattr(result, 'err', None))
+            return
+    except Exception as e:
+        logging.info('xhtml2pdf not available or failed: %s', e)
+
+    # Last-resort: strip HTML tags and render as plain markdown/text using
+    # the existing simple_pdf_from_text renderer so something is produced.
+    try:
+        # very simple tag stripper - keep newlines
+        text = re.sub(r'<\s*br\s*/?>', '\n', html, flags=re.IGNORECASE)
+        text = re.sub(r'<[^>]+>', '', text)
+        # Collapse excessive whitespace but keep paragraphs
+        text = re.sub(r"\n{2,}", '\n\n', text)
+        simple_pdf_from_text(text, output_path)
+        return
+    except Exception as e:
+        logging.exception('Failed to render HTML to PDF using any available backend: %s', e)
+        raise
