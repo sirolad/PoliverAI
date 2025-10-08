@@ -1,20 +1,10 @@
 from collections import defaultdict
 
 from fastapi import APIRouter
-from pydantic import BaseModel
 
 from ....knowledge.gdpr_articles import get_article_with_title
+from ....models.api import QueryAnswer, QueryRequest
 from ....rag.service import answer_question
-
-
-class QueryRequest(BaseModel):
-    question: str
-
-
-class QueryAnswer(BaseModel):
-    answer: str
-    sources: list[str]
-
 
 router = APIRouter(tags=["query"])
 

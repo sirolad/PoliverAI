@@ -17,7 +17,9 @@ BEARER_TOKEN_TYPE = "bearer"  # noqa: S105
 SECURITY_DEPENDENCY = Depends(security)
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = SECURITY_DEPENDENCY) -> User:
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = SECURITY_DEPENDENCY,
+) -> User:
     """Get current user from JWT token."""
     token = credentials.credentials
     email = verify_token(token)
@@ -97,7 +99,8 @@ async def upgrade_to_pro(current_user: User = CURRENT_USER_DEPENDENCY):
 
     if not success:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upgrade user"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to upgrade user",
         )
 
     # Return updated user

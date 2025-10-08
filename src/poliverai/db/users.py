@@ -1,7 +1,7 @@
 """In-memory user database for development purposes."""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ..core.auth import get_password_hash, verify_password
 from ..domain.auth import User, UserInDB, UserTier
@@ -28,7 +28,7 @@ class UserDatabase:
             email=email,
             tier=UserTier.FREE,
             credits=0,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             is_active=True,
             hashed_password=hashed_password,
         )
