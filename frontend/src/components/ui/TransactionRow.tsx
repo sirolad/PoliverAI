@@ -21,7 +21,7 @@ export default function TransactionRow({ date, description, userEmail, sessionId
           <div className="text-lg text-gray-700 truncate font-medium flex-1 min-w-0">
           <span className="truncate">{description || 'Transaction'}</span>
         </div>
-        {badge ? <div className="flex-shrink-0 ml-2">{badge}</div> : null}
+        {/* {badge ? <div className="flex-shrink-0 ml-2">{badge}</div> : null} */}
       </div>
 
       {/* allow caller to pass fully styled label nodes; fall back to simple text if not provided */}

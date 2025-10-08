@@ -12,7 +12,7 @@ import { X, ChevronLeft, ChevronRight, RefreshCcw, Shield, CreditCard, DollarSig
 import { Button } from '@/components/ui/Button'
 import MetaLine from '@/components/ui/MetaLine'
 import StatusFilterItem from '@/components/ui/StatusFilterItem'
-import TransactionRow from '@/components/ui/TransactionRow'
+import TransactionCard from '@/components/ui/TransactionCard'
 import { store } from '@/store/store'
 import { clearPendingCheckout } from '@/store/paymentsSlice'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -513,7 +513,7 @@ export default function Credits() {
           ) : (
             <>
             <div className="mb-2 flex items-center justify-between">
-            <div className="text-sm text-gray-600">Showing {filtered.length} of {total ?? items.length} transactions</div>
+            <div className="text-sm text-gray-600"><span className="hidden sm:inline">Showing </span>{filtered.length} of {total ?? items.length}<span className="hidden sm:inline"> transactions</span></div>
             <div className="flex items-center gap-3">
               {!isMobile && <label className="text-sm text-gray-600">Per page</label>}
               <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1">
@@ -560,14 +560,17 @@ export default function Credits() {
                 return raw.replace(/(\d{1,3}(?:\.\d+)?)\s*(?:%|percent\b)/gi, '100%')
               }
 
+              const badge = t.failure_code ? failureBadge(t.failure_code, t.failure_message) : statusBadge(st)
+              // console.log('Rendering transaction', t.id, 'status', st, 'badge', badge)
+
               return (
                 <div key={t.id} className="p-4 border rounded bg-white">
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between gap-4">
-                        <TransactionRow
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-end sm:justify-between gap-4">
+                        <TransactionCard
                           description={formatDescription(t, st)}
-                          badge={t.failure_code ? failureBadge(t.failure_code, t.failure_message) : statusBadge(st)}
+                          date={t.timestamp ? new Date(t.timestamp).toLocaleString() : undefined}
                           labels={(
                             (() => {
                               let labelColor = 'text-gray-600'
@@ -575,29 +578,27 @@ export default function Credits() {
                               else if (st === 'insufficient_funds') labelColor = 'text-yellow-600'
                               else if (st === 'failed') labelColor = 'text-red-600'
                               return (
-                                // Render email and session id as joined badge blocks so they
-                                // visually touch back-to-back (left piece + right piece).
                                 <div className={`text-xs inline-flex text-xs leading-4 align-middle ${labelColor}`}>
-                                  {/* left piece (email) */}
                                   {t.user_email ? (
                                     <span className={`px-2 py-1 border ${t.failure_code ? 'bg-red-50 text-red-700 border-red-200' : st === 'insufficient_funds' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-gray-50 text-gray-700 border-gray-200'} rounded-l-sm truncate max-w-xs`}>
                                       {t.user_email}
                                     </span>
                                   ) : null}
-
-                                  {/* right piece (session id) - remove left border so they appear joined */}
                                   {t.session_id ? (
-                                    <span className={`px-2 py-1 border border-l-0 ${t.failure_code ? 'bg-red-50 text-red-700 border-red-200' : st === 'insufficient_funds' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-gray-50 text-gray-700 border-gray-200'} rounded-r-sm truncate max-w-xs`}>{t.session_id}</span>
+                                    <span className={`px-2 py-1 border border-l-0 ${t.failure_code ? 'bg-red-50 text-red-700 border-red-200' : st === 'insufficient_funds' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-gray-50 text-gray-700 border-gray-200'} rounded-r-sm truncate max-w-[20ch]`}>{t.session_id}</span>
                                   ) : null}
                                 </div>
                               )
                             })()
                           )}
-                          dateNode={<div className="text-sm text-gray-600">{t.timestamp ? new Date(t.timestamp).toLocaleString() : '-'}</div>}
+                          badge={t.failure_code ? failureBadge(t.failure_code, t.failure_message) : statusBadge(st)}
+                          credits={t.credits ?? null}
+                          amountUsd={t.amount_usd ?? null}
                         />
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="w-full flex flex-row items-center justify-end gap-3 text-right sm:flex-col sm:items-end sm:justify-start">
+                      {(badge) ? <div className="flex-shrink-0 ml-2">{t.failure_code ? failureBadge(t.failure_code, t.failure_message) : statusBadge(st)}</div> : null}
                       <div className="font-semibold">{t.credits ?? 0} credits</div>
                       <div className="text-sm">
                         {(() => {
@@ -618,7 +619,7 @@ export default function Credits() {
                         })()}
                       </div>
                       {t.session_id && (
-                        <div className="mt-2">
+                        <div className="mt-0 sm:mt-2 ml-2 sm:ml-0">
                           <button className="text-sm text-blue-600 underline" onClick={async () => {
                             try {
                               const sid = t.session_id

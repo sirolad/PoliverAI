@@ -52,10 +52,12 @@ export interface ButtonProps
   iconColor?: string
   /** If true, the button text will be underlined. Defaults to false. */
   textUnderline?: boolean
+  /** When true, the button will align its content to the left (useful for full-width nav menu items) */
+  itIsInNavBar?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, icon, collapseToIcon = false, iconTheme = 'auto', canCollapse = true, hasBackground = true, iconColor, textUnderline = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, icon, collapseToIcon = false, iconTheme = 'auto', canCollapse = true, hasBackground = true, iconColor, textUnderline = false, itIsInNavBar = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     const iconColorClass = determineIconColorClass({ iconColor, iconTheme, className, variant })
 
@@ -75,7 +77,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     // compose classes then optionally strip background-related utilities
     const baseClass = buttonVariants({ variant, size, className })
-    const composed = composeButtonClass({ baseClass, collapseToIcon, canCollapse, hasBackground, textUnderline })
+  const composed = composeButtonClass({ baseClass, collapseToIcon, canCollapse, hasBackground, textUnderline, itIsInNavBar })
 
     return (
       <Comp

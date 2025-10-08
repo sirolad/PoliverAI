@@ -257,7 +257,7 @@ export function Navbar() {
                   </button>
 
                   {menuOpen && (
-                    <div ref={menuRef} className="absolute right-0 mt-2 w-56 bg-white rounded shadow py-1 z-50">
+                    <div ref={menuRef} className="absolute right-0 mt-2 w-56 bg-white rounded shadow py-1 z-[9999]">
                       <div className="px-4 py-3 border-b">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
@@ -288,15 +288,16 @@ export function Navbar() {
                         <span>Transaction History</span>
                       </Link>
                       {!isPro && (
-                        <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={async () => { setMenuOpen(false); try { await PaymentsService.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, 'Payment Failed', msg) } }} icon={<ChevronRight className="h-4 w-4 text-gray-600" />}>
-                          <span>Upgrade to Pro</span>
-                        </Button>
+                        <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" itIsInNavBar onClick={async () => { setMenuOpen(false); try { await PaymentsService.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, 'Payment Failed', msg) } }} icon={<ChevronRight className="h-4 w-4 text-gray-600" />}>
+                            <span>Upgrade to Pro</span>
+                          </Button>
                       )}
-                      <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); setCreditsModalOpen(true) }} icon={<CreditCard className="h-4 w-4 text-gray-600" />}>
+                      <hr className="my-1 border-t border-gray-100" />
+                      <Button variant="ghost" itIsInNavBar className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); setCreditsModalOpen(true) }} icon={<CreditCard className="h-4 w-4 text-gray-600 flex-shrink-0" />}>
                         <span>Buy Credits</span>
                       </Button>
                       <hr className="my-1 border-t border-gray-100" />
-                      <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); handleLogout() }} icon={<LogOut className="h-4 w-4 text-gray-600" />}>
+                      <Button variant="ghost" itIsInNavBar className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); handleLogout() }} icon={<LogOut className="h-4 w-4 text-gray-600 flex-shrink-0" />}>
                         <span>Logout</span>
                       </Button>
                     </div>

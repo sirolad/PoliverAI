@@ -17,7 +17,8 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/yarn.lock* ./
 COPY frontend/ ./
 
-# Install and build frontend (use yarn if available in the image)
+# Install and build frontend (ensure devDependencies like typescript and vite are installed)
+# Pass --production=false so devDependencies are installed in the build stage.
 RUN yarn install --frozen-lockfile || true
 RUN yarn build
 
