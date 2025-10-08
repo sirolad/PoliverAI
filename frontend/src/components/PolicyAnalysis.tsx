@@ -82,6 +82,12 @@ export default function PolicyAnalysis() {
       if (persisted.reportFilename) setReportFilename(persisted.reportFilename)
       if (persisted.revisedReportFilename) setRevisedReportFilename(persisted.revisedReportFilename)
       if (typeof persisted.isFullReportGenerated === 'boolean') setIsFullReportGenerated(persisted.isFullReportGenerated)
+      // hydrate newly-persisted fields so Full/Revised tabs restore
+      if (persisted.detailedContent) setDetailedContent(persisted.detailedContent)
+      if (persisted.detailedReport) setDetailedReport(persisted.detailedReport as any)
+      if (persisted.activeTab) setActiveTab(persisted.activeTab)
+      if (typeof persisted.loadingDetailed === 'boolean') setLoadingDetailed(persisted.loadingDetailed)
+      if (typeof persisted.loadingRevised === 'boolean') setLoadingRevised(persisted.loadingRevised)
     }
     // mark hydration complete so the persist effect doesn't immediately write back
     hydratedRef.current = true
@@ -99,9 +105,15 @@ export default function PolicyAnalysis() {
         reportFilename,
         revisedReportFilename,
         isFullReportGenerated,
+        // persist additional UI context so users return to same view
+        detailedContent,
+        detailedReport,
+        activeTab,
+        loadingDetailed,
+        loadingRevised,
       })
     )
-  }, [file, progress, message, result, reportFilename, revisedReportFilename, isFullReportGenerated, dispatch])
+  }, [file, progress, message, result, reportFilename, revisedReportFilename, isFullReportGenerated, detailedContent, detailedReport, activeTab, loadingDetailed, loadingRevised, dispatch])
 
   useEffect(() => {
     if (progress >= 100) {
@@ -151,7 +163,14 @@ export default function PolicyAnalysis() {
 
   // Determine whether the current tab is in a loading state. We keep
   // separate flags for full vs revised so their UIs can be distinct.
-  const isLoadingForTab = activeTab === 'full' ? loadingDetailed : activeTab === 'revised' ? loadingRevised : false
+  // For the free tab treat an in-progress streaming analysis (progress between
+  // 0 and 100) as a loading state so we can render the LoadingSpinner there
+  // as well.
+  const isLoadingForTab = activeTab === 'full'
+    ? loadingDetailed
+    : activeTab === 'revised'
+    ? loadingRevised
+    : (progress > 0 && progress < 100)
 
   if (loading) return (<div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner message="Loading…" size="lg" />
@@ -684,7 +703,11 @@ export default function PolicyAnalysis() {
 
             <div className="h-full flex-1 min-h-0">
               {activeTab === 'free' ? (
-                result ? (
+                isLoadingForTab ? (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <LoadingSpinner message="Analyzing…" subtext="Running quick analysis" size="lg" />
+                  </div>
+                ) : result ? (
                   <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
                     <div className="flex items-center justify-between">
                       <div>

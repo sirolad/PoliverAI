@@ -10,6 +10,12 @@ export type PolicyAnalysisState = {
   reportFilename?: string | null
   revisedReportFilename?: string | null
   isFullReportGenerated?: boolean
+  // Persisted UI additions so the analysis screen can be fully restored
+  detailedContent?: string | null
+  detailedReport?: Record<string, unknown> | null
+  activeTab?: 'free' | 'full' | 'revised'
+  loadingDetailed?: boolean
+  loadingRevised?: boolean
 }
 
 const initialState: PolicyAnalysisState = {
@@ -20,6 +26,11 @@ const initialState: PolicyAnalysisState = {
   reportFilename: null,
   revisedReportFilename: null,
   isFullReportGenerated: false,
+  detailedContent: null,
+  detailedReport: null,
+  activeTab: 'free',
+  loadingDetailed: false,
+  loadingRevised: false,
 }
 
 const slice = createSlice({
