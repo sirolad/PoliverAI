@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import policyService, { type ReportDetail } from '@/services/policyService'
 import EnterTitleModal from './ui/EnterTitleModal'
+import ReportViewerModal from './ui/ReportViewerModal'
 import EnterInstructionsModal from './ui/EnterInstructionsModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
@@ -9,6 +10,7 @@ import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
 import useSavedReportsCounter from '@/hooks/useSavedReportsCounter'
 import { renderMarkdownToHtml } from '@/lib/policyAnalysisHelpers'
 import { Button } from '@/components/ui/Button'
+import usePaymentResult from '@/components/ui/PaymentResultHook'
 import { Progress } from '@/components/ui/progress'
 import FindingCard from '@/components/ui/FindingCard'
 import SidebarFindingItem from '@/components/ui/SidebarFindingItem'
@@ -50,6 +52,11 @@ export default function PolicyAnalysis() {
 
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [titleModalInitial, setTitleModalInitial] = useState<string>('')
+  const [viewerOpen, setViewerOpen] = useState<boolean>(false)
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null)
+  const [viewerFilename, setViewerFilename] = useState<string | null>(null)
+  const [viewerTitle, setViewerTitle] = useState<string | null>(null)
+  const [viewerIsQuick, setViewerIsQuick] = useState<boolean | undefined>(undefined)
   const [insufficientOpen, setInsufficientOpen] = useState(false)
   const [instructionsModalOpen, setInstructionsModalOpen] = useState(false)
   const [instructionsInitial] = useState<string>('')
@@ -58,6 +65,9 @@ export default function PolicyAnalysis() {
   const analysisFinishedRef = useRef<boolean>(false)
   const dispatch = useAppDispatch()
   const persisted = useAppSelector((s: RootState) => s.policyAnalysis)
+
+  // Payment/result UI hook (used to show quick success/error feedback)
+  const paymentResult = usePaymentResult()
 
   // hydrate persisted UI
   const hydratedRef = useRef(false)
@@ -308,6 +318,7 @@ export default function PolicyAnalysis() {
   try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
   try { safeDispatch('reports:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
   try { safeDispatch('report:generated', { path: resp?.filename, download_url: resp?.download_url }) } catch (err) { console.debug('safeDispatch failed', err) }
+      return resp
     } catch (e: unknown) {
       try {
         const maybe = e as unknown as Record<string, unknown>
@@ -483,6 +494,42 @@ export default function PolicyAnalysis() {
                 </Button>
 
             <Button disabled={!result} onClick={handleGenerateReport} className="px-3 py-1 bg-black text-white rounded disabled:opacity-50" icon={<FileCheck className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Full Report</Button>
+
+            {/* View button: shows the appropriate view depending on active tab */}
+            {activeTab !== 'revised' ? (
+              <Button
+                disabled={activeTab === 'free' ? !result : !reportFilename}
+                onClick={async () => {
+                  if (activeTab === 'free') {
+                    // open viewer with inline streaming content (result summary/detailedContent)
+                    // prefer detailedContent if we have it, otherwise show a simple markdown serialization
+                    const inline = detailedContent ?? (result ? `# Analysis Result\n\n**Verdict:** ${result.verdict}\n\n${result.summary}` : '')
+                    setViewerUrl('')
+                    setViewerFilename(null)
+                    setViewerTitle('Free Analysis Result')
+                    setViewerIsQuick(true)
+                    setViewerOpen(true)
+                    // pass inline content via state used by modal
+                    // We'll store inline content in detailedContent (modal reads inlineContent prop)
+                    setDetailedContent(inline)
+                  } else {
+                    // Full tab — open persisted or generated full report
+                    if (!reportFilename) return
+                    const url = getReportDownloadUrl(reportFilename)
+                    setViewerUrl(url)
+                    setViewerFilename(reportFilename)
+                    setViewerTitle(reportFilename)
+                    setViewerIsQuick(false)
+                    setViewerOpen(true)
+                  }
+                }}
+                className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+                icon={<FileText className="h-4 w-4" />}
+                collapseToIcon
+              >
+                View
+              </Button>
+            ) : null}
 
             <Button disabled={!result} onClick={() => { const initial = reportFilename ?? file?.name ?? 'policy'; setTitleModalInitial(initial); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
 
@@ -913,14 +960,81 @@ export default function PolicyAnalysis() {
           open={titleModalOpen}
           initial={titleModalInitial}
           onClose={() => setTitleModalOpen(false)}
-            onConfirm={async (title) => {
-            if (!reportFilename) return
-            try { await handleSaveReport(reportFilename, title) } catch (e) { console.warn('save from title modal failed', e) }
+        onConfirm={async (title, saveType) => {
+            // If we have an existing persisted filename, use the normal save flow.
+            // Otherwise persist inline content (prefer detailedContent then streaming result)
+            try {
+                    if (reportFilename) {
+                      const resp = await handleSaveReport(reportFilename, title)
+                      // handleSaveReport will set state; return value may include filename
+                      if (resp && resp.filename) {
+                        // If backend returned a gs:// deep link, use the app download
+                        // endpoint instead so the iframe/modal can render the file.
+                        let url = resp.download_url || getReportDownloadUrl(resp.filename)
+                        if (typeof url === 'string' && url.startsWith('gs://')) {
+                          url = getReportDownloadUrl(resp.filename)
+                        }
+                        setViewerFilename(resp.filename)
+                        setViewerUrl(url)
+                        setViewerTitle(title)
+                        setViewerIsQuick(!isFullReportGenerated)
+                        setViewerOpen(true)
+                      }
+                    } else {
+                // Build a textual representation of the current result to persist.
+                // Prefer detailedContent when present, otherwise serialize the
+                // streaming `result` to markdown.
+                let content = detailedContent ?? null
+                if (!content && result) {
+                  // Simple markdown-ish serialization of result
+                  const sb: string[] = []
+                  sb.push(`# Compliance Report\n`)
+                  sb.push(`**Verdict:** ${result.verdict}\n`)
+                  sb.push(`**Score:** ${result.score}%\n`)
+                  sb.push(`**Confidence:** ${(result.confidence * 100).toFixed(0)}%\n\n`)
+                  sb.push(`## Summary\n${result.summary}\n\n`)
+                  if (result.findings && result.findings.length > 0) {
+                    sb.push('## Findings\n')
+                    result.findings.forEach((f) => {
+                      sb.push(`- Article ${f.article}: ${f.issue} (confidence ${(f.confidence*100).toFixed(0)}%)`)
+                    })
+                    sb.push('\n')
+                  }
+                  content = sb.join('\n')
+                }
+                const documentName = title ?? file?.name ?? persisted?.fileName
+                try {
+                  const resp = await policyService.saveReportInline(content ?? '', undefined, documentName, { is_quick: !isFullReportGenerated, save_type: saveType })
+                  if (resp?.filename) {
+                    setReportFilename(resp.filename)
+                    // notify user of success using the payment result UI (re-using existing payment modal)
+                    try { paymentResult.show('success', 'Report Saved', `Saved as ${resp.filename}`) } catch (e) { console.warn('failed to show save success', e) }
+                  }
+                } catch (err) {
+                  console.warn('save inline failed', err)
+                  try { paymentResult.show('failed', 'Save Failed', String(err)) } catch (e) { console.warn('failed to show save error', e) }
+                }
+              }
+            } catch (e) {
+              console.warn('save from title modal failed', e)
+            }
             setTitleModalOpen(false)
             try { safeDispatch('transactions:refresh') } catch (err) { console.debug('safeDispatch failed', err) }
           }}
         />
       )}
+        {viewerOpen && (
+          <ReportViewerModal
+            reportUrl={viewerUrl || ''}
+            filename={viewerFilename}
+            inlineContent={detailedContent}
+            title={(viewerTitle ?? viewerFilename) ?? undefined}
+            isQuick={viewerIsQuick}
+            onClose={() => setViewerOpen(false)}
+            onSaved={(fn) => { setReportFilename(fn); setViewerFilename(fn) }}
+            onDeleted={(fn) => { setViewerOpen(false); if (fn === reportFilename) setReportFilename(null) }}
+          />
+        )}
       {instructionsModalOpen && (
         <EnterInstructionsModal
           open={instructionsModalOpen}

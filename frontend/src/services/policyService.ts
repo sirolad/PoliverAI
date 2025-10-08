@@ -126,14 +126,37 @@ class PolicyService {
   async saveReport(
     filename: string,
     documentName?: string,
-    options?: { is_quick?: boolean }
+    options?: { is_quick?: boolean; save_type?: 'markdown' | 'prettify'; image_base64?: string }
   ): Promise<{ filename: string; download_url: string }> {
     try {
   const payload: Record<string, unknown> = { filename, document_name: documentName }
-      if (options?.is_quick) payload.is_quick = true
+  if (options?.is_quick) payload.is_quick = true
+  if (options?.save_type) payload.save_type = options.save_type
+  if (options?.image_base64) payload.image_base64 = options.image_base64
       return apiService.post<{ filename: string; download_url: string }>('/api/v1/reports/save', payload)
     } catch (e) {
       console.warn('saveReport failed', e)
+      throw e
+    }
+  }
+
+  // Persist inline content on the server and register the saved report.
+  async saveReportInline(
+    content: string,
+    filename?: string,
+    documentName?: string,
+    options?: { is_quick?: boolean; save_type?: 'markdown' | 'prettify'; image_base64?: string }
+  ): Promise<{ filename: string; download_url: string }> {
+    try {
+      const payload: Record<string, unknown> = { content }
+      if (filename) payload.filename = filename
+      if (documentName) payload.document_name = documentName
+  if (options?.is_quick) payload.is_quick = true
+  if (options?.save_type) payload.save_type = options.save_type
+  if (options?.image_base64) payload.image_base64 = options.image_base64
+      return apiService.post<{ filename: string; download_url: string }>('/api/v1/reports/save', payload)
+    } catch (e) {
+      console.warn('saveReportInline failed', e)
       throw e
     }
   }

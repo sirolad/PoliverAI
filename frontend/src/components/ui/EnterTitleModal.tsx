@@ -9,12 +9,13 @@ type Props = {
   open: boolean
   initial?: string
   onClose: () => void
-  onConfirm: (title: string) => Promise<void>
+  onConfirm: (title: string, saveType?: 'markdown' | 'prettify') => Promise<void>
 }
 
 export default function EnterTitleModal({ open, initial = '', onClose, onConfirm }: Props) {
   const [title, setTitle] = React.useState<string>(initial)
   const [isProcessing, setIsProcessing] = React.useState(false)
+  const [saveType, setSaveType] = React.useState<'markdown' | 'prettify'>('markdown')
 
   React.useEffect(() => {
     setTitle(initial)
@@ -27,7 +28,7 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
     if (!v) return
     setIsProcessing(true)
     try {
-      await onConfirm(v)
+      await onConfirm(v, saveType)
       onClose()
     } catch {
       // let caller handle errors
@@ -62,6 +63,12 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
               type="text"
               placeholder="Document title"
             />
+          </div>
+          <div className="flex items-center gap-2 mt-4 justify-end">
+            <select value={saveType} onChange={(e) => setSaveType(e.target.value as 'markdown' | 'prettify')} className="border rounded px-2 py-2 mr-2">
+              <option value="markdown">Render &amp; Save (PDF)</option>
+              <option value="prettify">Prettify (Image → PDF)</option>
+            </select>
             <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()} icon={<Save className="h-4 w-4" />} iconColor="text-white">
               {isProcessing ? 'Saving...' : 'Save'}
             </Button>

@@ -26,7 +26,7 @@ google-cloud-storage==2.11.0
 # protobuf constraint to satisfy google-cloud-aiplatform
 # google-cloud-aiplatform requires protobuf>=3.19.5 and <5.0.0dev
 protobuf
-pymongo>=4.0
+pymongo>=3.6.0
 pyflakes
 certifi
 
@@ -37,3 +37,5 @@ certifi
 # transformers==4.44.0
 # sentence-transformers==3.0.1
 # ###
+
+cairosvg

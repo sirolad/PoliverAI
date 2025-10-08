@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import useAuth from '@/contexts/useAuth'
 import useRampedCounters from '@/hooks/useRampedCounters'
-import { User, LogOut, CreditCard, ChevronRight, LogIn, UserPlus, Clock, BarChart2, Grid, List, Menu } from 'lucide-react'
+import { User, LogOut, CreditCard, ChevronRight, LogIn, UserPlus, Clock, BarChart2, Grid, List, Menu, Plus } from 'lucide-react'
 import PaymentsService from '@/services/payments'
 import { buildPendingCheckoutFromResponse, getCreditsTotal, normalizePaymentResult } from '@/lib/paymentsHelpers'
 import { useState } from 'react'
@@ -219,7 +219,7 @@ export function Navbar() {
 
                   {/* Upgrade button for free users */}
                   {!isPro && (
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700" icon={<ChevronRight className="h-4 w-4" />} collapseToIcon onClick={async () => {
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700" icon={<Plus className="h-4 w-4" />} collapseToIcon onClick={async () => {
                       try {
                         await PaymentsService.purchaseUpgrade(29)
                       } catch (err: unknown) {

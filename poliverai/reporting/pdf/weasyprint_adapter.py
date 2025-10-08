@@ -11,6 +11,12 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowabl
 from reportlab.lib.units import mm
 from reportlab.lib import colors
 import re
+from typing import Optional
+from io import BytesIO
+import logging
+
+# URL of the logo to embed at the end of each report
+LOGO_URL = "https://poliverai.com/poliverai-logo.svg"
 
 
 def _md_inline_to_html(s: str) -> str:
@@ -106,4 +112,104 @@ def simple_pdf_from_text(markdown_text: str, output_path: str) -> None:
     if not story:
         story.append(Paragraph('', normal))
 
+    # Attempt to append a centered logo image (convert SVG -> PNG if possible)
+    try:
+        png_bytes: Optional[bytes] = None
+        try:
+            import requests
+            resp = requests.get(LOGO_URL, timeout=3)
+            if resp.status_code == 200:
+                svg_bytes = resp.content
+                try:
+                    import cairosvg
+                    png_bytes = cairosvg.svg2png(bytestring=svg_bytes)
+                except Exception:
+                    # cairosvg not available or conversion failed
+                    png_bytes = None
+        except Exception:
+            png_bytes = None
+
+        if png_bytes:
+            from reportlab.platypus import Image as RLImage
+            img_buf = BytesIO(png_bytes)
+            # target height ~ 40px -> convert to points (approx 30pt)
+            img = RLImage(img_buf, height=30)
+            img.hAlign = 'CENTER'
+            story.append(Spacer(1, 8))
+            story.append(img)
+        else:
+            # fallback: centered clickable text with link
+            link_html = f'<p align="center"><a href="{LOGO_URL}">{LOGO_URL}</a></p>'
+            story.append(Spacer(1, 8))
+            story.append(Paragraph(link_html, small))
+    except Exception:
+        logging.exception('Failed to append logo to PDF')
+
     doc.build(story)
+
+
+def simple_pdf_from_image(image_bytes: bytes, output_path: str) -> None:
+    """Create a single-page PDF that places the provided image_bytes to fill
+    a standard A4 page while preserving aspect ratio.
+    """
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.utils import ImageReader
+    from io import BytesIO
+
+    buf = BytesIO(image_bytes)
+    img = ImageReader(buf)
+
+    c = canvas.Canvas(output_path, pagesize=A4)
+    page_w, page_h = A4
+    iw, ih = img.getSize()
+
+    # Calculate scale to fit the page while preserving aspect ratio
+    scale = min(page_w / iw, page_h / ih)
+    draw_w = iw * scale
+    draw_h = ih * scale
+
+    # Center the image on the page
+    x = (page_w - draw_w) / 2
+    y = (page_h - draw_h) / 2
+
+    c.drawImage(img, x, y, width=draw_w, height=draw_h, preserveAspectRatio=True, mask='auto')
+    c.showPage()
+    # Append centered logo on its own page bottom area (try convert SVG->PNG first)
+    try:
+        png_bytes = None
+        try:
+            import requests
+            resp = requests.get(LOGO_URL, timeout=3)
+            if resp.status_code == 200:
+                svg_bytes = resp.content
+                try:
+                    import cairosvg
+                    png_bytes = cairosvg.svg2png(bytestring=svg_bytes)
+                except Exception:
+                    png_bytes = None
+        except Exception:
+            png_bytes = None
+
+        if png_bytes:
+            from reportlab.lib.utils import ImageReader
+            img_buf = BytesIO(png_bytes)
+            logo = ImageReader(img_buf)
+            lw, lh = logo.getSize()
+            # scale to small height (30pt)
+            target_h = 30
+            scale = target_h / lh
+            lw_scaled = lw * scale
+            x_logo = (page_w - lw_scaled) / 2
+            y_logo = 10  # small margin from bottom
+            c.drawImage(logo, x_logo, y_logo, width=lw_scaled, height=target_h, preserveAspectRatio=True, mask='auto')
+        else:
+            # fallback: draw text link centered near bottom
+            c.setFont('Helvetica', 9)
+            text = LOGO_URL
+            text_w = c.stringWidth(text, 'Helvetica', 9)
+            c.drawString((page_w - text_w) / 2, 12, text)
+    except Exception:
+        logging.exception('Failed to append logo on image PDF')
+
+    c.save()

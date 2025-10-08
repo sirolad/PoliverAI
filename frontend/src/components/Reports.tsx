@@ -434,6 +434,7 @@ export default function Reports() {
                 filename={selected}
                 title={selected || 'Report'}
                 icon={<Eye className="h-5 w-5 text-gray-700" />}
+                showSave={false}
                 isQuick={false}
                 onClose={() => setModalUrl('')}
                 onDeleted={(fn) => {

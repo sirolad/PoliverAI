@@ -10,7 +10,7 @@ import logging
 
 from ....core.config import get_settings
 from ....rag.service import _init
-from ....reporting.exporter import export_report
+from ....reporting.exporter import export_report, export_report_image
 try:
     from ....storage.gcs_reports import upload_report_if_changed, compute_sha256_for_file
     from ....storage.gcs_reports import delete_object
@@ -1262,9 +1262,23 @@ async def count_user_reports(current_user: User = CURRENT_USER_DEPENDENCY, date_
 
 
 class SaveReportRequest(BaseModel):
-    filename: str
+    # filename may be omitted when client provides inline `content`; in that
+    # case the server will generate a filename and persist the provided
+    # content to the reports directory before proceeding with the usual
+    # save/upload/DB/charging logic.
+    filename: str | None = None
     document_name: str | None = None
     is_quick: bool | None = None
+    # Optional inline content to write into the report file (plain text).
+    content: str | None = None
+    # Optional save type: 'markdown' (render content to PDF) or 'prettify' (image)
+    save_type: str | None = None
+    # Optional base64 image payload (data without data: prefix) for prettify saves
+    image_base64: str | None = None
+    # Optional save type: 'markdown' (default) or 'prettify' (image-based PDF)
+    save_type: str | None = None
+    # Optional base64-encoded image bytes (used when save_type == 'prettify')
+    image_base64: str | None = None
 
 
 @router.post("/reports/save", response_model=ReportResponse)
@@ -1274,18 +1288,87 @@ async def save_report(
     """Persist an existing generated report file: upload to GCS (if configured) and insert a DB record."""
     try:
         reports_dir = Path("reports")
-        filepath = reports_dir / req.filename
+        reports_dir.mkdir(parents=True, exist_ok=True)
 
-        if not filepath.exists():
-            raise HTTPException(status_code=404, detail="Report file not found")
+        # If inline content is provided, render/save it according to save_type.
+        if req.content is not None or (req.save_type == 'prettify' and req.image_base64):
+            try:
+                final_name = None
+                # Handle image-based 'prettify' saves (client supplies base64 image)
+                if req.save_type == 'prettify' and req.image_base64:
+                    import base64
+                    img_bytes = base64.b64decode(req.image_base64)
+                    generated_path = export_report_image(img_bytes, str(reports_dir))
+                    gen_path = Path(generated_path)
+                    # handle requested filename renaming similarly to markdown
+                    if req.filename:
+                        desired_name = req.filename
+                        if not desired_name.lower().endswith('.pdf'):
+                            desired_name = f"{Path(desired_name).stem}.pdf"
+                        desired_path = reports_dir / desired_name
+                        if desired_path.exists():
+                            ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+                            desired_path = reports_dir / f"{Path(desired_name).stem}-{ts}.pdf"
+                        try:
+                            os.replace(str(gen_path), str(desired_path))
+                            filepath = desired_path
+                            final_name = desired_path.name
+                        except Exception:
+                            filepath = gen_path
+                            final_name = gen_path.name
+                    else:
+                        filepath = gen_path
+                        final_name = gen_path.name
+                else:
+                    # Default: render markdown/text to PDF
+                    generated_path = export_report(req.content or '', str(reports_dir))
+                    gen_path = Path(generated_path)
+                    if req.filename:
+                        desired_name = req.filename
+                        if not desired_name.lower().endswith('.pdf'):
+                            desired_name = f"{Path(desired_name).stem}.pdf"
+                        desired_path = reports_dir / desired_name
+                        if desired_path.exists():
+                            ts = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+                            desired_path = reports_dir / f"{Path(desired_name).stem}-{ts}.pdf"
+                        try:
+                            os.replace(str(gen_path), str(desired_path))
+                            filepath = desired_path
+                            final_name = desired_path.name
+                        except Exception:
+                            filepath = gen_path
+                            final_name = gen_path.name
+                    else:
+                        filepath = gen_path
+                        final_name = gen_path.name
+
+                # Ensure downstream logic sees a filename on the request model
+                try:
+                    if final_name:
+                        req.filename = final_name
+                except Exception:
+                    pass
+            except Exception as e:
+                logging.exception('Failed to render/persist inline report content')
+                raise HTTPException(status_code=500, detail=f"Failed to persist inline report content: {e}") from e
+        else:
+            if not req.filename:
+                raise HTTPException(status_code=400, detail='Missing filename or content to save')
+            filepath = reports_dir / req.filename
+            if not filepath.exists():
+                raise HTTPException(status_code=404, detail="Report file not found")
 
         # Try upload to GCS if available
         settings = get_settings()
         gcs_bucket = settings.reports_gcs_bucket or settings.gcs_bucket or os.getenv("POLIVERAI_REPORTS_GCS_BUCKET")
         gcs_url = None
+
+        # Ensure we have a stable filename to use throughout the save flow.
+        final_filename = req.filename or filepath.name
+
         try:
             if gcs_bucket and current_user and upload_report_if_changed:
-                object_path = f"{current_user.id}/{req.filename}"
+                object_path = f"{current_user.id}/{final_filename}"
                 uploaded, gcs_url = upload_report_if_changed(gcs_bucket, object_path, str(filepath))
         except Exception:
             # don't fail if upload not possible; continue to insert DB record
@@ -1311,13 +1394,13 @@ async def save_report(
                 # existing document rather than inserting a duplicate. This also
                 # allows us to avoid double-charging if the existing doc is
                 # already marked as charged.
-                existing = coll.find_one({"user_id": current_user.id, "filename": req.filename})
+                existing = coll.find_one({"user_id": current_user.id, "filename": final_filename})
                 report_doc = {
-                    "filename": req.filename,
+                    "filename": final_filename,
                     "path": str(filepath),
                     "gcs_url": gcs_url,
                     "user_id": current_user.id,
-                    "document_name": req.document_name or req.filename,
+                    "document_name": req.document_name or final_filename,
                     "analysis_mode": "balanced",
                     # quick saves are not full reports
                     "is_full_report": False,
@@ -1325,10 +1408,11 @@ async def save_report(
                     "score": None,
                     # try to infer verdict/type from file contents or filename
                     "verdict": None,
-                    "type": ("revision" if str(req.filename).startswith("revised-") else ("verification" if "verification" in str(req.filename) or str(req.filename).startswith("gdpr-verification") else "other")),
+                    "type": ("revision" if str(final_filename).startswith("revised-") else ("verification" if "verification" in str(final_filename) or str(final_filename).startswith("gdpr-verification") else "other")),
                     "file_size": file_size,
                     "created_at": datetime.utcnow(),
                 }
+
                 # Best-effort: try to extract a verdict string from the report file
                 try:
                     txt = filepath.read_text(encoding='utf-8', errors='ignore')
@@ -1358,9 +1442,19 @@ async def save_report(
                 except Exception:
                     # ignore failures reading/parsing file
                     pass
+
                 if existing:
-                    # Update fields that may have changed (path, gcs_url, file_size)
-                    coll.update_one({"_id": existing.get("_id")}, {"$set": {"path": report_doc['path'], "gcs_url": report_doc['gcs_url'], "file_size": report_doc['file_size'], "created_at": report_doc['created_at']}})
+                    # Update fields that may have changed (path, gcs_url, file_size,
+                    # and importantly the document_name if the user provided a
+                    # new title in the save dialog). This avoids leaving stale
+                    # titles when re-saving a report with the same filename.
+                    coll.update_one({"_id": existing.get("_id")}, {"$set": {
+                        "path": report_doc['path'],
+                        "gcs_url": report_doc['gcs_url'],
+                        "file_size": report_doc['file_size'],
+                        "document_name": report_doc['document_name'],
+                        "created_at": report_doc['created_at']
+                    }})
                     inserted_id = existing.get("_id")
                     # use the existing doc mapping for charged state
                     existing_charged = bool(existing.get('charged'))
@@ -1368,6 +1462,7 @@ async def save_report(
                     inserted = coll.insert_one(report_doc)
                     inserted_id = inserted.inserted_id
                     existing_charged = False
+
                 # Charge credits for any report save (quick or full) using a single
                 # configurable cost so the frontend can depend on a consistent
                 # transaction being recorded. Use a single COST value for now (10
@@ -1403,9 +1498,9 @@ async def save_report(
                         try:
                             transactions.add(tx)
                             coll.update_one({'_id': inserted_id}, {'$set': {'charged': True}})
-                            logger.info('Recorded transaction for save user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
+                            logger.info('Recorded transaction for save user=%s filename=%s', getattr(current_user, 'email', None), final_filename)
                         except Exception:
-                            logger.exception('Failed to add transaction for save for user=%s filename=%s', getattr(current_user, 'email', None), req.filename)
+                            logger.exception('Failed to add transaction for save for user=%s filename=%s', getattr(current_user, 'email', None), final_filename)
                     else:
                         # If no authenticated user is present, still record a
                         # non-charging save event for auditability. If the report
@@ -1430,7 +1525,8 @@ async def save_report(
             # Swallow DB errors but log them so persistence issues are visible in logs
             logging.exception('Failed to persist saved report record to Mongo')
 
-        return ReportResponse(filename=req.filename, path=str(filepath), download_url=gcs_url or f"/api/v1/reports/download/{req.filename}")
+        # Return a stable response using the resolved filename
+        return ReportResponse(filename=final_filename, path=str(filepath), download_url=gcs_url or f"/api/v1/reports/download/{final_filename}")
 
     except HTTPException:
         raise
