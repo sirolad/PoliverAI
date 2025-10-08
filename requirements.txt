@@ -69,3 +69,5 @@ pyflakes
 
 
 cairosvg
+svglib 
+lxml

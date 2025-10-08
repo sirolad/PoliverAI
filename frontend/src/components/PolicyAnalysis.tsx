@@ -582,9 +582,9 @@ export default function PolicyAnalysis() {
               <Button disabled={!file} onClick={handleAnalyze} className="w-full px-3 py-2 bg-indigo-600 text-white rounded">Analyze</Button>
             </div>
 
-            <div className="mb-4 mt-4"><h3 className="font-semibold">Summary</h3><div className="text-sm text-gray-700 mt-2">{result?.summary || 'No result yet'}</div></div>
+            <div className="mb-4 mt-4"><h3 className="font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-gray-600" />Summary</h3><div className="text-sm text-gray-700 mt-2">{result?.summary || 'No result yet'}</div></div>
 
-            <div className="mb-4 mt-4"><h3 className="font-semibold">Findings ({result?.findings?.length ?? 0})</h3>
+            <div className="mb-4 mt-4"><h3 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-500" />Findings ({result?.findings?.length ?? 0})</h3>
               <div className="text-sm text-gray-700 mt-2 max-h-40 overflow-auto">
                 {result?.findings && result.findings.length > 0 ? (
                   // Render findings as stacked items (SidebarFindingItem already renders
@@ -688,9 +688,9 @@ export default function PolicyAnalysis() {
                   <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm text-gray-500">Verdict</div>
+                        <div className="text-sm text-gray-500 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-green-600" />Verdict</div>
                         <div className="text-lg font-semibold">{formatVerdictLabel(result.verdict)}</div>
-                        <div className="text-sm text-gray-500">Confidence: {(result.confidence * 100).toFixed(0)}%</div>
+                        <div className="text-sm text-gray-500 flex items-center gap-2"><BarChart className="h-4 w-4 text-gray-600" />Confidence: {(result.confidence * 100).toFixed(0)}%</div>
                       </div>
                       <div>
                         <div className="text-sm text-gray-500">Score</div>
@@ -709,7 +709,7 @@ export default function PolicyAnalysis() {
                     </div>
                     <div className="mt-4 text-sm text-gray-800 whitespace-pre-wrap">{result.summary}</div>
                     <div className="mt-4">
-                      <h4 className="font-medium">Top Findings</h4>
+                      <h4 className="font-medium flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-500" />Top Findings</h4>
                       <div className="mt-2 space-y-2">
                         {result.findings && result.findings.length > 0 ? result.findings.slice(0, 6).map((f, i) => (
                           <FindingCard key={i} finding={f} />

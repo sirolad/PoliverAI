@@ -71,3 +71,5 @@ pymongo>=3.6.0
 pyflakes
 
 cairosvg
+svglib 
+lxml

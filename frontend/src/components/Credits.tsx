@@ -197,7 +197,9 @@ export default function Credits() {
     })
   }, [items, search, dateFrom, dateTo, statusFilter])
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  if (loading) return (<div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner message="Loading…" size="lg" />
+        </div>)
   if (!isAuthenticated) return <Navigate to="/login" replace />
 
   return (

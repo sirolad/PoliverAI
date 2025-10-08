@@ -148,7 +148,13 @@ class PolicyService {
     options?: { is_quick?: boolean; save_type?: 'markdown' | 'prettify'; image_base64?: string }
   ): Promise<{ filename: string; download_url: string }> {
     try {
-      const payload: Record<string, unknown> = { content }
+      // If the client asked to save as rendered markdown, append the
+      // Poliver AI Logo markdown snippet to the end of the content so the
+      // exported PDF includes the logo. Keep content unchanged for other
+      // save types (e.g. 'prettify').
+      const LOGO_MD = '![Poliver AI Logo](https://poliverai.com/poliverai-logo.svg "Poliver AI Logo"){height=80 align=center}'
+      const finalContent = (options?.save_type === 'markdown') ? `${content}\n\n${LOGO_MD}` : content
+      const payload: Record<string, unknown> = { content: finalContent }
       if (filename) payload.filename = filename
       if (documentName) payload.document_name = documentName
   if (options?.is_quick) payload.is_quick = true
@@ -160,6 +166,7 @@ class PolicyService {
       throw e
     }
   }
+  
   // Convert backend response to frontend UI format
   transformResultForUI(
     result: ComplianceResult,

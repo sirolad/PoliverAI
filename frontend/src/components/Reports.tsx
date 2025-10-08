@@ -180,9 +180,12 @@ export default function Reports() {
     </div>
   )
   if (!isAuthenticated) return <Navigate to="/login" replace />
-  // Allow access to Reports if user is PRO or has credits available
+  // Allow access to Reports if user is PRO, has credits available, or
+  // already has at least one saved report. We only redirect when the
+  // reports list has finished loading and the user truly has no files.
   const hasCredits = (user?.credits ?? 0) > 0
-  if (!isPro && !hasCredits) return <Navigate to="/dashboard" replace />
+  const hasSavedReports = (reports && reports.length > 0)
+  if (!isPro && !hasCredits && !isLoading && !hasSavedReports) return <Navigate to="/dashboard" replace />
 
   const filtered = reports.filter((r) => {
     if (query) {

@@ -39,3 +39,5 @@ certifi
 # ###
 
 cairosvg
+svglib 
+lxml
