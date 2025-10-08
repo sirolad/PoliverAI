@@ -19,7 +19,7 @@ COPY frontend/ ./
 
 # Install and build frontend (ensure devDependencies like typescript and vite are installed)
 # Pass --production=false so devDependencies are installed in the build stage.
-RUN yarn install --frozen-lockfile || true
+RUN yarn install || true
 RUN yarn build
 
 ############################################

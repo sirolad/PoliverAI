@@ -5,12 +5,13 @@ type Props = {
   description?: string
   userEmail?: string | null
   sessionId?: string | null
-  badge?: ReactNode
+  // badge?: ReactNode
   labels?: ReactNode
   dateNode?: ReactNode
 }
 
-export default function TransactionRow({ date, description, userEmail, sessionId, badge, labels, dateNode }: Props) {
+// export default function TransactionRow({ date, description, userEmail, sessionId, badge, labels, dateNode }: Props) {
+export default function TransactionRow({ date, description, userEmail, sessionId, labels, dateNode }: Props) {
   // This component renders the left column of a transaction row:
   // - first line: description (left) and optional badge (right)
   // - second line: user email • session id

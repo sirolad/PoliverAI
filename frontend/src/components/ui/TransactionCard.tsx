@@ -6,11 +6,12 @@ type Props = {
   date?: string
   labels?: ReactNode
   badge?: ReactNode
-  credits?: number | null
-  amountUsd?: number | null
+  // credits?: number | null
+  // amountUsd?: number | null
 }
 
-export default function TransactionCard({ description, date, labels, badge, credits, amountUsd }: Props) {
+// export default function TransactionCard({ description, date, labels, badge, credits, amountUsd }: Props) {
+export default function TransactionCard({ description, date, labels }: Props) {
   // Mobile-first layout: stack the TransactionRow on top, and place badge + amount/credits
   // in a bottom row. On md+ screens show them on the right side alignment.
   // const amountDisplay = (() => {
@@ -26,7 +27,8 @@ export default function TransactionCard({ description, date, labels, badge, cred
   return (
     <div className="p-4 bg-white flex flex-col md:flex-row md:items-start md:justify-between">
       <div className="flex-1">
-        <TransactionRow description={description} labels={labels} dateNode={date ? <div className="text-sm text-gray-600">{date}</div> : undefined} badge={badge} />
+        {/* <TransactionRow description={description} labels={labels} dateNode={date ? <div className="text-sm text-gray-600">{date}</div> : undefined} badge={badge} /> */}
+        <TransactionRow description={description} labels={labels} dateNode={date ? <div className="text-sm text-gray-600">{date}</div> : undefined} />
       </div>
 
       {/* Right/bottom area: on mobile this becomes a bottom inline row */}

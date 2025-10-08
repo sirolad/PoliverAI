@@ -592,8 +592,8 @@ export default function Credits() {
                             })()
                           )}
                           badge={t.failure_code ? failureBadge(t.failure_code, t.failure_message) : statusBadge(st)}
-                          credits={t.credits ?? null}
-                          amountUsd={t.amount_usd ?? null}
+                          // credits={t.credits ?? null}
+                          // amountUsd={t.amount_usd ?? null}
                         />
                       </div>
                     </div>
