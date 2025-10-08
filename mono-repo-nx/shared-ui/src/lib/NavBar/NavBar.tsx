@@ -18,7 +18,7 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
     }
   })();
 
-  const { user, logout, isAuthenticated, isPro } = useAuth();
+  const { user, logout, isAuthenticated, isPro, reportsCount } = useAuth();
   const { t } = useTranslation();
 
   const handleLogout = async () => {
@@ -106,7 +106,7 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
               <TouchableOpacity onPress={() => safeNavigate('Analyze', '/analyze')}>
                 <Text style={styles.link}>{t('components.navBar.links.analyze', 'Analyze Policy')}</Text>
               </TouchableOpacity>
-              {isPro && (
+              {(isPro || (typeof reportsCount === 'number' && reportsCount > 0)) && (
                 <TouchableOpacity onPress={() => safeNavigate('Reports', '/reports')}>
                   <Text style={styles.link}>{t('components.navBar.links.reports', 'Reports')}</Text>
                 </TouchableOpacity>

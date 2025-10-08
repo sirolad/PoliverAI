@@ -22,12 +22,9 @@ class StreamingService {
       const formData = new FormData()
   formData.append('file', file)
   formData.append('analysis_mode', analysisMode)
-  // Ask the server to ingest the uploaded file into the RAG store
-  // and to generate a PDF report after analysis. These flags cause
-  // the backend streaming endpoint to run ingestion and report creation
-  // and emit corresponding events.
-  formData.append('ingest', 'true')
-  formData.append('generate_report', 'true')
+  // By default do not request ingest or generate_report for quick analyses.
+  // Ingest/report generation can be triggered separately when the user
+  // explicitly requests a Full Report.
   const url = buildApiUrl('/api/v1/verify-stream')
       // Create EventSource-like functionality with fetch
       const controller = new AbortController()
@@ -83,16 +80,20 @@ class StreamingService {
                         : (typeof payload['progress'] === 'number' ? (payload['progress'] as number) : 0)
                       onUpdate({ status: 'processing', progress, message: (payload['message'] as string) || '' })
                     } else if (ev === 'completed') {
-                      // Completed carries the final result in data; record it but keep listening
+                      // Completed carries the final result in data; resolve now so quick analyses
+                      // return to the caller (free analysis should not wait for a report).
                       const result = payload as unknown as ComplianceResult
                       latestResult = result
                       onUpdate({ status: 'completed', progress: 100, message: 'completed', result })
-                      // Notify app to refresh user/transactions (but don't resolve yet)
+                      // Notify app to refresh user/transactions
                       try {
                         safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }])
                       } catch (e) {
                         console.warn('Failed to dispatch refresh events from streamingService', e)
                       }
+                      // Resolve the promise for quick analyses immediately
+                      resolve(latestResult)
+                      return
                     } else if (ev === 'report_completed') {
                       // Server generated a report; payload should include a path
                       const reportPath = (payload['path'] as string) || (payload['filename'] as string) || null

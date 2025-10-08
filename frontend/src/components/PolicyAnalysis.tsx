@@ -189,7 +189,7 @@ export default function PolicyAnalysis() {
     // progress shown by progress value
     try {
       setIsFullReportGenerated(false)
-      const res = await policyService.analyzePolicyStreaming(file, 'balanced', (progressVal, msg) => {
+      const res = await policyService.analyzePolicyStreaming(file, 'fast', (progressVal, msg) => {
         // Ignore any late/straggler callbacks after we've marked the run finished
         if (analysisFinishedRef.current) return
         setProgress(progressVal ?? 0)
@@ -484,7 +484,7 @@ export default function PolicyAnalysis() {
 
             <Button disabled={!result} onClick={handleGenerateReport} className="px-3 py-1 bg-black text-white rounded disabled:opacity-50" icon={<FileCheck className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Full Report</Button>
 
-            <Button disabled={!reportFilename} onClick={() => { if (!reportFilename) return; setTitleModalInitial(reportFilename); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
+            <Button disabled={!result} onClick={() => { const initial = reportFilename ?? file?.name ?? 'policy'; setTitleModalInitial(initial); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
 
             {isFullReportGenerated && (
               <Button disabled={!isFullReportGenerated || !result} onClick={() => setInstructionsModalOpen(true)} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Revised Policy</Button>
@@ -964,7 +964,7 @@ export default function PolicyAnalysis() {
             />
             <Button
               disabled={!reportFilename}
-              onClick={() => { if (!reportFilename) return; setTitleModalInitial(reportFilename); setTitleModalOpen(true) }}
+              onClick={() => { const initial = reportFilename ?? file?.name ?? 'policy'; setTitleModalInitial(initial); setTitleModalOpen(true) }}
               className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50"
               icon={<Save className="h-4 w-4" />}
             />

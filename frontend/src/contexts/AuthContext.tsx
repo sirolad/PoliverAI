@@ -18,6 +18,7 @@ axios.defaults.baseURL = getApiBaseOrigin() || 'http://localhost:8000'
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [reportsCount, setReportsCount] = useState<number | null>(null)
 
   // Check for existing token on mount
   useEffect(() => {
@@ -59,6 +60,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const userData = await authService.getCurrentUser()
       setUser(userData)
+      // fetch saved reports count for UI gating (Navbar, Dashboard quick action)
+      try {
+        const rc = await axios.get('/api/v1/user-reports/count')
+        setReportsCount(rc?.data?.count ?? 0)
+      } catch (err) {
+        console.debug('fetch reports count failed', err)
+        setReportsCount(0)
+      }
     } catch (error) {
       // If the request failed because the token is invalid or forbidden,
       // clear stored credentials. For network errors or other transient
@@ -84,8 +93,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const u = await authService.getCurrentUser()
       setUser(u)
+      try {
+        const rc = await axios.get('/api/v1/user-reports/count')
+        setReportsCount(rc?.data?.count ?? 0)
+      } catch (err) {
+        console.debug('refresh reports count failed', err)
+        setReportsCount(0)
+      }
     } catch (err) {
       console.error('Failed to refresh user', err)
+    }
+  }
+
+  const refreshReportsCount = async (): Promise<number> => {
+    try {
+      const rc = await axios.get('/api/v1/user-reports/count')
+      setReportsCount(rc?.data?.count ?? 0)
+      return rc?.data?.count ?? 0
+    } catch (err) {
+      console.debug('refreshReportsCount failed', err)
+      setReportsCount(0)
+      return 0
     }
   }
 
@@ -128,6 +156,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     register,
     logout,
     refreshUser,
+    reportsCount,
+    refreshReportsCount,
     loading,
     isAuthenticated: !!user,
     isPro: isProUser(user),

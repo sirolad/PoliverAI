@@ -24,6 +24,8 @@ export interface AuthContextType {
   isLoading?: boolean;
   isAuthenticated: boolean;
   isPro: boolean;
+  reportsCount?: number;
+  refreshReportsCount?: () => Promise<number>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,6 +59,7 @@ const TOKEN_KEY = '@poliverai/token';
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reportsCount, setReportsCount] = useState<number | undefined>(undefined);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -85,6 +88,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const res = await axios.get('/auth/me');
       setUser(res.data);
+      // Fetch saved reports count for UI gating (Navbar, dashboard, etc.)
+      try {
+        const rc = await axios.get<{ count: number }>('/api/v1/user-reports/count');
+        setReportsCount(rc?.data?.count ?? 0);
+      } catch (err) {
+        console.debug('fetch reports count failed', err);
+        setReportsCount(0);
+      }
       dispatch(
         setUserAction({
           id: res.data.id,
@@ -97,6 +108,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       );
     } catch (err) {
       console.warn('fetchUser failed', err);
+    }
+  };
+
+  const refreshReportsCount = async (): Promise<number> => {
+    try {
+      const rc = await axios.get<{ count: number }>('/api/v1/user-reports/count');
+      setReportsCount(rc?.data?.count ?? 0);
+      return rc?.data?.count ?? 0;
+    } catch (err) {
+      console.debug('refreshReportsCount failed', err);
+      setReportsCount(0);
+      return 0;
     }
   };
 
@@ -163,6 +186,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isLoading: loading,
     isAuthenticated: !!user,
     isPro: !!user && (user.tier === 'pro' || (user as any).isPro === true),
+    reportsCount,
+    refreshReportsCount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

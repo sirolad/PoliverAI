@@ -182,11 +182,15 @@ async def verify(
         'report': 10,
     }
 
-    # Determine total credits to charge (per-operation). We charge only for non-PRO users.
+    # Determine total credits to charge (per-operation).
+    # Fast analyses are free for everyone; only charge for non-fast (advanced) analysis
+    # and for optional ingest/report operations for non-PRO users.
     charges = []
     if current_user and current_user.tier != UserTier.PRO:
-        analysis_cost = COSTS['analysis'].get(effective_mode, COSTS['analysis']['fast'])
-        charges.append(('analysis', int(analysis_cost)))
+        # Only charge for advanced analysis modes (balanced/detailed)
+        if effective_mode != 'fast':
+            analysis_cost = COSTS['analysis'].get(effective_mode, COSTS['analysis']['fast'])
+            charges.append(('analysis', int(analysis_cost)))
         if ingest:
             charges.append(('ingest', int(COSTS['ingest'])))
         if generate_report:
@@ -416,18 +420,11 @@ async def verify_stream(
         # Check for Gradio bypass flag (for development/demo purposes)
         gradio_bypass_auth = os.getenv("GRADIO_BYPASS_AUTH", "false").lower() == "true"
         if not gradio_bypass_auth and (current_user is None or current_user.tier == UserTier.FREE):
-            # Free users can only use fast mode (unless bypass is enabled)
+            # Free or unauthenticated users always get the quick 'fast' analysis for streaming.
+            # Do not return an error when a client accidentally requests advanced modes; silently
+            # fall back to 'fast' so the front-end receives the free analysis output.
             if effective_mode in ["balanced", "detailed"]:
-                async def auth_error_stream():
-                    error_msg = json.dumps(
-                        {
-                            "status": "error",
-                            "progress": 0,
-                            "message": "Advanced analysis modes require a Pro subscription",
-                        }
-                    )
-                    yield f"data: {error_msg}\n\n"
-                return StreamingResponse(auth_error_stream(), media_type="text/plain")
+                logging.info("Requested advanced analysis mode '%s' for free/unauthenticated user; falling back to 'fast'", effective_mode)
             effective_mode = "fast"
         # Pricing (credits). 1 USD = 10 credits. Costs are in credits.
         COSTS = {
@@ -440,8 +437,10 @@ async def verify_stream(
         # starting heavy work and apply deductions after successful completion.
         charges = []
         if current_user and current_user.tier != UserTier.PRO:
-            analysis_cost = COSTS['analysis'].get(effective_mode, COSTS['analysis']['fast'])
-            charges.append(('analysis', int(analysis_cost)))
+            # Only charge analysis when it's an advanced mode; fast is free
+            if effective_mode != 'fast':
+                analysis_cost = COSTS['analysis'].get(effective_mode, COSTS['analysis']['fast'])
+                charges.append(('analysis', int(analysis_cost)))
             if ingest:
                 charges.append(('ingest', int(COSTS['ingest'])))
             if generate_report:
@@ -486,6 +485,12 @@ async def verify_stream(
         as a background task and yield events from the queue as they arrive.
         """
         q: asyncio.Queue = asyncio.Queue()
+
+        # Emit immediate started event so clients receive prompt feedback
+        try:
+            await q.put({"event": "started", "data": {"mode": effective_mode, "clauses": len(text.splitlines())}})
+        except Exception:
+            pass
 
         async def progress_cb(event_name: str, data: dict):
             # Normalize event payload and put into queue
@@ -637,12 +642,12 @@ async def verify_stream(
         # Iterate over queue yields until sentinel
         async for s in _yield_from_queue():
             yield s
+    # Return proper SSE media type and no duplicate Content-Type header
     return StreamingResponse(
         generate_stream(),
-        media_type="text/plain",
+        media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "Content-Type": "text/event-stream",
         },
     )

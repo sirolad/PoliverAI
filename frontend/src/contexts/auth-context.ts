@@ -10,6 +10,8 @@ export interface AuthContextType {
   loading: boolean
   isAuthenticated: boolean
   isPro: boolean
+  reportsCount?: number | null
+  refreshReportsCount?: () => Promise<number>
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)

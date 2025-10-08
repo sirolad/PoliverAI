@@ -33,7 +33,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
   // pricing helpers live in dashboardHelpers
 
 export function Dashboard() {
-  const { user, isAuthenticated, isPro, loading, refreshUser } = useAuth()
+  const { user, isAuthenticated, isPro, loading, refreshUser, reportsCount } = useAuth()
   const subscriptionCredits = (user?.subscription_credits ?? 0)
   const purchasedCredits = (user?.credits ?? 0)
   const effectiveCredits = subscriptionCredits + purchasedCredits
@@ -563,7 +563,7 @@ export function Dashboard() {
               </CardHeader>
             </Card>
 
-            {isPro && (
+            {(isPro || (typeof reportsCount === 'number' && reportsCount > 0)) && (
               <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/reports')}>
                 <CardHeader>
                   <div className="flex items-center gap-3">

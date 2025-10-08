@@ -13,7 +13,7 @@ import { setPendingCheckout, clearPaymentResult } from '@/store/paymentsSlice'
 import EnterCreditsModal from './ui/EnterCreditsModal'
 
 export function Navbar() {
-  const { user, logout, isAuthenticated, isPro, refreshUser, loading } = useAuth()
+  const { user, logout, isAuthenticated, isPro, refreshUser, loading, reportsCount } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -171,7 +171,7 @@ export function Navbar() {
               >
                 Analyze Policy
               </Link>
-              {isPro && (
+              {(isPro || (typeof reportsCount === 'number' && reportsCount > 0)) && (
                 <Link
                   to="/reports"
                   className="text-sm font-medium hover:text-blue-600 transition-colors"
