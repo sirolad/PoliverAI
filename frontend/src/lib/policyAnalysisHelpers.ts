@@ -49,7 +49,7 @@ export function inlineComputedStylesForExport(root: HTMLElement | null): string 
         // convert camelCase prop name to kebab-case CSS name
         const cssName = p.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())
         // try typed access first, then fallback to getPropertyValue
-        const v = (comp as unknown as Record<string, string | null>)[p as keyof CSSStyleDeclaration] || comp.getPropertyValue(cssName)
+        const v = ((comp as unknown as Record<string, string | null>)[p as string]) || comp.getPropertyValue(cssName)
         if (v) pairs.push(`${cssName}:${v}`)
       })
       if (pairs.length) el.setAttribute('style', pairs.join('; '))
@@ -96,7 +96,9 @@ export function htmlNodeToHtmlAndCss(
           if (v) pairs.push(`${cssName}:${v}`);
         });
         if (pairs.length) (el as HTMLElement).setAttribute('style', pairs.join(';'));
-      } catch {}
+      } catch {
+        // ignore errors (e.g. getComputedStyle on some elements or cross-origin issues)
+      }
     });
   }
 

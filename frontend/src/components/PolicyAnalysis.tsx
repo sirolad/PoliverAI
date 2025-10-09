@@ -237,7 +237,6 @@ export default function PolicyAnalysis() {
       analysisFinishedRef.current = true
       // ensure Full tab is visible after a completed quick analysis so the user
       // can immediately click "Full Report" to persist or view the detailed report.
-      setActiveTab('full')
       try { await refreshUser() } catch (e) { console.warn('Failed to refresh user after analysis', e) }
       try { safeDispatchMultiple([{ name: 'payment:refresh-user' }, { name: 'transactions:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
       setTimeout(() => {/* progress settled */}, 700)
@@ -356,7 +355,6 @@ export default function PolicyAnalysis() {
 
   const handleGenerateRevision = async (instructions?: string) => {
     if (!result) return
-    setActiveTab('revised')
     const stop = startIndeterminateProgress('Generating revised policy...')
     try {
       const original = (file ? await file.text() : '') || ''
@@ -379,7 +377,10 @@ export default function PolicyAnalysis() {
         try { await refreshUser() } catch (err) { console.debug('refreshUser failed', err) }
         try { safeDispatchMultiple([{ name: 'transactions:refresh' }, { name: 'payment:refresh-user' }, { name: 'reports:refresh' }]) } catch (err) { console.debug('safeDispatchMultiple failed', err) }
         // load the revised report into the revised tab so the user can view it
-        try { await loadDetailed(resp.filename, 'revised') } catch (err) { console.debug('loadDetailed revised failed', err) }
+        try { 
+          await loadDetailed(resp.filename, 'revised') 
+          setActiveTab('revised')
+        } catch (err) { console.debug('loadDetailed revised failed', err) }
       }
     } catch (e: unknown) {
       try {
@@ -422,47 +423,47 @@ export default function PolicyAnalysis() {
   }
 
   // Convenience wrappers that make intent explicit in the JSX
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const loadFull = async (filename?: string) => {
-    // If a full report generation has completed (either inline detail or
-    // a persisted filename), allow rendering the JSON that was returned.
-    // We prefer inline `detailedReport` when present. Only fetch from the
-    // backend when we have a persisted filename and no inline detail.
-    const fn = filename ?? reportFilename
-    if (!isFullReportGenerated) {
-      setMessage('Full report not ready — click the "Full Report" button at the top to generate it.')
-      setProgress(0)
-      return
-    }
+  // eslint-disable @typescript-eslint/no-unused-vars 
+  // const loadFull = async (filename?: string) => {
+  //   // If a full report generation has completed (either inline detail or
+  //   // a persisted filename), allow rendering the JSON that was returned.
+  //   // We prefer inline `detailedReport` when present. Only fetch from the
+  //   // backend when we have a persisted filename and no inline detail.
+  //   const fn = filename ?? reportFilename
+  //   if (!isFullReportGenerated) {
+  //     setMessage('Full report not ready — click the "Full Report" button at the top to generate it.')
+  //     setProgress(0)
+  //     return
+  //   }
 
-    // If we have an inline detailed report already present in state and no
-    // filename was supplied, we can render immediately without fetching.
-    if (!fn && detailedReport) {
-      setMessage('Loaded')
-      setProgress(100)
-      return
-    }
+  //   // If we have an inline detailed report already present in state and no
+  //   // filename was supplied, we can render immediately without fetching.
+  //   if (!fn && detailedReport) {
+  //     setMessage('Loaded')
+  //     setProgress(100)
+  //     return
+  //   }
 
-    // If we don't have inline detail, require a persisted filename to fetch.
-    if (!fn) {
-      setMessage('Full report generated but no persisted file available. Click "Full Report" to generate a persisted report.')
-      setProgress(0)
-      return
-    }
+  //   // If we don't have inline detail, require a persisted filename to fetch.
+  //   if (!fn) {
+  //     setMessage('Full report generated but no persisted file available. Click "Full Report" to generate a persisted report.')
+  //     setProgress(0)
+  //     return
+  //   }
 
-    await loadDetailed(fn, 'full')
-    return
-  }
+  //   await loadDetailed(fn, 'full')
+  //   return
+  // }
 
-  const loadRevised = async (filename?: string) => {
-  /* eslint-enable @typescript-eslint/no-unused-vars */
-    // Only load revised content from an explicit revised filename. We do
-    // not fall back to the main reportFilename so revises are only shown
-    // after the user has requested/received a revised report.
-    const fn = filename ?? revisedReportFilename
-    if (!fn) return
-    return loadDetailed(fn, 'revised')
-  }
+  // const loadRevised = async (filename?: string) => {
+  // /* eslint-enable @typescript-eslint/no-unused-vars */
+  //   // Only load revised content from an explicit revised filename. We do
+  //   // not fall back to the main reportFilename so revises are only shown
+  //   // after the user has requested/received a revised report.
+  //   const fn = filename ?? revisedReportFilename
+  //   if (!fn) return
+  //   return loadDetailed(fn, 'revised')
+  // }
 
   // helpers moved to lib/policyAnalysisHelpers
 
@@ -760,7 +761,7 @@ export default function PolicyAnalysis() {
                   </div>
                 )
               ) : (
-                <div className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
+                <div data-view="full" id="report-full-view" className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
                   {isLoadingForTab ? (
                         <LoadingSpinner
                           message="Loading report…"
@@ -793,7 +794,7 @@ export default function PolicyAnalysis() {
                                   </div>
                                 </div>
 
-                                <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-6 mr-6">
                                   <div className="text-sm text-gray-500 flex items-center gap-2"><LucideStar className="h-4 w-4 text-yellow-500" />Score</div>
                                   <div className="flex items-center gap-3">
                                     <div className="flex items-center gap-1">

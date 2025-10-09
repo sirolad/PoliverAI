@@ -13,6 +13,8 @@ Enhancements:
 - Reliable centering for both RL Image and Drawing using a single-cell Table wrapper.
 - Prevent oversize flowables via KeepInFrame.
 """
+import importlib
+import os
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
@@ -23,15 +25,15 @@ from reportlab.lib.units import mm
 from reportlab.lib import colors
 from reportlab.lib.utils import ImageReader
 import re, logging, base64
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from io import BytesIO
 from pathlib import Path
 
 MODULE_DIR = Path(__file__).resolve().parent
-LOGO_PATH = str(MODULE_DIR / "poliverai-logo.svg")
+LOGO_PATH = str(MODULE_DIR / "poliverai-logo.png")
 
 # URL of the logo to embed at the end of each report
-LOGO_URL = "https://poliverai.com/poliverai-logo.svg"
+LOGO_URL = "https://poliverai.com/poliverai-logo.png"
 
 # ---- Configuration -----------------------------------------------------------
 PX_TO_PT = 0.75  # 1 px ≈ 0.75 pt (72/96)
@@ -443,67 +445,254 @@ def simple_pdf_from_image(image_bytes: bytes, output_path: str) -> None:
 
     c.save()
 
+# --- helpers ---------------------------------------------------------------
+
+def _parse_base_href(html: str) -> Optional[str]:
+    m = re.search(r'<base[^>]+href=["\']([^"\']+)["\']', html, re.I)
+    return m.group(1).strip() if m else None
+
+
+def _split_html_css(html: str) -> Tuple[str, List[str]]:
+    """
+    Returns (html_without_style_blocks, list_of_css_blocks_as_strings)
+    """
+    css_blocks: List[str] = []
+
+    def _style_repl(m: re.Match) -> str:
+        css_blocks.append(m.group(1))
+        return ""  # remove style block from HTML
+
+    html_wo_style = re.sub(r"<style[^>]*>(.*?)</style>",
+                          _style_repl,
+                          html,
+                          flags=re.I | re.S)
+    return html_wo_style, css_blocks
+
+
+def _inject_css_into_head(html: str, css_text: str) -> str:
+    if not css_text.strip():
+        return html
+    if re.search(r"</head>", html, re.I):
+        return re.sub(r"</head>", f"<style>{css_text}</style></head>", html, count=1, flags=re.I)
+    # no head — create a minimal one
+    return re.sub(r"(<html[^>]*>)", r"\1<head><style>" + css_text + "</style></head>", html, count=1, flags=re.I) \
+        if re.search(r"<html", html, re.I) else f"<head><style>{css_text}</style></head>{html}"
+
+
+def _sanitize_css_for_xhtml2pdf(css: str) -> str:
+    """
+    xhtml2pdf’s CSS parser is very old. We strip/normalize modern bits so it won’t explode.
+    Keep this conservative; WeasyPrint gets the original CSS.
+    """
+    # Drop nested @-rules that trip the parser
+    css = re.sub(r"@(supports|media|layer|keyframes|font-face)\b[^{]*\{(?:[^{}]|\{[^{}]*\})*\}", "", css, flags=re.I)
+    # Down-level :where() / :is()
+    css = re.sub(r":where\(\s*([^)]+?)\s*\)", r"\1", css, flags=re.I)
+    css = re.sub(r":is\(\s*([^)]+?)\s*\)", r"\1", css, flags=re.I)
+    # Remove :has() and :not() (avoid orphan combinators)
+    css = re.sub(r":has\(\s*[^)]+?\s*\)", "*", css, flags=re.I)
+    css = re.sub(r":not\(\s*[^)]+?\s*\)", "", css, flags=re.I)
+    # Simplify var(--x, fallback)
+    def _var_repl(m: re.Match) -> str:
+        inner = m.group(1)
+        fb = re.search(r"var\(\s*--[a-z0-9_-]+\s*,\s*([^)]+)\)", inner, flags=re.I)
+        return fb.group(1) if fb else ""
+    css = re.sub(r"[a-zA-Z-]+\s*:\s*([^;]*var\([^)]*\)[^;]*);", lambda m: (_var_repl(m) and re.sub(r"var\(\s*--[a-z0-9_-]+\s*,\s*([^)]+)\)", _var_repl, m.group(0), flags=re.I)) or "", css, flags=re.I)
+    # Fix orphan combinators (e.g., "~ {")
+    css = re.sub(r"(^|[{,])\s*[>+~]\s*(?=[^\{]*\{)", r"\1*", css)
+    css = re.sub(r"([>+~])\s*(\{)", r" * \2", css)
+    return css
+
+
+def _strip_all_css(html: str) -> str:
+    html = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.I | re.S)
+    html = re.sub(r"<link[^>]+rel=['\"]?stylesheet['\"]?[^>]*>", "", html, flags=re.I)
+    html = re.sub(r"\sstyle=['\"][^'\"]*['\"]", "", html, flags=re.I)
+    html = re.sub(r"\sclass=['\"][^'\"]*['\"]", "", html, flags=re.I)
+    # xhtml2pdf warnings: strip inputs
+    html = re.sub(r"<input\b[^>]*>", "", html, flags=re.I)
+    return html
+
+
+# If you already have a link_callback, import/use it here
+def _link_callback(uri, rel):  # minimal passthrough; replace with your existing callback if available
+    return uri
+
+
+# --- main -----------------------------------------------------------------
+
 def simple_pdf_from_html(html: str, output_path: str) -> None:
     """
     Render an HTML string into a PDF at `output_path`.
 
-    Priority:
-      WeasyPrint (recommended): full HTML/CSS, SVG support.
-      xhtml2pdf (fallback): partial HTML/CSS.
-      Plain-text fallback: strips tags and uses simple_pdf_from_text.
+    Order: WeasyPrint (HTML + split CSS) → xhtml2pdf (sanitized CSS) → xhtml2pdf (no CSS) → plaintext.
 
-    Args:
-      html: HTML markup to render.
-      output_path: Target PDF path.
+    Asset resolution rules:
+      - Prefer local files by default (images/fonts next to the app).
+      - If HTML contains a remote <base href="http..."> we drop it (so local files work).
+      - Rewrites root-relative URLs (/img.png) to ./img.png when using file:// base.
+      - You can override the base via env:
+          HTML_TO_PDF_BASE_URL   = explicit base (file://... or http://...)
+          HTML_TO_PDF_ASSET_ROOT = local folder used when constructing file:// base
     """
-    # Try WeasyPrint first (best CSS/HTML support). Use importlib so static
-    # analyzers (pylance) don't complain if the optional package isn't
-    # installed in the dev environment.
+    logging.info("HTML->PDF start: target=%s", output_path)
+    if isinstance(html, bytes):
+        html = html.decode("utf-8", errors="ignore")
+
+    # 0) Decide base folder for local assets
+    asset_root = Path(os.getenv("HTML_TO_PDF_ASSET_ROOT") or os.getcwd())
+    file_base_url = asset_root.resolve().as_uri()  # e.g. file:///app
+
+    # 1) Read/normalize <base href> and decide which base_url to use
+    parsed_base = _parse_base_href(html)  # your helper
+    env_base = os.getenv("HTML_TO_PDF_BASE_URL")
+    base_url = env_base or parsed_base or file_base_url
+
+    removed_base = False
+    # If the HTML has a remote base and we're not explicitly overriding with env, drop it to prefer local files.
+    if parsed_base and parsed_base.startswith(("http://", "https://")) and not env_base:
+        html = re.sub(r'<\s*base\b[^>]*>', '', html, flags=re.I)
+        base_url = file_base_url
+        removed_base = True
+        logging.info("Removed remote <base href=%s>; using local base_url=%s", parsed_base, base_url)
+
+    # 2) Split out inline <style> blocks for WeasyPrint (your helper)
+    html_wo_style, css_blocks = _split_html_css(html)
+    total_css_len = sum(len(c) for c in css_blocks)
+    logging.debug("Split HTML/CSS: style_blocks=%d, css_bytes=%d, html_bytes=%d",
+                  len(css_blocks), total_css_len, len(html_wo_style))
+
+    # 3) If we’re using a local file base, rewrite root-relative asset URLs ("/foo.png") to "foo.png"
+    #    so they resolve under file://…/ (WeasyPrint doesn’t join root-relative with file:// roots).
+    root_rewrites = 0
+    if base_url.startswith("file://"):
+        # src="/foo.png" → src="foo.png"
+        # - (?!/) avoids protocol-relative //cdn...
+        # - capture only two groups: prefix (attr + opening quote) and path
+        _root_rel_pat = re.compile(
+            r'((?:src|href)\s*=\s*["\'])/(?!/|https?:|data:|mailto:|tel:|#)([^"\']+)', re.I
+        )
+
+        def _slash_fix(m: re.Match) -> str:
+            nonlocal root_rewrites
+            root_rewrites += 1
+            prefix, path = m.group(1), m.group(2)  # two groups only
+            return f'{prefix}{path}'               # drop the leading slash
+
+        html_wo_style = _root_rel_pat.sub(_slash_fix, html_wo_style)
+        if root_rewrites:
+            logging.info("Rewrote %d root-relative URL(s) to relative for file:// base.", root_rewrites)
+
+    logging.debug("Base URL for rendering: %s (removed_remote_base=%s, asset_root=%s)",
+                  base_url, removed_base, asset_root)
+
+    # 4) WeasyPrint (best support)
     try:
-        import importlib
-        wp = importlib.import_module('weasyprint')
-        HTML = getattr(wp, 'HTML', None)
-        # CSS may not be required here but keep for future usage
-        CSS = getattr(wp, 'CSS', None)
-        if HTML is not None:
-            HTML(string=html).write_pdf(target=str(output_path))
+        wp = importlib.import_module("weasyprint")
+        from weasyprint.text.fonts import FontConfiguration  # type: ignore
+        HTML = getattr(wp, "HTML", None)
+        CSS = getattr(wp, "CSS", None)
+        if HTML and CSS:
+            logging.info("Trying WeasyPrint with split CSS…")
+            font_config = FontConfiguration()
+            stylesheets = [CSS(string=css, base_url=base_url, font_config=font_config)
+                           for css in css_blocks] if css_blocks else None
+
+            # PRO TIP: inline a <base href> for WeasyPrint only when it’s a local file base.
+            # (It will ignore it for network fetches anyway.)
+            if base_url.startswith("file://"):
+                # ensure no lingering <base> remains
+                html_wo_style = re.sub(r'<\s*base\b[^>]*>', '', html_wo_style, flags=re.I)
+                # (Optional) You can inject a base tag; WeasyPrint mainly uses the base_url arg though.
+                # html_wo_style = _inject_base(html_wo_style, base_url)  # if you have such a helper
+
+            HTML(string=html_wo_style, base_url=base_url).write_pdf(
+                target=str(output_path),
+                stylesheets=stylesheets,
+                font_config=font_config,
+            )
+            logging.info("WeasyPrint SUCCESS -> %s", output_path)
+
+            # Extra diagnostics (first few image URLs and whether they exist on disk)
+            _log_local_asset_checks(html_wo_style, asset_root)
             return
+        else:
+            logging.warning("WeasyPrint module present but HTML/CSS classes not found.")
     except Exception as e:
-        logging.info("WeasyPrint not available or failed: %s", e)
+        logging.warning("WeasyPrint unavailable/failed: %s", e)
 
-    # Fallback: try xhtml2pdf (pisa) for basic HTML/CSS. Import dynamically.
+    # 5) xhtml2pdf (sanitized CSS)
     try:
-        import importlib
-        xhtml2pdf = importlib.import_module('xhtml2pdf')
-        pisa = getattr(xhtml2pdf, 'pisa', None) or getattr(xhtml2pdf, 'CreatePDF', None)
-        # xhtml2pdf exposes pisa.CreatePDF typically via xhtml2pdf.pisa
-        if pisa is None:
-            # try direct import path
-            pisa_mod = importlib.import_module('xhtml2pdf.pisa')
-            pisa = getattr(pisa_mod, 'CreatePDF', None) or getattr(pisa_mod, 'pisa', None)
+        logging.info("Trying xhtml2pdf (sanitized CSS)…")
+        from xhtml2pdf import pisa  # type: ignore
 
-        if pisa is not None:
-            with open(output_path, 'wb') as out_f:
-                # pisa.CreatePDF accepts a bytes/str source and file-like dest
-                # If we found a CreatePDF function alias, call it appropriately
-                create_pdf = getattr(pisa, 'CreatePDF', None) or pisa
-                result = create_pdf(src=html.encode('utf-8'), dest=out_f)
-                if getattr(result, 'err', 0):
-                    logging.info('xhtml2pdf reported errors rendering HTML to PDF: %s', getattr(result, 'err', None))
-            return
-    except Exception as e:
-        logging.info('xhtml2pdf not available or failed: %s', e)
+        combined_css = "\n\n".join(css_blocks) if css_blocks else ""
+        sanitized_css = _sanitize_css_for_xhtml2pdf(combined_css)
+        if combined_css and not sanitized_css:
+            logging.debug("All CSS stripped during sanitization (combined was %d bytes).", len(combined_css))
+        logging.debug("Sanitized CSS length: %d", len(sanitized_css))
 
-    # Last-resort: strip HTML tags and render as plain markdown/text using
-    # the existing simple_pdf_from_text renderer so something is produced.
-    try:
-        # very simple tag stripper - keep newlines
-        text = re.sub(r'<\s*br\s*/?>', '\n', html, flags=re.IGNORECASE)
-        text = re.sub(r'<[^>]+>', '', text)
-        # Collapse excessive whitespace but keep paragraphs
-        text = re.sub(r"\n{2,}", '\n\n', text)
-        simple_pdf_from_text(text, output_path)
+        sanitized_html = _inject_css_into_head(html_wo_style, sanitized_css)
+
+        # (Optional) Help xhtml2pdf with a file base by injecting a <base> tag too
+        if base_url.startswith("file://"):
+            sanitized_html = re.sub(r'<\s*base\b[^>]*>', '', sanitized_html, flags=re.I)
+            sanitized_html = _inject_css_into_head(
+                sanitized_html,
+                f'/* injected base for xhtml2pdf */'
+            )
+            sanitized_html = sanitized_html.replace(
+                "<head>",
+                f'<head><base href="{base_url}/">'
+            )
+
+        with open(output_path, "wb") as out_f:
+            result = pisa.CreatePDF(sanitized_html, dest=out_f, link_callback=_link_callback)
+        if getattr(result, "err", 0):
+            raise RuntimeError(f"xhtml2pdf reported {result.err} error(s)")
+        logging.info("xhtml2pdf SUCCESS (sanitized) -> %s", output_path)
         return
     except Exception as e:
-        logging.exception('Failed to render HTML to PDF using any available backend: %s', e)
+        logging.error("xhtml2pdf FAILED even after CSS sanitization: %s", e)
+
+    # 6) xhtml2pdf (no CSS)
+    try:
+        logging.info("Retrying xhtml2pdf with ALL CSS removed…")
+        from xhtml2pdf import pisa  # type: ignore
+        html_no_css = _strip_all_css(html)
+        with open(output_path, "wb") as out_f:
+            result2 = pisa.CreatePDF(html_no_css, dest=out_f, link_callback=_link_callback)
+        if getattr(result2, "err", 0):
+            raise RuntimeError(f"xhtml2pdf (no CSS) reported {result2.err} error(s)")
+        logging.info("xhtml2pdf SUCCESS (no CSS) -> %s", output_path)
+        return
+    except Exception as e:
+        logging.warning("xhtml2pdf (no CSS) FAILED: %s", e)
+
+    # 7) Plain-text fallback
+    logging.warning("FALLBACK: rendering as plaintext (both HTML engines failed)")
+    try:
+        text = re.sub(r'<\s*br\s*/?>', '\n', html, flags=re.I)
+        text = re.sub(r'<[^>]+>', '', text)
+        text = re.sub(r"\n{2,}", "\n\n", text)
+        simple_pdf_from_text(text, output_path)  # your existing function
+        logging.info("Plaintext PDF generated -> %s", output_path)
+    except Exception:
+        logging.exception("Failed to render HTML to PDF using any backend")
         raise
+
+
+# --- optional tiny helper for diagnostics (safe to keep) ----------------------
+
+def _log_local_asset_checks(html: str, root: Path, limit: int = 5) -> None:
+    """Log a few src/href values and whether they exist relative to `root`."""
+    urls = re.findall(r'(?:src|href)\s*=\s*["\']([^"\']+)["\']', html, flags=re.I)
+    checked = 0
+    for u in urls:
+        if u.startswith(("http://", "https://", "data:", "mailto:", "tel:", "#")):
+            continue
+        p = (root / u.lstrip("/")).resolve()
+        logging.debug("Asset check: %s -> %s exists=%s", u, p, p.exists())
+        checked += 1
+        if checked >= limit:
+            break

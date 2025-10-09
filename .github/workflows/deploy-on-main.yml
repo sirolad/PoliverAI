@@ -96,6 +96,7 @@ jobs:
 
           echo "IMAGE_NAME=${{ secrets.IMAGE_NAME }}" >> .env.ci
           echo "SKIP_NGINX=${{ secrets.SKIP_NGINX }}" >> .env.ci
+          echo "INSTALL_WEASY_DEPS=${{ secrets.INSTALL_WEASY_DEPS }}" >> .env.ci
 
           # Tell deploy script to use this env file
           echo "ENV_FILE=.env.ci" >> $GITHUB_ENV

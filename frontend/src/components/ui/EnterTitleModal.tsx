@@ -66,8 +66,8 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
           </div>
           <div className="flex items-center gap-2 mt-4 justify-end">
             <select value={saveType} onChange={(e) => setSaveType(e.target.value as 'regular' | 'html')} className="border rounded px-2 py-2 mr-2">
-              <option value="regular">Regular (PDF)</option>
               <option value="html">Prettify (VIEW → PDF)</option>
+              <option value="regular">Regular (PDF)</option>
             </select>
             <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()} icon={<Save className="h-4 w-4" />} iconColor="text-white">
               {isProcessing ? 'Saving...' : 'Save'}

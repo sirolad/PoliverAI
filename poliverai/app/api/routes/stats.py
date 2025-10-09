@@ -53,7 +53,15 @@ async def stats_summary() -> Dict[str, int]:
         if free is None:
             free = max(0, total_reports - full)
 
-        ai_policy = int(reports_coll.count_documents({"tags": "ai_policy"}))
+        # Count AI-related revised policies. Historically this was stored
+        # as a report with a tag 'ai_policy', but revised policies are now
+        # persisted with type == 'revision'. Count either form so the
+        # frontend receives a consistent 'ai_policy_reports' value.
+        try:
+            ai_policy = int(reports_coll.count_documents({"$or": [{"tags": "ai_policy"}, {"type": "revision"}]}))
+        except Exception:
+            # Fallback: try the older tag-only query if the composite query fails
+            ai_policy = int(reports_coll.count_documents({"tags": "ai_policy"}))
 
         stats_coll = mdb.db.get_collection("site_stats")
         stats_doc = stats_coll.find_one({"_id": "global"}) or {}

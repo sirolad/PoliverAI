@@ -28,7 +28,8 @@ RUN yarn build
 FROM python:3.11-slim AS python-builder
 ARG FAST_DEV=true
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \ 
+    PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /app
 
@@ -36,16 +37,25 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gcc curl ca-certificates python3-venv gnupg2 && rm -rf /var/lib/apt/lists/*
 
+# Create venv + upgrade tooling (INSIDE the venv)
+RUN python3 -m venv /opt/venv
 # Upgrade pip/tools, create isolated venv
-RUN python3 -m pip install --upgrade pip setuptools wheel virtualenv
+RUN /opt/venv/bin/pip install --upgrade pip setuptools wheel
+RUN python3 -m pip install --upgrade pip setuptools wheel virtualenv 
 RUN python3 -m virtualenv /opt/venv
+
+RUN rm -rf /var/lib/apt/lists/*
+
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy requirements files for cached dependency install
 COPY requirements.docker.txt requirements.txt requirements.dev.txt /app/
 
 # Install dependencies. Use FAST_DEV flag to install a smaller dev set during iterative builds.
-RUN if [ "$FAST_DEV" = "true" ] ; then pip install -r /app/requirements.dev.txt ; else if [ -f /app/requirements.docker.txt ]; then pip install -r /app/requirements.docker.txt; elif [ -f /app/requirements.txt ]; then pip install -r /app/requirements.txt; fi; fi
+RUN if [ "$FAST_DEV" = "true" ] ; then /opt/venv/bin/pip install -r /app/requirements.dev.txt ; else if [ -f /app/requirements.docker.txt ]; then pip install -r /app/requirements.docker.txt; elif [ -f /app/requirements.txt ]; then pip install -r /app/requirements.txt; fi; fi
+
+# # Ensure WeasyPrint is present in the ve1nv
+# RUN /opt/venv/bin/pip install weasyprint
 
 # Copy the application sources
 COPY . /app
@@ -59,10 +69,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
+RUN cd /app && pip install --no-cache-dir weasyprint
+RUN cd ..
 
-# Install nginx and minimal system deps
+# nginx + WeasyPrint native libs (runtime)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    nginx curl ca-certificates libcap2-bin && rm -rf /var/lib/apt/lists/*
+    nginx curl ca-certificates libcap2-bin \
+    libcairo2 \
+    libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
+    libgdk-pixbuf-2.0-0 libglib2.0-0 libharfbuzz0b libfribidi0 \
+    shared-mime-info \
+    fonts-dejavu-core fonts-liberation fonts-noto-core \
+ && rm -rf /var/lib/apt/lists/*
 
 # Copy virtualenv and application from python-builder
 COPY --from=python-builder /opt/venv /opt/venv

@@ -42,3 +42,13 @@ cairosvg
 svglib 
 lxml
 xhtml2pdf
+weasyprint
+Pango
+pydyf
+CFFI
+tinyhtml5
+tinycss2
+cssselect2
+Pyphen
+Pillow
+fontTools

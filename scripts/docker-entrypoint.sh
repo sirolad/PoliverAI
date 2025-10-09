@@ -105,6 +105,39 @@ echo "===== GENERATED NGINX CONFIG (${NGINX_CONF}) ====="
 cat ${NGINX_CONF} || true
 echo "===== END NGINX CONFIG ====="
 
+# Optional runtime installation of WeasyPrint system deps and pip package.
+# This is disabled by default. To enable at container start, set
+# INSTALL_WEASY_DEPS=1 (e.g., in your runtime environment or docker run -e ...).
+if [ "${INSTALL_WEASY_DEPS:-0}" = "1" ]; then
+    echo "INSTALL_WEASY_DEPS=1; attempting to install WeasyPrint system deps and pip package"
+    # Only proceed if apt-get is available (Debian/Ubuntu based images)
+    if command -v apt-get >/dev/null 2>&1; then
+        export DEBIAN_FRONTEND=noninteractive
+        echo "Updating apt and installing native libraries for WeasyPrint (this may take a while)"
+        pip install --no-cache-dir weasyprint
+        apt-get update
+        apt-get install -y --no-install-recommends \
+          libcairo2 \
+          libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
+          libgdk-pixbuf-2.0-0 libglib2.0-0 libharfbuzz0b libfribidi0 \
+          shared-mime-info \
+          fonts-dejavu-core fonts-liberation fonts-noto-core
+        rm -rf /var/lib/apt/lists/*
+    else
+        echo "apt-get not found; skipping native package install"
+    fi
+
+    # Install WeasyPrint into the virtualenv if present; fall back to system pip
+    if [ -x /opt/venv/bin/pip ]; then
+        echo "Installing weasyprint into venv (/opt/venv)"
+        /opt/venv/bin/pip install --no-cache-dir weasyprint
+    else
+        echo "/opt/venv/bin/pip not found; attempting system pip"
+        pip install --no-cache-dir weasyprint
+    fi
+    echo "WeasyPrint install step complete"
+fi
+
 # Start uvicorn in the background on 127.0.0.1:8000
 # Ensure the application package is importable from the application root
 export PYTHONPATH="/app:${PYTHONPATH:-}"

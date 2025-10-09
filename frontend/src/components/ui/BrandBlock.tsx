@@ -25,7 +25,7 @@ export default function BrandBlock({ hasBackground = true, subtitleClass = '', s
 
       <div className={hasBackground ? 'bg-white p-3 rounded-lg shadow-sm' : 'p-3'}>
         <div className="flex items-center gap-3">
-          <img src="/poliverai-logo.svg" alt="PoliverAI" className="h-12 w-auto" />
+          <img src="/poliverai-logo.png" className="h-12 w-auto" />
           {showAndelaLogo ? (
             <img src="/andela-logo-transparent.png" alt="Andela" className="h-10 w-auto" />
           ) : null}
