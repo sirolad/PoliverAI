@@ -44,6 +44,9 @@ export function Dashboard() {
 
   // Report state: fetch user reports and compute counts/costs for dashboard
   const [userReports, setUserReports] = React.useState<ReportMetadata[] | null>(null)
+  // Separate state for the "Completed Reports" card so its date range
+  // (completedRange) can be fetched independently from the Saved Files range.
+  const [completedReports, setCompletedReports] = React.useState<ReportMetadata[] | null>(null)
   // Keep a server-driven count for free reports (faster when dataset large). Fallback to client computed value.
   // (removed server-driven free count; derive on the fly)
   // Date range state per-section (default to current month)
@@ -72,14 +75,39 @@ export function Dashboard() {
     return () => { mounted = false }
   }, [reportsRange.from, reportsRange.to])
 
+  // Fetch reports specifically for the "Completed Reports" card when that
+  // date range changes. This avoids mixing the two ranges' results.
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const respRaw = await policyService.getUserReports({ date_from: completedRange.from, date_to: completedRange.to })
+        if (!mounted) return
+        const resp = respRaw as unknown as { reports?: ReportMetadata[] } | ReportMetadata[]
+        if (Array.isArray(resp)) setCompletedReports(resp)
+        else setCompletedReports(resp.reports ?? [])
+      } catch (e) {
+        console.warn('Failed to fetch completed reports for dashboard', e)
+        if (mounted) setCompletedReports([])
+      }
+    })()
+    return () => { mounted = false }
+  }, [completedRange.from, completedRange.to])
+
   const { totalSavedFiles, fullReportsSaved, revisedDocsSaved, totalSavedCredits, totalSavedUsd, freeReportsSaved } = computeSavedTotals(userReports)
-  const hasStatusField = !!(userReports && userReports.find((r) => typeof r.status !== 'undefined'))
-  const fullReportsDone = userReports
-    ? (hasStatusField ? userReports.filter((r) => r.is_full_report && (r.status === 'completed')).length : fullReportsSaved)
-    : null
-  const revisedCompleted = userReports
-    ? (hasStatusField ? userReports.filter((r) => r.type === 'revision' && (r.status === 'completed')).length : revisedDocsSaved)
-    : null
+  // Determine whether reports include a status field (server may or may not provide it)
+  const hasStatusField = !!((userReports && userReports.find((r) => typeof r.status !== 'undefined')) || (completedReports && completedReports.find((r) => typeof r.status !== 'undefined')))
+
+  // Prefer completedReports (fetched with the completed date range) when computing
+  // completed counts; fall back to userReports-derived values when completedReports
+  // is not yet loaded.
+  const fullReportsDone = (completedReports !== null)
+    ? (hasStatusField ? completedReports.filter((r) => r.is_full_report && (r.status === 'completed')).length : (completedReports.filter((r) => !!r.is_full_report).length))
+    : (userReports ? (hasStatusField ? userReports.filter((r) => r.is_full_report && (r.status === 'completed')).length : fullReportsSaved) : null)
+
+  const revisedCompleted = (completedReports !== null)
+    ? (hasStatusField ? completedReports.filter((r) => r.type === 'revision' && (r.status === 'completed')).length : (completedReports.filter((r) => r.type === 'revision').length))
+    : (userReports ? (hasStatusField ? userReports.filter((r) => r.type === 'revision' && (r.status === 'completed')).length : revisedDocsSaved) : null)
   const derivedFreeReportsSaved = computeDerivedFree(totalSavedFiles, fullReportsSaved, revisedDocsSaved)
   const freeReportsSavedDisplay = derivedFreeReportsSaved !== null ? derivedFreeReportsSaved : freeReportsSaved
   const freeReportsCompleted = userReports
@@ -117,7 +145,7 @@ export function Dashboard() {
   const displayedDeletedCounts = computeDeletedCountsForRange(deletedState.events, deletedState.legacyCounts, reportsRange)
 
   // When a dashboard "load" is complete: userReports and txTotals have been fetched
-  const dashboardLoaded = !loading && (userReports !== null) && (txTotals !== null)
+  const dashboardLoaded = !loading && (userReports !== null) && (txTotals !== null) && (completedReports !== null)
 
   // Saved files / totals (driven by userReports)
   const savedTargets = {
@@ -411,7 +439,7 @@ export function Dashboard() {
                   <input type="date" value={reportsRange.to ?? ''} onChange={(e) => setReportsRange({ ...reportsRange, to: e.target.value || null })} className="border px-2 py-1 rounded text-sm" />
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <div className="text-sm text-gray-600">Total files saved</div>
                   <div className="text-lg font-semibold">{dashboardLoaded ? animatedSaved.totalSavedFiles : null}</div>
@@ -419,10 +447,6 @@ export function Dashboard() {
                 <div>
                   <div className="text-sm text-gray-600">Total full reports saved</div>
                   <div className="text-lg font-semibold">{dashboardLoaded ? animatedSaved.fullReportsSaved : null}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">Total revised policies saved</div>
-                  <div className="text-lg font-semibold">{dashboardLoaded ? animatedSaved.revisedDocsSaved : null}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">Total free reports saved</div>
@@ -522,7 +546,7 @@ export function Dashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm text-gray-600">Total credits bought</div>
                   <div className="text-lg font-semibold">{dashboardLoaded ? animatedTx.total_bought_credits : null}</div>
@@ -533,10 +557,10 @@ export function Dashboard() {
                   <div className="text-lg font-semibold">{dashboardLoaded ? animatedTx.total_spent_credits : null}</div>
                   <div className="text-sm text-gray-500">{dashboardLoaded && txTotals?.total_spent_credits ? `${txTotals.total_spent_credits} credits` : ''}</div>
                 </div>
-                <div>
+                {/* <div>
                   <div className="text-sm text-gray-600">Total subscription payments (USD)</div>
                   <div className="text-lg font-semibold">{dashboardLoaded && txTotals?.total_subscription_usd ? `$${animatedTx.total_subscription_usd.toFixed(2)}` : null}</div>
-                </div>
+                </div> */}
               </div>
               <div className="mt-1 text-xs text-gray-500">{formatRangeLabel(txRange, defaultFrom, defaultTo)}</div>
             </div>

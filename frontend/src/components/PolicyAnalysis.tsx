@@ -211,7 +211,6 @@ export default function PolicyAnalysis() {
 
   const handleAnalyze = async () => {
     setActiveTab('free')
-    console.log('handleAnalyze()')
     if (!file) return
     // mark as in-progress
     analysisFinishedRef.current = false
@@ -263,7 +262,6 @@ export default function PolicyAnalysis() {
 
   const handleGenerateReport = async () => {
     setActiveTab('full')
-    console.log('handleGenerateReport()')
     if (!result) return
     const stop = startIndeterminateProgress('Generating Full Report...')
     try {
@@ -361,7 +359,6 @@ export default function PolicyAnalysis() {
 
   const handleGenerateRevision = async (instructions?: string) => {
     setActiveTab('revised')
-    console.log('handleGenerateRevision()')
     if (!result) return
     const stop = startIndeterminateProgress('Generating revised policy...')
     try {
@@ -487,7 +484,6 @@ export default function PolicyAnalysis() {
   // content (e.g., a PDF), the backend may provide a `download_url`. Build
   // a stable download URL to embed or open in the UI.
   const detailedDownloadUrl: string | null = (() => {
-    console.log('detailedDownloadUrl()', { detailedReport, revisedPolicy, activeTab })
     if (!detailedReport || !revisedPolicy) return null
     // prefer explicit download_url field if present. Use unknown->Record check
     // to avoid casting to `any` which the linter flags.

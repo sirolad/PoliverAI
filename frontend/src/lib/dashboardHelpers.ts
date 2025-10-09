@@ -12,7 +12,7 @@ export const getCost = (key: string | undefined): { credits: number; usd: number
   const MAP: Record<string, { credits: number; usd: number }> = {
     analysis: { credits: 5, usd: 0.5 },
     report: { credits: 5, usd: 0.5 },
-    ingest: { credits: 2, usd: 0.2 },
+    ingest: { credits: 10, usd: 1 },
   }
   if (!key) return undefined
   return MAP[key]
