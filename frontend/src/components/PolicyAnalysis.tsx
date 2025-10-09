@@ -45,6 +45,7 @@ export default function PolicyAnalysis() {
   const [activeTab, setActiveTab] = useState<'free' | 'full' | 'revised'>('free')
   const [detailedContent, setDetailedContent] = useState<string | null>(null)
   const [detailedReport, setDetailedReport] = useState<ReportDetail | null>(null)
+  const [revisedPolicy, setRevisedPolicy] = useState<ReportDetail | null>(null)
   const [loadingDetailed, setLoadingDetailed] = useState<boolean>(false)
   // Separate loading state for revised reports so the "full report" loader
   // does not show when a revised policy is being generated/loaded.
@@ -86,8 +87,9 @@ export default function PolicyAnalysis() {
       if (persisted.revisedReportFilename) setRevisedReportFilename(persisted.revisedReportFilename)
       if (typeof persisted.isFullReportGenerated === 'boolean') setIsFullReportGenerated(persisted.isFullReportGenerated)
       // hydrate newly-persisted fields so Full/Revised tabs restore
-      if (persisted.detailedContent) setDetailedContent(persisted.detailedContent)
-  if (persisted.detailedReport) setDetailedReport(persisted.detailedReport as unknown as ReportDetail)
+      // if (persisted.detailedContent) setDetailedContent(persisted.detailedContent)
+      if (persisted.detailedReport) setDetailedReport(persisted.detailedReport as unknown as ReportDetail)
+      if (persisted.revisedPolicy) setRevisedPolicy(persisted.revisedPolicy as unknown as ReportDetail)
       if (persisted.activeTab) setActiveTab(persisted.activeTab)
       if (typeof persisted.loadingDetailed === 'boolean') setLoadingDetailed(persisted.loadingDetailed)
       if (typeof persisted.loadingRevised === 'boolean') setLoadingRevised(persisted.loadingRevised)
@@ -111,12 +113,13 @@ export default function PolicyAnalysis() {
         // persist additional UI context so users return to same view
         detailedContent,
         detailedReport,
+        revisedPolicy,
         activeTab,
         loadingDetailed,
         loadingRevised,
       })
     )
-  }, [file, progress, message, result, reportFilename, revisedReportFilename, isFullReportGenerated, detailedContent, detailedReport, activeTab, loadingDetailed, loadingRevised, dispatch])
+  }, [file, progress, message, result, reportFilename, revisedReportFilename, isFullReportGenerated, detailedContent, detailedReport, revisedPolicy, activeTab, loadingDetailed, loadingRevised, dispatch])
 
   useEffect(() => {
     if (progress >= 100) {
@@ -207,13 +210,15 @@ export default function PolicyAnalysis() {
   }
 
   const handleAnalyze = async () => {
+    setActiveTab('free')
+    console.log('handleAnalyze()')
     if (!file) return
     // mark as in-progress
     analysisFinishedRef.current = false
 
     // show quick/free analysis and clear any loaded detailed report
-    setActiveTab('free')
     setDetailedReport(null)
+    setRevisedPolicy(null)
     setDetailedContent(null)
     setProgress(0)
     setMessage('Starting...')
@@ -257,8 +262,9 @@ export default function PolicyAnalysis() {
   }
 
   const handleGenerateReport = async () => {
-    if (!result) return
     setActiveTab('full')
+    console.log('handleGenerateReport()')
+    if (!result) return
     const stop = startIndeterminateProgress('Generating Full Report...')
     try {
       const documentName = file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy'
@@ -354,6 +360,8 @@ export default function PolicyAnalysis() {
   // }
 
   const handleGenerateRevision = async (instructions?: string) => {
+    setActiveTab('revised')
+    console.log('handleGenerateRevision()')
     if (!result) return
     const stop = startIndeterminateProgress('Generating revised policy...')
     try {
@@ -395,6 +403,7 @@ export default function PolicyAnalysis() {
   }
 
   const loadDetailed = async (filename?: string, mode: 'full' | 'revised' = 'full') => {
+    console.log('loadDetailed()', { filename, mode })
     // For 'full' mode filename is optional (we may render from streaming `result`).
     // For 'revised' mode we need a saved filename (revisedReportFilename or reportFilename).
     const fn = filename ?? (mode === 'revised' ? (revisedReportFilename ?? reportFilename) : reportFilename)
@@ -404,15 +413,16 @@ export default function PolicyAnalysis() {
     try {
       if (!fn) throw new Error('No filename provided for detailed report')
       const resp = await policyService.getDetailedReport(fn)
-      setDetailedReport(resp ?? null)
-      setDetailedContent(resp?.content ?? null)
+      if(mode === 'revised') setRevisedPolicy(resp ?? null)
+      else if(mode === 'full') setDetailedReport(resp ?? null)
+      if(mode === 'revised') setDetailedContent(resp?.content ?? null)
       // When detailed content is available, ensure the progress UI reflects completion
       setMessage('Loaded')
       setProgress(100)
     } catch (e) {
       console.warn('getDetailedReport failed', e)
-      setDetailedReport(null)
-      setDetailedContent(null)
+      if(mode === 'revised') setRevisedPolicy(null)
+      else if(mode === 'full') setDetailedReport(null)
       // on failure, reset progress/message so UI doesn't hang at an in-between state
       setMessage('Failed to load report')
       setProgress(0)
@@ -477,12 +487,14 @@ export default function PolicyAnalysis() {
   // content (e.g., a PDF), the backend may provide a `download_url`. Build
   // a stable download URL to embed or open in the UI.
   const detailedDownloadUrl: string | null = (() => {
-    if (!detailedReport) return null
+    console.log('detailedDownloadUrl()', { detailedReport, revisedPolicy, activeTab })
+    if (!detailedReport || !revisedPolicy) return null
     // prefer explicit download_url field if present. Use unknown->Record check
     // to avoid casting to `any` which the linter flags.
-    const maybe = detailedReport as unknown as Record<string, unknown>
+    const maybe = (activeTab === 'full' ? detailedReport : revisedPolicy) as unknown as Record<string, unknown>
     if (maybe.download_url && typeof maybe.download_url === 'string') return String(maybe.download_url)
-    if (typeof detailedReport.filename === 'string' && detailedReport.filename) return getReportDownloadUrl(detailedReport.filename)
+    if (typeof detailedReport.filename === 'string' && detailedReport.filename && activeTab === 'full') return getReportDownloadUrl(detailedReport.filename)
+    if (typeof revisedPolicy.filename === 'string' && revisedPolicy.filename && activeTab === 'revised') return getReportDownloadUrl(revisedPolicy.filename)
     return null
   })()
 
@@ -558,7 +570,8 @@ export default function PolicyAnalysis() {
               </Button>
             ) : null} */}
 
-            <Button disabled={!result} onClick={() => { const initial = reportFilename ?? file?.name ?? 'policy'; setTitleModalInitial(initial); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
+            {/* <Button disabled={!result} onClick={() => { const initial = reportFilename ?? file?.name ?? 'policy'; setTitleModalInitial(initial); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button> */}
+            <Button disabled={!result} onClick={() => { const initial = 'html'; setTitleModalInitial(initial); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Save</Button>
 
             {isFullReportGenerated && (
               <Button disabled={!isFullReportGenerated || !result} onClick={() => setInstructionsModalOpen(true)} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>Revised Policy</Button>
@@ -703,7 +716,7 @@ export default function PolicyAnalysis() {
                     iconColor="text-white"
                     collapseToIcon
                   >
-                    Download view
+                    Download File
                   </Button>
                 </div>
               </div>

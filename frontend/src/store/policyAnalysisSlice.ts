@@ -13,6 +13,7 @@ export type PolicyAnalysisState = {
   // Persisted UI additions so the analysis screen can be fully restored
   detailedContent?: string | null
   detailedReport?: Record<string, unknown> | null
+  revisedPolicy?: Record<string, unknown> | null
   activeTab?: 'free' | 'full' | 'revised'
   loadingDetailed?: boolean
   loadingRevised?: boolean
@@ -28,6 +29,7 @@ const initialState: PolicyAnalysisState = {
   isFullReportGenerated: false,
   detailedContent: null,
   detailedReport: null,
+  revisedPolicy: null,
   activeTab: 'free',
   loadingDetailed: false,
   loadingRevised: false,
