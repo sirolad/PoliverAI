@@ -1,0 +1,48 @@
+import { Lightbulb, FileCheck, Bot, DownloadCloud } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import useTabSwitcher from '@/hooks/useTabSwitcher'
+import useReportDownloader from '@/hooks/useReportDownloader'
+import { t } from '@/i18n'
+
+type Props = {
+  activeTab: 'free' | 'full' | 'revised'
+  setActiveTab: (tab: 'free' | 'full' | 'revised') => void
+  setLoadingDetailed: (v: boolean) => void
+  setLoadingRevised: (v: boolean) => void
+  reportFilename: string | null
+  detailedContent: string | null
+}
+
+export default function TabControls({ activeTab, setActiveTab, setLoadingDetailed, setLoadingRevised, reportFilename, detailedContent }: Props) {
+  const { goFree, goFull, goRevised } = useTabSwitcher(setActiveTab, setLoadingDetailed, setLoadingRevised)
+  const { download } = useReportDownloader()
+
+  return (
+    <div className="mb-3">
+      <div className="flex items-center">
+        <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'free' ? 'bg-blue-600 text-white border-blue-600 rounded-l' : 'bg-white text-gray-700 border-gray-200 rounded-l'}`} onClick={goFree}>
+          <Lightbulb className="h-4 w-4 mr-2" /> {t('policy_analysis.free_tab')}
+        </button>
+        <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'full' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200'}`} onClick={goFull}>
+          <FileCheck className="h-4 w-4 mr-2" /> {t('policy_analysis.full_tab')}
+        </button>
+        <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'revised' ? 'bg-blue-600 text-white border-blue-600 rounded-r' : 'bg-white text-gray-700 border-gray-200 rounded-r'}`} onClick={goRevised}>
+          <Bot className="h-4 w-4 mr-2" /> {t('policy_analysis.revised_tab')}
+        </button>
+
+        <div className="ml-auto">
+          <Button
+            disabled={!reportFilename}
+            onClick={() => download(reportFilename ?? undefined, detailedContent)}
+            className="px-3 py-1 bg-yellow-500 text-white rounded"
+            icon={<DownloadCloud className="h-4 w-4" />}
+            iconColor="text-white"
+            collapseToIcon
+          >
+            {t('policy_analysis.download_file')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
