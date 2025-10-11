@@ -7,15 +7,15 @@ import { setPaymentResult, clearPendingCheckout } from './store/paymentsSlice'
 import type { PaymentResult } from './store/paymentsSlice'
 import { AuthProvider } from './contexts/AuthContext'
 import PaymentResultProvider from './components/ui/PaymentResultProvider'
-import LandingPage from './components/LandingPage'
 import { Navbar } from './components/Navbar'
-import Dashboard from './components/Dashboard'
-import PolicyAnalysis from './components/PolicyAnalysis'
-import Reports from './components/Reports'
-import Credits from './components/Credits'
-import { Login } from './components/auth/Login'
-import { Register } from './components/auth/Register'
 import Footer from './components/Footer'
+import { LandingPageScreen } from './screens/LandingPageScreen'
+import LoginScreen from './screens/auth/LoginScreen'
+import RegisterScreen from './screens/auth/RegisterScreen'
+import { DashboardScreen } from './screens/DashboardScree'
+import { PolicyAnalysisScreen } from './screens/PolicyAnalysisScreen'
+import { ReportsScreen } from './screens/ReportsScreen'
+import { CreditsScreen } from './screens/CreditsScreen'
 
 function App() {
   // Component to handle post-checkout finalization when returning from Stripe
@@ -103,14 +103,14 @@ function App() {
             <main className="flex-1">
               <CheckoutFinalizer />
               <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/signup" element={<Register />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/analyze" element={<PolicyAnalysis />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/credits" element={<Credits />} />
+                <Route path="/" element={<LandingPageScreen />} />
+                <Route path="/login" element={<LoginScreen />} />
+                <Route path="/register" element={<RegisterScreen />} />
+                <Route path="/signup" element={<RegisterScreen />} />
+                <Route path="/dashboard" element={<DashboardScreen />} />
+                <Route path="/analyze" element={<PolicyAnalysisScreen />} />
+                <Route path="/reports" element={<ReportsScreen />} />
+                <Route path="/credits" element={<CreditsScreen />} />
               </Routes>
             </main>
             <FooterConditional />
