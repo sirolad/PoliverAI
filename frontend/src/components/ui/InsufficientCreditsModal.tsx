@@ -4,11 +4,12 @@ import { Button } from './Button'
 import MetaLine from './MetaLine'
 import EnterCreditsModal from './EnterCreditsModal'
 import PaymentsService from '@/services/payments'
+import { t } from '@/i18n'
 
 export default function InsufficientCreditsModal({
   open,
-  title = 'Insufficient Credits',
-  message = 'You do not have enough credits to perform this action. Top up your credits to continue.',
+  title = t('insufficient_credits.default_title'),
+  message = t('insufficient_credits.default_message'),
   onClose,
 }: {
   open: boolean
@@ -45,10 +46,10 @@ export default function InsufficientCreditsModal({
             </div>
             <div className="p-4 flex justify-end gap-2">
               <Button variant="ghost" onClick={onClose}>
-                Close
+                {t('insufficient_credits.close')}
               </Button>
               <Button onClick={handleTopUp} icon={<CreditCard className="h-4 w-4" />}>
-                Top-Up Credits
+                {t('insufficient_credits.top_up')}
               </Button>
             </div>
           </div>

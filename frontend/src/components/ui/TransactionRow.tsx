@@ -5,12 +5,10 @@ type Props = {
   description?: string
   userEmail?: string | null
   sessionId?: string | null
-  // badge?: ReactNode
   labels?: ReactNode
   dateNode?: ReactNode
 }
 
-// export default function TransactionRow({ date, description, userEmail, sessionId, badge, labels, dateNode }: Props) {
 export default function TransactionRow({ date, description, userEmail, sessionId, labels, dateNode }: Props) {
   // This component renders the left column of a transaction row:
   // - first line: description (left) and optional badge (right)
@@ -22,7 +20,6 @@ export default function TransactionRow({ date, description, userEmail, sessionId
           <div className="text-lg text-gray-700 truncate font-medium flex-1 min-w-0">
           <span className="truncate">{description || 'Transaction'}</span>
         </div>
-        {/* {badge ? <div className="flex-shrink-0 ml-2">{badge}</div> : null} */}
       </div>
 
       {/* allow caller to pass fully styled label nodes; fall back to simple text if not provided */}

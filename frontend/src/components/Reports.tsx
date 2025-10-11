@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import useAuth from '@/contexts/useAuth'
 import policyService from '@/services/policyService'
@@ -7,8 +7,14 @@ import ReportViewerModal from './ui/ReportViewerModal'
 import PaymentResultModal from './ui/PaymentResultModal'
 import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
-import { ChevronLeft, ChevronRight, Filter, Trash2, Eye } from 'lucide-react'
+import { Filter, Trash2, Eye } from 'lucide-react'
+import { t } from '@/i18n'
+import ReportsToolbar from './reports/ReportsToolbar'
 import { classifyDeletedDetails } from '@/lib/reportHelpers'
+import { filterReports } from './reports/reportsHelpers'
+import useReports from './reports/useReports'
+import useSelection from './reports/useSelection'
+import useResponsiveFilters from './reports/useResponsiveFilters'
 import ReportCard from '@/components/ui/ReportCard'
 import { Button } from '@/components/ui/Button'
 import ErrorText from '@/components/ui/ErrorText'
@@ -25,70 +31,16 @@ import BulkActions from './reports/BulkActions'
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
   const dispatch = useAppDispatch()
-  // showFilters: controls whether the filter sidebar is visible.
-  // Default: visible when viewport > 700px, hidden when <= 700px. If the user
-  // manually toggles, their preference persists across resizes.
-  const [showFilters, setShowFilters] = useState<boolean>(true)
-  // When true the filters are rendered above the reports list (stacked)
-  // instead of in a left sidebar. This kicks in for widths <= 1276px.
-  const [isMobile1276, setIsMobile1276] = useState<boolean>(() => (typeof window !== 'undefined' ? window.innerWidth <= 1276 : false))
-  const [reports, setReports] = useState<ReportMetadata[]>([])
-  const [page, setPage] = useState<number>(1)
-  const [limit, setLimit] = useState<number>(10)
-  const [total, setTotal] = useState<number | null>(null)
-  const [totalPages, setTotalPages] = useState<number>(1)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>({})
+  const { showFilters, setShowFilters, isMobile1276 } = useResponsiveFilters()
+  const { reports, setReports, page, setPage, limit, setLimit, total, totalPages, isLoading, error, fetchReports } = useReports()
+  const { selectedFiles, setSelectedFiles, syncWithReports } = useSelection({})
   // progress was part of the old in-file filters UI and has been removed.
   // progress indicator removed; filters component handles its own loading UI.
   const selectedFromStore = useAppSelector((s) => s.ui.selectedReport)
   const [selected, setSelected] = useState<string | null>(() => selectedFromStore || null)
 
-  const fetchReports = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
-      const resp = await policyService.getUserReports({ page, limit })
-      // Handle both legacy array response and new paged response
-      let arr: ReportMetadata[] = []
-      if (Array.isArray(resp)) {
-        arr = resp as ReportMetadata[]
-        setReports(arr)
-        setTotal(arr.length)
-        setTotalPages(1)
-      } else {
-        arr = resp.reports || []
-        setReports(arr)
-        setTotal(resp.total ?? arr.length)
-        setTotalPages(resp.total_pages ?? 1)
-      }
-      // Use the freshly-loaded array to determine empty-state
-      if (!arr || arr.length === 0) {
-        setError('You have no reports on file with us yet 🙂')
-      } else {
-        setError(null)
-      }
-    } catch (e) {
-      console.error('Failed to fetch reports', e)
-      setError('Failed to load reports')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [page, limit])
-
-  // initialize showFilters based on viewport and respond to resizes
-  useEffect(() => {
-    const onResize = () => {
-      const isMobile = window.innerWidth <= 700
-    setShowFilters(!isMobile)
-      // when the viewport is 1276px or less, stack filters on top of the list
-      setIsMobile1276(window.innerWidth <= 1276)
-    }
-    onResize()
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
+  // sync selection when reports change
+  useEffect(() => { syncWithReports(reports) }, [reports, syncWithReports])
   const [query, setQuery] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [verdictOptions, setVerdictOptions] = useState<string[]>([])
@@ -101,10 +53,6 @@ export default function Reports() {
   const [modalMessage, setModalMessage] = useState<string | undefined>()
   const [deleting, setDeleting] = useState(false)
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
-
-  useEffect(() => {
-    fetchReports()
-  }, [fetchReports])
 
   useEffect(() => {
     const h = () => { fetchReports().catch((e) => console.warn('reports refresh failed', e)) }
@@ -130,15 +78,7 @@ export default function Reports() {
   // Only run when the reports array changes (don't include selectedFiles so we don't
   // overwrite user toggles). This preserves selection for filenames that still exist
   // and drops selections for removed items.
-  useEffect(() => {
-    setSelectedFiles((prev) => {
-      const next: Record<string, boolean> = {}
-      reports.forEach((r) => {
-        if (prev[r.filename]) next[r.filename] = true
-      })
-      return next
-    })
-  }, [reports])
+  // (selection sync moved to useSelection hook via syncWithReports)
 
   // fetchReports is defined above as a useCallback
 
@@ -151,16 +91,16 @@ export default function Reports() {
 
   const onOpen = async (report: ReportMetadata) => {
     try {
-      // Instead of opening a new tab, show modal viewer for a smoother UX
       const apiBase = getApiBaseOrigin() ?? 'http://localhost:8000'
-      // Always use our download endpoint inside the modal iframe so external gs:// or signed URLs
-      // don't break iframe rendering. Use a separate Open action to open the best URL in a new tab.
       const url = `${apiBase}/api/v1/reports/download/${encodeURIComponent(report.filename)}`
       setSelected(report.filename)
       setModalUrl(url)
     } catch (err) {
       console.error('Failed to open report', err)
-      setError('Failed to open report')
+      setModalSuccess(false)
+      setModalTitle(t('reports.failed_open_report'))
+      setModalMessage(String(err))
+      setModalOpen(true)
     }
   }
 
@@ -169,14 +109,17 @@ export default function Reports() {
       await policyService.downloadReport(report.filename)
     } catch (err) {
       console.error('Failed to download report', err)
-      setError('Failed to download report')
+      setModalSuccess(false)
+      setModalTitle(t('reports.failed_download_report'))
+      setModalMessage(String(err))
+      setModalOpen(true)
     }
   }
 
   // Don't block the whole page while auth/loading — show progress inside filters
   if (!isAuthenticated && loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <LoadingSpinner message="Loading…" size="lg" />
+      <LoadingSpinner message={t('loading.short')} size="lg" />
     </div>
   )
   if (!isAuthenticated) return <Navigate to="/login" replace />
@@ -187,35 +130,7 @@ export default function Reports() {
   const hasSavedReports = (reports && reports.length > 0)
   if (!isPro && !hasCredits && !isLoading && !hasSavedReports) return <Navigate to="/dashboard" replace />
 
-  const filtered = reports.filter((r) => {
-    if (query) {
-      const q = query.toLowerCase()
-      if (!((r.title || r.document_name || '').toLowerCase().includes(q) || r.filename.toLowerCase().includes(q))) return false
-    }
-    if (statusFilter !== 'all') {
-      if (statusFilter === 'full') {
-        // treat as full if explicitly flagged, or if type indicates a generated verification report
-        if (!(r.is_full_report || (r.type && String(r.type).toLowerCase() === 'verification'))) return false
-      } else {
-        // normalize verdict/status for robust matching (handles 'Compliant', 'partially compliant', etc.)
-        const normalize = (s?: string) => (s || '').toString().trim().toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_')
-        const v = normalize((r.verdict || r.status) as string)
-        if (!v || v !== statusFilter) return false
-      }
-    }
-    if (startDate) {
-      const d = new Date(r.created_at)
-      if (d < new Date(startDate)) return false
-    }
-    if (endDate) {
-      const d = new Date(r.created_at)
-      // include whole day
-      const ed = new Date(endDate)
-      ed.setHours(23, 59, 59, 999)
-      if (d > ed) return false
-    }
-    return true
-  })
+  const filtered: ReportMetadata[] = filterReports(reports, { query, statusFilter, startDate, endDate })
 
   // selection summary for UI labels
 
@@ -223,7 +138,7 @@ export default function Reports() {
     <div className="min-h-screen p-8">
       <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-bold">Your Reports</h1>
+  <h1 className="text-3xl font-bold">{t('reports.title')}</h1>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
@@ -233,7 +148,7 @@ export default function Reports() {
             icon={<Filter className="h-4 w-4" />}
             collapseToIcon
           >
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
+            {showFilters ? t('filters.hide') : t('filters.show')}
           </Button>
           <BulkActions deleting={deleting} onRefresh={fetchReports} onDeleteOpen={() => setBulkDeleteOpen(true)} />
           <ConfirmBulkDeleteModal
@@ -292,15 +207,15 @@ export default function Reports() {
 
                 if (failed.length === 0) {
                   setModalSuccess(true)
-                  setModalTitle(`Deleted ${deleted.length} report${deleted.length !== 1 ? 's' : ''}`)
+                  setModalTitle(t('bulk_delete.deleted_title', { count: String(deleted.length) }))
                   setModalMessage(deleted.slice(0, 6).join(', '))
                 } else if (deleted.length === 0) {
                   setModalSuccess(false)
-                  setModalTitle('Failed to delete reports')
+                  setModalTitle(t('bulk_delete.failed'))
                   setModalMessage(failed.map(f => `${f.filename}: ${f.error || 'unknown error'}`).join('\n'))
                 } else {
                   setModalSuccess(false)
-                  setModalTitle('Partial delete')
+                  setModalTitle(t('bulk_delete.partial'))
                   setModalMessage(`Deleted: ${deleted.join(', ')}\nFailed: ${failed.map(f => f.filename).join(', ')}`)
                 }
                 setModalOpen(true)
@@ -309,7 +224,7 @@ export default function Reports() {
                 // finished bulk-delete
                 console.error('Bulk delete failed', e)
                 setModalSuccess(false)
-                setModalTitle('Bulk delete failed')
+                setModalTitle(t('errors.bulk_delete_failed'))
                 const extractMessage = (x: unknown): string => {
                   if (!x) return String(x)
                   if (typeof x === 'string') return x
@@ -371,53 +286,29 @@ export default function Reports() {
         {/* Loading state: show Analysis-style centered spinner when refreshing */}
         {isLoading ? (
           <div className="h-[60vh] flex items-center justify-center">
-            <LoadingSpinner message="Loading reports…" subtext="Refreshing the reports list — this may take a moment." size="lg" />
+            <LoadingSpinner message={t('loading.reports')} subtext={t('loading.reports_subtext')} size="lg" />
           </div>
         ) : null}
         {/* Empty state: no reports */}
         {!isLoading && (!reports || reports.length === 0) ? (
           <div className="h-[60vh]">
-            <NoDataView title="No reports yet 🙂" message="Run an analysis to create your first report." iconType="report" />
+            <NoDataView title={t('reports.no_reports_title')} message={t('reports.no_reports_message')} iconType="report" />
           </div>
         ) : null}
           {!isLoading && (
           <>
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <label className="inline-flex items-center gap-2 text-sm text-gray-700 ml-4">
-                <input
-                  type="checkbox"
-                  checked={filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])}
-                  onChange={() => {
-                    const allSelected = filtered.length > 0 && filtered.every((f) => !!selectedFiles[f.filename])
-                    // toggle all visible
-                    setSelectedFiles((prev) => {
-                      const next = { ...prev }
-                      filtered.forEach((f) => {
-                        next[f.filename] = !allSelected
-                      })
-                      return next
-                    })
-                  }}
-                  aria-label={filtered.length > 0 ? `Select all ${filtered.length} reports` : 'Select all reports'}
-                />
-                <span className="text-sm hide-below-700">Select all</span>
-
-                <div className="text-sm text-gray-600">{isLoading ? 'Loading...' : (total != null ? `${filtered.length} / ${total} results` : `${filtered.length} results`)}</div>
-              </label>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-3 ml-4">
-                <label className="text-sm text-gray-600 hide-below-700">Per page</label>
-                <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1 hide-below-700">
-                  {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
-                </select>
-                <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p-1))} className="flex items-center" icon={<ChevronLeft className="h-4 w-4"/>}><span className="hide-below-700">Prev</span></Button>
-                <div className="px-2 py-1 text-sm">{page} / {totalPages}</div>
-                <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))} className="flex items-center" icon={<ChevronRight className="h-4 w-4"/>}><span className="hide-below-700">Next</span></Button>
-              </div>
-            </div>
-          </div>
+          <ReportsToolbar
+            filtered={filtered}
+            selectedFiles={selectedFiles}
+            setSelectedFiles={setSelectedFiles}
+            isLoading={isLoading}
+            total={total}
+            limit={limit}
+            setLimit={setLimit}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
 
           <div className="space-y-3 max-h-[70vh] overflow-auto">
             {filtered.map((r) => (
@@ -435,7 +326,7 @@ export default function Reports() {
               <ReportViewerModal
                 reportUrl={modalUrl}
                 filename={selected}
-                title={selected || 'Report'}
+                title={selected || t('reports.report')}
                 icon={<Eye className="h-5 w-5 text-gray-700" />}
                 showSave={false}
                 isQuick={false}

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 // DotLottiePlayer.tsx
 import React from 'react'
 import '@dotlottie/player-component' // registers <dotlottie-player>
@@ -27,7 +26,12 @@ export default function DotLottiePlayer({
     if (!el) return
 
     const handleComplete = () => {
-      try { onComplete?.() } catch {}
+      try {
+        onComplete?.()
+      } catch (e) {
+        // Surface errors from user-provided handler while avoiding crash
+        console.warn('DotLottie onComplete handler error', e)
+      }
     }
 
     el.addEventListener('complete', handleComplete as EventListener)
@@ -37,7 +41,7 @@ export default function DotLottiePlayer({
   }, [onComplete])
 
   // Build props object for the element
-  const props: any = {
+  const props: Record<string, unknown> = {
     ref,
     src,
     autoplay: autoplay ? true : undefined,

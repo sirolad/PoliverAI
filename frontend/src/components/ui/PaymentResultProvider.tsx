@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Button } from './Button'
+import { t } from '@/i18n'
 import MetaLine from './MetaLine'
 import { getPaymentStatusClasses, renderPaymentStatusIcon } from '@/lib/paymentHelpers'
 import type { PaymentStatus } from '@/lib/paymentHelpers'
@@ -44,7 +45,7 @@ export function PaymentResultProvider({ children }: { children: React.ReactNode 
               </div>
               <div className="p-4 flex justify-end gap-2">
                 <Button variant="ghost" onClick={() => setState((s) => ({ ...s, open: false }))}>
-                  Close
+                  {t('payment_result.close')}
                 </Button>
               </div>
             </div>

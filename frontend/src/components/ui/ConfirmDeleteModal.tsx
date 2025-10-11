@@ -5,6 +5,7 @@ import IconButton from './IconButton'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
 import { getDangerButtonClass, getConfirmDeleteLabel } from '@/lib/ui/confirmHelpers'
 import MetaLine from './MetaLine'
+import { t } from '@/i18n'
 
 type Props = {
   open: boolean
@@ -39,16 +40,16 @@ export default function ConfirmDeleteModal({ open, filename, onClose, onConfirm,
           <div className="flex items-center gap-3">
             {typeof icon !== 'undefined' ? <div className="text-gray-700">{icon}</div> : null}
             <div>
-              <div className="text-lg font-semibold">Confirm Delete</div>
-              <MetaLine>This action cannot be undone.</MetaLine>
+              <div className="text-lg font-semibold">{t('confirm_delete_modal.title')}</div>
+              <MetaLine>{t('confirm_delete_modal.warning')}</MetaLine>
             </div>
           </div>
-          <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
+          <IconButton onClick={onClose} aria-label={t('confirm_delete_modal.close')}><X /></IconButton>
         </div>
         <div className="p-4">
-          <p className="text-sm text-gray-700 mb-4">Are you sure you want to delete <span className="font-medium">{filename}</span>? This action cannot be undone.</p>
+          <p className="text-sm text-gray-700 mb-4">{t('confirm_delete_modal.question', { filename: filename ?? '' })}</p>
           <div className="flex items-center gap-2 justify-end">
-            <Button onClick={onClose} disabled={isProcessing}>Close</Button>
+            <Button onClick={onClose} disabled={isProcessing}>{t('confirm_delete_modal.close')}</Button>
             <Button onClick={handleYes} disabled={isProcessing} className={getDangerButtonClass()} icon={<Trash2 className="h-4 w-4" />} iconColor="text-white">{getConfirmDeleteLabel(isProcessing)}</Button>
           </div>
         </div>

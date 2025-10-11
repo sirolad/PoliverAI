@@ -13,17 +13,35 @@ export function makeLottieOptions(container: Element | null, path: string, loop 
 }
 
 // Load animation and return the instance (typed as unknown to avoid coupling)
+export type LottieLoadOptions = {
+  container: Element | null
+  renderer?: 'svg' | 'canvas' | 'html'
+  loop?: boolean | number
+  autoplay?: boolean
+  path?: string
+  useWebWorker?: boolean
+}
+
 export function loadLottieAnimation(opts: Record<string, unknown>): unknown {
-  // lottie types are not imported here to keep helper decoupled; cast where needed
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return lottie.loadAnimation(opts as any)
+  // Cast to a narrowed LottieLoadOptions type before calling the library.
+  const o = opts as unknown as LottieLoadOptions
+  return lottie.loadAnimation(o)
+}
+
+export type LottieAnimationLike = {
+  addEventListener?: (event: string, cb: () => void) => void
+  destroy?: () => void
 }
 
 export function attachLottieComplete(anim: unknown, onComplete?: () => void) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (anim as any)?.addEventListener?.('complete', () => {
-      try { onComplete?.() } catch (e) { console.debug('lottie onComplete handler failed', e) }
+    const a = anim as LottieAnimationLike | undefined
+    a?.addEventListener?.('complete', () => {
+      try {
+        onComplete?.()
+      } catch (e) {
+        console.debug('lottie onComplete handler failed', e)
+      }
     })
   } catch (e) {
     console.debug('attachLottieComplete failed', e)
@@ -32,8 +50,8 @@ export function attachLottieComplete(anim: unknown, onComplete?: () => void) {
 
 export function destroyLottie(anim: unknown) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (anim as any)?.destroy?.()
+    const a = anim as LottieAnimationLike | undefined
+    a?.destroy?.()
   } catch (e) {
     console.debug('destroyLottie failed', e)
   }

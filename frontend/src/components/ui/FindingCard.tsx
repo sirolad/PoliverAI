@@ -1,3 +1,5 @@
+import { t } from '@/i18n'
+
 type Finding = { article?: string | number; issue?: string; confidence?: number; severity?: 'high' | 'medium' | 'low' | string }
 type Props = { finding: Finding }
 
@@ -14,9 +16,9 @@ export default function FindingCard({ finding }: Props) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm text-white break-words">Article {finding.article}</div>
+          <div className="font-semibold text-sm text-white break-words">{t('finding_card.article', { num: finding.article ?? '' })}</div>
           <div className="text-sm text-white mt-1 break-words whitespace-pre-wrap">{finding.issue}</div>
-          <div className="text-xs text-white/90 mt-1">Confidence: {(finding.confidence ?? 0) * 100}%</div>
+          <div className="text-xs text-white/90 mt-1">{t('finding_card.confidence', { pct: ((finding.confidence ?? 0) * 100).toFixed(0) })}</div>
         </div>
       </div>
     </div>

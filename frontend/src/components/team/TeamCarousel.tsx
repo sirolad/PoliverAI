@@ -1,5 +1,6 @@
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { t } from '@/i18n'
 
 type Member = {
   id: number
@@ -84,18 +85,18 @@ export default function TeamCarousel() {
     <div className="container mx-auto px-4 py-12">
       {/* Header: centered title + subtitle */}
       <div className="text-center mb-6">
-        <h3 className="text-3xl font-bold text-gray-900 mb-4">Meet the Team</h3>
-        <p className="text-lg text-gray-600">Building responsible AI tools to protect privacy and empower organizations.</p>
+        <h3 className="text-3xl font-bold text-gray-900 mb-4">{t('team_carousel.title')}</h3>
+        <p className="text-lg text-gray-600">{t('team_carousel.subtitle')}</p>
       </div>
 
       <div className="relative">
         {/* Left nav button - positioned at the left edge */}
-        <button aria-label="previous" onClick={prev} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow hover:bg-gray-50">
+        <button aria-label={t('team_carousel.aria_prev')} onClick={prev} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow hover:bg-gray-50">
           <ChevronLeft className="h-6 w-6 text-gray-700" />
         </button>
 
         {/* Right nav button - positioned at the right edge */}
-        <button aria-label="next" onClick={next} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow hover:bg-gray-50">
+        <button aria-label={t('team_carousel.aria_next')} onClick={next} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow hover:bg-gray-50">
           <ChevronRight className="h-6 w-6 text-gray-700" />
         </button>
 

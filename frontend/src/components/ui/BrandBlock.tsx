@@ -1,4 +1,5 @@
 import { getCurrentYear } from '@/lib/uiHelpers'
+import { t } from '@/i18n'
 
 type Props = {
   hasBackground?: boolean
@@ -13,13 +14,13 @@ export default function BrandBlock({ hasBackground = true, subtitleClass = '', s
     <div className="flex flex-col items-center text-center gap-2 mt-4">
       {showCopyrightText ? (
         <div className={`text-sm ${subtitleClass} mt-2`}>
-          &copy; {getCurrentYear()} PoliverAI ™. All rights reserved.
+          {t('brand_block.copyright', { year: getCurrentYear() })}
         </div>
       ) : null}
 
       {showPartnershipText ? (
         <div className={`text-sm ${subtitleClass} mt-2`}>
-          Designed in partnership with Andela
+          {t('brand_block.partnership')}
         </div>
       ) : null}
 
@@ -27,7 +28,7 @@ export default function BrandBlock({ hasBackground = true, subtitleClass = '', s
         <div className="flex items-center gap-3">
           <img src="/poliverai-logo.png" className="h-12 w-auto" />
           {showAndelaLogo ? (
-            <img src="/andela-logo-transparent.png" alt="Andela" className="h-10 w-auto" />
+            <img src="/andela-logo-transparent.png" alt={t('brand_block.andela_alt')} className="h-10 w-auto" />
           ) : null}
         </div>
       </div>

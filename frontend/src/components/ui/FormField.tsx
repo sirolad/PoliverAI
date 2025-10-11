@@ -21,7 +21,7 @@ export default function FormField({ id, label, icon, children, error }: Props) {
         ) : null}
         {children}
       </div>
-  <ErrorText error={error} />
+      <ErrorText error={error} />
     </div>
   )
 }

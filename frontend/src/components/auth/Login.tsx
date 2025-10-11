@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { t } from '@/i18n'
 import { Button } from '@/components/ui/Button'
 import LoadingLabel from '@/components/ui/LoadingLabel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -12,8 +13,8 @@ import useAuth from '@/contexts/useAuth'
 import { Mail, Lock, AlertCircle, LogIn, UserPlus } from 'lucide-react'
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email(t('auth.register.validation_email')),
+  password: z.string().min(6, t('auth.register.validation_password_min')),
 })
 
 type LoginForm = z.infer<typeof loginSchema>
@@ -69,17 +70,17 @@ export function Login() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48 mx-auto" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">Welcome back to PoliverAI</h2>
+          <h2 className="mt-6 text-3xl font-bold text-gray-900">{t('auth_login.welcome_title')}</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Sign in to access your GDPR compliance dashboard
+            {t('auth_login.welcome_subtitle')}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle>{t('auth_login.sign_in_title')}</CardTitle>
             <CardDescription>
-              Enter your email and password to access your account
+              {t('auth_login.sign_in_desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -91,12 +92,12 @@ export function Login() {
                 </div>
               )}
 
-              <FormField id="email" label="Email address" icon={<Mail />} error={errors.email?.message}>
-                <Input id="email" type="email" placeholder="Enter your email" className="pl-10" {...register('email')} />
+              <FormField id="email" label={t('auth_login.email_label')} icon={<Mail />} error={errors.email?.message}>
+                <Input id="email" type="email" placeholder={t('auth_login.email_placeholder')} className="pl-10" {...register('email')} />
               </FormField>
 
-              <FormField id="password" label="Password" icon={<Lock />} error={errors.password?.message}>
-                <Input id="password" type="password" placeholder="Enter your password" className="pl-10" {...register('password')} />
+              <FormField id="password" label={t('auth_login.password_label')} icon={<Lock />} error={errors.password?.message}>
+                <Input id="password" type="password" placeholder={t('auth_login.password_placeholder')} className="pl-10" {...register('password')} />
               </FormField>
 
               <Button
@@ -107,19 +108,19 @@ export function Login() {
               >
                 <LoadingLabel
                   loading={isSubmitting}
-                  loadingNode={"Signing in..."}
-                  normalNode={"Sign In"}
+                  loadingNode={t('auth_login.signing_in')}
+                  normalNode={t('auth_login.sign_in_cta')}
                 />
               </Button>
 
               <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{' '}
-                  <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Sign up for free
-                  </Link>
-                </p>
+                  <p className="text-sm text-gray-600">
+                    {t('auth_login.no_account_prefix')}{' '}
+                    <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
+                      <UserPlus className="h-4 w-4" />
+                      {t('auth_login.sign_up_cta')}
+                    </Link>
+                  </p>
               </div>
             </form>
           </CardContent>

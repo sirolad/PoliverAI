@@ -3,6 +3,7 @@ import type { ReportMetadata } from '@/types/api'
 import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
 import { DownloadCloud, ExternalLink } from 'lucide-react'
 import { Button } from './Button'
+import { t } from '@/i18n'
 import policyService from '@/services/policyService'
 import { normalizeStatus, isFullReport, getStarCounts, formatFileSize, formatDateTime } from '@/lib/reportHelpers'
 
@@ -32,16 +33,16 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
           checked={!!selected}
           onChange={() => onToggleSelect && onToggleSelect(r.filename)}
           className="w-4 h-4"
-          aria-label={`Select report ${r.filename}`}
+          aria-label={t('report_card.select_aria', { filename: r.filename })}
         />
       </div>
       <div className="col-span-10 flex-1">
         <div className="font-semibold">{r.title || r.document_name}</div>
         <div className="text-sm text-gray-600">{r.document_name}</div>
         <div className="text-sm text-gray-500 mt-1">{formatDateTime(r.created_at)}</div>
-        <div className="text-sm text-gray-500 truncate">filename: <span className="font-mono">{r.filename}</span></div>
+  <div className="text-sm text-gray-500 truncate">{t('report_card.filename_label')} <span className="font-mono">{r.filename}</span></div>
         {r.file_size ? (
-          <div className="text-sm text-gray-500">Size: {formatFileSize(r.file_size)}</div>
+          <div className="text-sm text-gray-500">{t('report_card.size_label')} {formatFileSize(r.file_size)}</div>
         ) : null}
 
         <div className="mt-2 ml-2 mr-2 flex items-center gap-2">
@@ -66,7 +67,7 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
           return (
             <div className="inline-flex items-center mt-2 text-xs font-medium rounded overflow-hidden">
               {isFull ? (
-                <div className="px-2 py-1 bg-green-100 text-green-700 border border-r-0 border-green-200">Full</div>
+                <div className="px-2 py-1 bg-green-100 text-green-700 border border-r-0 border-green-200">{t('report_card.full_label')}</div>
               ) : null}
               {hasVerdict ? (
                 <div className={`px-2 py-1 border ${vnorm === 'compliant' ? 'bg-green-100 text-green-700 border-green-200' : vnorm === 'partially_compliant' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
@@ -80,14 +81,14 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
       <div className={`col-span-1 flex-shrink-0 ml-0 md:ml-4 flex items-center space-x-2 w-full md:w-auto justify-end self-end`}>
         {r.gcs_url ? (
           <Button onClick={() => (onExternalOpen ? onExternalOpen(r) : policyService.openReport(r))} className="text-sm bg-gray-700 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
-            Open
+            {t('report_card.open')}
           </Button>
         ) : null}
         <Button onClick={() => onOpen(r)} className="text-sm bg-blue-600 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} collapseToIcon>
-          View
+          {t('report_card.view')}
         </Button>
         <Button onClick={() => onDownload(r)} className="bg-green-600 text-white px-3 py-1 rounded" icon={<DownloadCloud className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
-          Download
+          {t('report_card.download')}
         </Button>
       </div>
     </div>

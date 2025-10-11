@@ -18,13 +18,13 @@ type Options = {
  * - options: { durationMs, maxSteps, minIntervalMs }
  * Returns current animated values (same keys as targets).
  */
-export default function useRampedCounters(targets: Targets, enabled: boolean, options: Options = {}) {
+export default function useRampedCounters<T extends Targets>(targets: T, enabled: boolean, options: Options = {}) {
   const { durationMs = 1200, maxSteps = 5, minIntervalMs = 30 } = options
 
-  const [values, setValues] = useState<Targets>(() => {
-    const init: Targets = {}
-    Object.keys(targets || {}).forEach((k) => { init[k] = 0 })
-    return init
+  const [values, setValues] = useState<T>(() => {
+    const initObj: Record<string, number> = {}
+    Object.keys(targets || {}).forEach((k) => { initObj[k] = 0 })
+    return initObj as T
   })
 
   const timers = useRef<Record<string, number>>({})
@@ -75,5 +75,5 @@ export default function useRampedCounters(targets: Targets, enabled: boolean, op
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, JSON.stringify(targets), durationMs, maxSteps, minIntervalMs])
 
-  return values
+  return values as T
 }

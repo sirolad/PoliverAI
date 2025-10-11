@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { t } from '@/i18n'
 import { Button } from '@/components/ui/Button'
 import LoadingLabel from '@/components/ui/LoadingLabel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -12,12 +13,12 @@ import useAuth from '@/contexts/useAuth'
 import { Mail, Lock, User, AlertCircle, UserPlus, LogIn } from 'lucide-react'
 
 const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  name: z.string().min(2, t('auth.register.validation_name_min')),
+  email: z.string().email(t('auth.register.validation_email')),
+  password: z.string().min(6, t('auth.register.validation_password_min')),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: t('auth.register.validation_password_match'),
   path: ["confirmPassword"],
 })
 
@@ -74,17 +75,17 @@ export function Register() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48 mx-auto" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">Join PoliverAI</h2>
+          <h2 className="mt-6 text-3xl font-bold text-gray-900">{t('auth.register.join_title')}</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Create your account and start ensuring GDPR compliance
+            {t('auth.register.join_subtitle')}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Create Account</CardTitle>
+            <CardTitle>{t('auth.register.create_account')}</CardTitle>
             <CardDescription>
-              Get started with your free PoliverAI account
+              {t('auth.register.create_account_desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -96,27 +97,27 @@ export function Register() {
                 </div>
               )}
 
-              <FormField id="name" label="Full Name" icon={<User />} error={errors.name?.message}>
-                <Input id="name" type="text" placeholder="Enter your full name" className="pl-10" {...register('name')} />
+              <FormField id="name" label={t('auth.register.name_label')} icon={<User />} error={errors.name?.message}>
+                <Input id="name" type="text" placeholder={t('auth.register.name_placeholder')} className="pl-10" {...register('name')} />
               </FormField>
 
-              <FormField id="email" label="Email address" icon={<Mail />} error={errors.email?.message}>
-                <Input id="email" type="email" placeholder="Enter your email" className="pl-10" {...register('email')} />
+              <FormField id="email" label={t('auth.register.email_label')} icon={<Mail />} error={errors.email?.message}>
+                <Input id="email" type="email" placeholder={t('auth.register.email_placeholder')} className="pl-10" {...register('email')} />
               </FormField>
 
-              <FormField id="password" label="Password" icon={<Lock />} error={errors.password?.message}>
-                <Input id="password" type="password" placeholder="Create a password" className="pl-10" {...register('password')} />
+              <FormField id="password" label={t('auth.register.password_label')} icon={<Lock />} error={errors.password?.message}>
+                <Input id="password" type="password" placeholder={t('auth.register.password_placeholder')} className="pl-10" {...register('password')} />
               </FormField>
 
-              <FormField id="confirmPassword" label="Confirm Password" icon={<Lock />} error={errors.confirmPassword?.message}>
-                <Input id="confirmPassword" type="password" placeholder="Confirm your password" className="pl-10" {...register('confirmPassword')} />
+              <FormField id="confirmPassword" label={t('auth.register.confirm_password_label')} icon={<Lock />} error={errors.confirmPassword?.message}>
+                <Input id="confirmPassword" type="password" placeholder={t('auth.register.confirm_password_placeholder')} className="pl-10" {...register('confirmPassword')} />
               </FormField>
 
               <div className="text-xs text-gray-600">
-                By creating an account, you agree to our{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500">Terms of Service</a>{' '}
+                {t('auth.register.terms_prefix')}{' '}
+                <a href="#" className="text-blue-600 hover:text-blue-500">{t('auth.register.terms')}</a>{' '}
                 and{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500">Privacy Policy</a>.
+                <a href="#" className="text-blue-600 hover:text-blue-500">{t('auth.register.privacy')}</a>.
               </div>
 
               <Button
@@ -127,19 +128,19 @@ export function Register() {
               >
                 <LoadingLabel
                   loading={isSubmitting}
-                  loadingNode={"Creating account..."}
-                  normalNode={"Create Account"}
+                  loadingNode={t('auth.register.creating_account')}
+                  normalNode={t('auth.register.create_account_cta')}
                 />
               </Button>
 
               <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Already have an account?{' '}
-                  <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Sign in
-                  </Link>
-                </p>
+                  <p className="text-sm text-gray-600">
+                    {t('auth.register.already_have_account')}{' '}
+                    <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
+                      <LogIn className="h-4 w-4" />
+                      {t('auth.register.sign_in')}
+                    </Link>
+                  </p>
               </div>
             </form>
           </CardContent>

@@ -1,4 +1,5 @@
 import { Button } from './Button'
+import { t } from '@/i18n'
 import MetaLine from './MetaLine'
 import { getPaymentStatusClasses, renderPaymentStatusIcon } from '@/lib/paymentHelpers'
 
@@ -31,7 +32,7 @@ export default function PaymentResultModal({
           </div>
           <div className="p-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={onClose}>
-              Close
+              {t('payment_result_modal.close')}
             </Button>
           </div>
         </div>

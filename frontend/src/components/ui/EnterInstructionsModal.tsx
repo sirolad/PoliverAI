@@ -3,6 +3,7 @@ import { Button } from './Button'
 import IconButton from './IconButton'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
 import { X, Bot } from 'lucide-react'
+import { t } from '@/i18n'
 
 type Props = {
   open: boolean
@@ -45,24 +46,24 @@ export default function EnterInstructionsModal({ open, initial = '', onClose, on
               <Bot className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-lg font-semibold">Revised Policy Instructions</div>
-              <div className="text-sm text-gray-600">Optional guidance to customize how the policy is revised</div>
+              <div className="text-lg font-semibold">{t('enter_instructions_modal.title')}</div>
+              <div className="text-sm text-gray-600">{t('enter_instructions_modal.subtitle')}</div>
             </div>
           </div>
-          <IconButton onClick={onClose} aria-label="close"><X /></IconButton>
+          <IconButton onClick={onClose} aria-label={t('enter_instructions_modal.close_aria')}><X /></IconButton>
         </div>
         <div className="p-4">
-          <p className="text-sm text-gray-600 mb-4">Provide optional natural-language instructions to guide how the policy should be revised (tone, scope, sections to prioritize, etc.). Leave empty to use default guidance.</p>
+          <p className="text-sm text-gray-600 mb-4">{t('enter_instructions_modal.description')}</p>
           <div className="flex flex-col gap-3">
             <textarea
               className="border rounded px-3 py-2 w-full h-40 resize-y"
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
-              placeholder="E.g. keep language plain-English, focus on cookie consent section, use bullet lists"
+              placeholder={t('enter_instructions_modal.placeholder')}
             />
             <div className="flex justify-end">
               <Button onClick={handleConfirm} disabled={isProcessing} icon={<Bot className="h-4 w-4" />} iconColor="text-white">
-                {isProcessing ? 'Generating...' : 'Generate Revised Policy'}
+                {isProcessing ? t('enter_instructions_modal.generating') : t('enter_instructions_modal.generate')}
               </Button>
             </div>
           </div>

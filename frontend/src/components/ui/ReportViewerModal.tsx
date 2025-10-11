@@ -3,6 +3,7 @@ import { X, DownloadCloud, Save, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
+import { t } from '@/i18n'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { safeDispatch } from '@/lib/eventHelpers'
 import { extractErrorStatus } from '@/lib/errorHelpers'
@@ -139,8 +140,8 @@ export default function ReportViewerModal({ reportUrl, filename, title, inlineCo
           <div className="flex items-center gap-3 min-w-0">
             {typeof icon !== 'undefined' ? <div className="text-gray-700 flex-shrink-0">{icon}</div> : null}
             <div className="min-w-0">
-              <div className="font-semibold truncate max-w-full">{title || filename || 'Report'}</div>
-              <MetaLine>Preview the generated report. You can save, download or delete it.</MetaLine>
+              <div className="font-semibold truncate max-w-full">{title || filename || t('report_viewer.title_report')}</div>
+              <MetaLine>{t('report_viewer.meta_line')}</MetaLine>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -151,32 +152,32 @@ export default function ReportViewerModal({ reportUrl, filename, title, inlineCo
                 } catch (e) {
                   console.warn('modal download failed', e)
                 }
-              }}>Download</Button>
+              }}>{t('report_viewer.download')}</Button>
             {showSave ? (
               <Button variant="default" size="sm" icon={<Save className="h-4 w-4" />} collapseToIcon onClick={() => {
                 // open title modal to collect document title before saving
                 setPendingTitle(title || filename || '')
                 setTitleModalOpen(true)
-              }}>Save</Button>
+              }}>{t('report_viewer.save')}</Button>
             ) : null}
             <Button variant="destructive" size="sm" icon={<Trash2 className="h-4 w-4" />} collapseToIcon onClick={() => {
                 setConfirmDeleteOpen(true)
-              }}>Delete</Button>
-            <Button variant="ghost" size="sm" icon={<X className="h-4 w-4" />} collapseToIcon onClick={onClose}>Close</Button>
+              }}>{t('report_viewer.delete')}</Button>
+            <Button variant="ghost" size="sm" icon={<X className="h-4 w-4" />} collapseToIcon onClick={onClose}>{t('report_viewer.close')}</Button>
           </div>
         </div>
         <div className="h-[80vh]">
           {savingInline ? (
-            <LoadingSpinner message="Saving report…" size="lg" />
+            <LoadingSpinner message={t('report_viewer.saving_report')} size="lg" />
           ) : loadingDetail ? (
-            <LoadingSpinner message="Loading preview…" size="lg" />
+            <LoadingSpinner message={t('report_viewer.loading_preview')} size="lg" />
           ) : detailedContent ? (
             <div className="p-6 overflow-auto h-full prose max-w-none text-sm" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(detailedContent) }} />
           ) : displayUrl ? (
-            <iframe src={displayUrl} className="w-full h-full" title={filename || 'report-viewer'} />
+            <iframe src={displayUrl} className="w-full h-full" title={filename || t('report_viewer.iframe_title')} />
           ) : (
             <div className="p-6 h-full">
-              <NoDataView title="Preview not available" message="You can download the report using the Download button." iconType="report" iconSize="md" />
+              <NoDataView title={t('report_viewer.preview_not_available_title')} message={t('report_viewer.preview_not_available_message')} iconType="report" iconSize="md" />
             </div>
           )}
         </div>
