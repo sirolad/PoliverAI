@@ -9,52 +9,22 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel
 
 from ....core.auth import verify_token
 from ....core.exceptions import IngestionError, VerificationError
 from ....db.users import user_db
-from ....domain.auth import User, UserTier
 from ....ingestion.readers.docx_reader import read_docx_text
 from ....ingestion.readers.html_reader import read_html_text
 from ....ingestion.readers.pdf_reader import read_pdf_text
+from ....models.api import (
+    ClauseMatch,
+    ComplianceMetrics,
+    ComplianceResult,
+    Finding,
+    Recommendation,
+)
+from ....models.auth import User, UserTier
 from ....rag.verification import analyze_policy
-
-
-class ClauseMatch(BaseModel):
-    article: str
-    policy_excerpt: str
-    score: float
-
-
-class Finding(BaseModel):
-    article: str
-    issue: str
-    severity: str
-    confidence: float
-
-
-class Recommendation(BaseModel):
-    article: str
-    suggestion: str
-
-
-class ComplianceMetrics(BaseModel):
-    total_violations: int
-    total_fulfills: int
-    critical_violations: int
-
-
-class ComplianceResult(BaseModel):
-    verdict: str
-    score: int
-    confidence: float
-    evidence: list[ClauseMatch]
-    findings: list[Finding]
-    recommendations: list[Recommendation]
-    summary: str
-    metrics: ComplianceMetrics
-
 
 router = APIRouter(tags=["verification"])
 
