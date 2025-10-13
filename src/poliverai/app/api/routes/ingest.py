@@ -5,17 +5,10 @@ import tempfile
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, UploadFile, status
-from pydantic import BaseModel
 
 from ....core.exceptions import IngestionError
+from ....models.api import IngestResponse
 from ....rag.service import ingest_paths
-
-
-class IngestResponse(BaseModel):
-    files: int
-    chunks: int
-    skipped: list[dict]
-
 
 router = APIRouter(tags=["ingest"])
 
