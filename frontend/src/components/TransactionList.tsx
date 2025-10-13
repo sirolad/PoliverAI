@@ -25,23 +25,23 @@ type Props = {
 export default function TransactionList({ filtered, total, itemsLength, page, setPage, limit, setLimit, totalPages, isMobile, fetchTx, refreshUser, getTxStatus }: Props) {
   return (
     <>
-      <div className={twFromTokens('mb-2', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
-        <div className={twFromTokens(textSizes.sm, colors.textMuted)}><span className="hidden sm:inline">Showing </span>{filtered.length} of {total ?? itemsLength}<span className="hidden sm:inline"> transactions</span></div>
+      <div className={twFromTokens(spacing.blockSmall, alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+        <div className={twFromTokens(textSizes.sm, colors.textMuted)}><span className={twFromTokens('hidden sm:inline')}>Showing </span>{filtered.length} of {total ?? itemsLength}<span className={twFromTokens('hidden sm:inline')}> transactions</span></div>
         <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, spacing.controlsGap)}>
           {!isMobile && <Text as="span" preset="small" color="textMuted">Per page</Text>}
-          <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className={twFromTokens('border', colors.mutedBorder, 'rounded', 'px-2', 'py-1')}>
+          <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className={twFromTokens('border', colors.mutedBorder, 'rounded', spacing.buttonSmall.tw)}>
             {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
           </select>
           {!isMobile && <Text as="span" preset="small" color="textMuted">Page</Text>}
           <div className={twFromTokens('inline-flex', alignment.itemsCenter, spacing.controlsGap)}>
             <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(Math.max(1, page-1))} className={twFromTokens(alignment.flexRow, alignment.itemsCenter)} icon={<ChevronLeft className={twFromTokens('h-4 w-4', colors.textMuted)} />}>{!isMobile && <span className="ml-1">Prev</span>}</Button>
-            <div className={twFromTokens('px-2', 'py-1', textSizes.sm)}>{page} / {totalPages}</div>
+            <div className={twFromTokens(spacing.buttonSmall, textSizes.sm)}>{page} / {totalPages}</div>
             <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(Math.min(totalPages, page+1))} className={twFromTokens(alignment.flexRow, alignment.itemsCenter)} icon={<ChevronRight className={twFromTokens('h-4 w-4', colors.textMuted)} />}>{!isMobile && <span className="mr-1">Next</span>}</Button>
           </div>
         </div>
       </div>
 
-      <div className={twFromTokens('flex-1', 'overflow-auto', 'space-y-4')}>
+      <div className={twFromTokens(spacing.listContainer)}>
         {filtered.length === 0 ? (
           <NoDataView title="No transactions" message="No transactions match your filters." iconType="transactions" />
         ) : filtered.map((t) => {

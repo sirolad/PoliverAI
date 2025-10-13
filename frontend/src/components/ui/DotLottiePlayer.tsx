@@ -1,6 +1,6 @@
 // DotLottiePlayer.tsx
 import React from 'react'
-import { twFromTokens } from '@/styles/styleTokens'
+import { twFromTokens, spacing, alignment } from '@/styles/styleTokens'
 import '@dotlottie/player-component' // registers <dotlottie-player>
 
 type DotLottiePlayerProps = {
@@ -45,12 +45,18 @@ export default function DotLottiePlayer({
   }, [onComplete])
 
   // Build props object for the element
+  const defaultClass = classTokens
+    ? twFromTokens(...classTokens)
+    : className
+    ? className
+    : twFromTokens(alignment.center, spacing.emptyOuterMd)
+
   const props: Record<string, unknown> = {
     ref,
     src,
     autoplay: autoplay ? true : undefined,
     loop: loop ? true : undefined,
-    class: classTokens ? twFromTokens(...classTokens) : className,
+    class: defaultClass,
     style,
   }
 

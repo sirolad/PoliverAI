@@ -1,7 +1,7 @@
 import useTeam from '@/hooks/useTeam'
 import Heading from './ui/Heading'
 import Text from './ui/Text'
-import { twFromTokens, spacing, alignment } from '@/styles/styleTokens'
+import { twFromTokens, spacing, alignment, colors } from '@/styles/styleTokens'
 
 export default function TeamWriteup() {
   const { heading, paragraph } = useTeam()
@@ -9,7 +9,7 @@ export default function TeamWriteup() {
   return (
     <>
       <div className={twFromTokens(alignment.center)}>
-        <div className={twFromTokens(spacing.dividerShort, 'bg-gradient-to-r', 'from-blue-400', 'to-green-400')} />
+        <div className={twFromTokens(spacing.dividerShort, colors.gradientBlueGreen.tw)} />
       </div>
 
       {/* Team write-up */}

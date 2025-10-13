@@ -6,7 +6,7 @@ import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHel
 import { getDangerButtonClass, getConfirmDeleteLabel } from '@/lib/ui/confirmHelpers'
 import MetaLine from './MetaLine'
 import { t } from '@/i18n'
-import { twFromTokens, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
+import { twFromTokens, baseFontSizes, fontWeights, colors, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   open: boolean
@@ -34,11 +34,11 @@ export default function ConfirmDeleteModal({ open, filename, onClose, onConfirm,
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className={twFromTokens('fixed inset-0 z-50', spacing.fullScreenCenter)}>
       <div className={getModalBackdropClass()} onClick={onClose}></div>
       <div className={getModalContainerClass()}>
-        <div className="p-4 border-b flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className={twFromTokens(spacing.modalPadding, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
             {typeof icon !== 'undefined' ? <div className={twFromTokens(colors.textSecondary)}>{icon}</div> : null}
             <div>
               <div className={twFromTokens(baseFontSizes.lg, fontWeights.semibold)}>{t('confirm_delete_modal.title')}</div>
@@ -47,11 +47,11 @@ export default function ConfirmDeleteModal({ open, filename, onClose, onConfirm,
           </div>
           <IconButton onClick={onClose} aria-label={t('confirm_delete_modal.close')}><X /></IconButton>
         </div>
-        <div className="p-4">
-          <p className={twFromTokens(baseFontSizes.sm, colors.textSecondary, 'mb-4')}>{t('confirm_delete_modal.question', { filename: filename ?? '' })}</p>
-          <div className="flex items-center gap-2 justify-end">
+        <div className={twFromTokens(spacing.modalPadding)}>
+          <p className={twFromTokens(baseFontSizes.sm, colors.textSecondary, spacing.smallTop)}>{t('confirm_delete_modal.question', { filename: filename ?? '' })}</p>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2, alignment.justifyEnd)}>
             <Button onClick={onClose} disabled={isProcessing}>{t('confirm_delete_modal.close')}</Button>
-            <Button onClick={handleYes} disabled={isProcessing} className={getDangerButtonClass()} icon={<Trash2 className={twFromTokens('h-4 w-4', colors.onPrimary)} />} iconColor="text-white">{getConfirmDeleteLabel(isProcessing)}</Button>
+            <Button onClick={handleYes} disabled={isProcessing} className={getDangerButtonClass()} icon={<Trash2 className={twFromTokens(spacing.iconsXs, colors.onPrimary)} />} iconColor="text-white">{getConfirmDeleteLabel(isProcessing)}</Button>
           </div>
         </div>
       </div>

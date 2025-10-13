@@ -2,7 +2,7 @@ import { t } from '@/i18n'
 import { CheckCircle2, Zap } from 'lucide-react'
 import Heading from '@/components/ui/Heading'
 import Text from '@/components/ui/Text'
-import { twFromTokens, colors, textSizes } from '@/styles/styleTokens'
+import { twFromTokens, colors, textSizes, spacing, alignment } from '@/styles/styleTokens'
 import useFeatures from '@/hooks/useFeatures'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 
@@ -17,13 +17,13 @@ function FeatureCard({ icon: Icon, title, description, isPro = false }: FeatureC
   return (
     <Card className={twFromTokens('h-full', isPro ? 'border-blue-200 bg-blue-50/50' : '')}>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <Icon className={twFromTokens('h-6', 'w-6', isPro ? colors.primary : colors.success)} />
+        <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
+          <Icon className={twFromTokens(spacing.iconsMd, isPro ? colors.primary : colors.success)} />
           <CardTitle>
             <Text preset="small" className="font-semibold">{title}</Text>
           </CardTitle>
           {isPro && (
-            <span className={twFromTokens('px-2', 'py-1', 'rounded-full', textSizes.sm, colors.primaryBg, colors.onPrimary)}>PRO</span>
+            <span className={twFromTokens(spacing.badgePadding, 'rounded-full', textSizes.sm, colors.primaryBg, colors.onPrimary, spacing.badgeMarginLeft)}>PRO</span>
           )}
         </div>
       </CardHeader>
@@ -40,19 +40,19 @@ export default function FeaturesSection() {
   const { freeFeatures, proFeatures } = useFeatures()
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="text-center mb-12">
-        <Heading as="h2" preset="subheading" className="mb-4">{t('landing.features.title')}</Heading>
+    <div className={twFromTokens(spacing.sectionContainer)}>
+      <div className={twFromTokens(spacing.sectionTitle)}>
+        <Heading as="h2" preset="subheading" className={twFromTokens(spacing.headingMargin)}>{t('landing.features.title')}</Heading>
         <Text preset="lead" color="textMuted">{t('landing.features.subtitle')}</Text>
       </div>
 
       {/* Free Features */}
-      <div className="mb-12">
-        <h3 className="mb-6 flex items-center gap-2">
-          <CheckCircle2 className={twFromTokens('h-6', 'w-6', colors.success)} />
+      <div className={twFromTokens(spacing.smallTop)}>
+        <h3 className={twFromTokens(alignment.flexRow, spacing.headingLarge, alignment.gap2)}>
+          <CheckCircle2 className={twFromTokens(spacing.iconsMd, colors.success)} />
           <Heading as="h3" preset="subheading">{t('landing.features.free_heading')}</Heading>
         </h3>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className={twFromTokens('grid md:grid-cols-3', spacing.cardInnerGap.tw ? spacing.cardInnerGap.tw : spacing.cardInnerGap)}>
           {freeFeatures.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
           ))}
@@ -60,12 +60,12 @@ export default function FeaturesSection() {
       </div>
 
       {/* Pro Features */}
-      <div>
-        <h3 className="mb-6 flex items-center gap-2">
-          <Zap className={twFromTokens('h-6', 'w-6', colors.primary)} />
+      <div className={twFromTokens(spacing.smallTop)}>
+        <h3 className={twFromTokens(alignment.flexRow, spacing.headingLarge, alignment.gap2)}>
+          <Zap className={twFromTokens(spacing.iconsMd, colors.primary)} />
           <Heading as="h3" preset="subheading">{t('landing.features.pro_heading')}</Heading>
         </h3>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className={twFromTokens('grid md:grid-cols-3', spacing.cardInnerGap.tw ? spacing.cardInnerGap.tw : spacing.cardInnerGap)}>
           {proFeatures.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
           ))}

@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { t } from '@/i18n'
-import { twFromTokens, textSizes, colors, fontWeights, hoverFromColor } from '@/styles/styleTokens'
+import { twFromTokens, textSizes, colors, fontWeights, hoverFromColor, spacing, alignment } from '@/styles/styleTokens'
 import { Button } from '@/components/ui/Button'
 import LoadingLabel from '@/components/ui/LoadingLabel'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 import FormField from '@/components/ui/FormField'
 import useAuth from '@/contexts/useAuth'
@@ -60,52 +60,49 @@ export function Login() {
 
   if (loading) {
     return (
-      <div className={twFromTokens('min-h-screen flex items-center justify-center')}>
-        <div className={twFromTokens('animate-spin rounded-full h-12 w-12 border-b-2', colors.primary)} />
+      <div className={twFromTokens(spacing.fullScreenCenter)}>
+        <div className={twFromTokens('animate-spin rounded-full', 'h-12 w-12', colors.primary)} />
       </div>
     )
   }
 
   return (
-    <div className={twFromTokens('min-h-screen flex items-center justify-center', colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48 mx-auto" />
-          <h2 className={twFromTokens('mt-6 font-bold', textSizes.h1, colors.textPrimary)}>{t('auth_login.welcome_title')}</h2>
-          <p className={twFromTokens('mt-2', textSizes.sm, colors.textMuted)}>
+    <div className={twFromTokens(spacing.fullScreenCenter, colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
+      <div className={twFromTokens(spacing.containerMaxMd, alignment.gap4)}>
+        <div className={twFromTokens(alignment.centerColumn)}>
+          <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className={twFromTokens('h-48', 'mx-auto')} />
+          <h2 className={twFromTokens(spacing.sectionButtonTop, fontWeights.bold, textSizes.h1, colors.textPrimary)}>{t('auth_login.welcome_title')}</h2>
+          <p className={twFromTokens(spacing.tinyTop, textSizes.sm, colors.textMuted)}>
             {t('auth_login.welcome_subtitle')}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t('auth_login.sign_in_title')}</CardTitle>
-            <CardDescription>
-              {t('auth_login.sign_in_desc')}
-            </CardDescription>
+            {/* header content (omitted) */}
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className={twFromTokens(alignment.flexCol, alignment.gap4)}>
               {error && (
-                <div className={twFromTokens('flex items-center gap-2 p-3', colors.danger, colors.dangerBg, 'rounded-md', textSizes.sm)}>
-                  <AlertCircle className={twFromTokens('h-4 w-4', colors.danger)} />
+                <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2, spacing.cardDefault, colors.danger, colors.dangerBg, 'rounded-md', textSizes.sm)}>
+                  <AlertCircle className={twFromTokens(spacing.iconsXs, colors.danger)} />
                   {error}
                 </div>
               )}
 
-              <FormField id="email" label={t('auth_login.email_label')} icon={<Mail />} error={errors.email?.message}>
-                <Input id="email" type="email" placeholder={t('auth_login.email_placeholder')} className="pl-10" {...register('email')} />
+              <FormField id="email" label={t('auth.register.email_label')} icon={<Mail />} error={errors.email?.message}>
+                <Input id="email" type="email" placeholder={t('auth.register.email_placeholder')} className="pl-10" {...register('email')} />
               </FormField>
 
-              <FormField id="password" label={t('auth_login.password_label')} icon={<Lock />} error={errors.password?.message}>
-                <Input id="password" type="password" placeholder={t('auth_login.password_placeholder')} className="pl-10" {...register('password')} />
+              <FormField id="password" label={t('auth.register.password_label')} icon={<Lock />} error={errors.password?.message}>
+                <Input id="password" type="password" placeholder={t('auth.register.password_placeholder')} className="pl-10" {...register('password')} />
               </FormField>
 
               <Button
                 type="submit"
-                className={twFromTokens(textSizes.sm, colors.primaryBg, 'w-full flex items-center justify-center gap-2')}
+                className={twFromTokens(textSizes.sm, colors.primaryBg, spacing.fullWidth, alignment.center, alignment.gap2)}
                 disabled={isSubmitting}
-                icon={<LogIn className={twFromTokens('h-4 w-4', textSizes.sm)} />}
+                icon={<LogIn className={twFromTokens(spacing.iconsXs, textSizes.sm)} />}
               >
                 <LoadingLabel
                   loading={isSubmitting}
@@ -115,13 +112,13 @@ export function Login() {
               </Button>
 
               <div className="text-center">
-                    <p className={twFromTokens(textSizes.sm, colors.textMuted)}>
-                    {t('auth_login.no_account_prefix')}{' '}
-                    <Link to="/register" className={twFromTokens(textSizes.sm, fontWeights.medium, 'inline-flex items-center gap-2', 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
-                      <UserPlus className={twFromTokens('h-4 w-4')} />
-                      {t('auth_login.sign_up_cta')}
-                    </Link>
-                  </p>
+                <p className={twFromTokens(textSizes.sm, colors.textMuted)}>
+                  {t('auth_login.no_account_prefix')}{' '}
+                  <Link to="/register" className={twFromTokens(textSizes.sm, fontWeights.medium, alignment.flexRow, alignment.itemsCenter, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
+                    <UserPlus className={twFromTokens(spacing.iconsXs)} />
+                    {t('auth_login.sign_up_cta')}
+                  </Link>
+                </p>
               </div>
             </form>
           </CardContent>

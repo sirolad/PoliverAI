@@ -5,7 +5,7 @@ import { getCreditsTotal } from '@/lib/paymentsHelpers'
 import useRampedCounters from '@/hooks/useRampedCounters'
 import { badgeClass, badgeText, formatCredits } from '@/lib/navHelpers'
 import { t } from '@/i18n'
-import { twFromTokens, textSizes, baseFontSizes, colors } from '@/styles/styleTokens'
+import { twFromTokens, textSizes, baseFontSizes, colors, spacing, alignment } from '@/styles/styleTokens'
 
 function useNavUser() {
   const { user, loading, isPro } = useAuth()
@@ -21,8 +21,8 @@ export default function NavUserInfo({ showName = false, showBadge = false }: { s
   return (
     <>
       {showName ? (
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
+        <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
             <User className={twFromTokens('h-4 w-4', textSizes.sm)} />
             <span className={twFromTokens(textSizes.sm)}>{user?.name}</span>
           </div>
@@ -30,10 +30,10 @@ export default function NavUserInfo({ showName = false, showBadge = false }: { s
       ) : null}
 
       {showBadge ? (
-        <div className="flex items-center gap-2">
-          <span className={twFromTokens(baseFontSizes.xs, 'px-2 py-1 rounded-full', badgeClass(isPro))}>{badgeText(isPro)}</span>
+        <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
+          <span className={twFromTokens(baseFontSizes.xs, spacing.badgePadding, 'rounded-full', badgeClass(isPro))}>{badgeText(isPro)}</span>
           {navRampEnabled ? (
-            <div title={`${t('credits.label')} ${navCreditsTotal}`} className={twFromTokens(textSizes.sm, 'px-2 py-1 rounded', colors.surfaceMuted)}>
+            <div title={`${t('credits.label')} ${navCreditsTotal}`} className={twFromTokens(textSizes.sm, spacing.badgePadding, 'rounded', colors.surfaceMuted)}>
               {t('credits.label')} {formatCredits(animatedNavCredits.total)}
             </div>
           ) : null}

@@ -7,6 +7,7 @@ import { Robot, Stack } from 'phosphor-react'
 import StatFooter from './StatFooter'
 import useRampedCounters from '@/hooks/useRampedCounters'
 import { twFromTokens, textSizes, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
+import { spacing, alignment, hoverBgFromColor } from '@/styles/styleTokens'
 
 type Platform = 'android' | 'ios' | 'windows' | 'macos' | 'linux'
 
@@ -140,23 +141,23 @@ export default function AppPlatforms({ hideOnPlatform }: { hideOnPlatform?: Part
   }
 
   return (
-    <div className="container mx-auto px-4 py-10">
-  <div className="bg-white rounded-2xl shadow-xl max-w-3xl mx-auto p-10 flex flex-col items-center text-center gap-6">
+    <div className={twFromTokens(spacing.containerMaxLg, 'py-10')}>
+  <div className={twFromTokens(colors.surface, 'rounded-2xl shadow-xl', 'max-w-3xl mx-auto', spacing.cardLg, alignment.flexCol, alignment.itemsCenter, 'text-center', alignment.gap4)}>
         <div>
           <h3 className={twFromTokens(textSizes.h2, fontWeights.semibold)}>{t('app_platforms.heading')}</h3>
           <p className={twFromTokens(textSizes.lg, colors.textMuted)}>{t('app_platforms.subheading')}</p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className={twFromTokens(alignment.flexRow, 'flex-wrap', alignment.justifyCenter, alignment.gap3)}>
           {PLATFORMS.map((p) => (
             <button
               key={p.key}
               onClick={() => toggle(p.key)}
               className={twFromTokens(
-                'px-4 py-2 rounded-full border transition-colors',
+                spacing.pillBtn,
                 visible[p.key]
                   ? twFromTokens(colors.primaryBg, colors.ctaText, 'border-blue-600')
-                  : twFromTokens(colors.surface, colors.textSecondary, 'hover:bg-gray-50')
+                  : twFromTokens(colors.surface, colors.textSecondary, hoverBgFromColor(colors.surface))
               )}
             >
               <span className={twFromTokens('inline-flex items-center')}>
@@ -168,7 +169,7 @@ export default function AppPlatforms({ hideOnPlatform }: { hideOnPlatform?: Part
         </div>
 
         <div className="w-full flex flex-wrap items-center justify-center gap-8">
-          <Button onClick={handleDownload} disabled={downloading} className={twFromTokens('px-6 flex-shrink-0 whitespace-nowrap', 'bg-green-600 hover:bg-green-700', colors.ctaText)} icon={<DownloadCloud className={twFromTokens('h-5 w-5', colors.ctaText)} />}>
+          <Button onClick={handleDownload} disabled={downloading} className={twFromTokens('px-6 flex-shrink-0 whitespace-nowrap', colors.successBgStrong, hoverBgFromColor(colors.successBgStrong), colors.ctaText)} icon={<DownloadCloud className={twFromTokens(spacing.iconsMd, colors.ctaText)} />}>
             {downloading ? t('app_platforms.downloading') : t('app_platforms.download_app')}
           </Button>
 

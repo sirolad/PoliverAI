@@ -12,7 +12,7 @@ import type { Transaction } from '@/services/transactions'
 import type { TransactionStatus, StatusFilter } from '@/types/transaction'
 import { Filter } from 'lucide-react'
 import { t } from '@/i18n'
-import { twFromTokens, textSizes, fontWeights, colors } from '@/styles/styleTokens'
+import { twFromTokens, textSizes, fontWeights, colors, spacing, alignment } from '@/styles/styleTokens'
 import { Button } from '@/components/ui/Button'
 import TransactionList from '@/components/TransactionList'
 import TransactionFilters from '@/components/TransactionFilters'
@@ -149,20 +149,20 @@ export default function Credits() {
     })
   }, [items, search, dateFrom, dateTo, statusFilter])
 
-  if (loading) return (<div className="min-h-screen flex items-center justify-center">
+  if (loading) return (<div className={twFromTokens(spacing.fullScreenCenter)}>
           <LoadingSpinner message={t('credits.loading')} size="lg" />
         </div>)
   if (!isAuthenticated) return <Navigate to="/login" replace />
 
   return (
-    <div className="p-8 flex flex-col flex-1 min-h-0">
-      <div className="flex items-center justify-between mb-4">
+    <div className={twFromTokens(spacing.pagePadding, 'flex flex-col flex-1 min-h-0')}>
+      <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween, spacing.headingMargin)}>
         <h1 className={twFromTokens(textSizes.h1, fontWeights.bold)}>{t('credits.transaction_history_title')}</h1>
 
-        <div className="flex items-center gap-3">
+        <div className={twFromTokens(alignment.flexRow, alignment.gap3)}>
           {/* Show filters toggle on mobile */}
           {isMobile && (
-            <Button size="sm" variant="outline" icon={<Filter className="h-4 w-4" />} onClick={() => setFiltersOpen((s) => !s)} collapseToIcon>
+            <Button size="sm" variant="outline" icon={<Filter className={twFromTokens(spacing.iconsXs)} />} onClick={() => setFiltersOpen((s) => !s)} collapseToIcon>
               {filtersOpen ? t('credits.hide_filters') : t('credits.show_filters')}
             </Button>
           )}
@@ -184,7 +184,7 @@ export default function Credits() {
 
       {/* If not wide, render the full credits breakdown below the header */}
       {!isWide1276 && (
-        <div className="mb-4">
+        <div className={twFromTokens(spacing.headingMargin)}>
           <CreditsSummary
             isCompactUnderHeader={isCompactUnderHeader}
             statsLoaded={statsLoaded}

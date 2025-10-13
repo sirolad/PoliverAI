@@ -3,7 +3,7 @@ import { Clock, CreditCard, Grid } from 'lucide-react'
 import useHeroActions from '@/hooks/useHeroActions'
 import { t } from '@/i18n'
 import useAuth from '@/contexts/useAuth'
-import { twFromTokens, textSizes, colors } from '@/styles/styleTokens'
+import { twFromTokens, textSizes, colors, spacing, hoverBgFromColor } from '@/styles/styleTokens'
 
 export default function HeroCTAs() {
   const { isAuthenticated } = useAuth()
@@ -15,7 +15,7 @@ export default function HeroCTAs() {
         <Button
           onClick={onStartFree}
           size="lg"
-          className={twFromTokens(textSizes.sm, colors.primaryBg)}
+          className={twFromTokens(spacing.buttonSmall, textSizes.sm, colors.primaryBg, hoverBgFromColor(colors.primaryBg))}
           icon={<Clock className={twFromTokens('h-5 w-5', textSizes.sm)} />}
           collapseToIcon
         >
@@ -25,6 +25,7 @@ export default function HeroCTAs() {
           size="lg"
           variant="outline"
           onClick={onUpgrade}
+          className={twFromTokens(spacing.buttonSmall, textSizes.sm)}
           icon={<CreditCard className={twFromTokens('h-5 w-5', textSizes.sm)} />}
           collapseToIcon
         >
@@ -37,7 +38,7 @@ export default function HeroCTAs() {
   return (
     <Button
       size="lg"
-      className={twFromTokens(textSizes.sm, colors.primaryBg)}
+      className={twFromTokens(spacing.buttonSmall, textSizes.sm, colors.primaryBg, hoverBgFromColor(colors.primaryBg))}
       icon={<Grid className={twFromTokens('h-5 w-5', textSizes.sm)} />}
       onClick={onGoDashboard}
     >

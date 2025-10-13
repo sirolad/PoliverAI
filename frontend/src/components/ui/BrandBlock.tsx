@@ -1,5 +1,6 @@
 import { getCurrentYear } from '@/lib/uiHelpers'
 import { t } from '@/i18n'
+import { twFromTokens, alignment, spacing, textSizes, colors } from '@/styles/styleTokens'
 
 type Props = {
   hasBackground?: boolean
@@ -10,25 +11,27 @@ type Props = {
 }
 
 export default function BrandBlock({ hasBackground = true, subtitleClass = '', showPartnershipText = true, showAndelaLogo = true, showCopyrightText = true }: Props) {
+  const wrapperClass = hasBackground ? twFromTokens(colors.surface, spacing.cardDefault, 'rounded-lg', 'shadow-sm') : twFromTokens(spacing.cardDefault)
+
   return (
-    <div className="flex flex-col items-center text-center gap-2 mt-4">
+    <div className={twFromTokens(alignment.flexCol, alignment.itemsCenter, 'text-center', spacing.smallTop)}>
       {showCopyrightText ? (
-        <div className={`text-sm ${subtitleClass} mt-2`}>
+        <div className={twFromTokens(textSizes.sm, subtitleClass, spacing.tinyTop)}>
           {t('brand_block.copyright', { year: getCurrentYear() })}
         </div>
       ) : null}
 
       {showPartnershipText ? (
-        <div className={`text-sm ${subtitleClass} mt-2`}>
+        <div className={twFromTokens(textSizes.sm, subtitleClass, spacing.tinyTop)}>
           {t('brand_block.partnership')}
         </div>
       ) : null}
 
-      <div className={hasBackground ? 'bg-white p-3 rounded-lg shadow-sm' : 'p-3'}>
-        <div className="flex items-center gap-3">
-          <img src="/poliverai-logo.png" className="h-12 w-auto" />
+      <div className={wrapperClass}>
+        <div className={twFromTokens(alignment.flexRow, alignment.gap3)}>
+          <img src="/poliverai-logo.png" className={twFromTokens(spacing.iconsLg, 'w-auto')} />
           {showAndelaLogo ? (
-            <img src="/andela-logo-transparent.png" alt={t('brand_block.andela_alt')} className="h-10 w-auto" />
+            <img src="/andela-logo-transparent.png" alt={t('brand_block.andela_alt')} className={twFromTokens(spacing.iconsMdLarge, 'w-auto')} />
           ) : null}
         </div>
       </div>

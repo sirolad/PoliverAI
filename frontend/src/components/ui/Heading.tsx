@@ -1,5 +1,5 @@
 import React from 'react'
-import { twFromTokens, fontPresets, colors } from '@/styles/styleTokens'
+import { twFromTokens, fontPresets, colors, spacing } from '@/styles/styleTokens'
 
 type PresetKey = keyof typeof fontPresets
 type ColorKey = keyof typeof colors
@@ -16,8 +16,10 @@ export default function Heading({ as = 'h1', preset = 'heading', color, classNam
   const colorToken = color && (color as string) in colors ? (colors as Record<string, { tw?: string }>)[color as string] : color
 
   const Component = as as React.ElementType
+  // Default headings get the shared `headingMargin` spacing unless overridden
+  const spacingClass = className && className.length > 0 ? className : spacing.headingMargin.tw
   return (
-    <Component className={twFromTokens(presetObj.size, presetObj.weight, colorToken as string | { tw?: string } | undefined, className || '')} {...rest}>
+    <Component className={twFromTokens(presetObj.size, presetObj.weight, colorToken as string | { tw?: string } | undefined, spacingClass)} {...rest}>
       {children}
     </Component>
   )

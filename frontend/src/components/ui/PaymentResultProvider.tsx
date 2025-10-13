@@ -4,7 +4,7 @@ import { t } from '@/i18n'
 import MetaLine from './MetaLine'
 import { getPaymentStatusClasses, renderPaymentStatusIcon } from '@/lib/paymentHelpers'
 import type { PaymentStatus } from '@/lib/paymentHelpers'
-import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, fontWeights, spacing, alignment } from '@/styles/styleTokens'
 
 type State = {
   open: boolean
@@ -32,10 +32,10 @@ export function PaymentResultProvider({ children }: { children: React.ReactNode 
     <PaymentResultContext.Provider value={{ show }}>
       {children}
       {state.open && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-6 pointer-events-none">
-          <div className="w-full max-w-md pointer-events-auto">
+        <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, 'pointer-events-none')}>
+          <div className={twFromTokens(spacing.modalMaxXl, 'pointer-events-auto')}> 
             <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
-              <div className={twFromTokens('p-4 flex items-center gap-3', getPaymentStatusClasses(state.status).border)}>
+              <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.itemsCenter, 'gap-3', getPaymentStatusClasses(state.status).border)}>
                 <div className={getPaymentStatusClasses(state.status).iconWrap}>
                   {renderPaymentStatusIcon(state.status)}
                 </div>
@@ -44,7 +44,7 @@ export function PaymentResultProvider({ children }: { children: React.ReactNode 
                     <MetaLine>{state.message}</MetaLine>
                 </div>
               </div>
-              <div className="p-4 flex justify-end gap-2">
+              <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.justifyEnd, 'gap-2')}>
                 <Button variant="ghost" onClick={() => setState((s) => ({ ...s, open: false }))}>
                   {t('payment_result.close')}
                 </Button>

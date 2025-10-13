@@ -1,5 +1,5 @@
 import React from 'react'
-import { twFromTokens, colors } from '@/styles/styleTokens'
+import { twFromTokens, colors, spacing } from '@/styles/styleTokens'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 type SplashProps = {
@@ -99,7 +99,7 @@ export default function Splash({
   }, [onFinish])
 
   return (
-    <div className={twFromTokens('fixed inset-0 z-50 flex items-center justify-center', colors.surfaceOverlay, 'backdrop-blur-sm')} style={{ zIndex: 99999 }}>
+    <div className={twFromTokens('fixed inset-0', spacing.fullScreenCenter, colors.surfaceOverlay, 'backdrop-blur-sm')} style={{ zIndex: 99999 }}>
         <DotLottieReact
           src="https://lottie.host/60d101b5-d7e9-4e51-8c0c-2624f51e642a/sGDt58V29f.lottie"
           autoplay

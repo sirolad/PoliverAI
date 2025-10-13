@@ -1,7 +1,7 @@
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { t } from '@/i18n'
-import { twFromTokens, textSizes, colors, fontWeights, hoverBgFromColor } from '@/styles/styleTokens'
+import { twFromTokens, textSizes, colors, fontWeights, hoverBgFromColor, spacing, alignment } from '@/styles/styleTokens'
 
 type Member = {
   id: number
@@ -29,11 +29,11 @@ const MEMBERS: Member[] = [
 
 function Avatar({ img, name }: { img?: string | null; name: string }) {
   if (img) {
-    return <img src={img} alt={name} className="w-28 h-28 rounded-full object-cover" />
+    return <img src={img} alt={name} className={twFromTokens('rounded-full object-cover', spacing.emptyOuterMd)} />
   }
   // simple placeholder stacked circles (larger)
   return (
-    <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-xl font-semibold text-gray-700">
+    <div className={twFromTokens('rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-xl font-semibold text-gray-700', spacing.emptyOuterMd)}>
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="8" r="3.6" stroke="#4B5563" strokeWidth="1.2" fill="#F3F4F6" />
         <path d="M4 20c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6" stroke="#4B5563" strokeWidth="1.2" fill="#F3F4F6" />
@@ -83,33 +83,33 @@ export default function TeamCarousel() {
   const slice = MEMBERS.slice(start, start + perView)
 
   return (
-    <div className={twFromTokens('container mx-auto px-4', 'py-12')}>
+    <div className={twFromTokens(spacing.sectionContainer, spacing.sectionPaddingY)}>
       {/* Header: centered title + subtitle */}
-      <div className="text-center mb-6">
-  <h3 className={twFromTokens(fontWeights.bold, 'mb-4', textSizes.h2, colors.textPrimary)}>{t('team_carousel.title')}</h3>
+      <div className={twFromTokens('text-center', spacing.headingLarge)}>
+        <h3 className={twFromTokens(fontWeights.bold, spacing.headingMargin, textSizes.h2, colors.textPrimary)}>{t('team_carousel.title')}</h3>
         <p className={twFromTokens(textSizes.lead, colors.textMuted)}>{t('team_carousel.subtitle')}</p>
       </div>
 
       <div className="relative">
         {/* Left nav button - positioned at the left edge */}
         <button aria-label={t('team_carousel.aria_prev')} onClick={prev} className={twFromTokens('absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow', colors.surface, hoverBgFromColor(colors.surfaceMuted))}>
-          <ChevronLeft className={twFromTokens('h-6 w-6', colors.textSecondary)} />
+          <ChevronLeft className={twFromTokens(spacing.iconsMd, colors.textSecondary)} />
         </button>
 
         {/* Right nav button - positioned at the right edge */}
         <button aria-label={t('team_carousel.aria_next')} onClick={next} className={twFromTokens('absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow', colors.surface, hoverBgFromColor(colors.surfaceMuted))}>
-          <ChevronRight className={twFromTokens('h-6 w-6', colors.textSecondary)} />
+          <ChevronRight className={twFromTokens(spacing.iconsMd, colors.textSecondary)} />
         </button>
 
-        <div className="p-6 mx-8">
-          <div className="grid grid-cols-1 gap-6" style={{ gridTemplateColumns: `repeat(${perView}, minmax(0, 1fr))` }}>
+        <div className={twFromTokens(spacing.cardLg, 'mx-8')}>
+          <div className={twFromTokens('grid grid-cols-1', spacing.gridGapLarge)} style={{ gridTemplateColumns: `repeat(${perView}, minmax(0, 1fr))` }}>
             {slice.map((m) => (
-              <div key={m.id} className={twFromTokens('flex flex-col items-center text-center p-10 rounded-xl shadow-md hover:shadow-lg transition-shadow transform-gpu', colors.surface)}>
+              <div key={m.id} className={twFromTokens(alignment.flexCol, alignment.itemsCenter, 'text-center', spacing.cardLg, 'rounded-xl shadow-md hover:shadow-lg transition-shadow transform-gpu', colors.surface)}>
                 <Avatar img={m.img} name={m.name} />
-                <div className="mt-4">
+                <div className={twFromTokens(spacing.smallTop)}>
                   <div className={twFromTokens(fontWeights.semibold, textSizes.lg, colors.textPrimary)}>{m.name}</div>
                   <div className={twFromTokens(textSizes.sm, colors.textMutedLight)}>{m.title}</div>
-                  <p className={twFromTokens('mt-3 italic', textSizes.sm, colors.textMuted)}>{`“${m.quote}”`}</p>
+                  <p className={twFromTokens(spacing.mt3, 'italic', textSizes.sm, colors.textMuted)}>{`“${m.quote}”`}</p>
                 </div>
               </div>
             ))}

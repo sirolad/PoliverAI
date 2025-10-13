@@ -2,6 +2,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { determineIconColorClass, composeButtonClass } from '@/lib/ui/buttonHelpers'
+import { twFromTokens, buttons } from '@/styles/styleTokens'
 import "./button-collapse.css"
 import IconSpan from './IconSpan'
 
@@ -21,11 +22,11 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
+          default: twFromTokens(buttons.base, 'h-10'),
+          sm: twFromTokens(buttons.small, 'h-9'),
+          lg: twFromTokens(buttons.base, 'h-11', 'px-8'),
+          icon: twFromTokens('h-10 w-10'),
+        },
     },
     defaultVariants: {
       variant: "default",

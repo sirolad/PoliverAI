@@ -2,7 +2,7 @@ import { Button } from './Button'
 import { t } from '@/i18n'
 import MetaLine from './MetaLine'
 import { getPaymentStatusClasses, renderPaymentStatusIcon } from '@/lib/paymentHelpers'
-import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, fontWeights, spacing, alignment } from '@/styles/styleTokens'
 
 export default function PaymentResultModal({
   open,
@@ -19,10 +19,10 @@ export default function PaymentResultModal({
 }) {
   if (!open) return null
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-6 pointer-events-none">
-      <div className="w-full max-w-md pointer-events-auto">
+    <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, 'pointer-events-none')}>
+      <div className={twFromTokens(spacing.modalMaxXl, 'pointer-events-auto')}>
         <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
-          <div className={twFromTokens('p-4 flex items-center gap-3', getPaymentStatusClasses(success ? 'success' : 'error').border)}>
+          <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.itemsCenter, 'gap-3', getPaymentStatusClasses(success ? 'success' : 'error').border)}>
             <div className={getPaymentStatusClasses(success ? 'success' : 'error').iconWrap}>
               {renderPaymentStatusIcon(success ? 'success' : 'error')}
             </div>
@@ -31,7 +31,7 @@ export default function PaymentResultModal({
               <MetaLine>{message}</MetaLine>
             </div>
           </div>
-          <div className="p-4 flex justify-end gap-2">
+          <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.justifyEnd, 'gap-2')}>
             <Button variant="ghost" onClick={onClose}>
               {t('payment_result_modal.close')}
             </Button>

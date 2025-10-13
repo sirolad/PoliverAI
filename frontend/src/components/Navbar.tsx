@@ -10,7 +10,7 @@ import { store } from '@/store/store'
 import { setPendingCheckout } from '@/store/paymentsSlice'
 import PaymentsService from '@/services/payments'
 import { CreditCard } from 'lucide-react'
-import { twFromTokens, colors } from '@/styles/styleTokens'
+import { twFromTokens, colors, spacing, alignment } from '@/styles/styleTokens'
 import { buildPendingCheckoutFromResponse } from '@/lib/paymentsHelpers'
 import { useState } from 'react'
 import usePaymentResult from '@/hooks/usePaymentResult'
@@ -93,14 +93,14 @@ export function Navbar() {
           }
         }}
       />
-      <nav className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <nav className={twFromTokens(spacing.navbarBg)}>
+        <div className={twFromTokens(spacing.navbarContainer, alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
           {/* Logo */}
           <NavBrand />
 
           {/* Navigation Links */}
           {/* Desktop links: hidden when collapsed mobile menu is active */}
-          <div className={`${isMobile ? 'hidden' : 'hidden md:flex'} items-center gap-6`}>
+          <div className={twFromTokens(isMobile ? 'hidden' : 'hidden md:flex', alignment.itemsCenter, 'gap-6')}>
             {isAuthenticated && (
               <>
                 <NavLinks isPro={isPro} reportsCount={reportsCount} />

@@ -1,4 +1,5 @@
 import React from 'react'
+import { twFromTokens, colors, spacing } from '@/styles/styleTokens'
 // ...existing code...
 // ...existing code...
 import useAuth from '@/contexts/useAuth'
@@ -24,12 +25,12 @@ export default function LandingPage() {
   
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className={twFromTokens('min-h-screen', colors.pageGradient)}>
       <ConditionalSplash show={showSplash} onFinish={() => setShowSplash(false)} delayMs={200} durationMs={5000} />
       <HeroSection />
 
       {/* App platforms / download stats section */}
-      <div className="container mx-auto px-4">
+      <div className={twFromTokens(spacing.sectionContainer)}>
         <AppPlatforms />
       </div>
 

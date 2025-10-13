@@ -11,6 +11,7 @@ import type { ReportMetadata } from '@/types/api'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { pushEvent, addToLegacy, computeDeletedCountsForRange } from '@/store/deletedReportsSlice'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { twFromTokens, spacing, colors } from '@/styles/styleTokens'
 import QuickActions from '@/components/dashboard/QuickActions'
 import AvailableFeatures from '@/components/dashboard/AvailableFeatures'
 import GettingStarted from '@/components/dashboard/GettingStarted'
@@ -190,12 +191,12 @@ export default function Dashboard(): React.ReactElement {
     return () => { window.removeEventListener('payment:refresh-user', handler); window.removeEventListener('transactions:refresh', handler) }
   }, [refreshUser])
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner message={t('dashboard.loading')} size="lg" /></div>
+  if (loading) return <div className={twFromTokens(spacing.fullScreenCenter)}><LoadingSpinner message={t('dashboard.loading')} size="lg" /></div>
   if (!isAuthenticated) return <Navigate to="/login" replace />
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className={twFromTokens('min-h-screen', colors.pageBg)}>
+      <div className={twFromTokens(spacing.containerMaxLg, spacing.pagePadding)}>
         <DashboardHeader />
 
         <AccountStatus

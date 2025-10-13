@@ -4,7 +4,7 @@ import BrandBlock from '../ui/BrandBlock'
 import { t } from '@/i18n'
 import useRoundedStars from '@/hooks/useRoundedStars'
 import type { ComplianceResult } from '@/types/api'
-import { twFromTokens, colors, baseFontSizes, fontWeights, textSizes } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, fontWeights, textSizes, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   result: ComplianceResult | null
@@ -14,18 +14,18 @@ export default function FreeReportView({ result }: Props) {
   const { stars, percent } = useRoundedStars(result?.score)
 
   return (
-    <div data-view="free" id="report-free-view" className={twFromTokens('p-4 rounded h-full min-h-0 overflow-auto w-full', colors.surfaceMuted)}>
-      <div className="flex items-center justify-between">
+    <div data-view="free" id="report-free-view" className={twFromTokens(colors.surfaceMuted, spacing.card, 'rounded h-full min-h-0 overflow-auto w-full')}>
+      <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
         <div>
-          <div className={twFromTokens(textSizes.sm, colors.textMuted, 'flex items-center gap-2')}><CheckCircle2 className={twFromTokens('h-4 w-4', colors.success)} />{t('policy_analysis.verdict_label')}</div>
+          <div className={twFromTokens(textSizes.sm, colors.textMuted, alignment.flexRow, alignment.itemsCenter, alignment.gap2)}><CheckCircle2 className={twFromTokens(spacing.iconsXs, colors.success)} />{t('policy_analysis.verdict_label')}</div>
           <div className={twFromTokens(baseFontSizes.lg, fontWeights.semibold)}>{String(result?.verdict ?? '').replace(/_/g, ' ').replace(/\b\w/g, (c) => (c as string).toUpperCase())}</div>
-          <div className={twFromTokens(textSizes.sm, colors.textMuted, 'flex items-center gap-2')}><BarChart className={twFromTokens('h-4 w-4', colors.textMuted)} />{t('policy_analysis.confidence_label', { pct: String(Math.round(Number(result?.confidence ?? 0) * 100)) })}</div>
+          <div className={twFromTokens(textSizes.sm, colors.textMuted, alignment.flexRow, alignment.itemsCenter, alignment.gap2)}><BarChart className={twFromTokens(spacing.iconsXs, colors.textMuted)} />{t('policy_analysis.confidence_label', { pct: String(Math.round(Number(result?.confidence ?? 0) * 100)) })}</div>
         </div>
         <div>
           <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('policy_analysis.score_label')}</div>
-          <div className="flex items-center">
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter)}>
             {Array.from({ length: 5 }).map((_, idx) => (
-              <svg key={idx} className={twFromTokens('h-5 w-5', idx < stars ? colors.warning : colors.textLight)} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+              <svg key={idx} className={twFromTokens(spacing.iconsMd, idx < stars ? colors.warning : colors.textLight)} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.462a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.39-2.462a1 1 0 00-1.176 0l-3.39 2.462c-.784.57-1.84-.197-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.047 9.393c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.966z" />
               </svg>
             ))}
@@ -33,10 +33,10 @@ export default function FreeReportView({ result }: Props) {
           </div>
         </div>
       </div>
-      <div className={twFromTokens('mt-4 whitespace-pre-wrap', textSizes.sm, colors.textPrimary)}>{result?.summary}</div>
-      <div className="mt-4">
-        <h4 className={twFromTokens(fontWeights.medium, 'flex items-center gap-2')}><AlertTriangle className={twFromTokens('h-4 w-4', colors.danger)} />{t('policy_analysis.top_findings')}</h4>
-        <div className="mt-2 space-y-2">
+      <div className={twFromTokens(spacing.smallTop, textSizes.sm, colors.textPrimary)}>{result?.summary}</div>
+      <div className={twFromTokens(spacing.sectionButtonTop)}>
+        <h4 className={twFromTokens(fontWeights.medium, alignment.flexRow, alignment.itemsCenter, alignment.gap2)}><AlertTriangle className={twFromTokens(spacing.iconsXs, colors.danger)} />{t('policy_analysis.top_findings')}</h4>
+        <div className={twFromTokens(spacing.tinyTop, 'space-y-2')}>
           {result?.findings && result.findings.length > 0 ? result.findings.slice(0, 6).map((f, i) => (
             <FindingCard key={i} finding={f} />
           )) : <div className={twFromTokens(textSizes.sm, colors.textMutedLight)}>{t('policy_analysis.no_findings_detected')}</div>}

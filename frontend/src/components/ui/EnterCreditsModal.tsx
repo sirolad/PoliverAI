@@ -6,7 +6,7 @@ import { getInputClassName } from '@/lib/ui/inputHelpers'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
 import MetaLine from './MetaLine'
 import { t } from '@/i18n'
-import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, fontWeights, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   open: boolean
@@ -36,30 +36,30 @@ export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Pr
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-  <div className={getModalBackdropClass()} onClick={onClose}></div>
-  <div className={getModalContainerClass()}>
-        <div className="p-4 border-b flex items-center justify-between">
-          <div className="flex items-center gap-3">
+    <div className={twFromTokens('fixed inset-0 z-50', spacing.fullScreenCenter)}>
+      <div className={getModalBackdropClass()} onClick={onClose}></div>
+      <div className={getModalContainerClass()}>
+        <div className={twFromTokens(spacing.modalPadding, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
             {/** optional icon shown left of title */}
             {typeof icon !== 'undefined' ? <div className={twFromTokens(colors.textSecondary)}>{icon}</div> : null}
             <div className={twFromTokens(baseFontSizes.lg, fontWeights.semibold)}>{t('enter_credits_modal.title')}</div>
           </div>
           <IconButton onClick={onClose} aria-label={t('enter_credits_modal.close_aria')}><X /></IconButton>
         </div>
-        <div className="p-4">
-          <p className={twFromTokens(baseFontSizes.sm, colors.textMuted, 'mb-4')}>{t('enter_credits_modal.description')}</p>
+        <div className={twFromTokens(spacing.modalPadding)}>
+          <p className={twFromTokens(baseFontSizes.sm, colors.textMuted, spacing.smallTop)}>{t('enter_credits_modal.description')}</p>
           <MetaLine>{t('enter_credits_modal.meta')}</MetaLine>
-          <div className="flex items-center gap-2">
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
             <input
-              className={getInputClassName('border rounded px-3 py-2 w-full')}
+              className={getInputClassName(twFromTokens(spacing.input))}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               type="number"
               step="0.01"
               min="0"
             />
-            <Button onClick={handleConfirm} disabled={isProcessing} icon={<CreditCard className={twFromTokens('h-4 w-4', colors.onPrimary)} />}>
+            <Button onClick={handleConfirm} disabled={isProcessing} icon={<CreditCard className={twFromTokens(spacing.iconsXs, colors.onPrimary)} />}>
               {isProcessing ? t('enter_credits_modal.processing') : t('enter_credits_modal.buy')}
             </Button>
           </div>

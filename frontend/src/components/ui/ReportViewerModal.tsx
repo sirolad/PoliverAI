@@ -13,7 +13,7 @@ import InsufficientCreditsModal from './InsufficientCreditsModal'
 import MetaLine from './MetaLine'
 import { renderMarkdownToHtml } from '@/lib/policyAnalysisHelpers'
 import NoDataView from '@/components/ui/NoDataView'
-import { twFromTokens, colors } from '@/styles/styleTokens'
+import { twFromTokens, colors, spacing, alignment, fontWeights } from '@/styles/styleTokens'
 
 // Helper: walk a node and inline computed styles onto elements so the
 // exported HTML preserves appearance when rendered by a PDF engine.
@@ -135,17 +135,17 @@ export default function ReportViewerModal({ reportUrl, filename, title, inlineCo
       .trim()
       .replace(/\s+/g, '-')
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-6" style={{ background: 'rgba(0,0,0,0.5)' }}>
-      <div className={twFromTokens('w-full max-w-5xl rounded shadow-lg overflow-hidden', colors.surface)}>
-        <div className={twFromTokens('flex items-center justify-between px-4 py-2 border-b', colors.mutedBorder)}>
-          <div className="flex items-center gap-3 min-w-0">
+    <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart)} style={{ background: 'rgba(0,0,0,0.5)' }}>
+      <div className={twFromTokens(spacing.modalMaxXl, 'rounded shadow-lg overflow-hidden', colors.surface)}>
+        <div className={twFromTokens('flex items-center justify-between', spacing.modalPadding, colors.mutedBorder)}>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, 'gap-3', 'min-w-0')}>
             {typeof icon !== 'undefined' ? <div className={twFromTokens(colors.textSecondary, 'flex-shrink-0')}>{icon}</div> : null}
             <div className="min-w-0">
-              <div className="font-semibold truncate max-w-full">{title || filename || t('report_viewer.title_report')}</div>
+              <div className={twFromTokens(fontWeights.semibold, 'truncate max-w-full')}>{title || filename || t('report_viewer.title_report')}</div>
               <MetaLine>{t('report_viewer.meta_line')}</MetaLine>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, 'gap-2')}>
             <Button variant="outline" size="sm" icon={<DownloadCloud className="h-4 w-4" />} collapseToIcon onClick={async () => {
                 if (!filename) return
                 try {

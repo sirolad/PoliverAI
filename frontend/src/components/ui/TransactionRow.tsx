@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import Text from '@/components/ui/Text'
-import { twFromTokens, textSizes, fontWeights, colors } from '@/styles/styleTokens'
+import { twFromTokens, textSizes, fontWeights, colors, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   date?: string
@@ -17,8 +17,8 @@ export default function TransactionRow({ date, description, userEmail, sessionId
   // - second line: user email • session id
   // - third line: human readable date
   return (
-    <div className="flex-1 min-w-0 py-2">
-      <div className={twFromTokens('flex items-start justify-between gap-4', 'mb-1')}>
+    <div className={twFromTokens('flex-1 min-w-0', spacing.cardCompact)}>
+      <div className={twFromTokens(alignment.flexRow, alignment.itemsStart, alignment.justifyBetween, alignment.gap4, spacing.tinyTop)}>
           <div className={twFromTokens(textSizes.lg, colors.textSecondary, 'truncate', fontWeights.medium, 'flex-1 min-w-0')}>
           <span className={twFromTokens('truncate')}>{description || 'Transaction'}</span>
         </div>
@@ -26,22 +26,22 @@ export default function TransactionRow({ date, description, userEmail, sessionId
 
       {/* allow caller to pass fully styled label nodes; fall back to simple text if not provided */}
       {labels ? (
-        <div className={twFromTokens('mt-1 mb-2')}>{labels}</div>
+        <div className={twFromTokens(spacing.tinyTop, 'mb-2')}>{labels}</div>
       ) : (userEmail || sessionId) ? (
         <>
-          <div className={twFromTokens('mt-1')}>
+          <div className={twFromTokens(spacing.tinyTop)}>
             {userEmail ? <Text preset="caption" color="textMuted" className={twFromTokens('truncate')}>{userEmail}</Text> : null}
           </div>
-          <div className={twFromTokens('mt-1')}>
+          <div className={twFromTokens(spacing.tinyTop)}>
             {sessionId ? <Text preset="caption" color="textMuted" className={twFromTokens('truncate')}>{sessionId}</Text> : null}
           </div>
         </>
       ) : null}
 
       {dateNode ? (
-        <div className={twFromTokens('mt-1')}>{dateNode}</div>
+        <div className={twFromTokens(spacing.tinyTop)}>{dateNode}</div>
       ) : (date ? (
-          <div className={twFromTokens('mt-1')}><Text preset="small" color="textMuted">{date}</Text></div>
+          <div className={twFromTokens(spacing.tinyTop)}><Text preset="small" color="textMuted">{date}</Text></div>
       ) : null)}
     </div>
   )

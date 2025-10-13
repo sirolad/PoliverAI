@@ -1,25 +1,32 @@
 import { cn } from '@/lib/utils'
+import { twFromTokens, spacing, alignment, textSizes, fontWeights, colors } from '@/styles/styleTokens'
 
 export function getCardClassName(extra?: string) {
-  return cn('rounded-lg border bg-card text-card-foreground shadow-sm', extra)
+  // Map the previous design tokens to centralized tokens: surface bg, muted border, rounded + shadow
+  return cn(twFromTokens('rounded-lg', 'border', colors.mutedBorder, colors.surface, colors.textPrimary, 'shadow-sm'), extra)
 }
 
 export function getCardHeaderClassName(extra?: string) {
-  return cn('flex flex-col space-y-1.5 p-6', extra)
+  // Previously: flex flex-col space-y-1.5 p-6
+  return cn(twFromTokens(alignment.flexCol, alignment.gap2, spacing.modalPadding), extra)
 }
 
 export function getCardTitleClassName(extra?: string) {
-  return cn('text-2xl font-semibold leading-none tracking-tight', extra)
+  // Previously: text-2xl font-semibold leading-none tracking-tight
+  return cn(twFromTokens(textSizes.h2, fontWeights.semibold, 'leading-none', 'tracking-tight'), extra)
 }
 
 export function getCardDescriptionClassName(extra?: string) {
-  return cn('text-sm text-muted-foreground', extra)
+  // Previously: text-sm text-muted-foreground
+  return cn(twFromTokens(textSizes.sm, colors.textMuted), extra)
 }
 
 export function getCardContentClassName(extra?: string) {
-  return cn('p-6 pt-0', extra)
+  // Previously: p-6 pt-0
+  return cn(twFromTokens(spacing.modalPadding, 'pt-0'), extra)
 }
 
 export function getCardFooterClassName(extra?: string) {
-  return cn('flex items-center p-6 pt-0', extra)
+  // Previously: flex items-center p-6 pt-0
+  return cn(twFromTokens(alignment.flexRow, alignment.itemsCenter, spacing.modalPadding, 'pt-0'), extra)
 }

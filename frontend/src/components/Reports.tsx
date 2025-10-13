@@ -9,12 +9,12 @@ import ConfirmBulkDeleteModal from './ui/ConfirmBulkDeleteModal'
 import type { ReportMetadata } from '@/types/api'
 import { Filter, Trash2, Eye } from 'lucide-react'
 import { t } from '@/i18n'
-import ReportsToolbar from './reports/ReportsToolbar'
+import ReportsToolbar from './reports-ui/ReportsToolbar'
 import { classifyDeletedDetails } from '@/lib/reportHelpers'
-import { filterReports } from './reports/reportsHelpers'
-import useReports from './reports/useReports'
-import useSelection from './reports/useSelection'
-import useResponsiveFilters from './reports/useResponsiveFilters'
+import { filterReports } from './reports-ui/reportsHelpers'
+import useReports from './reports-ui/useReports'
+import useSelection from './reports-ui/useSelection'
+import useResponsiveFilters from './reports-ui/useResponsiveFilters'
 import ReportCard from '@/components/ui/ReportCard'
 import { Button } from '@/components/ui/Button'
 import ErrorText from '@/components/ui/ErrorText'
@@ -25,10 +25,10 @@ import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
 import '@/styles/responsive.css'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { pushEvent, addToLegacy } from '@/store/deletedReportsSlice'
-import Filters from './reports/Filters'
-import BulkActions from './reports/BulkActions'
+import Filters from './reports-ui/Filters'
+import BulkActions from './reports-ui/BulkActions'
 import Heading from './ui/Heading'
-import { twFromTokens, colors } from '@/styles/styleTokens'
+import { twFromTokens, colors, spacing, alignment } from '@/styles/styleTokens'
 
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
@@ -137,11 +137,11 @@ export default function Reports() {
   // selection summary for UI labels
 
   return (
-    <div className="min-h-screen p-8">
-      <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
-    <div className="flex items-center justify-between mb-4">
-  <Heading as="h1" className="mr-4">{t('reports.title')}</Heading>
-        <div className="flex items-center gap-2">
+  <div className={twFromTokens('min-h-screen', spacing.pagePadding)}>
+    <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
+    <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween, spacing.headingMargin)}>
+      <Heading as="h1" className={twFromTokens(spacing.headingOffset)}>{t('reports.title')}</Heading>
+      <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
           <Button
             size="sm"
             variant="outline"
@@ -245,7 +245,7 @@ export default function Reports() {
   <ErrorText error={error} />
 
     <div
-      className="grid gap-6 items-start"
+      className={twFromTokens('grid', spacing.gridGapLarge, alignment.itemsStart)}
       style={{ gridTemplateColumns: isMobile1276 ? '1fr' : (showFilters ? '320px 1fr' : '1fr') }}
     >
     {/* When stacking is enabled we render the filters first so they appear on top */}
@@ -284,10 +284,10 @@ export default function Reports() {
     )}
 
   {/* Right: reports list */}
-  <main className={'bg-white p-4 rounded shadow'}>
+  <main className={twFromTokens(colors.surface, spacing.card, 'rounded', 'shadow')}>
         {/* Loading state: show Analysis-style centered spinner when refreshing */}
         {isLoading ? (
-          <div className="h-[60vh] flex items-center justify-center">
+          <div className={twFromTokens('h-[60vh]', alignment.center)}>
             <LoadingSpinner message={t('loading.reports')} subtext={t('loading.reports_subtext')} size="lg" />
           </div>
         ) : null}
@@ -312,7 +312,7 @@ export default function Reports() {
             totalPages={totalPages}
           />
 
-          <div className="space-y-3 max-h-[70vh] overflow-auto">
+          <div className={twFromTokens('space-y-3', 'max-h-[70vh]', 'overflow-auto')}>
             {filtered.map((r) => (
               <ReportCard
                 key={r.filename}

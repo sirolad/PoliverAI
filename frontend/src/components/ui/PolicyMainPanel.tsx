@@ -12,7 +12,7 @@ import FullReportPrompt from '@/components/ui/FullReportPrompt'
 import RevisedPolicyPreview from '@/components/ui/RevisedPolicyPreview'
 import { t } from '@/i18n'
 import type { ComplianceResult } from '@/types/api'
-import { twFromTokens, colors, baseFontSizes } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   activeTab: 'free' | 'full' | 'revised'
@@ -50,7 +50,7 @@ export default function PolicyMainPanel({
   handleGenerateReport,
 }: Props) {
   return (
-    <main className={twFromTokens('md:col-span-2 p-4 rounded shadow flex flex-col min-h-0 overflow-hidden', colors.surface)}>
+    <main className={twFromTokens('md:col-span-2', spacing.cardDefault, alignment.flexCol, 'min-h-0 overflow-hidden', colors.surface)}>
       <PolicyHeader activeTab={activeTab} result={result} />
 
       {/* Progress bar and message shown during streaming analysis */}
@@ -70,7 +70,7 @@ export default function PolicyMainPanel({
       <div className="h-full flex-1 min-h-0 pb-20 md:pb-0">
         {activeTab === 'free' ? (
           isLoadingForTab ? (
-            <div className="h-full w-full flex items-center justify-center">
+            <div className={twFromTokens('h-full w-full', alignment.center)}>
               <LoadingSpinner message={t('policy_analysis.analyzing')} subtext={t('policy_analysis.analyzing')} size="lg" />
             </div>
           ) : result ? (
@@ -79,7 +79,7 @@ export default function PolicyMainPanel({
             <NoAnalysisView />
           )
         ) : (
-          <div data-view="full" id="report-full-view" className={twFromTokens('p-4 rounded h-full min-h-0 overflow-auto w-full', colors.surfaceMuted)}>
+            <div data-view="full" id="report-full-view" className={twFromTokens(spacing.cardDefault, 'h-full min-h-0 overflow-auto w-full', colors.surfaceMuted)}>
             {isLoadingForTab ? (
               <LoadingSpinner
                 message={t('policy_analysis.loading_report')}
@@ -91,7 +91,7 @@ export default function PolicyMainPanel({
                 fullReportSource ? (
                   <div>
                     <FullReportDashboard src={fullReportSource as Record<string, unknown>} />
-                    <div className="mt-4">
+                    <div className={twFromTokens(spacing.smallTop)}>
                       <EvidenceList evidence={(fullReportSource as Record<string, unknown>)['evidence'] as Array<Record<string, unknown>> | null} />
                     </div>
                   </div>

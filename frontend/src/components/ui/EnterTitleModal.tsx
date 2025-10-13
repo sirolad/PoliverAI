@@ -6,7 +6,7 @@ import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHel
 import { X, Save } from 'lucide-react'
 import { t } from '@/i18n'
 import Text from '@/components/ui/Text'
-import { twFromTokens, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
+import { twFromTokens, baseFontSizes, fontWeights, colors, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   open: boolean
@@ -41,13 +41,13 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className={twFromTokens('fixed inset-0 z-50', spacing.fullScreenCenter)}>
       <div className={getModalBackdropClass()} onClick={onClose}></div>
       <div className={getModalContainerClass()}>
-        <div className="p-4 border-b flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={twFromTokens('p-2 rounded-full', colors.successBg, colors.success)}>
-              <Save className={twFromTokens('h-5 w-5', colors.onPrimary)} />
+        <div className={twFromTokens(spacing.modalPadding, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, 'gap-3')}>
+            <div className={twFromTokens(spacing.iconWrapperCompact, 'rounded-full', colors.successBg, colors.success)}>
+              <Save className={twFromTokens(spacing.iconsMd, colors.onPrimary)} />
             </div>
             <div>
               <div className={twFromTokens(baseFontSizes.lg, fontWeights.semibold)}>{t('enter_title_modal.title')}</div>
@@ -56,23 +56,23 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
           </div>
           <IconButton onClick={onClose} aria-label={t('enter_title_modal.close_aria')}><X /></IconButton>
         </div>
-        <div className="p-4">
-          <Text preset="small" color="textMuted" className="mb-4">{t('enter_title_modal.description')}</Text>
-          <div className="flex items-center gap-2">
+        <div className={twFromTokens(spacing.modalPadding)}>
+          <Text preset="small" color="textMuted" className={twFromTokens(spacing.smallTop)}>{t('enter_title_modal.description')}</Text>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
             <input
-              className={getInputClassName('border rounded px-3 py-2 w-full')}
+              className={getInputClassName(twFromTokens(spacing.input))}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               type="text"
               placeholder={t('enter_title_modal.placeholder')}
             />
           </div>
-          <div className="flex items-center gap-2 mt-4 justify-end">
-            <select value={saveType} onChange={(e) => setSaveType(e.target.value as 'regular' | 'html')} className="border rounded px-2 py-2 mr-2">
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2, spacing.sectionButtonTop, alignment.justifyEnd)}>
+            <select value={saveType} onChange={(e) => setSaveType(e.target.value as 'regular' | 'html')} className={twFromTokens(spacing.input, 'mr-2')}>
               <option value="html">{t('enter_title_modal.option_html')}</option>
               <option value="regular">{t('enter_title_modal.option_regular')}</option>
             </select>
-            <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()} icon={<Save className={twFromTokens('h-4 w-4', colors.onPrimary)} />} iconColor="text-white">
+            <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()} icon={<Save className={twFromTokens(spacing.iconsXs, colors.onPrimary)} />} iconColor="text-white">
               {isProcessing ? t('enter_title_modal.saving') : t('enter_title_modal.save')}
             </Button>
           </div>

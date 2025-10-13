@@ -1,7 +1,7 @@
 // React import not required with the new JSX runtime
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Text from '@/components/ui/Text'
-import { twFromTokens, colors, fontWeights, textSizes } from '@/styles/styleTokens'
+import { twFromTokens, colors, fontWeights, textSizes, spacing, alignment } from '@/styles/styleTokens'
 import useGettingStarted from '@/hooks/useGettingStarted'
 
 export default function GettingStarted() {
@@ -15,10 +15,10 @@ export default function GettingStarted() {
       </CardHeader>
 
       <CardContent>
-        <div className="space-y-4">
+        <div className={twFromTokens(alignment.flexCol, alignment.gap4)}>
           {steps.map((s) => (
-            <div className="flex items-start gap-3" key={s.id}>
-              <div className={twFromTokens('rounded-full flex items-center justify-center mt-0.5', 'w-6 h-6', colors.primaryBgLight, colors.primary, textSizes.sm, fontWeights.bold)}>
+            <div className={twFromTokens(alignment.flexRow, alignment.itemsStart, alignment.gap3)} key={s.id}>
+              <div className={twFromTokens('rounded-full', alignment.center, spacing.iconsMd, spacing.tinyTop, colors.primaryBgLight, colors.primary, textSizes.sm, fontWeights.bold)}>
                 {s.id}
               </div>
               <div>

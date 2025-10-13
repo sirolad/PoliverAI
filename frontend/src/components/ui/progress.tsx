@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ProgressPrimitive from '@radix-ui/react-progress'
 import { cn } from '@/lib/utils'
-import { twFromTokens, colors } from '@/styles/styleTokens'
+import { twFromTokens, colors, spacing } from '@/styles/styleTokens'
 import { progressTransformStyle } from '@/lib/progressHelpers'
 
 const Progress = React.forwardRef<
@@ -11,13 +11,13 @@ const Progress = React.forwardRef<
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
-      twFromTokens('relative h-4 w-full overflow-hidden rounded-full', colors.surfaceMuted),
+      twFromTokens('relative w-full', spacing.progressBarContainer, colors.surfaceMuted),
       className
     )}
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className={twFromTokens('h-full w-full flex-1 transition-all', colors.primaryBg)}
+      className={twFromTokens(spacing.progressBarInner, 'w-full transition-all', colors.primaryBg)}
       style={progressTransformStyle(value)}
     />
   </ProgressPrimitive.Root>

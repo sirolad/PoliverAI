@@ -9,7 +9,7 @@ import SavedReportsCountDisplay from '@/components/ui/SavedReportsCountDisplay'
 import PolicyMainPanel from '@/components/ui/PolicyMainPanel'
 import usePolicyWorkspace from '@/hooks/usePolicyWorkspace'
 import type { ComplianceResult } from '@/types/api'
-import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, fontWeights, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   persisted: unknown
@@ -65,31 +65,31 @@ export default function PolicyWorkspace(props: Props) {
   const { showWorkInProgress, findingsCount } = usePolicyWorkspace({ persisted, result, userReportsCount, reportFilename })
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className={twFromTokens('flex-1', alignment.flexCol)}>
       {showWorkInProgress ? (
-        <div className={twFromTokens('mb-2 w-40 px-3 py-1 text-center rounded', colors.warningBg, colors.warning, fontWeights.medium)}>{t('policy_analysis.work_in_progress')}</div>
+        <div className={twFromTokens(spacing.blockSmall, spacing.modalPadding, 'w-40 text-center rounded', colors.warningBg, colors.warning, fontWeights.medium)}>{t('policy_analysis.work_in_progress')}</div>
       ) : null}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <aside className={twFromTokens('md:col-span-1 p-4 rounded shadow', colors.surface)}>
+      <div className={twFromTokens('grid grid-cols-1 md:grid-cols-3', spacing.gridGapLarge)}>
+        <aside className={twFromTokens('md:col-span-1', spacing.cardDefault, 'rounded shadow', colors.surface)}>
           <UploadZone file={file} setFile={setFile} fileInputRef={fileInputRef} handleFileChange={handleFileChange} />
 
           {file && (
             <SelectedFileInfo file={file} />
           )}
 
-          <div className="mt-3">
-            <Button disabled={!file} onClick={handleAnalyze} className={twFromTokens('w-full px-3 py-2 rounded', colors.primaryBg, colors.ctaText)}>{t('policy_analysis.analyze')}</Button>
+          <div className={twFromTokens(spacing.sectionBlock)}>
+            <Button disabled={!file} onClick={handleAnalyze} className={twFromTokens(spacing.fullWidth, spacing.buttonSmall, colors.primaryBg, colors.ctaText)}>{t('policy_analysis.analyze')}</Button>
           </div>
 
-          <div className="mb-4 mt-4">
-            <h3 className={twFromTokens(fontWeights.semibold, 'flex items-center gap-2')}><FileText className={twFromTokens('h-4 w-4', colors.textMuted)} />{t('policy_analysis.summary_heading')}</h3>
-            <div className={twFromTokens(baseFontSizes.sm, colors.textSecondary, 'mt-2')}>{result?.summary || t('policy_analysis.no_result_yet')}</div>
+          <div className={twFromTokens(spacing.sectionBlock)}>
+            <h3 className={twFromTokens(fontWeights.semibold, alignment.flexRow, alignment.itemsCenter, alignment.gap2)}><FileText className={twFromTokens(spacing.iconsXs, colors.textMuted)} />{t('policy_analysis.summary_heading')}</h3>
+            <div className={twFromTokens(baseFontSizes.sm, colors.textSecondary, spacing.smallTop)}>{result?.summary || t('policy_analysis.no_result_yet')}</div>
           </div>
 
-          <div className="mb-4 mt-4">
-            <h3 className={twFromTokens(fontWeights.semibold, 'flex items-center gap-2')}><AlertTriangle className={twFromTokens('h-4 w-4', colors.danger)} />{t('policy_analysis.findings_heading', { count: findingsCount })}</h3>
-            <div className={twFromTokens(baseFontSizes.sm, colors.textSecondary, 'mt-2 max-h-40 overflow-auto')}>
+          <div className={twFromTokens(spacing.sectionBlock)}>
+            <h3 className={twFromTokens(fontWeights.semibold, alignment.flexRow, alignment.itemsCenter, alignment.gap2)}><AlertTriangle className={twFromTokens(spacing.iconsXs, colors.danger)} />{t('policy_analysis.findings_heading', { count: findingsCount })}</h3>
+            <div className={twFromTokens(baseFontSizes.sm, colors.textSecondary, spacing.sectionBlock, 'max-h-40 overflow-auto')}>
               {result?.findings && result.findings.length > 0 ? (
                 <div className="space-y-2">
                   {result.findings.map((f: unknown, idx: number) => {
@@ -105,7 +105,7 @@ export default function PolicyWorkspace(props: Props) {
             </div>
           </div>
 
-          <div className="mb-4">
+          <div className={twFromTokens(spacing.sectionBlock)}>
             <h3 className={twFromTokens(fontWeights.semibold)}>{t('policy_analysis.work_in_progress')} {userReportsCount !== null ? `(` : ''}
               {userReportsCount !== null ? (
                 <SavedReportsCountDisplay count={userReportsCount} />

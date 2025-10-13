@@ -121,6 +121,11 @@ export const colors = {
   // overlays
   overlayDark: makeColor('bg-black/50', 'gray900'),
 
+  // gradients (simple, shared gradient utilities used sparingly)
+  gradientBlueGreen: makeColor('bg-gradient-to-r from-blue-400 to-green-400', 'blue500'),
+  // landing / hero vertical gradient used on the main landing page
+  pageGradient: makeColor('bg-gradient-to-b from-blue-50 to-white', 'blue100'),
+
   // utility
   mutedBorder: makeColor('border-gray-200', 'gray200'),
   // convenience alias for text placed on a primary-colored background
@@ -132,6 +137,8 @@ export const colors = {
   successBgStrong: makeColor('bg-green-600', 'green600'),
   // utility for darker muted action buttons (used sparingly)
   mutedActionBg: makeColor('bg-gray-700', 'gray700'),
+  // stronger warning background for CTA-like warning buttons
+  warningBgStrong: makeColor('bg-yellow-600', 'yellow600'),
 }
 
 export const spacing = {
@@ -148,6 +155,10 @@ export const spacing = {
   formLabel: { tw: 'block mb-1', value: null },
   // common input utility used across forms (full-width border + padding)
   input: { tw: 'w-full border px-2 py-1 rounded', value: null },
+  // small block margin (bottom) used where compact vertical spacing is needed
+  blockSmall: { tw: 'mb-2', value: 8 },
+  // container style for lists that need scrolling and vertical gaps
+  listContainer: { tw: 'flex-1 overflow-auto space-y-4', value: null },
   // full width utility as a token for consistency
   fullWidth: { tw: 'w-full', value: null },
   // inner gaps used in card layouts
@@ -159,14 +170,102 @@ export const spacing = {
   badgeMarginLeft: { tw: 'ml-2', value: 8 },
   // small top margin
   smallTop: { tw: 'mt-2', value: 8 },
-  // tiny top margin for subtle spacing
-  tinyTop: { tw: 'mt-1', value: 4 },
   // section divider height/width utilities
   dividerShort: { tw: 'w-36 h-1 rounded-full my-6', value: null },
   // container spacing (used on landing sections)
   sectionContainer: { tw: 'container mx-auto px-4 py-12', value: null },
+  // modal-specific padding used across modal components (matches p-6)
+  modalPadding: { tw: 'p-6', value: 24 },
+  // modal max width for larger modals (matches max-w-5xl)
+  modalMaxXl: { tw: 'w-full max-w-5xl', value: null },
+  // page-level padding used on larger pages
+  pagePadding: { tw: 'p-8', value: null },
   // heading bottom margin used across landing/section headings
   headingMargin: { tw: 'mb-4', value: 16 },
+  // medium icon size used across lists and feature cards
+  iconsMd: { tw: 'h-6 w-6', value: 24 },
+  // extra-small icon used for inline controls
+  iconsXs: { tw: 'h-4 w-4', value: 16 },
+  // slightly larger icon used in compact card views
+  iconsSm: { tw: 'h-8 w-8', value: 32 },
+  // medium-large icon used in standard card views
+  iconsMdLarge: { tw: 'h-10 w-10', value: 40 },
+  // compact / default icon wrapper paddings used across credit summary and small cards
+  iconWrapperCompact: { tw: 'flex-shrink-0 rounded-md flex items-center justify-center p-2', value: null },
+  iconWrapperLarge: { tw: 'flex-shrink-0 rounded-md flex items-center justify-center p-3', value: null },
+  // larger heading bottom margin used for subsection headings
+  headingLarge: { tw: 'mb-6', value: 24 },
+  // section title block spacing (centered title + margin)
+  sectionTitle: { tw: 'text-center mb-12', value: null },
+  // reusable section vertical spacing (top+bottom)
+  sectionBlock: { tw: 'my-4', value: null },
+  // large top margin used before section-level buttons
+  sectionButtonTop: { tw: 'mt-6', value: 24 },
+  // small button padding + rounded used across compact buttons
+  buttonSmall: { tw: 'px-3 py-1 rounded', value: null },
+  // compact and default card paddings
+  cardCompact: { tw: 'p-2', value: 8 },
+  cardDefault: { tw: 'p-3', value: 12 },
+  // large card padding used for feature/hero cards
+  cardLg: { tw: 'p-10', value: 40 },
+  // pill-style button used in platform toggles
+  pillBtn: { tw: 'px-4 py-2 rounded-full border transition-colors', value: null },
+  // utility for centering a full-screen area (used on auth pages)
+  fullScreenCenter: { tw: 'min-h-screen flex items-center justify-center', value: null },
+  // menu button used in mobile navs and toolbars
+  menuButton: { tw: 'p-2 rounded-md border shadow-sm focus:outline-none', value: null },
+  // menu container: positioned dropdown menus
+  menuContainer: { tw: 'absolute right-0 mt-2 w-56 rounded shadow py-1 z-[9999]', value: null },
+  // menu header padding (top area within dropdowns)
+  menuHeaderPadding: { tw: 'px-4 py-3', value: null },
+  // individual menu item padding (links / buttons inside menus)
+  menuItem: { tw: 'px-4 py-2', value: null },
+  // common centered container limits used across auth and forms
+  containerMaxMd: { tw: 'max-w-md w-full', value: null },
+  containerMaxLg: { tw: 'max-w-4xl mx-auto', value: null },
+  // larger grid gap token used on list pages and cards
+  gridGapLarge: { tw: 'gap-6', value: 24 },
+  // small heading offset (right margin) used in header rows
+  headingOffset: { tw: 'mr-4', value: 16 },
+  // tiny top margin for subtle spacing (alias kept for menus and separators)
+  tinyTop: { tw: 'mt-1', value: 4 },
+  // small/medium top margin (used where mt-3 was previously used)
+  mt3: { tw: 'mt-3', value: 12 },
+  // full-width left-aligned utility for menu buttons
+  fullWidthLeft: { tw: 'w-full text-left', value: null },
+  // nav-specific spacing for inline nav links
+  navLink: { tw: 'px-3 py-2', value: null },
+  // container spacing for nav link groups (horizontal spacing)
+  navLinksContainer: { tw: 'flex items-center gap-4', value: null },
+  // brand spacing used in the header/logo area
+  brandGap: { tw: 'flex items-center gap-2 font-bold', value: null },
+  // icon sizing tokens (used for logo and icons)
+  iconsLg: { tw: 'h-12', value: 48 },
+  // empty-state outer wrapper sizes and inner icon sizes
+  emptyOuterLg: { tw: 'w-40 h-40', value: null },
+  emptyOuterMd: { tw: 'w-24 h-24', value: null },
+  emptyIconLg: { tw: 'h-20 w-20', value: null },
+  emptyIconMd: { tw: 'h-12 w-12', value: null },
+  // navbar container (centered max-width with horizontal padding and fixed height)
+  navbarContainer: { tw: 'container mx-auto px-4 h-16', value: null },
+  // navbar background + border + backdrop blur helper
+  navbarBg: { tw: 'border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60', value: null },
+  // top margin for small components like progress bars
+  progressTop: { tw: 'mt-4', value: 16 },
+  // progress bar container utilities
+  progressBarContainer: { tw: 'h-2 w-full rounded-full overflow-hidden', value: null },
+  // inner progress bar height
+  progressBarInner: { tw: 'h-2 rounded-full', value: null },
+}
+
+// Button tokens: layout/padding/shape presets only. Compose with semantic
+// color tokens (e.g. colors.primaryBg, colors.onPrimary) using
+// `twFromTokens(buttons.base, colors.primaryBg, colors.onPrimary)` so the
+// color part remains semantic and easily swappable.
+export const buttons = {
+  base: { tw: 'px-4 py-2 rounded', value: null },
+  small: { tw: 'px-3 py-1 rounded text-sm', value: null },
+  pill: { tw: 'px-4 py-2 rounded-full', value: null },
 }
 
 // Alignment tokens: centralized flex/grid alignment utilities so components
@@ -186,6 +285,10 @@ export const alignment = {
   // common convenience presets
   center: { tw: 'flex items-center justify-center' },
   centerColumn: { tw: 'flex flex-col items-center justify-center' },
+  // simple gap helpers to centralize spacing between items
+  gap2: { tw: 'gap-2' },
+  gap3: { tw: 'gap-3' },
+  gap4: { tw: 'gap-4' },
 }
 
 // Convenience font presets that bundle size + weight (referencing the
@@ -240,6 +343,9 @@ export function hoverBgFromColor(token?: { tw?: string } | string | undefined) {
   return ''
 }
 
+// alias for clarity when consumers want an explicit hover text helper
+export const hoverTextFromColor = hoverFromColor
+
 // Helper: produce a React Native / web style object from tokens or a
 // font preset. Accepts keys that reference the exported maps above.
 export function rnStyleFromTokens(opts: {
@@ -275,4 +381,8 @@ export default {
   fontPresets,
   twFromTokens,
   rnStyleFromTokens,
+  alignment,
+  hoverFromColor,
+  hoverBgFromColor,
+  hoverTextFromColor,
 }

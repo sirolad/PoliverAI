@@ -2,7 +2,7 @@ import * as React from 'react'
 import { XCircle, CreditCard } from 'lucide-react'
 import { Button } from './Button'
 import MetaLine from './MetaLine'
-import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, fontWeights, spacing, alignment } from '@/styles/styleTokens'
 import EnterCreditsModal from './EnterCreditsModal'
 import PaymentsService from '@/services/payments'
 import { t } from '@/i18n'
@@ -33,23 +33,23 @@ export default function InsufficientCreditsModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-start justify-center p-6 pointer-events-none">
-        <div className="w-full max-w-md pointer-events-auto">
+      <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, 'pointer-events-none')}>
+        <div className={twFromTokens(spacing.containerMaxMd, 'pointer-events-auto')}>
           <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
-            <div className={twFromTokens('p-4 flex items-center gap-3 border-b', colors.dangerBg)}>
+            <div className={twFromTokens(spacing.cardDefault, alignment.flexRow, alignment.itemsCenter, alignment.gap3, 'border-b', colors.dangerBg)}>
               <div className={twFromTokens('p-2 rounded-full', colors.danger)}>
-                <XCircle className="h-6 w-6" />
+                <XCircle className={twFromTokens(spacing.iconsMd)} />
               </div>
               <div>
                 <div className={twFromTokens(fontWeights.semibold, baseFontSizes.sm)}>{title}</div>
                 <MetaLine>{message}</MetaLine>
               </div>
             </div>
-            <div className="p-4 flex justify-end gap-2">
+            <div className={twFromTokens(spacing.cardDefault, alignment.flexRow, alignment.justifyEnd, alignment.gap2)}>
               <Button variant="ghost" onClick={onClose}>
                 {t('insufficient_credits.close')}
               </Button>
-              <Button onClick={handleTopUp} icon={<CreditCard className="h-4 w-4" />}>
+              <Button onClick={handleTopUp} icon={<CreditCard className={twFromTokens(spacing.iconsXs)} />}>
                 {t('insufficient_credits.top_up')}
               </Button>
             </div>

@@ -4,7 +4,7 @@ import TransactionCard from '@/components/ui/TransactionCard'
 import MetaLine from '@/components/ui/MetaLine'
 import TransactionStatusChecker from '@/components/TransactionStatusChecker'
 import { t } from '@/i18n'
-import { textSizes, fontWeights, colors, twFromTokens, spacing, alignment } from '@/styles/styleTokens'
+import { textSizes, baseFontSizes, fontWeights, colors, twFromTokens, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   tx: Transaction
@@ -19,13 +19,13 @@ export default function TransactionListItem({ tx, st, fetchTx, refreshUser }: Pr
   function statusBadge(status: TransactionStatus) {
     switch (status) {
       case 'pending':
-        return <span className={twFromTokens('inline-block', 'text-xs', spacing.badgePadding, 'rounded-full', colors.warningBg, colors.warning)}>{t('credits.status_pending')}</span>
+        return <span className={twFromTokens('inline-block', baseFontSizes.xs, spacing.badgePadding, 'rounded-full', colors.warningBg, colors.warning)}>{t('credits.status_pending')}</span>
       case 'success':
-        return <span className={twFromTokens('inline-block', 'text-xs', spacing.badgePadding, 'rounded-full', colors.successBg, colors.success)}>{t('credits.status_success')}</span>
+        return <span className={twFromTokens('inline-block', baseFontSizes.xs, spacing.badgePadding, 'rounded-full', colors.successBg, colors.success)}>{t('credits.status_success')}</span>
       case 'failed':
-        return <span className={twFromTokens('inline-block', 'text-xs', spacing.badgePadding, 'rounded-full', colors.dangerBg, colors.danger)}>{t('credits.status_failed')}</span>
+        return <span className={twFromTokens('inline-block', baseFontSizes.xs, spacing.badgePadding, 'rounded-full', colors.dangerBg, colors.danger)}>{t('credits.status_failed')}</span>
       default:
-        return <span className={twFromTokens('inline-block', 'text-xs', spacing.badgePadding, 'rounded-full', colors.dangerBg, colors.danger)}>{status}</span>
+        return <span className={twFromTokens('inline-block', baseFontSizes.xs, spacing.badgePadding, 'rounded-full', colors.dangerBg, colors.danger)}>{status}</span>
     }
   }
 
@@ -45,7 +45,7 @@ export default function TransactionListItem({ tx, st, fetchTx, refreshUser }: Pr
     const label = map[failure_code] || failure_code
     return (
       <div className={twFromTokens(spacing.smallTop)}>
-        <span className={twFromTokens('inline-block', 'text-xs', spacing.badgePadding, 'rounded-full', colors.dangerBg, colors.danger)}>{label}</span>
+        <span className={twFromTokens('inline-block', baseFontSizes.xs, spacing.badgePadding, 'rounded-full', colors.dangerBg, colors.danger)}>{label}</span>
         <MetaLine>{failure_message}</MetaLine>
       </div>
     )
@@ -92,7 +92,7 @@ export default function TransactionListItem({ tx, st, fetchTx, refreshUser }: Pr
               description={formatDescription(tx, st)}
               date={tx.timestamp ? new Date(tx.timestamp).toLocaleString() : undefined}
               labels={(
-                <div className={twFromTokens(textSizes.sm, 'inline-flex', 'leading-4', 'align-middle', labelColorToken)}>
+                <div className={twFromTokens(textSizes.sm, alignment.flexRow, alignment.itemsCenter, 'leading-4', 'align-middle', labelColorToken)}>
                   {tx.user_email ? (
                     <span className={twFromTokens(spacing.badgePadding, 'border', tx.failure_code ? twFromTokens(colors.dangerBg, colors.danger) : st === 'insufficient_funds' ? twFromTokens(colors.warningBg, colors.warning) : twFromTokens(colors.surface, colors.textSecondary), 'rounded-l-sm', 'truncate', 'max-w-xs')}>
                       {tx.user_email}
@@ -108,7 +108,7 @@ export default function TransactionListItem({ tx, st, fetchTx, refreshUser }: Pr
           </div>
         </div>
 
-        <div className={twFromTokens('w-full', alignment.flexRow, alignment.itemsCenter, 'justify-end', 'text-right', 'sm:flex-col', 'sm:items-end', 'sm:justify-start', spacing.controlsGap)}>
+        <div className={twFromTokens(spacing.fullWidth, alignment.flexRow, alignment.itemsCenter, 'justify-end', 'text-right', 'sm:flex-col', 'sm:items-end', 'sm:justify-start', spacing.controlsGap)}>
           {badge ? <div className={twFromTokens('flex-shrink-0', spacing.badgeMarginLeft)}>{badge}</div> : null}
           <div className={twFromTokens(fontWeights.semibold, textSizes.md)}>{tx.credits ?? 0} credits</div>
           <div className={twFromTokens(textSizes.md)}>

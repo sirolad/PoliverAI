@@ -7,9 +7,10 @@ import EnterInstructionsModal from './ui/EnterInstructionsModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
 import { RefreshCcw, Save, FileCheck, Bot } from 'lucide-react'
-import { twFromTokens, textSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, textSizes, fontWeights, colors, alignment } from '@/styles/styleTokens'
 import { htmlNodeToHtmlAndCss } from '@/lib/policyAnalysisHelpers'
 import { Button } from '@/components/ui/Button'
+import { buttons } from '@/styles/styleTokens'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
 // moved into PolicyMainPanel
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -30,7 +31,6 @@ import type { RootState } from '@/store/store'
 
 export default function PolicyAnalysis() {
   const { isAuthenticated, loading, refreshUser } = useAuth()
-  const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState<number>(0)
   const [message, setMessage] = useState<string>('')
   const [result, setResult] = useState<ComplianceResult | null>(null)
@@ -40,8 +40,8 @@ export default function PolicyAnalysis() {
   const [userReportsCount, setUserReportsCount] = useState<number | null>(null)
   // progress bar visibility is derived from `progress` value
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-
-  // tabs
+  const [file, setFile] = useState<File | null>(null)
+  const [instructionsInitial, setInstructionsInitial] = useState<string>('')
   const [activeTab, setActiveTab] = useState<'free' | 'full' | 'revised'>('free')
   const [detailedContent, setDetailedContent] = useState<string | null>(null)
   const [detailedReport, setDetailedReport] = useState<ReportDetail | null>(null)
@@ -50,7 +50,6 @@ export default function PolicyAnalysis() {
   // Separate loading state for revised reports so the "full report" loader
   // does not show when a revised policy is being generated/loaded.
   const [loadingRevised, setLoadingRevised] = useState<boolean>(false)
-
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [titleModalInitial, setTitleModalInitial] = useState<string>('')
   const [viewerOpen, setViewerOpen] = useState<boolean>(false)
@@ -60,7 +59,6 @@ export default function PolicyAnalysis() {
   const [viewerIsQuick ] = useState<boolean | undefined>(undefined)
   const [insufficientOpen, setInsufficientOpen] = useState(false)
   const [instructionsModalOpen, setInstructionsModalOpen] = useState(false)
-  const [instructionsInitial] = useState<string>('')
 
   const saveProgressIntervalRef = useRef<number | null>(null)
   const analysisFinishedRef = useRef<boolean>(false)
@@ -118,28 +116,6 @@ export default function PolicyAnalysis() {
   }, [file, progress, message, result, reportFilename, revisedReportFilename, isFullReportGenerated, detailedContent, detailedReport, revisedPolicy, activeTab, loadingDetailed, loadingRevised, dispatch])
 
   useEffect(() => {
-    if (progress >= 100) {
-      const t = setTimeout(() => {/* progress settled */}, 800)
-      return () => clearTimeout(t)
-    }
-    return undefined
-  }, [progress])
-
-  useEffect(() => {
-    if (!isAuthenticated) return
-    let mounted = true
-    policyService
-      .getUserReportsCount()
-      .then((n) => {
-        if (mounted) setUserReportsCount(n ?? 0)
-      })
-      .catch((err) => console.debug('getUserReportsCount failed', err))
-    return () => {
-      mounted = false
-    }
-  }, [isAuthenticated])
-
-  useEffect(() => {
     const handler = (e: Event) => {
       try {
         const detail = (e as CustomEvent).detail || {}
@@ -152,7 +128,7 @@ export default function PolicyAnalysis() {
         }
       } catch (err) {
         console.warn('report:generated handler error', err)
-  }
+      }
       // Mark that a full report has been generated (persisted or inline)
       // This enables the Revised Policy button to appear so the user can
       // request a revision. Note: we do NOT auto-save the full report here;
@@ -218,7 +194,7 @@ export default function PolicyAnalysis() {
     : (progress > 0 && progress < 100)
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className={twFromTokens('min-h-screen', alignment.center)}>
       <LoadingSpinner message={t('loading.short')} size="lg" />
     </div>
   )
@@ -248,6 +224,35 @@ export default function PolicyAnalysis() {
         window.clearInterval(saveProgressIntervalRef.current)
         saveProgressIntervalRef.current = null
       }
+    }
+  }
+
+  // Load detailed report (full or revised). Hoisted so handlers can call it.
+  async function loadDetailed(filename?: string | null, mode: 'full' | 'revised' = 'full') {
+    const fn = filename ?? (mode === 'revised' ? revisedReportFilename ?? null : reportFilename ?? null)
+    if (!fn) return
+    if (mode === 'full') setLoadingDetailed(true)
+    else setLoadingRevised(true)
+    try {
+      const resp = await policyService.getDetailedReport(fn)
+      if (mode === 'full') {
+        setDetailedReport(resp)
+      } else {
+        setRevisedPolicy(resp as unknown as ReportDetail)
+        // some reports include inline content
+        try { setDetailedContent(String((resp as unknown as Record<string, unknown>)?.content ?? null) as string | null) } catch { /* ignore */ }
+      }
+      setMessage(t('policy_analysis.loaded'))
+      setProgress(100)
+    } catch (err) {
+      console.warn('getDetailedReport failed', err)
+      if (mode === 'revised') setRevisedPolicy(null)
+      else setDetailedReport(null)
+      setMessage(t('policy_analysis.failed_to_load_report'))
+      setProgress(0)
+    } finally {
+      if (mode === 'full') setLoadingDetailed(false)
+      else setLoadingRevised(false)
     }
   }
 
@@ -382,8 +387,8 @@ export default function PolicyAnalysis() {
         (result.recommendations || []) as unknown as Record<string, unknown>[],
         (result.evidence || []) as unknown as Record<string, unknown>[],
         file?.name ?? (persisted?.fileName as string | undefined) ?? 'policy',
-        'comprehensive'
-        , instructions
+        'comprehensive',
+        instructions
       )
       if (resp?.filename) {
         setRevisedReportFilename(resp.filename)
@@ -407,40 +412,8 @@ export default function PolicyAnalysis() {
       } catch (err) { console.debug('inspect revision error failed', err) }
       setMessage(e instanceof Error ? e.message : t('policy_analysis.revision_failed'))
     } finally {
-      stop()
+      try { if (typeof stop === 'function') stop() } catch (err) { console.debug('stop() failed', err) }
       setTimeout(() => {/* progress settled */}, 700)
-    }
-  }
-
-  const loadDetailed = async (filename?: string, mode: 'full' | 'revised' = 'full') => {
-    console.log('loadDetailed()', { filename, mode })
-    // For 'full' mode filename is optional (we may render from streaming `result`).
-    // For 'revised' mode we need a saved filename (revisedReportFilename or reportFilename).
-    const fn = filename ?? (mode === 'revised' ? (revisedReportFilename ?? reportFilename) : reportFilename)
-    if (mode === 'revised' && !fn) return
-    if (mode === 'full') setLoadingDetailed(true)
-    else setLoadingRevised(true)
-    try {
-      if(!fn) throw new Error(t('policy_analysis.failed_to_load_report'))
-      const resp = await policyService.getDetailedReport(fn)
-      if(mode === 'revised') setRevisedPolicy(resp ?? null)
-      else if(mode === 'full') setDetailedReport(resp ?? null)
-      if(mode === 'revised') setDetailedContent(resp?.content ?? null)
-      // When detailed content is available, ensure the progress UI reflects completion
-      setMessage(t('policy_analysis.loaded'))
-      setMessage(t('policy_analysis.loaded'))
-      setProgress(100)
-    } catch (e) {
-      console.warn('getDetailedReport failed', e)
-      if(mode === 'revised') setRevisedPolicy(null)
-      else if(mode === 'full') setDetailedReport(null)
-      // on failure, reset progress/message so UI doesn't hang at an in-between state
-      setMessage(t('policy_analysis.failed_to_load_report'))
-      setMessage(t('policy_analysis.failed_to_load_report'))
-      setProgress(0)
-    } finally {
-      if (mode === 'full') setLoadingDetailed(false)
-      else setLoadingRevised(false)
     }
   }
 
@@ -558,8 +531,8 @@ export default function PolicyAnalysis() {
   // header handled by usePolicyHeader/PolicyHeader component
 
   return (
-    <div className="p-8 flex flex-col min-h-screen">
-      <div className="flex items-center justify-between mb-6">
+    <div className={twFromTokens('p-8', alignment.flexCol, 'min-h-screen')}>
+      <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween, 'mb-6')}>
         {/* Use Heading primitive so size/weight/colors come from centralized tokens */}
         <div>
           {/* avoid importing here to keep top-level file edits small; render inline */}
@@ -567,25 +540,46 @@ export default function PolicyAnalysis() {
         </div>
 
         {(result || reportFilename) ? (
-          <div className="flex items-center gap-2">
+          <div className={twFromTokens(alignment.itemsCenter, 'gap-2')}>
             {/* Download button removed per UX update */}
 
                 <Button
                   onClick={handleResetAll}
-                  className="px-3 py-1 bg-red-600 text-white rounded disabled:opacity-50"
-                  icon={<RefreshCcw className="h-4 w-4" />}
+                  className={twFromTokens(buttons.small, 'disabled:opacity-50', 'bg-red-600', colors.ctaText)}
+                  icon={<RefreshCcw className={twFromTokens('h-4 w-4')} />}
                   iconColor="text-white"
                   collapseToIcon
                 >
                   {t('policy_analysis.reset')}
                 </Button>
 
-            <Button disabled={!result} onClick={handleGenerateReport} className="px-3 py-1 bg-black text-white rounded disabled:opacity-50" icon={<FileCheck className="h-4 w-4" />} iconColor="text-white" collapseToIcon>{t('policy_analysis.full_report_cta')}</Button>
+            <Button
+              disabled={!result}
+              onClick={handleGenerateReport}
+              className={twFromTokens(buttons.small, 'disabled:opacity-50', 'bg-black', colors.ctaText)}
+              icon={<FileCheck className={twFromTokens('h-4 w-4')} />}
+              iconColor="text-white"
+              collapseToIcon
+            >{t('policy_analysis.full_report_cta')}</Button>
 
-            <Button disabled={!result} onClick={() => { const initial = 'html'; setTitleModalInitial(initial); setTitleModalOpen(true) }} className="px-3 py-1 bg-green-600 text-white rounded disabled:opacity-50" icon={<Save className="h-4 w-4" />} iconColor="text-white" collapseToIcon>{t('policy_analysis.save')}</Button>
+            <Button
+              disabled={!result}
+              onClick={() => { const initial = 'html'; setTitleModalInitial(initial); setTitleModalOpen(true) }}
+              className={twFromTokens(buttons.small, 'disabled:opacity-50', 'bg-green-600', colors.ctaText)}
+              icon={<Save className={twFromTokens('h-4 w-4')} />}
+              iconColor="text-white"
+              collapseToIcon
+            >{t('policy_analysis.save')}</Button>
 
             {isFullReportGenerated && (
-              <Button disabled={!isFullReportGenerated || !result} onClick={() => setInstructionsModalOpen(true)} className="px-3 py-1 bg-purple-600 text-white rounded disabled:opacity-50" icon={<Bot className="h-4 w-4" />} iconColor="text-white" collapseToIcon>{t('policy_analysis.revised_policy_cta')}</Button>
+                <Button
+                  disabled={!isFullReportGenerated || !result}
+                  onClick={() => { setInstructionsInitial(''); setInstructionsModalOpen(true) }}
+                className={twFromTokens(buttons.small, 'disabled:opacity-50', 'bg-purple-600', colors.ctaText)}
+                  icon={<Bot className={twFromTokens('h-4 w-4')} />}
+                  iconColor="text-white"
+                  collapseToIcon
+                >{t('policy_analysis.revised_policy_cta')}</Button>
             )}
           </div>
         ) : null}

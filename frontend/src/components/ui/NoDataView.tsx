@@ -1,5 +1,5 @@
 import { FileText, FileSearch, CreditCard, Lock, Search } from 'lucide-react'
-import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, colors, baseFontSizes, fontWeights, spacing, alignment } from '@/styles/styleTokens'
 
 export default function NoDataView({
   title = 'No detailed content yet',
@@ -14,8 +14,8 @@ export default function NoDataView({
   iconType?: 'report' | 'analysis' | 'transactions' | 'locked' | 'search' | 'default'
   customIcon?: React.ReactElement
 }) {
-  const iconClass = iconSize === 'lg' ? 'h-20 w-20' : 'h-12 w-12'
-  const outer = iconSize === 'lg' ? 'w-40 h-40' : 'w-24 h-24'
+  const iconClass = iconSize === 'lg' ? spacing.emptyIconLg.tw : spacing.emptyIconMd.tw
+  const outer = iconSize === 'lg' ? spacing.emptyOuterLg.tw : spacing.emptyOuterMd.tw
 
   const iconForType = (type: string) => {
     switch (type) {
@@ -44,13 +44,13 @@ export default function NoDataView({
   }
 
   return (
-    <div className="h-full w-full flex items-center justify-center">
-      <div className="text-center p-6">
+    <div className={twFromTokens('h-full w-full', alignment.center)}>
+      <div className={twFromTokens('text-center', spacing.modalPadding)}>
         <div className={twFromTokens('mx-auto flex items-center justify-center rounded-full', outer, colors.surfaceMuted)}>
           {customIcon ?? iconForType(iconType)}
         </div>
-        <div className={twFromTokens('mt-4', fontWeights.semibold, baseFontSizes.lg)}>{title}</div>
-        <div className={twFromTokens('mt-2', baseFontSizes.sm, colors.textMutedLight)}>{message}</div>
+        <div className={twFromTokens(spacing.sectionButtonTop, fontWeights.semibold, baseFontSizes.lg)}>{title}</div>
+        <div className={twFromTokens(spacing.smallTop, baseFontSizes.sm, colors.textMutedLight)}>{message}</div>
       </div>
     </div>
   )

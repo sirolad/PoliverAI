@@ -47,15 +47,15 @@ const TransactionFilters: FC<Props> = ({ search, setSearch, dateFrom, setDateFro
           )
         })}
       </div>
-      <div>
-        <Button className={twFromTokens(spacing.fullWidth, 'px-3', 'py-1', 'rounded', colors.surfaceMuted, colors.textPrimary)} onClick={() => { onClear?.() }} icon={<X className={twFromTokens('h-4 w-4', colors.textMuted)} />} collapseToIcon>
+      <div className={twFromTokens(alignment.flexCol, spacing.smallTop)}>
+        <Button className={twFromTokens(spacing.fullWidth, spacing.buttonSmall, colors.surfaceMuted, colors.textPrimary)} onClick={() => { onClear?.() }} icon={<X className={twFromTokens('h-4 w-4', colors.textMuted)} />} collapseToIcon>
           {t('credits.clear')}
         </Button>
-      </div>
-      <div className={twFromTokens(spacing.smallTop)}>
-        <Button className={twFromTokens(spacing.fullWidth, 'px-3', 'py-1', 'rounded', colors.successBg, colors.success, 'text-white')} onClick={() => { onRefresh?.() }} icon={<RefreshCcw className={twFromTokens('h-4 w-4', colors.onPrimary)} />} collapseToIcon>
-          {t('credits.refresh')}
-        </Button>
+        <div className={twFromTokens(spacing.smallTop)}>
+          <Button className={twFromTokens(spacing.fullWidth, spacing.buttonSmall, colors.successBg, colors.onPrimary)} onClick={() => { onRefresh?.() }} icon={<RefreshCcw className={twFromTokens('h-4 w-4', colors.onPrimary)} />} collapseToIcon>
+            {t('credits.refresh')}
+          </Button>
+        </div>
       </div>
 
       <LoadingProgress progress={progress} show={showBar} />

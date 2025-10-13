@@ -1,6 +1,6 @@
 import { FileText, FileSearch } from 'lucide-react'
 import { t } from '@/i18n'
-import { twFromTokens, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
+import { twFromTokens, baseFontSizes, fontWeights, colors, spacing, alignment } from '@/styles/styleTokens'
 
 type EvidenceItem = Record<string, unknown>
 
@@ -18,23 +18,23 @@ export default function EvidenceList({ evidence, limit = 6 }: Props) {
   const count = (evidence || []).length
 
   return (
-    <div className="mt-4">
-      <div className={twFromTokens(baseFontSizes.sm, fontWeights.medium, colors.textSecondary, 'flex items-center gap-2')}>
-        <FileSearch className={twFromTokens('h-4 w-4', colors.textMuted)} />
+    <div className={twFromTokens(spacing.smallTop)}>
+      <div className={twFromTokens(baseFontSizes.sm, fontWeights.medium, colors.textSecondary, alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
+        <FileSearch className={twFromTokens(spacing.iconsXs, colors.textMuted)} />
         <span>{t('policy_analysis.evidence_heading') || 'Evidence'}</span>
-        <div className={twFromTokens('px-2 py-0.5 rounded', baseFontSizes.xs, colors.textMuted, colors.surfaceMuted)}>{`(${count})`}</div>
+        <div className={twFromTokens(spacing.badgePadding, baseFontSizes.xs, colors.textMuted, colors.surfaceMuted)}>{`(${count})`}</div>
       </div>
-      <div className="mt-2 space-y-2">
+      <div className={twFromTokens(spacing.tinyTop, alignment.flexCol, alignment.gap2)}>
         {items.length > 0 ? (
           items.map((ev, i) => (
-            <div key={i} className={twFromTokens('p-3 rounded shadow', colors.success, colors.onPrimary)}>
-              <div className="flex items-start gap-3">
-                <div className={twFromTokens('p-2 rounded', 'flex-shrink-0', 'bg-white/10')}>
-                  <FileText className={twFromTokens('h-5 w-5', colors.onPrimary)} />
+            <div key={i} className={twFromTokens(spacing.cardDefault, 'rounded shadow', colors.success, colors.onPrimary)}>
+              <div className={twFromTokens(alignment.flexRow, alignment.itemsStart, alignment.gap3)}>
+                <div className={twFromTokens(spacing.iconWrapperCompact, 'rounded bg-white/10 flex-shrink-0')}>
+                  <FileText className={twFromTokens(spacing.iconsMd, colors.onPrimary)} />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className={twFromTokens('flex-1 min-w-0')}>
                   <div className={twFromTokens(fontWeights.semibold, 'break-words')}>{String(ev['article'] ?? '')}</div>
-                  <div className={twFromTokens(baseFontSizes.xs, 'mt-1 whitespace-pre-wrap break-words')}>{String(ev['policy_excerpt'] ?? '')}</div>
+                  <div className={twFromTokens(baseFontSizes.xs, spacing.tinyTop, 'whitespace-pre-wrap break-words')}>{String(ev['policy_excerpt'] ?? '')}</div>
                 </div>
               </div>
             </div>
