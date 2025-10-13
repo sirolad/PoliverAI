@@ -1,5 +1,6 @@
 import { UploadCloud } from 'lucide-react'
 import useNoAnalysisTexts from '@/hooks/useNoAnalysisTexts'
+import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
 
 type Props = {
   className?: string
@@ -11,11 +12,11 @@ export default function NoAnalysisView({ className = '' }: Props) {
   return (
     <div className={`h-full w-full flex items-center justify-center ${className}`}>
       <div className="text-center p-6">
-        <div className="mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-gray-100">
-          <UploadCloud className="h-10 w-10 text-gray-500" />
+        <div className={twFromTokens('mx-auto flex items-center justify-center rounded-full', 'w-24 h-24', colors.surfaceMuted)}>
+          <UploadCloud className={twFromTokens('h-10 w-10', colors.textMuted)} />
         </div>
-        <div className="mt-4 text-lg font-semibold">{title}</div>
-        <div className="mt-2 text-sm text-gray-500">{desc}</div>
+        <div className={twFromTokens('mt-4', fontWeights.semibold, baseFontSizes.lg)}>{title}</div>
+        <div className={twFromTokens('mt-2', baseFontSizes.sm, colors.textMutedLight)}>{desc}</div>
       </div>
     </div>
   )

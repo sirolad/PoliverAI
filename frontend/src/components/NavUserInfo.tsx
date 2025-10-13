@@ -5,6 +5,7 @@ import { getCreditsTotal } from '@/lib/paymentsHelpers'
 import useRampedCounters from '@/hooks/useRampedCounters'
 import { badgeClass, badgeText, formatCredits } from '@/lib/navHelpers'
 import { t } from '@/i18n'
+import { twFromTokens, textSizes, baseFontSizes, colors } from '@/styles/styleTokens'
 
 function useNavUser() {
   const { user, loading, isPro } = useAuth()
@@ -22,17 +23,17 @@ export default function NavUserInfo({ showName = false, showBadge = false }: { s
       {showName ? (
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <User className="h-4 w-4" />
-            <span className="text-sm">{user?.name}</span>
+            <User className={twFromTokens('h-4 w-4', textSizes.sm)} />
+            <span className={twFromTokens(textSizes.sm)}>{user?.name}</span>
           </div>
         </div>
       ) : null}
 
       {showBadge ? (
         <div className="flex items-center gap-2">
-          <span className={`text-xs px-2 py-1 rounded-full ${badgeClass(isPro)}`}>{badgeText(isPro)}</span>
+          <span className={twFromTokens(baseFontSizes.xs, 'px-2 py-1 rounded-full', badgeClass(isPro))}>{badgeText(isPro)}</span>
           {navRampEnabled ? (
-            <div title={`${t('credits.label')} ${navCreditsTotal}`} className="text-sm px-2 py-1 rounded bg-gray-100">
+            <div title={`${t('credits.label')} ${navCreditsTotal}`} className={twFromTokens(textSizes.sm, 'px-2 py-1 rounded', colors.surfaceMuted)}>
               {t('credits.label')} {formatCredits(animatedNavCredits.total)}
             </div>
           ) : null}

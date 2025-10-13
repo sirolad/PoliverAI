@@ -10,6 +10,7 @@ import { store } from '@/store/store'
 import { setPendingCheckout } from '@/store/paymentsSlice'
 import PaymentsService from '@/services/payments'
 import { CreditCard } from 'lucide-react'
+import { twFromTokens, colors } from '@/styles/styleTokens'
 import { buildPendingCheckoutFromResponse } from '@/lib/paymentsHelpers'
 import { useState } from 'react'
 import usePaymentResult from '@/hooks/usePaymentResult'
@@ -61,7 +62,7 @@ export function Navbar() {
       <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
       <EnterCreditsModal
         open={creditsModalOpen}
-        icon={<CreditCard className="h-5 w-5 text-gray-700" />}
+        icon={<CreditCard className={twFromTokens('h-5 w-5', colors.textSecondary)} />}
         onClose={() => setCreditsModalOpen(false)}
         onConfirm={async (amount_usd: number) => {
           try {

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { XCircle, CreditCard } from 'lucide-react'
 import { Button } from './Button'
 import MetaLine from './MetaLine'
+import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
 import EnterCreditsModal from './EnterCreditsModal'
 import PaymentsService from '@/services/payments'
 import { t } from '@/i18n'
@@ -34,13 +35,13 @@ export default function InsufficientCreditsModal({
     <>
       <div className="fixed inset-0 z-50 flex items-start justify-center p-6 pointer-events-none">
         <div className="w-full max-w-md pointer-events-auto">
-          <div className="rounded-lg shadow-lg overflow-hidden border bg-white">
-            <div className="p-4 flex items-center gap-3 border-b border-red-100">
-              <div className="p-2 rounded-full bg-red-50 text-red-600">
+          <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
+            <div className={twFromTokens('p-4 flex items-center gap-3 border-b', colors.dangerBg)}>
+              <div className={twFromTokens('p-2 rounded-full', colors.danger)}>
                 <XCircle className="h-6 w-6" />
               </div>
               <div>
-                <div className="font-semibold text-sm">{title}</div>
+                <div className={twFromTokens(fontWeights.semibold, baseFontSizes.sm)}>{title}</div>
                 <MetaLine>{message}</MetaLine>
               </div>
             </div>

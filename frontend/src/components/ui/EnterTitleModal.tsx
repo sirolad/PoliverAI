@@ -5,6 +5,8 @@ import { getInputClassName } from '@/lib/ui/inputHelpers'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
 import { X, Save } from 'lucide-react'
 import { t } from '@/i18n'
+import Text from '@/components/ui/Text'
+import { twFromTokens, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
 
 type Props = {
   open: boolean
@@ -44,18 +46,18 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
       <div className={getModalContainerClass()}>
         <div className="p-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-green-50 text-green-600">
-              <Save className="h-5 w-5" />
+            <div className={twFromTokens('p-2 rounded-full', colors.successBg, colors.success)}>
+              <Save className={twFromTokens('h-5 w-5', colors.onPrimary)} />
             </div>
             <div>
-              <div className="text-lg font-semibold">{t('enter_title_modal.title')}</div>
-              <div className="text-sm text-gray-600">{t('enter_title_modal.subtitle')}</div>
+              <div className={twFromTokens(baseFontSizes.lg, fontWeights.semibold)}>{t('enter_title_modal.title')}</div>
+              <Text preset="small" color="textMuted">{t('enter_title_modal.subtitle')}</Text>
             </div>
           </div>
           <IconButton onClick={onClose} aria-label={t('enter_title_modal.close_aria')}><X /></IconButton>
         </div>
         <div className="p-4">
-          <p className="text-sm text-gray-600 mb-4">{t('enter_title_modal.description')}</p>
+          <Text preset="small" color="textMuted" className="mb-4">{t('enter_title_modal.description')}</Text>
           <div className="flex items-center gap-2">
             <input
               className={getInputClassName('border rounded px-3 py-2 w-full')}
@@ -70,7 +72,7 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
               <option value="html">{t('enter_title_modal.option_html')}</option>
               <option value="regular">{t('enter_title_modal.option_regular')}</option>
             </select>
-            <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()} icon={<Save className="h-4 w-4" />} iconColor="text-white">
+            <Button onClick={handleConfirm} disabled={isProcessing || !title.trim()} icon={<Save className={twFromTokens('h-4 w-4', colors.onPrimary)} />} iconColor="text-white">
               {isProcessing ? t('enter_title_modal.saving') : t('enter_title_modal.save')}
             </Button>
           </div>

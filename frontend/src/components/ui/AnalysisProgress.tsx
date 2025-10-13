@@ -1,5 +1,6 @@
 import { Progress } from '@/components/ui/progress'
 import useAnalysisProgress from '@/hooks/useAnalysisProgress'
+import { twFromTokens, textSizes, colors } from '@/styles/styleTokens'
 
 type Props = {
   message?: string | null
@@ -11,12 +12,12 @@ export default function AnalysisProgress({ message, progress, className = '' }: 
   const { displayMessage, percent } = useAnalysisProgress(message, progress)
 
   return (
-    <div className={`mb-3 ${className}`}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-gray-700">{displayMessage}</div>
-        <div className="text-sm text-gray-500">{percent}%</div>
+    <div className={twFromTokens('mb-3', className)}>
+      <div className={twFromTokens('flex items-center justify-between mb-2')}>
+        <div className={twFromTokens(textSizes.sm, colors.textSecondary)}>{displayMessage}</div>
+        <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{percent}%</div>
       </div>
-      <Progress value={percent} className="h-2" />
+      <Progress value={percent} className={twFromTokens('h-2')} />
     </div>
   )
 }

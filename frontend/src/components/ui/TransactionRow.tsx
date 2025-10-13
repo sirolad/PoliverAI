@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import Text from '@/components/ui/Text'
+import { twFromTokens, textSizes, fontWeights, colors } from '@/styles/styleTokens'
 
 type Props = {
   date?: string
@@ -16,30 +18,30 @@ export default function TransactionRow({ date, description, userEmail, sessionId
   // - third line: human readable date
   return (
     <div className="flex-1 min-w-0 py-2">
-      <div className="flex items-start justify-between gap-4 mb-1">
-          <div className="text-lg text-gray-700 truncate font-medium flex-1 min-w-0">
-          <span className="truncate">{description || 'Transaction'}</span>
+      <div className={twFromTokens('flex items-start justify-between gap-4', 'mb-1')}>
+          <div className={twFromTokens(textSizes.lg, colors.textSecondary, 'truncate', fontWeights.medium, 'flex-1 min-w-0')}>
+          <span className={twFromTokens('truncate')}>{description || 'Transaction'}</span>
         </div>
       </div>
 
       {/* allow caller to pass fully styled label nodes; fall back to simple text if not provided */}
       {labels ? (
-        <div className="mt-1 mb-2">{labels}</div>
+        <div className={twFromTokens('mt-1 mb-2')}>{labels}</div>
       ) : (userEmail || sessionId) ? (
         <>
-          <div className="mt-1">
-            {userEmail ? <div className="text-xs text-gray-600 truncate">{userEmail}</div> : null}
+          <div className={twFromTokens('mt-1')}>
+            {userEmail ? <Text preset="caption" color="textMuted" className={twFromTokens('truncate')}>{userEmail}</Text> : null}
           </div>
-          <div className="mt-1">
-            {sessionId ? <div className="text-xs text-gray-600 truncate mt-1">{sessionId}</div> : null}
+          <div className={twFromTokens('mt-1')}>
+            {sessionId ? <Text preset="caption" color="textMuted" className={twFromTokens('truncate')}>{sessionId}</Text> : null}
           </div>
         </>
       ) : null}
 
       {dateNode ? (
-        <div className="mt-1">{dateNode}</div>
+        <div className={twFromTokens('mt-1')}>{dateNode}</div>
       ) : (date ? (
-          <div className="text-sm text-gray-600 mt-1">{date}</div>
+          <div className={twFromTokens('mt-1')}><Text preset="small" color="textMuted">{date}</Text></div>
       ) : null)}
     </div>
   )

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { t } from '@/i18n'
+import { twFromTokens, textSizes, colors, fontWeights, hoverFromColor } from '@/styles/styleTokens'
 import { Button } from '@/components/ui/Button'
 import LoadingLabel from '@/components/ui/LoadingLabel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -59,19 +60,19 @@ export function Login() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className={twFromTokens('min-h-screen flex items-center justify-center')}>
+        <div className={twFromTokens('animate-spin rounded-full h-12 w-12 border-b-2', colors.primary)} />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className={twFromTokens('min-h-screen flex items-center justify-center', colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48 mx-auto" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">{t('auth_login.welcome_title')}</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className={twFromTokens('mt-6 font-bold', textSizes.h1, colors.textPrimary)}>{t('auth_login.welcome_title')}</h2>
+          <p className={twFromTokens('mt-2', textSizes.sm, colors.textMuted)}>
             {t('auth_login.welcome_subtitle')}
           </p>
         </div>
@@ -86,8 +87,8 @@ export function Login() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {error && (
-                <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                  <AlertCircle className="h-4 w-4" />
+                <div className={twFromTokens('flex items-center gap-2 p-3', colors.danger, colors.dangerBg, 'rounded-md', textSizes.sm)}>
+                  <AlertCircle className={twFromTokens('h-4 w-4', colors.danger)} />
                   {error}
                 </div>
               )}
@@ -102,9 +103,9 @@ export function Login() {
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+                className={twFromTokens(textSizes.sm, colors.primaryBg, 'w-full flex items-center justify-center gap-2')}
                 disabled={isSubmitting}
-                icon={<LogIn className="h-4 w-4" />}
+                icon={<LogIn className={twFromTokens('h-4 w-4', textSizes.sm)} />}
               >
                 <LoadingLabel
                   loading={isSubmitting}
@@ -114,10 +115,10 @@ export function Login() {
               </Button>
 
               <div className="text-center">
-                  <p className="text-sm text-gray-600">
+                    <p className={twFromTokens(textSizes.sm, colors.textMuted)}>
                     {t('auth_login.no_account_prefix')}{' '}
-                    <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
-                      <UserPlus className="h-4 w-4" />
+                    <Link to="/register" className={twFromTokens(textSizes.sm, fontWeights.medium, 'inline-flex items-center gap-2', 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
+                      <UserPlus className={twFromTokens('h-4 w-4')} />
                       {t('auth_login.sign_up_cta')}
                     </Link>
                   </p>

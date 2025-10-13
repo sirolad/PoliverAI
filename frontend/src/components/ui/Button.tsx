@@ -77,7 +77,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     // compose classes then optionally strip background-related utilities
     const baseClass = buttonVariants({ variant, size, className })
-  const composed = composeButtonClass({ baseClass, collapseToIcon, canCollapse, hasBackground, textUnderline, itIsInNavBar })
+    const composed = composeButtonClass({ baseClass, collapseToIcon, canCollapse, hasBackground, textUnderline, itIsInNavBar })
 
     return (
       <Comp

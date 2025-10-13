@@ -6,6 +6,7 @@ import { getInputClassName } from '@/lib/ui/inputHelpers'
 import { getModalBackdropClass, getModalContainerClass } from '@/lib/ui/modalHelpers'
 import MetaLine from './MetaLine'
 import { t } from '@/i18n'
+import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
 
 type Props = {
   open: boolean
@@ -41,13 +42,13 @@ export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Pr
         <div className="p-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/** optional icon shown left of title */}
-            {typeof icon !== 'undefined' ? <div className="text-gray-700">{icon}</div> : null}
-            <div className="text-lg font-semibold">{t('enter_credits_modal.title')}</div>
+            {typeof icon !== 'undefined' ? <div className={twFromTokens(colors.textSecondary)}>{icon}</div> : null}
+            <div className={twFromTokens(baseFontSizes.lg, fontWeights.semibold)}>{t('enter_credits_modal.title')}</div>
           </div>
           <IconButton onClick={onClose} aria-label={t('enter_credits_modal.close_aria')}><X /></IconButton>
         </div>
         <div className="p-4">
-          <p className="text-sm text-gray-600 mb-4">{t('enter_credits_modal.description')}</p>
+          <p className={twFromTokens(baseFontSizes.sm, colors.textMuted, 'mb-4')}>{t('enter_credits_modal.description')}</p>
           <MetaLine>{t('enter_credits_modal.meta')}</MetaLine>
           <div className="flex items-center gap-2">
             <input
@@ -58,7 +59,7 @@ export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Pr
               step="0.01"
               min="0"
             />
-            <Button onClick={handleConfirm} disabled={isProcessing} icon={<CreditCard className="h-4 w-4" />}>
+            <Button onClick={handleConfirm} disabled={isProcessing} icon={<CreditCard className={twFromTokens('h-4 w-4', colors.onPrimary)} />}>
               {isProcessing ? t('enter_credits_modal.processing') : t('enter_credits_modal.buy')}
             </Button>
           </div>

@@ -1,11 +1,13 @@
 import React from 'react'
 import { makeLottieOptions, loadLottieAnimation, attachLottieComplete, destroyLottie } from '@/lib/lottieHelpers'
+import { twFromTokens } from '@/styles/styleTokens'
 
 type SimpleLottieProps = {
   src: string
   loop?: boolean
   autoplay?: boolean
   className?: string
+  classTokens?: Array<string | { tw?: string } | undefined>
   onComplete?: () => void
   // allow opting into the worker; default is false to avoid worker XHR issues
   useWebWorker?: boolean
@@ -16,6 +18,7 @@ export default function SimpleLottie({
   loop = false,
   autoplay = true,
   className,
+  classTokens,
   onComplete,
   useWebWorker = false,
 }: SimpleLottieProps) {
@@ -36,5 +39,7 @@ export default function SimpleLottie({
     }
   }, [src, loop, autoplay, onComplete, useWebWorker])
 
-  return <div ref={ref} className={className || ''} />
+  const finalClassName = className ?? twFromTokens(...(classTokens ?? []))
+
+  return <div ref={ref} className={finalClassName} />
 }

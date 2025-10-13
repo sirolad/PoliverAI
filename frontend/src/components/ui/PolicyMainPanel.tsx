@@ -12,6 +12,7 @@ import FullReportPrompt from '@/components/ui/FullReportPrompt'
 import RevisedPolicyPreview from '@/components/ui/RevisedPolicyPreview'
 import { t } from '@/i18n'
 import type { ComplianceResult } from '@/types/api'
+import { twFromTokens, colors, baseFontSizes } from '@/styles/styleTokens'
 
 type Props = {
   activeTab: 'free' | 'full' | 'revised'
@@ -49,7 +50,7 @@ export default function PolicyMainPanel({
   handleGenerateReport,
 }: Props) {
   return (
-    <main className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col min-h-0 overflow-hidden">
+    <main className={twFromTokens('md:col-span-2 p-4 rounded shadow flex flex-col min-h-0 overflow-hidden', colors.surface)}>
       <PolicyHeader activeTab={activeTab} result={result} />
 
       {/* Progress bar and message shown during streaming analysis */}
@@ -78,7 +79,7 @@ export default function PolicyMainPanel({
             <NoAnalysisView />
           )
         ) : (
-          <div data-view="full" id="report-full-view" className="bg-gray-50 p-4 rounded h-full min-h-0 overflow-auto w-full">
+          <div data-view="full" id="report-full-view" className={twFromTokens('p-4 rounded h-full min-h-0 overflow-auto w-full', colors.surfaceMuted)}>
             {isLoadingForTab ? (
               <LoadingSpinner
                 message={t('policy_analysis.loading_report')}
@@ -102,7 +103,7 @@ export default function PolicyMainPanel({
               ) : (
                 // revised tab: uses saved file content (markdown) or a persisted file (PDF)
                 detailedContent ? (
-                  <div className="prose max-w-none text-sm" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(detailedContent as string) }} />
+                  <div className={twFromTokens('prose max-w-none', baseFontSizes.sm)} dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(detailedContent as string) }} />
                 ) : (
                   <RevisedPolicyPreview
                     downloadUrl={detailedDownloadUrl}

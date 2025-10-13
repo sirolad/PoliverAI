@@ -1,5 +1,6 @@
 import * as React from 'react'
 import ErrorText from './ErrorText'
+import { twFromTokens, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
 
 type Props = {
   id: string
@@ -12,12 +13,12 @@ type Props = {
 export default function FormField({ id, label, icon, children, error }: Props) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="text-sm font-medium text-gray-700">
+      <label htmlFor={id} className={twFromTokens(baseFontSizes.sm, fontWeights.medium, colors.textSecondary)}>
         {label}
       </label>
       <div className="relative">
         {icon ? (
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400">{icon}</span>
+          <span className={twFromTokens('absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4', colors.textMuted)}>{icon}</span>
         ) : null}
         {children}
       </div>

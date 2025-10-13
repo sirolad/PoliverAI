@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/Button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import NoDataView from '@/components/ui/NoDataView'
 import TransactionListItem from '@/components/TransactionListItem'
+import Text from './ui/Text'
+import { textSizes, colors, twFromTokens, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   filtered: Transaction[]
@@ -23,23 +25,23 @@ type Props = {
 export default function TransactionList({ filtered, total, itemsLength, page, setPage, limit, setLimit, totalPages, isMobile, fetchTx, refreshUser, getTxStatus }: Props) {
   return (
     <>
-      <div className="mb-2 flex items-center justify-between">
-        <div className="text-sm text-gray-600"><span className="hidden sm:inline">Showing </span>{filtered.length} of {total ?? itemsLength}<span className="hidden sm:inline"> transactions</span></div>
-        <div className="flex items-center gap-3">
-          {!isMobile && <label className="text-sm text-gray-600">Per page</label>}
-          <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className="border rounded px-2 py-1">
+      <div className={twFromTokens('mb-2', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+        <div className={twFromTokens(textSizes.sm, colors.textMuted)}><span className="hidden sm:inline">Showing </span>{filtered.length} of {total ?? itemsLength}<span className="hidden sm:inline"> transactions</span></div>
+        <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, spacing.controlsGap)}>
+          {!isMobile && <Text as="span" preset="small" color="textMuted">Per page</Text>}
+          <select value={limit} onChange={(e) => { setPage(1); setLimit(Number(e.target.value)) }} className={twFromTokens('border', colors.mutedBorder, 'rounded', 'px-2', 'py-1')}>
             {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
           </select>
-          {!isMobile && <div className="text-sm text-gray-600">Page</div>}
-          <div className="inline-flex items-center gap-2">
-            <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(Math.max(1, page-1))} className="flex items-center" icon={<ChevronLeft className="h-4 w-4"/>}>{!isMobile && <span className="ml-1">Prev</span>}</Button>
-            <div className="px-2 py-1">{page} / {totalPages}</div>
-            <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(Math.min(totalPages, page+1))} className="flex items-center" icon={<ChevronRight className="h-4 w-4"/>}>{!isMobile && <span className="mr-1">Next</span>}</Button>
+          {!isMobile && <Text as="span" preset="small" color="textMuted">Page</Text>}
+          <div className={twFromTokens('inline-flex', alignment.itemsCenter, spacing.controlsGap)}>
+            <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(Math.max(1, page-1))} className={twFromTokens(alignment.flexRow, alignment.itemsCenter)} icon={<ChevronLeft className={twFromTokens('h-4 w-4', colors.textMuted)} />}>{!isMobile && <span className="ml-1">Prev</span>}</Button>
+            <div className={twFromTokens('px-2', 'py-1', textSizes.sm)}>{page} / {totalPages}</div>
+            <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(Math.min(totalPages, page+1))} className={twFromTokens(alignment.flexRow, alignment.itemsCenter)} icon={<ChevronRight className={twFromTokens('h-4 w-4', colors.textMuted)} />}>{!isMobile && <span className="mr-1">Next</span>}</Button>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto space-y-4">
+      <div className={twFromTokens('flex-1', 'overflow-auto', 'space-y-4')}>
         {filtered.length === 0 ? (
           <NoDataView title="No transactions" message="No transactions match your filters." iconType="transactions" />
         ) : filtered.map((t) => {

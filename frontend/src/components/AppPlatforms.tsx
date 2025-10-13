@@ -6,6 +6,7 @@ import { DownloadCloud, Smartphone, Monitor, Apple, Server, File, FileStack, Cre
 import { Robot, Stack } from 'phosphor-react'
 import StatFooter from './StatFooter'
 import useRampedCounters from '@/hooks/useRampedCounters'
+import { twFromTokens, textSizes, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
 
 type Platform = 'android' | 'ios' | 'windows' | 'macos' | 'linux'
 
@@ -142,8 +143,8 @@ export default function AppPlatforms({ hideOnPlatform }: { hideOnPlatform?: Part
     <div className="container mx-auto px-4 py-10">
   <div className="bg-white rounded-2xl shadow-xl max-w-3xl mx-auto p-10 flex flex-col items-center text-center gap-6">
         <div>
-          <h3 className="text-3xl font-semibold">{t('app_platforms.heading')}</h3>
-          <p className="text-lg text-gray-600">{t('app_platforms.subheading')}</p>
+          <h3 className={twFromTokens(textSizes.h2, fontWeights.semibold)}>{t('app_platforms.heading')}</h3>
+          <p className={twFromTokens(textSizes.lg, colors.textMuted)}>{t('app_platforms.subheading')}</p>
         </div>
 
         <div className="flex flex-wrap justify-center gap-3">
@@ -151,31 +152,36 @@ export default function AppPlatforms({ hideOnPlatform }: { hideOnPlatform?: Part
             <button
               key={p.key}
               onClick={() => toggle(p.key)}
-              className={`px-4 py-2 rounded-full border transition-colors ${visible[p.key] ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+              className={twFromTokens(
+                'px-4 py-2 rounded-full border transition-colors',
+                visible[p.key]
+                  ? twFromTokens(colors.primaryBg, colors.ctaText, 'border-blue-600')
+                  : twFromTokens(colors.surface, colors.textSecondary, 'hover:bg-gray-50')
+              )}
             >
-              <span className="inline-flex items-center">
+              <span className={twFromTokens('inline-flex items-center')}>
                 {renderIcon(p.key)}
-                <span className="align-middle">{t(`app_platforms.platforms.${p.key}`)}</span>
+                <span className={twFromTokens('align-middle', textSizes.md)}>{t(`app_platforms.platforms.${p.key}`)}</span>
               </span>
             </button>
           ))}
         </div>
 
         <div className="w-full flex flex-wrap items-center justify-center gap-8">
-          <Button onClick={handleDownload} disabled={downloading} className="bg-green-600 hover:bg-green-700 px-6 flex-shrink-0 whitespace-nowrap" icon={<DownloadCloud className="h-5 w-5 text-white" />}>
+          <Button onClick={handleDownload} disabled={downloading} className={twFromTokens('px-6 flex-shrink-0 whitespace-nowrap', 'bg-green-600 hover:bg-green-700', colors.ctaText)} icon={<DownloadCloud className={twFromTokens('h-5 w-5', colors.ctaText)} />}>
             {downloading ? t('app_platforms.downloading') : t('app_platforms.download_app')}
           </Button>
 
           <div className="flex items-baseline gap-3">
-            <div className="text-3xl font-bold">
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
               {statsLoaded && (
                 animatedStats.total_downloads
               )}
             </div>
-            <div className="text-lg font-normal text-gray-500 inline-flex items-center gap-2 whitespace-nowrap">
-              <Stack className="w-5 h-5 text-gray-500" />
+            <div className={twFromTokens(textSizes.lg, fontWeights.normal, colors.textMutedLight, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <Stack className={twFromTokens('w-5 h-5', colors.textMutedLight)} />
               <span>{t('app_platforms.downloads_label')}</span>
-              <div className="text-xs text-gray-400 ml-2">{t('app_platforms.downloads_so_far')}</div>
+              <div className={twFromTokens(baseFontSizes.xs, colors.textMutedLight, 'ml-2')}>{t('app_platforms.downloads_so_far')}</div>
             </div>
           </div>
         </div>
@@ -183,45 +189,45 @@ export default function AppPlatforms({ hideOnPlatform }: { hideOnPlatform?: Part
         {/* Short write-up between downloads and stats */}
         <div className="w-full">
           <div className="max-w-2xl mx-auto text-center mt-4 mb-2">
-            <p className="text-lg text-gray-600">{t('app_platforms.description', { defaultValue: 'PoliverAI delivers fast, practical reports for quick checks and deep, AI-powered policy reviews for thorough compliance. Whether you\'re running a quick scan or generating a full policy report, we\'ve made it simple and reliable — built to support teams across devices and platforms.' })}</p>
+            <p className={twFromTokens(textSizes.lg, colors.textMuted)}>{t('app_platforms.description', { defaultValue: 'PoliverAI delivers fast, practical reports for quick checks and deep, AI-powered policy reviews for thorough compliance. Whether you\'re running a quick scan or generating a full policy report, we\'ve made it simple and reliable — built to support teams across devices and platforms.' })}</p>
           </div>
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex flex-col items-center">
-              <div className="text-lg font-semibold text-black inline-flex items-center gap-2 whitespace-nowrap">
-              <File className="w-5 h-5 text-gray-600" />
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <File className={twFromTokens('w-5 h-5', colors.textMuted)} />
               {t('app_platforms.free_reports')}
             </div>
-            <div className="text-3xl font-bold">
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
               {statsLoaded && (
-                <>{animatedStats.free_reports} <span className="text-sm font-normal text-gray-500">{t('app_platforms.reports_label')}</span></>
+                <>{animatedStats.free_reports} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.reports_label')}</span></>
               )}
             </div>
             <StatFooter />
           </div>
 
           <div className="flex flex-col items-center">
-              <div className="text-lg font-semibold text-black inline-flex items-center gap-2 whitespace-nowrap">
-              <FileStack className="w-5 h-5 text-gray-600" />
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <FileStack className={twFromTokens('w-5 h-5', colors.textMuted)} />
               {t('app_platforms.full_reports')}
             </div>
-            <div className="text-3xl font-bold">
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
               {statsLoaded && (
-                <>{animatedStats.full_reports} <span className="text-sm font-normal text-gray-500">{t('app_platforms.reports_label')}</span></>
+                <>{animatedStats.full_reports} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.reports_label')}</span></>
               )}
             </div>
             <StatFooter />
           </div>
 
           <div className="flex flex-col items-center">
-              <div className="text-lg font-semibold text-black inline-flex items-center gap-2 whitespace-nowrap">
-              <Robot className="w-5 h-5 text-gray-600" />
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <Robot className={twFromTokens('w-5 h-5', colors.textMuted)} />
               {t('app_platforms.ai_revised_policies')}
             </div>
-            <div className="text-3xl font-bold">
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
               {statsLoaded && (
-                <>{animatedStats.ai_policy_reports} <span className="text-sm font-normal text-gray-500">{t('app_platforms.policies_label')}</span></>
+                <>{animatedStats.ai_policy_reports} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.policies_label')}</span></>
               )}
             </div>
             <StatFooter />
@@ -231,26 +237,26 @@ export default function AppPlatforms({ hideOnPlatform }: { hideOnPlatform?: Part
         {/* Additional single stats row: users + subscriptions */}
         <div className="w-full flex justify-center mt-4 gap-8">
           <div className="flex flex-col items-center">
-              <div className="text-lg font-semibold text-black inline-flex items-center gap-2 whitespace-nowrap">
-              <User className="w-5 h-5 text-gray-600" />
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <User className={twFromTokens('w-5 h-5', colors.textMuted)} />
               {t('app_platforms.sign_ups')}
             </div>
-            <div className="text-3xl font-bold">
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
               {statsLoaded && (
-                <>{animatedStats.total_users} <span className="text-sm font-normal text-gray-500">{t('app_platforms.users_label')}</span></>
+                <>{animatedStats.total_users} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.users_label')}</span></>
               )}
             </div>
             <StatFooter />
           </div>
 
           <div className="flex flex-col items-center">
-              <div className="text-lg font-semibold text-black inline-flex items-center gap-2 whitespace-nowrap">
-              <CreditCard className="w-5 h-5 text-gray-600" />
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <CreditCard className={twFromTokens('w-5 h-5', colors.textMuted)} />
               {t('app_platforms.subs_label')}
             </div>
-            <div className="text-3xl font-bold">
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
               {statsLoaded && (
-                <>{animatedStats.total_subscriptions} <span className="text-sm font-normal text-gray-500">{t('app_platforms.subs_label')}</span></>
+                <>{animatedStats.total_subscriptions} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.subs_label')}</span></>
               )}
             </div>
             <StatFooter />

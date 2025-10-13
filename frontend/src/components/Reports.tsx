@@ -27,6 +27,8 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { pushEvent, addToLegacy } from '@/store/deletedReportsSlice'
 import Filters from './reports/Filters'
 import BulkActions from './reports/BulkActions'
+import Heading from './ui/Heading'
+import { twFromTokens, colors } from '@/styles/styleTokens'
 
 export default function Reports() {
   const { isAuthenticated, isPro, loading, user } = useAuth()
@@ -137,8 +139,8 @@ export default function Reports() {
   return (
     <div className="min-h-screen p-8">
       <PaymentResultModal open={modalOpen} success={modalSuccess} title={modalTitle} message={modalMessage} onClose={() => setModalOpen(false)} />
-      <div className="flex items-center justify-between mb-4">
-  <h1 className="text-3xl font-bold">{t('reports.title')}</h1>
+    <div className="flex items-center justify-between mb-4">
+  <Heading as="h1" className="mr-4">{t('reports.title')}</Heading>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
@@ -155,7 +157,7 @@ export default function Reports() {
             open={bulkDeleteOpen}
             filenames={Object.keys(selectedFiles).filter((k) => selectedFiles[k])}
             onClose={() => setBulkDeleteOpen(false)}
-            icon={<Trash2 className="h-5 w-5 text-gray-700" />}
+            icon={<Trash2 className={twFromTokens(colors.textMuted, 'h-5', 'w-5')} />}
             onConfirm={async () => {
               setBulkDeleteOpen(false)
               setDeleting(true)
@@ -327,7 +329,7 @@ export default function Reports() {
                 reportUrl={modalUrl}
                 filename={selected}
                 title={selected || t('reports.report')}
-                icon={<Eye className="h-5 w-5 text-gray-700" />}
+                icon={<Eye className={twFromTokens(colors.textMuted, 'h-5', 'w-5')} />}
                 showSave={false}
                 isQuick={false}
                 onClose={() => setModalUrl('')}

@@ -1,4 +1,5 @@
 import useSelectedFileInfo from '@/hooks/useSelectedFileInfo'
+import { twFromTokens, textSizes, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
 
 type Props = {
   file: File | null
@@ -9,9 +10,9 @@ export default function SelectedFileInfo({ file, className = '' }: Props) {
   const { label, meta } = useSelectedFileInfo(file)
 
   return (
-    <div className={`mt-3 text-sm text-gray-700 ${className}`}>
-      <div className="font-medium">{label}</div>
-      <div className="text-xs text-gray-500">{meta}</div>
+    <div className={twFromTokens('mt-3', textSizes.sm, colors.textSecondary, className)}>
+        <div className={twFromTokens(fontWeights.medium)}>{label}</div>
+        <div className={twFromTokens(baseFontSizes.xs, colors.textMutedLight)}>{meta}</div>
     </div>
   )
 }

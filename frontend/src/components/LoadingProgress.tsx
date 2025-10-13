@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { twFromTokens, colors } from '@/styles/styleTokens'
 
 type Props = {
   progress: number
@@ -10,7 +11,7 @@ const LoadingProgress: FC<Props> = ({ progress, show }) => {
   return (
     <div className="mt-4">
       <div className="w-full">
-        <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+        <div className={twFromTokens('h-2 w-full rounded-full overflow-hidden', colors.mutedBorder)}>
           <div
             className={`h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 transition-all duration-300 ease-out ${progress < 5 ? 'opacity-90 animate-pulse' : ''}`}
             style={{ width: progress < 5 ? '25%' : `${Math.min(100, Math.max(2, progress))}%` }}

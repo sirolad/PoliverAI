@@ -1,5 +1,7 @@
+import { twFromTokens, colors, textSizes, fontWeights } from '@/styles/styleTokens'
+
 export function badgeClass(isPro: boolean) {
-  return isPro ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+  return twFromTokens('px-3 py-1 rounded-full', textSizes.sm, fontWeights.medium, isPro ? colors.primaryBgLight : colors.successBg, isPro ? colors.primaryMuted : colors.success)
 }
 
 export function badgeText(isPro: boolean) {

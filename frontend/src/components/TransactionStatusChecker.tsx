@@ -1,5 +1,6 @@
 import useTransactionStatusChecker from '@/hooks/useTransactionStatusChecker'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
+import { textSizes, colors, twFromTokens, spacing, alignment } from '@/styles/styleTokens'
 
 type Props = {
   sessionId?: string | null
@@ -12,10 +13,15 @@ export default function TransactionStatusChecker({ sessionId, fetchTx, refreshUs
   const paymentResult = usePaymentResult()
 
   return (
-    <div className="mt-0 sm:mt-2 ml-2 sm:ml-0">
-      <button className="text-sm text-blue-600 underline" onClick={async () => {
-        await checkTransaction(sessionId, paymentResult, fetchTx, refreshUser)
-      }}>{'Check status'}</button>
+    <div className={twFromTokens(spacing.formContainer, alignment.center)}>
+      <button
+        className={twFromTokens(textSizes.sm, colors.primary, 'underline')}
+        onClick={async () => {
+          await checkTransaction(sessionId, paymentResult, fetchTx, refreshUser)
+        }}
+      >
+        {'Check status'}
+      </button>
     </div>
   )
 }

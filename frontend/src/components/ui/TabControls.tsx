@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button'
 import useTabSwitcher from '@/hooks/useTabSwitcher'
 import useReportDownloader from '@/hooks/useReportDownloader'
 import { t } from '@/i18n'
+import { twFromTokens, colors } from '@/styles/styleTokens'
 
 type Props = {
   activeTab: 'free' | 'full' | 'revised'
@@ -19,15 +20,39 @@ export default function TabControls({ activeTab, setActiveTab, setLoadingDetaile
 
   return (
     <div className="mb-3">
-      <div className="flex items-center">
-        <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'free' ? 'bg-blue-600 text-white border-blue-600 rounded-l' : 'bg-white text-gray-700 border-gray-200 rounded-l'}`} onClick={goFree}>
-          <Lightbulb className="h-4 w-4 mr-2" /> {t('policy_analysis.free_tab')}
+      <div className={twFromTokens('flex items-center')}>
+        <button
+          className={twFromTokens(
+            'px-3 py-1 border text-sm flex items-center',
+            activeTab === 'free'
+              ? twFromTokens(colors.primaryBg, colors.ctaText, 'border-blue-600', 'rounded-l')
+              : twFromTokens(colors.surface, colors.textSecondary, 'border-gray-200', 'rounded-l')
+          )}
+          onClick={goFree}
+        >
+          <Lightbulb className={twFromTokens('h-4 w-4 mr-2', colors.textMuted)} /> {t('policy_analysis.free_tab')}
         </button>
-        <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'full' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200'}`} onClick={goFull}>
-          <FileCheck className="h-4 w-4 mr-2" /> {t('policy_analysis.full_tab')}
+        <button
+          className={twFromTokens(
+            'px-3 py-1 border text-sm flex items-center',
+            activeTab === 'full'
+              ? twFromTokens(colors.primaryBg, colors.ctaText, 'border-blue-600')
+              : twFromTokens(colors.surface, colors.textSecondary, 'border-gray-200')
+          )}
+          onClick={goFull}
+        >
+          <FileCheck className={twFromTokens('h-4 w-4 mr-2', colors.textMuted)} /> {t('policy_analysis.full_tab')}
         </button>
-        <button className={`px-3 py-1 border text-sm flex items-center ${activeTab === 'revised' ? 'bg-blue-600 text-white border-blue-600 rounded-r' : 'bg-white text-gray-700 border-gray-200 rounded-r'}`} onClick={goRevised}>
-          <Bot className="h-4 w-4 mr-2" /> {t('policy_analysis.revised_tab')}
+        <button
+          className={twFromTokens(
+            'px-3 py-1 border text-sm flex items-center',
+            activeTab === 'revised'
+              ? twFromTokens(colors.primaryBg, colors.ctaText, 'border-blue-600', 'rounded-r')
+              : twFromTokens(colors.surface, colors.textSecondary, 'border-gray-200', 'rounded-r')
+          )}
+          onClick={goRevised}
+        >
+          <Bot className={twFromTokens('h-4 w-4 mr-2', colors.textMuted)} /> {t('policy_analysis.revised_tab')}
         </button>
 
         <div className="ml-auto">

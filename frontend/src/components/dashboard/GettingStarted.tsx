@@ -1,5 +1,7 @@
 // React import not required with the new JSX runtime
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import Text from '@/components/ui/Text'
+import { twFromTokens, colors, fontWeights, textSizes } from '@/styles/styleTokens'
 import useGettingStarted from '@/hooks/useGettingStarted'
 
 export default function GettingStarted() {
@@ -16,12 +18,12 @@ export default function GettingStarted() {
         <div className="space-y-4">
           {steps.map((s) => (
             <div className="flex items-start gap-3" key={s.id}>
-              <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+              <div className={twFromTokens('rounded-full flex items-center justify-center mt-0.5', 'w-6 h-6', colors.primaryBgLight, colors.primary, textSizes.sm, fontWeights.bold)}>
                 {s.id}
               </div>
               <div>
-                <h4 className="font-medium">{s.title}</h4>
-                <p className="text-sm text-gray-600">{s.desc}</p>
+                <h4 className={twFromTokens(fontWeights.semibold)}>{s.title}</h4>
+                <Text preset="small" color="textMuted">{s.desc}</Text>
               </div>
             </div>
           ))}

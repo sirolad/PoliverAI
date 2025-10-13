@@ -2,6 +2,7 @@ import React from 'react'
 import type { ReportMetadata } from '@/types/api'
 import { Star, StarHalf, Star as StarEmpty } from 'phosphor-react'
 import { DownloadCloud, ExternalLink } from 'lucide-react'
+import { twFromTokens, textSizes, colors, fontWeights, baseFontSizes, hoverFromColor } from '@/styles/styleTokens'
 import { Button } from './Button'
 import { t } from '@/i18n'
 import policyService from '@/services/policyService'
@@ -26,7 +27,7 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
   const cardMinHeightClass = hasExtraContent ? 'card-min-h-mobile-long md:min-h-0' : 'card-min-h-mobile md:min-h-0'
 
   return (
-    <div className={`${cardMinHeightClass} p-4 border rounded grid grid-cols-12 gap-4 items-start md:flex md:items-center ${selected ? 'border-blue-600 bg-blue-50' : ''}`}>
+    <div className={`${cardMinHeightClass} p-4 border rounded grid grid-cols-12 gap-4 items-start md:flex md:items-center ${selected ? twFromTokens(colors.primaryBorder, colors.primaryBgLight) : ''}`}>
       <div className="col-span-1 flex items-center h-full">
         <input
           type="checkbox"
@@ -37,10 +38,10 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
         />
       </div>
       <div className="col-span-10 flex-1">
-        <div className="font-semibold">{r.title || r.document_name}</div>
-        <div className="text-sm text-gray-600">{r.document_name}</div>
-        <div className="text-sm text-gray-500 mt-1">{formatDateTime(r.created_at)}</div>
-  <div className="text-sm text-gray-500 truncate">{t('report_card.filename_label')} <span className="font-mono">{r.filename}</span></div>
+    <div className={twFromTokens(fontWeights.semibold)}>{r.title || r.document_name}</div>
+    <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{r.document_name}</div>
+    <div className={twFromTokens(textSizes.sm, colors.textMuted, 'mt-1')}>{formatDateTime(r.created_at)}</div>
+    <div className={twFromTokens(textSizes.sm, colors.textMuted, 'truncate')}>{t('report_card.filename_label')} <span className="font-mono">{r.filename}</span></div>
         {r.file_size ? (
           <div className="text-sm text-gray-500">{t('report_card.size_label')} {formatFileSize(r.file_size)}</div>
         ) : null}
@@ -49,14 +50,14 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
           {(() => {
             if (score == null) return null
             const { full, half, empty, percentage } = getStarCounts(score)
-            const icons: React.ReactElement[] = []
-            for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={16} weight="fill" className="text-yellow-500" />)
-            if (half) icons.push(<StarHalf key={`h`} size={16} weight="fill" className="text-yellow-500" />)
-            for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={16} weight="duotone" className="text-gray-300" />)
+              const icons: React.ReactElement[] = []
+            for (let i = 0; i < full; i++) icons.push(<Star key={`f-${i}`} size={16} weight="fill" className={twFromTokens(colors.warning)} />)
+            if (half) icons.push(<StarHalf key={`h`} size={16} weight="fill" className={twFromTokens(colors.warning)} />)
+            for (let i = 0; i < empty; i++) icons.push(<StarEmpty key={`e-${i}`} size={16} weight="duotone" className={twFromTokens(colors.surface)} />)
             return (
-              <div className="flex items-center text-sm text-gray-700">
+              <div className={twFromTokens('flex', 'items-center', textSizes.sm, colors.textPrimary)}>
                 <div className="flex items-center gap-0.5">{icons}</div>
-                <div className="ml-2 text-xs text-gray-500">{percentage}%</div>
+                <div className={twFromTokens('ml-2', textSizes.sm, colors.textMuted)}>{percentage}%</div>
               </div>
             )
           })()}
@@ -65,12 +66,12 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
         {(() => {
           if (!isFull && !hasVerdict) return null
           return (
-            <div className="inline-flex items-center mt-2 text-xs font-medium rounded overflow-hidden">
+            <div className={twFromTokens('inline-flex items-center mt-2 rounded overflow-hidden', baseFontSizes.xs, fontWeights.medium)}>
               {isFull ? (
-                <div className="px-2 py-1 bg-green-100 text-green-700 border border-r-0 border-green-200">{t('report_card.full_label')}</div>
+                <div className={twFromTokens('px-2 py-1 border border-r-0', colors.successBg, colors.success)}>{t('report_card.full_label')}</div>
               ) : null}
               {hasVerdict ? (
-                <div className={`px-2 py-1 border ${vnorm === 'compliant' ? 'bg-green-100 text-green-700 border-green-200' : vnorm === 'partially_compliant' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' : 'bg-red-100 text-red-700 border-red-200'}`}>
+                <div className={twFromTokens('px-2 py-1 border', vnorm === 'compliant' ? colors.successBg : vnorm === 'partially_compliant' ? colors.warningBg : colors.dangerBg, vnorm === 'compliant' ? colors.success : vnorm === 'partially_compliant' ? colors.warning : colors.danger)}>
                   {String(r.verdict).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                 </div>
               ) : null}
@@ -80,14 +81,14 @@ export default function ReportCard({ report: r, selected, onToggleSelect, onOpen
       </div>
       <div className={`col-span-1 flex-shrink-0 ml-0 md:ml-4 flex items-center space-x-2 w-full md:w-auto justify-end self-end`}>
         {r.gcs_url ? (
-          <Button onClick={() => (onExternalOpen ? onExternalOpen(r) : policyService.openReport(r))} className="text-sm bg-gray-700 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
+          <Button onClick={() => (onExternalOpen ? onExternalOpen(r) : policyService.openReport(r))} className={twFromTokens('text-sm px-3 py-1 rounded', colors.mutedActionBg, colors.onPrimary)} icon={<ExternalLink className={twFromTokens('h-4 w-4', colors.onPrimary)} />} iconColor="text-white" collapseToIcon>
             {t('report_card.open')}
           </Button>
         ) : null}
-        <Button onClick={() => onOpen(r)} className="text-sm bg-blue-600 text-white px-3 py-1 rounded" icon={<ExternalLink className="h-4 w-4" />} collapseToIcon>
+        <Button onClick={() => onOpen(r)} className={twFromTokens('text-sm px-3 py-1 rounded', colors.primaryBg, colors.onPrimary, hoverFromColor(colors.primary))} icon={<ExternalLink className={twFromTokens('h-4 w-4', colors.onPrimary)} />} collapseToIcon>
           {t('report_card.view')}
         </Button>
-        <Button onClick={() => onDownload(r)} className="bg-green-600 text-white px-3 py-1 rounded" icon={<DownloadCloud className="h-4 w-4" />} iconColor="text-white" collapseToIcon>
+        <Button onClick={() => onDownload(r)} className={twFromTokens(colors.ctaText, 'px-3 py-1 rounded', colors.successBg)} icon={<DownloadCloud className={twFromTokens('h-4 w-4', colors.onPrimary)} />} iconColor="text-white" collapseToIcon>
           {t('report_card.download')}
         </Button>
       </div>

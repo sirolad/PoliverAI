@@ -2,16 +2,19 @@ import { t } from '@/i18n'
 import { Button } from '@/components/ui/Button'
 import { BarChart } from 'lucide-react'
 import useCTA from '@/hooks/useCTA'
+import Heading from './ui/Heading'
+import Text from './ui/Text'
+import { twFromTokens, colors } from '@/styles/styleTokens'
 
 export default function CTASection() {
   const { onStartFree } = useCTA()
 
   return (
-    <div className="bg-blue-600 text-white py-16">
+    <div className={twFromTokens('py-16', colors.primaryBg, colors.onPrimary)}>
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-4">{t('landing.cta.heading')}</h2>
-        <p className="text-xl mb-8 text-blue-100">{t('landing.cta.paragraph')}</p>
-        <Button size="lg" variant="secondary" onClick={onStartFree} className="justify-center mx-auto w-fit" icon={<BarChart className="h-5 w-5" />} iconColor="text-black">
+        <Heading as="h2" preset="subheading" className="mb-4" color="ctaText">{t('landing.cta.heading')}</Heading>
+        <Text preset="lead" className="mb-8" color="ctaMuted">{t('landing.cta.paragraph')}</Text>
+        <Button size="lg" variant="secondary" onClick={onStartFree} className={twFromTokens('justify-center mx-auto w-fit')} icon={<BarChart className={twFromTokens('h-5 w-5', colors.textPrimary)} />} iconColor="text-black">
           {t('landing.buttons.start_free_cta')}
         </Button>
       </div>

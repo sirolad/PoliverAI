@@ -4,6 +4,7 @@ import { t } from '@/i18n'
 import MetaLine from './MetaLine'
 import { getPaymentStatusClasses, renderPaymentStatusIcon } from '@/lib/paymentHelpers'
 import type { PaymentStatus } from '@/lib/paymentHelpers'
+import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
 
 type State = {
   open: boolean
@@ -33,13 +34,13 @@ export function PaymentResultProvider({ children }: { children: React.ReactNode 
       {state.open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-6 pointer-events-none">
           <div className="w-full max-w-md pointer-events-auto">
-            <div className="rounded-lg shadow-lg overflow-hidden border bg-white">
-              <div className={`p-4 flex items-center gap-3 ${getPaymentStatusClasses(state.status).border}`}>
+            <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
+              <div className={twFromTokens('p-4 flex items-center gap-3', getPaymentStatusClasses(state.status).border)}>
                 <div className={getPaymentStatusClasses(state.status).iconWrap}>
                   {renderPaymentStatusIcon(state.status)}
                 </div>
                 <div>
-                  <div className="font-semibold text-sm">{state.title}</div>
+                  <div className={twFromTokens(fontWeights.semibold, baseFontSizes.sm)}>{state.title}</div>
                     <MetaLine>{state.message}</MetaLine>
                 </div>
               </div>

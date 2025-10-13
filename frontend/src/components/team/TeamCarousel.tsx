@@ -1,6 +1,7 @@
 import React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { t } from '@/i18n'
+import { twFromTokens, textSizes, colors, fontWeights, hoverBgFromColor } from '@/styles/styleTokens'
 
 type Member = {
   id: number
@@ -82,33 +83,33 @@ export default function TeamCarousel() {
   const slice = MEMBERS.slice(start, start + perView)
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className={twFromTokens('container mx-auto px-4', 'py-12')}>
       {/* Header: centered title + subtitle */}
       <div className="text-center mb-6">
-        <h3 className="text-3xl font-bold text-gray-900 mb-4">{t('team_carousel.title')}</h3>
-        <p className="text-lg text-gray-600">{t('team_carousel.subtitle')}</p>
+  <h3 className={twFromTokens(fontWeights.bold, 'mb-4', textSizes.h2, colors.textPrimary)}>{t('team_carousel.title')}</h3>
+        <p className={twFromTokens(textSizes.lead, colors.textMuted)}>{t('team_carousel.subtitle')}</p>
       </div>
 
       <div className="relative">
         {/* Left nav button - positioned at the left edge */}
-        <button aria-label={t('team_carousel.aria_prev')} onClick={prev} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow hover:bg-gray-50">
-          <ChevronLeft className="h-6 w-6 text-gray-700" />
+        <button aria-label={t('team_carousel.aria_prev')} onClick={prev} className={twFromTokens('absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow', colors.surface, hoverBgFromColor(colors.surfaceMuted))}>
+          <ChevronLeft className={twFromTokens('h-6 w-6', colors.textSecondary)} />
         </button>
 
         {/* Right nav button - positioned at the right edge */}
-        <button aria-label={t('team_carousel.aria_next')} onClick={next} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow hover:bg-gray-50">
-          <ChevronRight className="h-6 w-6 text-gray-700" />
+        <button aria-label={t('team_carousel.aria_next')} onClick={next} className={twFromTokens('absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full shadow', colors.surface, hoverBgFromColor(colors.surfaceMuted))}>
+          <ChevronRight className={twFromTokens('h-6 w-6', colors.textSecondary)} />
         </button>
 
         <div className="p-6 mx-8">
           <div className="grid grid-cols-1 gap-6" style={{ gridTemplateColumns: `repeat(${perView}, minmax(0, 1fr))` }}>
             {slice.map((m) => (
-              <div key={m.id} className="flex flex-col items-center text-center p-10 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow transform-gpu">
+              <div key={m.id} className={twFromTokens('flex flex-col items-center text-center p-10 rounded-xl shadow-md hover:shadow-lg transition-shadow transform-gpu', colors.surface)}>
                 <Avatar img={m.img} name={m.name} />
                 <div className="mt-4">
-                  <div className="font-semibold text-lg">{m.name}</div>
-                  <div className="text-sm text-gray-500">{m.title}</div>
-                  <p className="mt-3 text-sm text-gray-600 italic">“{m.quote}”</p>
+                  <div className={twFromTokens(fontWeights.semibold, textSizes.lg, colors.textPrimary)}>{m.name}</div>
+                  <div className={twFromTokens(textSizes.sm, colors.textMutedLight)}>{m.title}</div>
+                  <p className={twFromTokens('mt-3 italic', textSizes.sm, colors.textMuted)}>{`“${m.quote}”`}</p>
                 </div>
               </div>
             ))}

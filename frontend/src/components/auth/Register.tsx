@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { t } from '@/i18n'
+import { twFromTokens, textSizes, colors, fontWeights, hoverFromColor } from '@/styles/styleTokens'
 import { Button } from '@/components/ui/Button'
 import LoadingLabel from '@/components/ui/LoadingLabel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -64,24 +65,24 @@ export function Register() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className={twFromTokens('min-h-screen flex items-center justify-center')}>
+        <div className={twFromTokens('animate-spin rounded-full h-12 w-12 border-b-2', colors.primary)} />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className={twFromTokens('min-h-screen flex items-center justify-center', colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className="h-48 mx-auto" />
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">{t('auth.register.join_title')}</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className={twFromTokens('mt-6 font-bold', textSizes.h1, colors.textPrimary)}>{t('auth.register.join_title')}</h2>
+          <p className={twFromTokens('mt-2', textSizes.sm, colors.textMuted)}>
             {t('auth.register.join_subtitle')}
           </p>
         </div>
 
-        <Card>
+          <Card>
           <CardHeader>
             <CardTitle>{t('auth.register.create_account')}</CardTitle>
             <CardDescription>
@@ -91,8 +92,8 @@ export function Register() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {error && (
-                <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-md">
-                  <AlertCircle className="h-4 w-4" />
+                <div className={twFromTokens('flex items-center gap-2 p-3', colors.danger, colors.dangerBg, 'rounded-md', textSizes.sm)}>
+                  <AlertCircle className={twFromTokens('h-4 w-4', colors.danger)} />
                   {error}
                 </div>
               )}
@@ -113,18 +114,18 @@ export function Register() {
                 <Input id="confirmPassword" type="password" placeholder={t('auth.register.confirm_password_placeholder')} className="pl-10" {...register('confirmPassword')} />
               </FormField>
 
-              <div className="text-xs text-gray-600">
+              <div className={twFromTokens(textSizes.sm, colors.textMuted)}>
                 {t('auth.register.terms_prefix')}{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500">{t('auth.register.terms')}</a>{' '}
+                <a href="#" className={twFromTokens(fontWeights.medium, 'inline-flex items-center gap-1', 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>{t('auth.register.terms')}</a>{' '}
                 and{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-500">{t('auth.register.privacy')}</a>.
+                <a href="#" className={twFromTokens(fontWeights.medium, 'inline-flex items-center gap-1', 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>{t('auth.register.privacy')}</a>.
               </div>
 
-              <Button
+                <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2"
+                className={twFromTokens(textSizes.sm, colors.primaryBg, 'w-full flex items-center justify-center gap-2')}
                 disabled={isSubmitting}
-                icon={<UserPlus className="h-4 w-4" />}
+                icon={<UserPlus className={twFromTokens('h-4 w-4', textSizes.sm)} />}
               >
                 <LoadingLabel
                   loading={isSubmitting}
@@ -134,10 +135,10 @@ export function Register() {
               </Button>
 
               <div className="text-center">
-                  <p className="text-sm text-gray-600">
+                  <p className={twFromTokens(textSizes.sm, colors.textMuted)}>
                     {t('auth.register.already_have_account')}{' '}
-                    <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center gap-2">
-                      <LogIn className="h-4 w-4" />
+                    <Link to="/login" className={twFromTokens(textSizes.sm, fontWeights.medium, 'inline-flex items-center gap-2', 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
+                      <LogIn className={twFromTokens('h-4 w-4')} />
                       {t('auth.register.sign_in')}
                     </Link>
                   </p>

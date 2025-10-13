@@ -1,5 +1,7 @@
 import type { TransactionStatus } from '@/types/transaction'
 
+import { twFromTokens, textSizes, colors } from '@/styles/styleTokens'
+
 type Props = {
   name: TransactionStatus
   checked: boolean
@@ -8,9 +10,9 @@ type Props = {
 
 export default function StatusFilterItem({ name, checked, onChange }: Props) {
   return (
-    <label className="flex items-center gap-2">
-      <input type="checkbox" checked={checked} onChange={() => onChange(name)} className="w-4 h-4" />
-      <span className="text-sm text-gray-700 capitalize">{name.replace(/_/g, ' ')}</span>
+    <label className={twFromTokens('flex items-center gap-2')}>
+      <input type="checkbox" checked={checked} onChange={() => onChange(name)} className={twFromTokens('w-4 h-4')} />
+      <span className={twFromTokens(textSizes.sm, colors.textSecondary, 'capitalize')}>{name.replace(/_/g, ' ')}</span>
     </label>
   )
 }

@@ -1,4 +1,5 @@
 import { FileText, FileSearch, CreditCard, Lock, Search } from 'lucide-react'
+import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
 
 export default function NoDataView({
   title = 'No detailed content yet',
@@ -19,18 +20,18 @@ export default function NoDataView({
   const iconForType = (type: string) => {
     switch (type) {
       case 'report':
-        return <FileText className={`${iconClass} text-gray-400`} aria-hidden />
+        return <FileText className={twFromTokens(iconClass, colors.textMuted)} aria-hidden />
       case 'analysis':
-        return <FileSearch className={`${iconClass} text-gray-400`} aria-hidden />
+        return <FileSearch className={twFromTokens(iconClass, colors.textMuted)} aria-hidden />
       case 'transactions':
-        return <CreditCard className={`${iconClass} text-gray-400`} aria-hidden />
+        return <CreditCard className={twFromTokens(iconClass, colors.textMuted)} aria-hidden />
       case 'locked':
-        return <Lock className={`${iconClass} text-gray-400`} aria-hidden />
+        return <Lock className={twFromTokens(iconClass, colors.textMuted)} aria-hidden />
       case 'search':
-        return <Search className={`${iconClass} text-gray-400`} aria-hidden />
+        return <Search className={twFromTokens(iconClass, colors.textMuted)} aria-hidden />
       default:
         return (
-          <svg className={`${iconClass} text-gray-400`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <svg className={twFromTokens(iconClass, colors.textMuted)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <path d="M14 2v6h6" />
             <circle cx="9.5" cy="13.5" r="2.5" />
@@ -45,11 +46,11 @@ export default function NoDataView({
   return (
     <div className="h-full w-full flex items-center justify-center">
       <div className="text-center p-6">
-        <div className={`mx-auto ${outer} flex items-center justify-center rounded-full bg-gray-100`}>
+        <div className={twFromTokens('mx-auto flex items-center justify-center rounded-full', outer, colors.surfaceMuted)}>
           {customIcon ?? iconForType(iconType)}
         </div>
-        <div className="mt-4 text-xl font-semibold">{title}</div>
-        <div className="mt-2 text-sm text-gray-500">{message}</div>
+        <div className={twFromTokens('mt-4', fontWeights.semibold, baseFontSizes.lg)}>{title}</div>
+        <div className={twFromTokens('mt-2', baseFontSizes.sm, colors.textMutedLight)}>{message}</div>
       </div>
     </div>
   )

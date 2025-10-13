@@ -1,5 +1,6 @@
 // DotLottiePlayer.tsx
 import React from 'react'
+import { twFromTokens } from '@/styles/styleTokens'
 import '@dotlottie/player-component' // registers <dotlottie-player>
 
 type DotLottiePlayerProps = {
@@ -7,6 +8,8 @@ type DotLottiePlayerProps = {
   loop?: boolean
   autoplay?: boolean
   className?: string
+  // Accept token objects or raw classes to compose the class attribute
+  classTokens?: Array<string | { tw?: string } | undefined>
   style?: React.CSSProperties
   onComplete?: () => void
 }
@@ -16,6 +19,7 @@ export default function DotLottiePlayer({
   loop = false,
   autoplay = true,
   className,
+  classTokens,
   style,
   onComplete,
 }: DotLottiePlayerProps) {
@@ -46,7 +50,7 @@ export default function DotLottiePlayer({
     src,
     autoplay: autoplay ? true : undefined,
     loop: loop ? true : undefined,
-    class: className,
+    class: classTokens ? twFromTokens(...classTokens) : className,
     style,
   }
 

@@ -9,6 +9,7 @@ import SavedReportsCountDisplay from '@/components/ui/SavedReportsCountDisplay'
 import PolicyMainPanel from '@/components/ui/PolicyMainPanel'
 import usePolicyWorkspace from '@/hooks/usePolicyWorkspace'
 import type { ComplianceResult } from '@/types/api'
+import { twFromTokens, colors, baseFontSizes, fontWeights } from '@/styles/styleTokens'
 
 type Props = {
   persisted: unknown
@@ -66,11 +67,11 @@ export default function PolicyWorkspace(props: Props) {
   return (
     <div className="flex-1 flex flex-col">
       {showWorkInProgress ? (
-        <div className="mb-2 w-40 px-3 py-1 text-center rounded bg-yellow-100 text-yellow-500 font-medium">{t('policy_analysis.work_in_progress')}</div>
+        <div className={twFromTokens('mb-2 w-40 px-3 py-1 text-center rounded', colors.warningBg, colors.warning, fontWeights.medium)}>{t('policy_analysis.work_in_progress')}</div>
       ) : null}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <aside className="md:col-span-1 bg-white p-4 rounded shadow">
+        <aside className={twFromTokens('md:col-span-1 p-4 rounded shadow', colors.surface)}>
           <UploadZone file={file} setFile={setFile} fileInputRef={fileInputRef} handleFileChange={handleFileChange} />
 
           {file && (
@@ -78,13 +79,17 @@ export default function PolicyWorkspace(props: Props) {
           )}
 
           <div className="mt-3">
-            <Button disabled={!file} onClick={handleAnalyze} className="w-full px-3 py-2 bg-indigo-600 text-white rounded">{t('policy_analysis.analyze')}</Button>
+            <Button disabled={!file} onClick={handleAnalyze} className={twFromTokens('w-full px-3 py-2 rounded', colors.primaryBg, colors.ctaText)}>{t('policy_analysis.analyze')}</Button>
           </div>
 
-          <div className="mb-4 mt-4"><h3 className="font-semibold flex items-center gap-2"><FileText className="h-4 w-4 text-gray-600" />{t('policy_analysis.summary_heading')}</h3><div className="text-sm text-gray-700 mt-2">{result?.summary || t('policy_analysis.no_result_yet')}</div></div>
+          <div className="mb-4 mt-4">
+            <h3 className={twFromTokens(fontWeights.semibold, 'flex items-center gap-2')}><FileText className={twFromTokens('h-4 w-4', colors.textMuted)} />{t('policy_analysis.summary_heading')}</h3>
+            <div className={twFromTokens(baseFontSizes.sm, colors.textSecondary, 'mt-2')}>{result?.summary || t('policy_analysis.no_result_yet')}</div>
+          </div>
 
-          <div className="mb-4 mt-4"><h3 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-500" />{t('policy_analysis.findings_heading', { count: findingsCount })}</h3>
-            <div className="text-sm text-gray-700 mt-2 max-h-40 overflow-auto">
+          <div className="mb-4 mt-4">
+            <h3 className={twFromTokens(fontWeights.semibold, 'flex items-center gap-2')}><AlertTriangle className={twFromTokens('h-4 w-4', colors.danger)} />{t('policy_analysis.findings_heading', { count: findingsCount })}</h3>
+            <div className={twFromTokens(baseFontSizes.sm, colors.textSecondary, 'mt-2 max-h-40 overflow-auto')}>
               {result?.findings && result.findings.length > 0 ? (
                 <div className="space-y-2">
                   {result.findings.map((f: unknown, idx: number) => {
@@ -95,13 +100,13 @@ export default function PolicyWorkspace(props: Props) {
                   })}
                 </div>
               ) : (
-                <div className="text-sm text-gray-500">{t('policy_analysis.no_findings')}</div>
+                <div className={twFromTokens(baseFontSizes.sm, colors.textMutedLight)}>{t('policy_analysis.no_findings')}</div>
               )}
             </div>
           </div>
 
           <div className="mb-4">
-            <h3 className="font-semibold">{t('policy_analysis.work_in_progress')} {userReportsCount !== null ? `(` : ''}
+            <h3 className={twFromTokens(fontWeights.semibold)}>{t('policy_analysis.work_in_progress')} {userReportsCount !== null ? `(` : ''}
               {userReportsCount !== null ? (
                 <SavedReportsCountDisplay count={userReportsCount} />
               ) : null}
@@ -109,9 +114,9 @@ export default function PolicyWorkspace(props: Props) {
             </h3>
             <div className="mt-2">
               {reportFilename ? (
-                <div className="space-y-2"><div className="text-sm">{t('policy_analysis.generated_label')} <span className="font-medium">{reportFilename}</span></div></div>
+                <div className="space-y-2"><div className={twFromTokens(baseFontSizes.sm)}>{t('policy_analysis.generated_label')} <span className={twFromTokens(fontWeights.medium)}>{reportFilename}</span></div></div>
               ) : (
-                <div className="text-sm text-gray-500">{t('policy_analysis.no_report_generated_yet')}</div>
+                <div className={twFromTokens(baseFontSizes.sm, colors.textMutedLight)}>{t('policy_analysis.no_report_generated_yet')}</div>
               )}
             </div>
           </div>

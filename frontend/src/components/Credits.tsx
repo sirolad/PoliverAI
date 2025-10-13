@@ -12,8 +12,8 @@ import type { Transaction } from '@/services/transactions'
 import type { TransactionStatus, StatusFilter } from '@/types/transaction'
 import { Filter } from 'lucide-react'
 import { t } from '@/i18n'
+import { twFromTokens, textSizes, fontWeights, colors } from '@/styles/styleTokens'
 import { Button } from '@/components/ui/Button'
-// ...existing code...
 import TransactionList from '@/components/TransactionList'
 import TransactionFilters from '@/components/TransactionFilters'
 import useTransactionFilters from '@/hooks/useTransactionFilters'
@@ -157,7 +157,7 @@ export default function Credits() {
   return (
     <div className="p-8 flex flex-col flex-1 min-h-0">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-bold">{t('credits.transaction_history_title')}</h1>
+        <h1 className={twFromTokens(textSizes.h1, fontWeights.bold)}>{t('credits.transaction_history_title')}</h1>
 
         <div className="flex items-center gap-3">
           {/* Show filters toggle on mobile */}
@@ -218,7 +218,7 @@ export default function Credits() {
           }
         }}
       />
-      {error && <div className="text-red-600">{error}</div>}
+  {error && <div className={twFromTokens(colors.danger)}>{error}</div>}
 
       <div className={`flex-1 ${isMobile ? 'flex flex-col' : 'flex gap-6'}`}>
         {/* Sidebar filters: render as sidebar on desktop, as collapsible block above list on mobile */}

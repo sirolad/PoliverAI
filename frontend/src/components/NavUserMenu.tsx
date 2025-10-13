@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { User, LogOut, CreditCard, ChevronRight, Clock, BarChart2, Grid, List, Menu, Plus } from 'lucide-react'
 import { t } from '@/i18n'
 import NavUserInfo from './NavUserInfo'
+import { twFromTokens, textSizes, colors, baseFontSizes, fontWeights, hoverBgFromColor } from '@/styles/styleTokens'
 
 type Props = {
   isMobile: boolean
@@ -54,14 +55,14 @@ export default function NavUserMenu({ isMobile, isPro, user, reportsCount, menuO
       )}
 
       {isMobile && (
-        <div className="relative">
-          <button
+          <div className="relative">
+            <button
             ref={menuButtonRef}
             onClick={() => setMenuOpen((s) => !s)}
-            className="p-2 rounded-md border border-gray-200 bg-white hover:bg-gray-50 shadow-sm focus:outline-none flex items-center"
+            className={twFromTokens('p-2 rounded-md border shadow-sm focus:outline-none flex items-center', colors.mutedBorder, colors.surface)}
             aria-label={t('navbar.open_user_menu')}
           >
-            <Menu className="h-5 w-5 text-gray-700" />
+            <Menu className={twFromTokens('h-5 w-5', colors.textSecondary)} />
           </button>
 
           {menuOpen && (
@@ -71,41 +72,41 @@ export default function NavUserMenu({ isMobile, isPro, user, reportsCount, menuO
                   <div className="flex items-center gap-2">
                     <User className="h-5 w-5 text-gray-700" />
                     <div>
-                      <div className="text-sm font-medium">{user?.name}</div>
-                      <div className="text-xs text-gray-500">{isPro ? t('navbar.badge_pro') : t('navbar.badge_free')}</div>
+                      <div className={twFromTokens(textSizes.sm, fontWeights.medium)}>{user?.name}</div>
+                      <div className={twFromTokens(baseFontSizes.xs, colors.textMutedLight)}>{isPro ? t('navbar.badge_pro') : t('navbar.badge_free')}</div>
                     </div>
                   </div>
                 </div>
               </div>
-              <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
-                <Grid className="h-4 w-4 text-gray-600" />
+              <Link to="/dashboard" className={twFromTokens(textSizes.sm, 'flex items-center gap-2 px-4 py-2', hoverBgFromColor(colors.surfaceMuted))}>
+                <Grid className={twFromTokens('h-4 w-4', colors.textMuted)} />
                 <span>{t('navbar.dashboard')}</span>
               </Link>
-              <Link to="/analyze" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
-                <BarChart2 className="h-4 w-4 text-gray-600" />
+              <Link to="/analyze" className={twFromTokens(textSizes.sm, 'flex items-center gap-2 px-4 py-2', hoverBgFromColor(colors.surfaceMuted))}>
+                <BarChart2 className={twFromTokens('h-4 w-4', colors.textMuted)} />
                 <span>{t('navbar.analyze_policy')}</span>
               </Link>
               {(isPro || (typeof reportsCount === 'number' && reportsCount > 0)) && (
-                <Link to="/reports" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
-                  <List className="h-4 w-4 text-gray-600" />
+                <Link to="/reports" className={twFromTokens(textSizes.sm, 'flex items-center gap-2 px-4 py-2 hover:bg-gray-50')}>
+                  <List className={twFromTokens('h-4 w-4', colors.textMuted)} />
                   <span>{t('navbar.reports')}</span>
                 </Link>
               )}
-              <Link to="/credits" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50">
-                <Clock className="h-4 w-4 text-gray-600" />
+              <Link to="/credits" className={twFromTokens(textSizes.sm, 'flex items-center gap-2 px-4 py-2', hoverBgFromColor(colors.surfaceMuted))}>
+                <Clock className={twFromTokens('h-4 w-4', colors.textMuted)} />
                 <span>{t('navbar.transaction_history')}</span>
               </Link>
               {!isPro && (
-                <Button variant="ghost" className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" itIsInNavBar onClick={async () => { setMenuOpen(false); try { await (await import('@/services/payments')).default.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, t('payments.failed'), msg) } }} icon={<ChevronRight className="h-4 w-4 text-gray-600" />}>
+                <Button variant="ghost" className={twFromTokens(textSizes.sm, 'w-full text-left px-4 py-2 flex items-center gap-2', hoverBgFromColor(colors.surfaceMuted))} itIsInNavBar onClick={async () => { setMenuOpen(false); try { await (await import('@/services/payments')).default.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, t('payments.failed'), msg) } }} icon={<ChevronRight className={twFromTokens('h-4 w-4', colors.textMuted)} />}>
                     <span>{t('navbar.upgrade_to_pro')}</span>
                   </Button>
               )}
-              <hr className="my-1 border-t border-gray-100" />
-              <Button variant="ghost" itIsInNavBar className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); setCreditsModalOpen(true) }} icon={<CreditCard className="h-4 w-4 text-gray-600 flex-shrink-0" />}>
+              <hr className="my-1 border-t" />
+              <Button variant="ghost" itIsInNavBar className={twFromTokens(textSizes.sm, 'w-full text-left px-4 py-2 flex items-center gap-2', hoverBgFromColor(colors.surfaceMuted))} onClick={() => { setMenuOpen(false); setCreditsModalOpen(true) }} icon={<CreditCard className={twFromTokens('h-4 w-4', colors.textMuted) + ' flex-shrink-0'} />}>
                 <span>{t('navbar.buy_credits')}</span>
               </Button>
-              <hr className="my-1 border-t border-gray-100" />
-              <Button variant="ghost" itIsInNavBar className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2" onClick={() => { setMenuOpen(false); handleLogout() }} icon={<LogOut className="h-4 w-4 text-gray-600 flex-shrink-0" />}>
+              <hr className="my-1 border-t" />
+              <Button variant="ghost" itIsInNavBar className={twFromTokens(textSizes.sm, 'w-full text-left px-4 py-2 flex items-center gap-2', hoverBgFromColor(colors.surfaceMuted))} onClick={() => { setMenuOpen(false); handleLogout() }} icon={<LogOut className={twFromTokens('h-4 w-4', colors.textMuted) + ' flex-shrink-0'} />}>
                 <span>{t('navbar.logout')}</span>
               </Button>
             </div>

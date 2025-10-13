@@ -7,6 +7,7 @@ import EnterInstructionsModal from './ui/EnterInstructionsModal'
 import useAuth from '@/contexts/useAuth'
 import type { ComplianceResult } from '@/types/api'
 import { RefreshCcw, Save, FileCheck, Bot } from 'lucide-react'
+import { twFromTokens, textSizes, fontWeights } from '@/styles/styleTokens'
 import { htmlNodeToHtmlAndCss } from '@/lib/policyAnalysisHelpers'
 import { Button } from '@/components/ui/Button'
 import usePaymentResult from '@/components/ui/PaymentResultHook'
@@ -559,7 +560,11 @@ export default function PolicyAnalysis() {
   return (
     <div className="p-8 flex flex-col min-h-screen">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">{t('policy_analysis.title')}</h1>
+        {/* Use Heading primitive so size/weight/colors come from centralized tokens */}
+        <div>
+          {/* avoid importing here to keep top-level file edits small; render inline */}
+          <h1 className={twFromTokens(textSizes.h2, fontWeights.bold)}>{t('policy_analysis.title')}</h1>
+        </div>
 
         {(result || reportFilename) ? (
           <div className="flex items-center gap-2">
@@ -589,10 +594,6 @@ export default function PolicyAnalysis() {
       <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
 
       <div className="flex-1 flex flex-col">
-        {persisted && persisted.fileName ? (
-          <div className="mb-2 w-40 px-3 py-1 text-center rounded bg-yellow-100 text-yellow-500 font-medium">{t('policy_analysis.work_in_progress')}</div>
-        ) : null}
-
         <PolicyWorkspace
           persisted={persisted}
           file={file}
