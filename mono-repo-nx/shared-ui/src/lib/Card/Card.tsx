@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, ViewStyle, TouchableOpacity, StyleProp } from 'react-native';
+import { rnTokens } from '../rnStyleTokens'
 
 export interface CardProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ export const Card: React.FC<CardProps> = ({
   padding = 16,
 }) => {
   const baseStyle: ViewStyle = {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: rnTokens.colors.white.hex,
     borderRadius: 12,
     padding,
     ...(shadow && {
@@ -26,9 +27,9 @@ export const Card: React.FC<CardProps> = ({
         width: 0,
         height: 2,
       },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 4, // for Android
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      elevation: 3,
     }),
   };
 

@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { useTranslation } from '@poliverai/intl';
+import rnStyleFromTokens, { rnTokens } from '../rnStyleTokens'
 
 const { width } = Dimensions.get('window');
 
@@ -41,13 +42,15 @@ export function FeatureCard({ title, description, emoji, icon, isPro }: FeatureP
   return (
     <View style={[styles.card, isPro ? styles.cardPro : null]}>
       <View style={styles.cardHeader}>
-  {renderIcon()}
-  <Text style={styles.cardTitle}>{title}{isPro && <Text style={styles.proBadge}>{t('components.featureCard.proBadge', 'PRO')}</Text>}</Text>
-        
+        {renderIcon()}
+        <Text style={[styles.cardTitle, rnStyleFromTokens({ size: 'lg', weight: 'bold' })]}>
+          {title}
+          {isPro && <Text style={styles.proBadge}>{t('components.featureCard.proBadge', 'PRO')}</Text>}
+        </Text>
       </View>
-      <Text style={styles.cardDescription}>{description}</Text>
+      <Text style={[styles.cardDescription, rnStyleFromTokens({ size: 'md' })]}>{description}</Text>
     </View>
-  );
+  )
 }
 
 const CARD_MIN_WIDTH = Math.min(420, Math.max(230, Math.floor(width / 1.1)));
@@ -57,8 +60,8 @@ const styles = StyleSheet.create({
     minWidth: CARD_MIN_WIDTH,
     flexBasis: CARD_MIN_WIDTH,
     borderRadius: 8,
-    paddingVertical: 24,
-    paddingHorizontal: 24,
+    paddingVertical: rnTokens.spacing.large,
+    paddingHorizontal: rnTokens.spacing.large,
     backgroundColor: '#fff',
     margin: 8,
     shadowColor: '#000',
@@ -67,7 +70,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardPro: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: rnTokens.colors.blue100.hex,
     borderColor: '#bfdbfe',
     borderWidth: 1,
   },
@@ -88,8 +91,7 @@ const styles = StyleSheet.create({
     color: '#2563eb',
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
+    // font styling migrated to rnStyleFromTokens in the render tree
     flex: 1,
   },
   proBadge: {
@@ -103,8 +105,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   cardDescription: {
-    color: '#475569',
-    marginTop: 12,
-    fontSize: 17,
+    color: rnTokens.colors.gray600.hex,
+    marginTop: rnTokens.spacing.small,
+    fontSize: rnTokens.textSizes.lg.size,
   },
 });

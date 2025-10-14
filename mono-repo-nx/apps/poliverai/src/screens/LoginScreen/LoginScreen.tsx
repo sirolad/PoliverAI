@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, View, Text, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Input } from '@poliverai/shared-ui';
-import { Button } from '@poliverai/shared-ui';
-import { Card } from '@poliverai/shared-ui';
+import { Input, Card, Button } from '@poliverai/shared-ui';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth, useTranslation } from '@poliverai/intl';
 import brandAssets from '../../../assets/brand';

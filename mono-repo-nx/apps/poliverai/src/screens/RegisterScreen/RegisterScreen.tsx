@@ -87,15 +87,16 @@ export const RegisterScreen: React.FC = () => {
               </View>
             ) : null}
 
-            <Input label={t('screens.register.form.fullNameLabel')} placeholder={t('screens.register.form.fullNamePlaceholder')} value={name} onChangeText={setName} error={undefined} />
-            <Input label={t('screens.register.form.emailLabel')} placeholder={t('screens.register.form.emailPlaceholder')} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={undefined} />
-            <Input label={t('screens.register.form.passwordLabel')} placeholder={t('screens.register.form.passwordPlaceholder')} value={password} onChangeText={setPassword} secureTextEntry error={undefined} />
-            <Input label={t('screens.register.form.confirmPasswordLabel')} placeholder={t('screens.register.form.confirmPasswordPlaceholder')} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry error={undefined} />
+            <Input label={t('screens.register.form.fullNameLabel')} placeholder={t('screens.register.form.fullNamePlaceholder')} value={name} onChangeText={(v) => { setName(v); setError(''); }} error={undefined} />
+            <Input label={t('screens.register.form.emailLabel')} placeholder={t('screens.register.form.emailPlaceholder')} value={email} onChangeText={(v) => { setEmail(v); setError(''); }} keyboardType="email-address" autoCapitalize="none" error={undefined} />
+            <Input label={t('screens.register.form.passwordLabel')} placeholder={t('screens.register.form.passwordPlaceholder')} value={password} onChangeText={(v) => { setPassword(v); setError(''); }} secureTextEntry error={undefined} />
+            <Input label={t('screens.register.form.confirmPasswordLabel')} placeholder={t('screens.register.form.confirmPasswordPlaceholder')} value={confirmPassword} onChangeText={(v) => { setConfirmPassword(v); setError(''); }} secureTextEntry error={undefined} />
 
             <Button title={isSubmitting ? t('screens.register.form.submitting') : t('screens.register.form.submit')} onPress={onSubmit} loading={isSubmitting} disabled={isSubmitting} />
 
             <View style={styles.footerText}>
-              <Text style={styles.smallText}>{t('screens.register.footer.haveAccount')}</Text>
+              <Text style={styles.smallText}>{t('screens.register.footer.haveAccount')}{' '}</Text>
+              <Text style={[styles.smallText, { color: '#2563eb', fontWeight: '700' }]} onPress={() => navigation?.navigate?.('Login' as never)}>{t('screens.register.footer.signIn')}</Text>
             </View>
           </View>
         </Card>
@@ -135,3 +136,5 @@ const styles = StyleSheet.create({
     alignSelf: 'center' 
   }
 });
+
+export default RegisterScreen;

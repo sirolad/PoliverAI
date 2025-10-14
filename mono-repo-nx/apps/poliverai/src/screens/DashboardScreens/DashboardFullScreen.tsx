@@ -1,179 +1,257 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card } from '@poliverai/shared-ui';
-import { FeatureCard } from '@poliverai/shared-ui';
-import { useAuth } from '@poliverai/intl';
-import { useTranslation } from '@poliverai/intl';
+import React from 'react'
+import { View, ScrollView, Text, StyleSheet } from 'react-native'
+import { useTranslation, useAuth } from '@poliverai/intl'
+import { getDefaultMonthRange, getCost, getCostForReport, computeSavedTotals, computeDerivedFree, formatRangeLabel as _formatRangeLabel } from '../../lib/dashboardHelpers'
+import useRampedCounters from '../../hooks/useRampedCounters'
+import { computeTransactionTotals } from '../../lib/transactionHelpers'
+import transactionsService from '../../services/transactions'
+import policyService from '../../services/policyService'
+import type { ReportMetadata } from '../../types/api'
+import { LoadingSpinner, rnTokens } from '@poliverai/shared-ui'
+import {
+  QuickActions,
+  AvailableFeatures,
+  GettingStarted,
+  DashboardHeader,
+  AccountStatus,
+} from '../../components/dashboard'
 
-export const DashboardFullScreen: React.FC = () => {
-	const { user, isAuthenticated, isLoading } = useAuth();
-	const { t, get } = useTranslation();
+// Local lightweight fallbacks until the RN app store is fully wired
+const useAppDispatch = () => () => {}
+const useAppSelector = (_sel: unknown) => ({ events: [], legacyCounts: {} } as { events: unknown[]; legacyCounts: Record<string, number> })
+const computeDeletedCountsForRange = (_events: unknown, _legacy: unknown, _range: unknown) => ({ full: 0, revision: 0, free: 0 })
 
-	// Local types for locale-provided arrays
-	type Feature = { emoji: string; title: string; description: string; isPro?: boolean };
-	type Step = { n: number; title: string; desc: string };
+const formatRangeLabel = (range: { from: string | null; to: string | null } | null, defFrom: string | null, defTo: string | null) => _formatRangeLabel(range, defFrom ?? '', defTo ?? '')
 
-	// AuthContext does not include an `isPro` flag on the User type by default.
-	// Safely derive a boolean from the user object if present (keeps TypeScript happy
-	// and avoids changing the shared AuthContext shape here).
-	// Local type guard for user objects that might include an isPro flag
-	const isUserWithPro = (u: unknown): u is { isPro?: boolean } => !!u && typeof u === 'object' && 'isPro' in (u as Record<string, unknown>);
-	const isPro: boolean = isUserWithPro(user) ? Boolean(user.isPro) : false;
+type DashboardUser = { subscription_credits?: number; credits?: number; subscription_expires?: string | null } | null
 
-	if (isLoading) {
-		return (
-			<SafeAreaView style={styles.container}>
-				<View style={styles.center}><Text>{t('common.loading', 'Loading...')}</Text></View>
-			</SafeAreaView>
-		);
-	}
+type ReportMetadataMinimal = {
+  is_full_report?: boolean
+  status?: string
+  type?: string
+  analysis_mode?: string | number
+  filename?: string
+}
 
-	if (!isAuthenticated) {
-		// If not authenticated, render a placeholder — navigation should protect this route.
-		return (
-			<SafeAreaView style={styles.container}>
-				<View style={styles.center}><Text>{t('screens.login.header.subtitle', 'Sign in to access your GDPR compliance dashboard')}</Text></View>
-			</SafeAreaView>
-		);
-	}
+export default function DashboardFullScreen(): React.ReactElement {
+  const { t } = useTranslation()
+  const authFromIntl = useAuth() as unknown as { user?: Record<string, unknown> | null; isAuthenticated?: boolean; isPro?: boolean; loading?: boolean; refreshUser?: () => Promise<void>; reportsCount?: number }
+  const { user, isAuthenticated, isPro = false, loading = false, refreshUser, reportsCount } = authFromIntl
 
-	// Load feature lists from locales; fall back to inline defaults if missing
-	const freeFeatures = (get('screens.dashboard.features.free') as Feature[]) || [
-		{ emoji: '✅', title: 'Policy Verification', description: 'Upload and analyze privacy policies with basic GDPR compliance checks', isPro: false },
-		{ emoji: '⏱️', title: 'Fast Analysis', description: 'Quick rule-based compliance screening', isPro: false },
-		{ emoji: '🛡️', title: 'Basic Recommendations', description: 'Get essential compliance improvement suggestions', isPro: false },
-	];
+  const subscriptionCredits = Number((user && (user as Record<string, unknown>).subscription_credits) ?? 0)
+  const purchasedCredits = Number((user && (user as Record<string, unknown>).credits) ?? 0)
+  const effectiveCredits = subscriptionCredits + purchasedCredits
+  const hasCredits = effectiveCredits > 0
 
-	const proFeatures = (get('screens.dashboard.features.pro') as Feature[]) || [
-		{ emoji: '⚡', title: 'AI-Powered Analysis', description: 'Advanced AI analysis with nuanced violation detection', isPro: !!isPro },
-		{ emoji: '📊', title: 'Comprehensive Reports', description: 'Detailed PDF reports with confidence scores and evidence', isPro: !!isPro },
-		{ emoji: '📝', title: 'Policy Generation', description: 'Automatically generate revised compliant policies', isPro: !!isPro },
-	];
+  const [userReports, setUserReports] = React.useState<ReportMetadata[] | null>(null)
+  const [completedReports, setCompletedReports] = React.useState<ReportMetadata[] | null>(null)
 
-	return (
-		<SafeAreaView style={styles.container}>
-			<ScrollView contentContainerStyle={styles.content}>
-				<View style={styles.header}>
-					{/* welcome template uses {{name}} placeholder; replace manually */}
-					<Text style={styles.title}>{(get('screens.dashboard.header.welcome') as string || 'Welcome back, {{name}}!').replace('{{name}}', user?.name ?? '')}</Text>
-					<Text style={styles.subtitle}>{t('screens.dashboard.header.subtitle')}</Text>
-				</View>
+  const { from: defaultFrom, to: defaultTo } = getDefaultMonthRange()
+  const [reportsRange, setReportsRange] = React.useState<{ from: string | null; to: string | null }>({ from: defaultFrom, to: defaultTo })
+  const [completedRange, setCompletedRange] = React.useState<{ from: string | null; to: string | null }>({ from: defaultFrom, to: defaultTo })
+  const [txRange, setTxRange] = React.useState<{ from: string | null; to: string | null }>({ from: defaultFrom, to: defaultTo })
 
-				<Card style={{ marginBottom: 16 }}>
-					<View style={styles.cardRow}>
-						<View style={{ flex: 1 }}>
-							<Text style={styles.cardTitle}>{t('screens.dashboard.account.title')}</Text>
-							<Text style={styles.cardDesc}>{(get('screens.dashboard.account.status') as string || 'You are currently on the {{plan}} plan').replace('{{plan}}', isPro ? 'Pro' : 'Free')}</Text>
-						</View>
-						<View style={styles.cardActions}>
-							<View style={[styles.planPill, isPro ? styles.proPill : styles.freePill]}>
-								<Text style={styles.planText}>{isPro ? t('screens.dashboard.account.planLabel.pro', 'PRO PLAN') : t('screens.dashboard.account.planLabel.free', 'FREE PLAN')}</Text>
-							</View>
-							{!isPro && (
-								<TouchableOpacity style={[styles.upgradeButton]}>
-									<Text style={{ color: '#fff', fontWeight: '700' }}>{t('screens.dashboard.account.upgrade', 'Upgrade to Pro')}</Text>
-								</TouchableOpacity>
-							)}
-						</View>
-					</View>
-				</Card>
+  const [txTotals, setTxTotals] = React.useState<{ total_bought_credits?: number; total_spent_credits?: number; total_subscription_usd?: number; total_subscription_credits?: number } | null>(null)
 
-				<View style={{ marginBottom: 16 }}>
-					<Text style={styles.sectionTitle}>{t('screens.dashboard.quickActions.title', 'Quick Actions')}</Text>
-					<View style={styles.quickActionsRow}>
-									<TouchableOpacity style={[styles.quickActionCard]}>
-										<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-															<View style={[{ width: 28, height: 28, borderRadius: 6, backgroundColor: '#e0f2fe', alignItems: 'center', justifyContent: 'center', marginRight: 8 }]} accessibilityRole="image" accessibilityLabel="Analyze New Policy">
-																<Text style={{ fontSize: 14 }}>A</Text>
-															</View>
-															<Text style={styles.quickActionTitle}>{t('screens.dashboard.quickActions.analyze.title', 'Analyze New Policy')}</Text>
-										</View>
-										<Text style={styles.quickActionDesc}>{t('screens.dashboard.quickActions.analyze.desc', 'Upload a privacy policy for GDPR compliance analysis')}</Text>
-									</TouchableOpacity>
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const respRaw = await policyService.getUserReports({ date_from: reportsRange.from, date_to: reportsRange.to })
+        if (!mounted) return
+        const resp = respRaw as unknown as { reports?: ReportMetadata[] } | ReportMetadata[]
+        if (Array.isArray(resp)) setUserReports(resp)
+        else setUserReports(resp.reports ?? [])
+      } catch {
+        if (mounted) setUserReports([])
+      }
+    })()
+    return () => { mounted = false }
+  }, [reportsRange.from, reportsRange.to])
 
-						{isPro && (
-											<TouchableOpacity style={[styles.quickActionCard]}>
-												<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-																		<View style={[{ width: 28, height: 28, borderRadius: 6, backgroundColor: '#d1fae5', alignItems: 'center', justifyContent: 'center', marginRight: 8 }]} accessibilityRole="image" accessibilityLabel="View Reports">
-																			<Text style={{ fontSize: 14 }}>R</Text>
-																		</View>
-																		<Text style={styles.quickActionTitle}>{t('screens.dashboard.quickActions.reports.title', 'View Reports')}</Text>
-												</View>
-												<Text style={styles.quickActionDesc}>{t('screens.dashboard.quickActions.reports.desc', 'Access your detailed compliance reports and history')}</Text>
-											</TouchableOpacity>
-						)}
-					</View>
-				</View>
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const respRaw = await policyService.getUserReports({ date_from: completedRange.from, date_to: completedRange.to })
+        if (!mounted) return
+        const resp = respRaw as unknown as { reports?: ReportMetadata[] } | ReportMetadata[]
+        if (Array.isArray(resp)) setCompletedReports(resp)
+        else setCompletedReports(resp.reports ?? [])
+      } catch {
+        if (mounted) setCompletedReports([])
+      }
+    })()
+    return () => { mounted = false }
+  }, [completedRange.from, completedRange.to])
 
-				<View style={{ marginBottom: 16 }}>
-					<Text style={styles.sectionTitle}>{t('screens.dashboard.features.title', 'Your Features')}</Text>
+  const { totalSavedFiles, fullReportsSaved, revisedDocsSaved, totalSavedCredits, totalSavedUsd, freeReportsSaved } = computeSavedTotals(userReports)
+  const hasStatusField = !!((userReports && userReports.find((r) => typeof (r as ReportMetadataMinimal).status !== 'undefined')) || (completedReports && completedReports.find((r) => typeof (r as ReportMetadataMinimal).status !== 'undefined')))
 
-					<Text style={styles.subheading}>{t('screens.dashboard.features.freeHeading', 'Free Plan Features')}</Text>
-					<View style={styles.featuresGrid}>
-						{freeFeatures.map((f, i) => (
-							<FeatureCard key={i} {...f} />
-						))}
-					</View>
+  const fullReportsDone = (completedReports !== null)
+    ? (hasStatusField ? completedReports.filter((r) => (r as ReportMetadataMinimal).is_full_report && ((r as ReportMetadataMinimal).status === 'completed')).length : (completedReports.filter((r) => (r as ReportMetadataMinimal).is_full_report).length))
+    : (userReports ? (hasStatusField ? userReports.filter((r) => (r as ReportMetadataMinimal).is_full_report && ((r as ReportMetadataMinimal).status === 'completed')).length : fullReportsSaved) : null)
 
-					<Text style={[styles.subheading, { marginTop: 12 }]}>{t('screens.dashboard.features.proHeading', 'Pro Plan Features')}</Text>
-					<View style={styles.featuresGrid}>
-						{proFeatures.map((f, i) => (
-							<FeatureCard key={i} {...f} />
-						))}
-					</View>
-				</View>
+  const revisedCompleted = (completedReports !== null)
+    ? (hasStatusField ? completedReports.filter((r) => (r as ReportMetadataMinimal).type === 'revision' && ((r as ReportMetadataMinimal).status === 'completed')).length : (completedReports.filter((r) => (r as ReportMetadataMinimal).type === 'revision').length))
+    : (userReports ? (hasStatusField ? userReports.filter((r) => (r as ReportMetadataMinimal).type === 'revision' && ((r as ReportMetadataMinimal).status === 'completed')).length : revisedDocsSaved) : null)
 
-				<Card>
-					<View style={{ padding: 12 }}>
-						<Text style={styles.cardTitle}>{t('screens.dashboard.gettingStarted.title', 'Getting Started')}</Text>
-						<Text style={styles.cardDesc}>{t('screens.dashboard.gettingStarted.lead', "New to PoliverAI? Here's how to get the most out of your account")}</Text>
+  const derivedFreeReportsSaved = computeDerivedFree(totalSavedFiles, fullReportsSaved, revisedDocsSaved)
+  const freeReportsSavedDisplay = derivedFreeReportsSaved !== null ? derivedFreeReportsSaved : freeReportsSaved
+  const freeReportsCompleted = userReports
+    ? (hasStatusField ? userReports.filter((r) => (((r as ReportMetadataMinimal).analysis_mode || '').toString() === 'fast') && ((r as ReportMetadataMinimal).status === 'completed')).length : freeReportsSaved)
+    : null
 
-						<View style={{ marginTop: 12 }}>
-							{((get('screens.dashboard.gettingStarted.steps') as Step[]) || []).map((s) => (
-								<View key={s.n} style={styles.stepRow}>
-									<View style={styles.stepNumber}><Text style={styles.stepNumberText}>{s.n}</Text></View>
-									<View style={{ flex: 1 }}>
-										<Text style={styles.stepTitle}>{s.title}</Text>
-										<Text style={styles.stepDesc}>{s.desc}</Text>
-									</View>
-								</View>
-							))}
-						</View>
-					</View>
-				</Card>
-			</ScrollView>
-		</SafeAreaView>
-	);
-};
+  // store dispatch/selectors are not yet wired in RN; use local no-op placeholders
+  const dispatch = useAppDispatch()
+  const deletedState = useAppSelector((_: unknown) => ({ events: [], legacyCounts: {} } as { events: unknown[]; legacyCounts: Record<string, number> }))
+
+  React.useEffect(() => {
+    const handler = (_ev: unknown) => {
+      // In RN we don't have the deletedReports store yet; keep handler as a no-op
+      // TODO: integrate with RN store/event emitter to track deleted reports
+      return undefined
+    }
+    // on native, window events may not be used; keep for parity if code emits them elsewhere
+    if (typeof window !== 'undefined' && window?.addEventListener) {
+      window.addEventListener('reports:deleted', handler as EventListener)
+      return () => window.removeEventListener('reports:deleted', handler as EventListener)
+    }
+    return undefined
+  }, [dispatch])
+
+  const displayedDeletedCounts = computeDeletedCountsForRange(deletedState.events, deletedState.legacyCounts, reportsRange)
+
+  const dashboardLoaded = !loading && (userReports !== null) && (txTotals !== null) && (completedReports !== null)
+
+  const savedTargets = {
+    totalSavedFiles: Number(totalSavedFiles ?? 0),
+    fullReportsSaved: Number(fullReportsSaved ?? 0),
+    revisedDocsSaved: Number(revisedDocsSaved ?? 0),
+    freeReportsSaved: Number(freeReportsSavedDisplay ?? 0),
+    totalSavedCredits: Number(totalSavedCredits ?? 0),
+    totalSavedUsd: Number(totalSavedUsd ?? 0),
+  }
+  const animatedSaved = useRampedCounters(savedTargets, dashboardLoaded, { durationMs: 1400, maxSteps: 6, minIntervalMs: 60 })
+
+  const deletedTargets = {
+    deletedFull: Number(displayedDeletedCounts.full ?? 0),
+    deletedRevision: Number(displayedDeletedCounts.revision ?? 0),
+    deletedFree: Number(displayedDeletedCounts.free ?? 0),
+    deletedTotal: Number((displayedDeletedCounts.full || 0) + (displayedDeletedCounts.revision || 0) + (displayedDeletedCounts.free || 0)),
+  }
+  const animatedDeleted = useRampedCounters(deletedTargets, dashboardLoaded, { durationMs: 1200, maxSteps: 6, minIntervalMs: 60 })
+
+  const completedTargets = {
+    fullReportsDone: Number(fullReportsDone ?? 0),
+    revisedCompleted: Number(revisedCompleted ?? 0),
+    freeReportsCompleted: Number(freeReportsCompleted ?? 0),
+  }
+  const animatedCompleted = useRampedCounters(completedTargets, dashboardLoaded, { durationMs: 1200, maxSteps: 6, minIntervalMs: 60 })
+
+  const txTargets = {
+    total_bought_credits: Number(txTotals?.total_bought_credits ?? 0),
+    total_spent_credits: Number(txTotals?.total_spent_credits ?? 0),
+    total_subscription_usd: Number(txTotals?.total_subscription_usd ?? 0),
+  }
+  const animatedTx = useRampedCounters(txTargets, dashboardLoaded, { durationMs: 1400, maxSteps: 6, minIntervalMs: 80 })
+
+  const creditsTargets = {
+    subscriptionCredits: subscriptionCredits,
+    purchasedCredits: purchasedCredits,
+    effectiveCredits: effectiveCredits,
+  }
+  const animatedCredits = useRampedCounters(creditsTargets, dashboardLoaded, { durationMs: 1600, maxSteps: 6, minIntervalMs: 80 })
+
+  React.useEffect(() => { return undefined }, [reportsRange.from, reportsRange.to])
+
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const resp = await transactionsService.listTransactions({ page: 1, limit: 1000, date_from: txRange.from ?? undefined, date_to: txRange.to ?? undefined })
+        if (!mounted) return
+        const txs = resp.transactions ?? []
+        const { total_bought_credits, total_spent_credits, total_subscription_usd, total_subscription_credits } = computeTransactionTotals(txs, resp)
+        setTxTotals({ total_bought_credits: total_bought_credits || undefined, total_spent_credits: total_spent_credits || undefined, total_subscription_usd: total_subscription_usd || undefined, total_subscription_credits: total_subscription_credits || undefined })
+      } catch {
+        if (mounted) setTxTotals(null)
+      }
+    })()
+    return () => { mounted = false }
+  }, [txRange.from, txRange.to])
+
+  // Refresh user when payment/transaction events occur elsewhere in the app
+  React.useEffect(() => {
+    const handler = () => {
+      try {
+  if (refreshUser) refreshUser().catch(() => undefined)
+      } catch {
+        // ignore
+      }
+    }
+    // On RN, global event emitters should be used; for parity keep window-based handlers if available
+    if (typeof window !== 'undefined' && window?.addEventListener) {
+      window.addEventListener('payment:refresh-user', handler as EventListener)
+      window.addEventListener('transactions:refresh', handler as EventListener)
+      return () => { window.removeEventListener('payment:refresh-user', handler as EventListener); window.removeEventListener('transactions:refresh', handler as EventListener) }
+    }
+    return undefined
+  }, [refreshUser])
+
+  if (loading) return <View style={styles.centered}><LoadingSpinner message={t('dashboard.loading')} size="lg" /></View>
+  if (!isAuthenticated) return <View style={styles.centered}><Text>{t('auth.not_authenticated') || 'Please sign in'}</Text></View>
+
+  return (
+    <ScrollView style={styles.page} contentContainerStyle={styles.container}>
+      <DashboardHeader />
+
+      <AccountStatus
+        isPro={!!isPro}
+        user={user as DashboardUser}
+        dashboardLoaded={dashboardLoaded}
+        animatedCredits={animatedCredits}
+        animatedSaved={animatedSaved}
+        animatedDeleted={animatedDeleted}
+        animatedCompleted={animatedCompleted}
+        animatedTx={animatedTx}
+        reportsRange={reportsRange}
+        setReportsRange={setReportsRange}
+        completedRange={completedRange}
+        setCompletedRange={setCompletedRange}
+        txRange={txRange}
+        setTxRange={setTxRange}
+        defaultFrom={defaultFrom}
+        defaultTo={defaultTo}
+        getCostForReport={(r: unknown) => getCostForReport(r as ReportMetadata)}
+        userReports={(userReports ?? undefined) as unknown[] | undefined}
+        txTotals={(txTotals ?? undefined) as { total_bought_credits?: number; total_spent_credits?: number } | undefined}
+        totalSavedCredits={totalSavedCredits ?? undefined}
+        totalSavedUsd={totalSavedUsd ?? undefined}
+        formatRangeLabel={formatRangeLabel}
+      />
+
+      <QuickActions reportsCount={reportsCount ?? undefined} />
+
+      <AvailableFeatures getCost={getCost} hasCredits={hasCredits} />
+
+      <GettingStarted />
+    </ScrollView>
+  )
+}
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: '#F8FAFC' },
-	content: { padding: 16 },
-	center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-	header: { marginBottom: 12 },
-	title: { fontSize: 22, fontWeight: '800', color: '#0f172a' },
-	subtitle: { color: '#64748b', marginTop: 4 },
-	cardRow: { flexDirection: 'row', alignItems: 'center' },
-	cardTitle: { fontSize: 18, fontWeight: '800' },
-	cardDesc: { color: '#64748b', marginTop: 4 },
-	cardActions: { alignItems: 'flex-end' },
-	planPill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, marginBottom: 8 },
-	proPill: { backgroundColor: '#e0f2fe' },
-	freePill: { backgroundColor: '#ecfdf5' },
-	planText: { fontWeight: '800', color: '#0f172a' },
-	upgradeButton: { backgroundColor: '#2563eb', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginTop: 6 },
-	sectionTitle: { fontSize: 18, fontWeight: '800', marginBottom: 8 },
-	quickActionsRow: { flexDirection: 'row', gap: 12 },
-	quickActionCard: { flex: 1, backgroundColor: '#fff', padding: 12, borderRadius: 8, marginRight: 8 },
-	quickActionTitle: { fontWeight: '700', marginBottom: 4 },
-	quickActionDesc: { color: '#64748b' },
-	featuresGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-	subheading: { fontSize: 16, fontWeight: '700', marginBottom: 8 },
-	stepRow: { flexDirection: 'row', gap: 12, marginBottom: 12, alignItems: 'flex-start' },
-	stepNumber: { backgroundColor: '#e0f2fe', width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: 8 },
-	stepNumberText: { fontWeight: '800' },
-	stepTitle: { fontWeight: '700' },
-	stepDesc: { color: '#64748b' },
-});
-
+  page: {
+    flex: 1,
+    backgroundColor: rnTokens.colors?.pageBg ?? '#fff',
+  },
+  container: {
+    padding: 16,
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+})
