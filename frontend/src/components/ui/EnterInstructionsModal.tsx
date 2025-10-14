@@ -55,7 +55,7 @@ export default function EnterInstructionsModal({ open, initial = '', onClose, on
         </div>
         <div className={twFromTokens(spacing.card)}>
           <p className={twFromTokens(textSizes.sm, colors.textMuted, spacing.smallTop)}>{t('enter_instructions_modal.description')}</p>
-          <div className={twFromTokens(alignment.flexCol, alignment.gap3)}>
+          <div className={twFromTokens(alignment.flexCol, alignment.gap3, spacing.mt3)}>
             <textarea
               className={twFromTokens(spacing.input, 'h-40', 'resize-y')}
               value={instructions}

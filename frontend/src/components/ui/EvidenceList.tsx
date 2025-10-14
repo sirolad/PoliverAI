@@ -27,7 +27,7 @@ export default function EvidenceList({ evidence, limit = 6 }: Props) {
       <div className={twFromTokens(spacing.tinyTop, alignment.flexCol, alignment.gap2)}>
         {items.length > 0 ? (
           items.map((ev, i) => (
-            <div key={i} className={twFromTokens(spacing.cardDefault, 'rounded shadow', colors.success, colors.onPrimary)}>
+            <div key={i} className={twFromTokens(spacing.cardDefault, 'rounded shadow', colors.greenBg, colors.onPrimary)}>
               <div className={twFromTokens(alignment.flexRow, alignment.itemsStart, alignment.gap3)}>
                 <div className={twFromTokens(spacing.iconWrapperCompact, 'rounded bg-white/10 flex-shrink-0')}>
                   <FileText className={twFromTokens(spacing.iconsMd, colors.onPrimary)} />

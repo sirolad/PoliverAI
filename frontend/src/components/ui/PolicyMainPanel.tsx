@@ -7,7 +7,6 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import FreeReportView from '@/components/ui/FreeReportView'
 import NoAnalysisView from '@/components/ui/NoAnalysisView'
 import FullReportDashboard from '@/components/ui/FullReportDashboard'
-import EvidenceList from '@/components/ui/EvidenceList'
 import FullReportPrompt from '@/components/ui/FullReportPrompt'
 import RevisedPolicyPreview from '@/components/ui/RevisedPolicyPreview'
 import { t } from '@/i18n'
@@ -91,9 +90,6 @@ export default function PolicyMainPanel({
                 fullReportSource ? (
                   <div>
                     <FullReportDashboard src={fullReportSource as Record<string, unknown>} />
-                    <div className={twFromTokens(spacing.smallTop)}>
-                      <EvidenceList evidence={(fullReportSource as Record<string, unknown>)['evidence'] as Array<Record<string, unknown>> | null} />
-                    </div>
                   </div>
                 ) : (
                   <div>

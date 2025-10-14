@@ -4,6 +4,7 @@ import { t } from '@/i18n'
 import { twFromTokens, textSizes, colors, fontWeights, spacing, alignment } from '@/styles/styleTokens'
 import useScoreStars from '@/hooks/useScoreStars'
 import BrandBlock from '../ui/BrandBlock'
+import EvidenceList from './EvidenceList'
 
 type Props = {
   src: Record<string, unknown>
@@ -15,6 +16,7 @@ export default function FullReportDashboard({ src }: Props) {
   const findings = (src['findings'] ?? []) as Array<Record<string, unknown>>
   const recommendations = (src['recommendations'] ?? []) as Array<Record<string, unknown>>
   const metrics = (src['metrics'] ?? {}) as Record<string, unknown>
+  const evidence = (src['evidence'] ?? []) as Array<Record<string, unknown>>
 
   const { sc, full, half, empty } = useScoreStars(score)
 
@@ -121,7 +123,10 @@ export default function FullReportDashboard({ src }: Props) {
             })()}
           </div>
 
-          {/* Evidence slot is handled by the parent component in PolicyAnalysis */}
+          
+            <div className={twFromTokens(spacing.smallTop)}>
+                <EvidenceList evidence={evidence ?? null} />
+            </div>
         </aside>
       </div>
       <BrandBlock hasBackground showCopyrightText={false} showAndelaLogo={false} showPartnershipText={false} />
