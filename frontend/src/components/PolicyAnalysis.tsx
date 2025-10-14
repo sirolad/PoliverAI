@@ -240,7 +240,10 @@ export default function PolicyAnalysis() {
       } else {
         setRevisedPolicy(resp as unknown as ReportDetail)
         // some reports include inline content
-        try { setDetailedContent(String((resp as unknown as Record<string, unknown>)?.content ?? null) as string | null) } catch { /* ignore */ }
+        try {
+          const maybeContent = (resp as unknown as Record<string, unknown>)?.content
+          setDetailedContent(typeof maybeContent === 'string' ? maybeContent : null)
+        } catch { /* ignore */ }
       }
       setMessage(t('policy_analysis.loaded'))
       setProgress(100)
@@ -516,13 +519,14 @@ export default function PolicyAnalysis() {
   // content (e.g., a PDF), the backend may provide a `download_url`. Build
   // a stable download URL to embed or open in the UI.
   const detailedDownloadUrl: string | null = (() => {
-    if (!detailedReport || !revisedPolicy) return null
+    if (!detailedReport && !revisedPolicy) return null
     // prefer explicit download_url field if present. Use unknown->Record check
     // to avoid casting to `any` which the linter flags.
     const maybe = (activeTab === 'full' ? detailedReport : revisedPolicy) as unknown as Record<string, unknown>
-    if (maybe.download_url && typeof maybe.download_url === 'string') return String(maybe.download_url)
-    if (typeof detailedReport.filename === 'string' && detailedReport.filename && activeTab === 'full') return getReportDownloadUrl(detailedReport.filename)
-    if (typeof revisedPolicy.filename === 'string' && revisedPolicy.filename && activeTab === 'revised') return getReportDownloadUrl(revisedPolicy.filename)
+  if (maybe.download_url && typeof maybe.download_url === 'string') return String(maybe.download_url)
+  // Use the resolved `maybe` record for filename checks to avoid null access
+  if (activeTab === 'full' && maybe && typeof maybe['filename'] === 'string' && (maybe['filename'] as string)) return getReportDownloadUrl(String(maybe['filename']))
+  if (activeTab === 'revised' && maybe && typeof maybe['filename'] === 'string' && (maybe['filename'] as string)) return getReportDownloadUrl(String(maybe['filename']))
     return null
   })()
 
