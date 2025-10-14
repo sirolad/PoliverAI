@@ -29,7 +29,7 @@ const MEMBERS: Member[] = [
 
 function Avatar({ img, name }: { img?: string | null; name: string }) {
   if (img) {
-    return <img src={img} alt={name} className={twFromTokens('rounded-full object-cover', spacing.emptyOuterMd)} />
+    return <img src={img} alt={name} className={twFromTokens('rounded-full object-cover', spacing.emptyOuterMd2)} />
   }
   // simple placeholder stacked circles (larger)
   return (

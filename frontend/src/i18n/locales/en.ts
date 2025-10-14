@@ -529,6 +529,14 @@ const en = {
     no_analysis_yet_desc: 'Upload a policy file and click Analyze to run a quick analysis.',
     no_findings_detected: 'No findings detected.',
     top_findings: 'Top Findings',
+  top_controls: {
+    title: 'Policy analysis',
+    subtitle: 'Review and generate reports for uploaded policies.',
+    summary: 'Summary: {verdict} — score {score}',
+    how_it_works: 'How it works',
+    reset: 'Reset',
+    save_report: 'Save report'
+  },
   result_summary_compact: '{verdict} • Score {score}',
   verdict_label: 'Verdict',
   confidence_label: 'Confidence: {pct}%',

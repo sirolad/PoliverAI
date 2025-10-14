@@ -36,10 +36,10 @@ export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Pr
   }
 
   return (
-    <div className={twFromTokens('fixed inset-0 z-50', spacing.fullScreenCenter)}>
+    <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsCenter, alignment.flex, alignment.flex)}>
       <div className={getModalBackdropClass()} onClick={onClose}></div>
       <div className={getModalContainerClass()}>
-        <div className={twFromTokens(spacing.modalPadding, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+        <div className={twFromTokens(spacing.card, 'border-b', alignment.flex, alignment.itemsCenter, alignment.justifyBetween)}>
           <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
             {/** optional icon shown left of title */}
             {typeof icon !== 'undefined' ? <div className={twFromTokens(colors.textSecondary)}>{icon}</div> : null}
@@ -48,7 +48,7 @@ export default function EnterCreditsModal({ open, onClose, onConfirm, icon }: Pr
           <IconButton onClick={onClose} aria-label={t('enter_credits_modal.close_aria')}><X /></IconButton>
         </div>
         <div className={twFromTokens(spacing.modalPadding)}>
-          <p className={twFromTokens(baseFontSizes.sm, colors.textMuted, spacing.smallTop)}>{t('enter_credits_modal.description')}</p>
+          <p className={twFromTokens(baseFontSizes.sm, colors.textMuted, spacing.headingMargin)}>{t('enter_credits_modal.description')}</p>
           <MetaLine>{t('enter_credits_modal.meta')}</MetaLine>
           <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
             <input

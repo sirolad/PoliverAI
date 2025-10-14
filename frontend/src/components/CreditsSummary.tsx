@@ -18,7 +18,7 @@ const CreditsSummary: FC<Props> = ({ isCompactUnderHeader, statsLoaded, animated
   if (mobileCompact) {
     // compact horizontal bar used on smallest screens
     return (
-      <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
+      <div className={twFromTokens(alignment.flex, alignment.itemsCenter, alignment.justifyBetween, alignment.gap3)}>
         <div className={twFromTokens(alignment.flexRow, alignment.gap3)}>
           <div className={twFromTokens(spacing.iconWrapperCompact, colors.primaryBgLight)}>
             <Shield className={twFromTokens(spacing.iconsMd, colors.primary)} />

@@ -540,7 +540,7 @@ export default function PolicyAnalysis() {
         </div>
 
         {(result || reportFilename) ? (
-          <div className={twFromTokens(alignment.itemsCenter, 'gap-2')}>
+          <div className={twFromTokens(alignment.flex, alignment.itemsCenter, 'gap-2')}>
             {/* Download button removed per UX update */}
 
                 <Button
@@ -564,7 +564,7 @@ export default function PolicyAnalysis() {
 
             <Button
               disabled={!result}
-              onClick={() => { const initial = 'html'; setTitleModalInitial(initial); setTitleModalOpen(true) }}
+              onClick={() => { const initial = ''; setTitleModalInitial(initial); setTitleModalOpen(true) }}
               className={twFromTokens(buttons.small, 'disabled:opacity-50', 'bg-green-600', colors.ctaText)}
               icon={<Save className={twFromTokens('h-4 w-4')} />}
               iconColor="text-white"

@@ -6,7 +6,7 @@ type Props = { finding: Finding }
 
 export default function FindingCard({ finding }: Props) {
   const sev = finding.severity
-  const bgToken = sev === 'high' ? colors.dangerBg : sev === 'medium' ? colors.warningBg : colors.successBg
+  const bgToken = sev === 'high' ? colors.deepRedBg : sev === 'medium' ? colors.warningBgStrong : colors.successBgStrong
   return (
     <div className={twFromTokens(bgToken, spacing.cardDefault, 'rounded shadow')}>
       <div className={twFromTokens(alignment.flexRow, alignment.itemsStart, alignment.gap3)}>

@@ -7,11 +7,11 @@ import { t } from '@/i18n'
 import { twFromTokens, textSizes, colors, fontWeights, hoverFromColor, spacing, alignment } from '@/styles/styleTokens'
 import { Button } from '@/components/ui/Button'
 import LoadingLabel from '@/components/ui/LoadingLabel'
-import { Card, CardContent, CardHeader } from '@/components/ui/Card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 import FormField from '@/components/ui/FormField'
 import useAuth from '@/contexts/useAuth'
-import { Mail, Lock, AlertCircle, LogIn, UserPlus } from 'lucide-react'
+import { Mail, Lock, AlertCircle, LogIn } from 'lucide-react'
 
 const loginSchema = z.object({
   email: z.string().email(t('auth.register.validation_email')),
@@ -69,9 +69,9 @@ export function Login() {
   return (
     <div className={twFromTokens(spacing.fullScreenCenter, colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
       <div className={twFromTokens(spacing.containerMaxMd, alignment.gap4)}>
-        <div className={twFromTokens(alignment.centerColumn)}>
+        <div className={twFromTokens(alignment.centerColumnMargined)}>
           <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className={twFromTokens('h-48', 'mx-auto')} />
-          <h2 className={twFromTokens(spacing.sectionButtonTop, fontWeights.bold, textSizes.h1, colors.textPrimary)}>{t('auth_login.welcome_title')}</h2>
+          <h2 className={twFromTokens(spacing.sectionButtonTop, fontWeights.bold, textSizes.h2, colors.textPrimary)}>{t('auth_login.welcome_title')}</h2>
           <p className={twFromTokens(spacing.tinyTop, textSizes.sm, colors.textMuted)}>
             {t('auth_login.welcome_subtitle')}
           </p>
@@ -79,7 +79,10 @@ export function Login() {
 
         <Card>
           <CardHeader>
-            {/* header content (omitted) */}
+            <CardTitle>{t('auth_login.sign_in_title')}</CardTitle>
+            <CardDescription>
+              {t('auth_login.sign_in_desc')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className={twFromTokens(alignment.flexCol, alignment.gap4)}>
@@ -90,11 +93,11 @@ export function Login() {
                 </div>
               )}
 
-              <FormField id="email" label={t('auth.register.email_label')} icon={<Mail />} error={errors.email?.message}>
+              <FormField id="email" label={t('auth.register.email_label')} icon={<Mail className={twFromTokens(colors.mutedText, 'h-4')} />} error={errors.email?.message}>
                 <Input id="email" type="email" placeholder={t('auth.register.email_placeholder')} className="pl-10" {...register('email')} />
               </FormField>
 
-              <FormField id="password" label={t('auth.register.password_label')} icon={<Lock />} error={errors.password?.message}>
+              <FormField id="password" label={t('auth.register.password_label')} icon={<Lock className={twFromTokens(colors.mutedText, 'h-4')} />} error={errors.password?.message}>
                 <Input id="password" type="password" placeholder={t('auth.register.password_placeholder')} className="pl-10" {...register('password')} />
               </FormField>
 
@@ -114,8 +117,7 @@ export function Login() {
               <div className="text-center">
                 <p className={twFromTokens(textSizes.sm, colors.textMuted)}>
                   {t('auth_login.no_account_prefix')}{' '}
-                  <Link to="/register" className={twFromTokens(textSizes.sm, fontWeights.medium, alignment.flexRow, alignment.itemsCenter, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
-                    <UserPlus className={twFromTokens(spacing.iconsXs)} />
+                  <Link to="/register" className={twFromTokens(textSizes.sm, fontWeights.medium, alignment.itemsCenter, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
                     {t('auth_login.sign_up_cta')}
                   </Link>
                 </p>

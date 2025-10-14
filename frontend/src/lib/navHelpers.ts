@@ -1,11 +1,11 @@
-import { twFromTokens, colors, textSizes, fontWeights } from '@/styles/styleTokens'
+import { twFromTokens, colors, textSizes, fontWeights, spacing } from '@/styles/styleTokens'
 
 export function badgeClass(isPro: boolean) {
-  return twFromTokens('px-3 py-1 rounded-full', textSizes.sm, fontWeights.medium, isPro ? colors.primaryBgLight : colors.successBg, isPro ? colors.primaryMuted : colors.success)
+  return twFromTokens(spacing.badgePadding, 'rounded-full', textSizes.sm, fontWeights.medium, isPro ? colors.primaryBgLight : colors.successBg, isPro ? colors.primaryOnLight : colors.success)
 }
 
-export function badgeText(isPro: boolean) {
-  return isPro ? 'PRO' : 'FREE'
+export function badgeText(isPro: boolean, hasPlanText?: boolean) {
+  return isPro ? `PRO${(hasPlanText) ? ' PLAN' : ''}`     : 'FREE'
 }
 
 export function formatCredits(total: number) {

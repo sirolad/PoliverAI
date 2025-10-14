@@ -33,5 +33,11 @@ export default function usePricing() {
     onUpgrade: useCallback(() => navigate('/login'), [navigate]),
   }
 
-  return { freePlan, proPlan }
+  const pricing = {
+    title: t('landing.pricing.title') || '',
+    desc: t('landing.pricing.subtitle') || '',
+    popular: t('landing.pricing.popular') || '',
+  }
+
+  return { freePlan, proPlan, pricing }
 }

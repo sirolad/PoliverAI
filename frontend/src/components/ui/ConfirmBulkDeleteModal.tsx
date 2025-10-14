@@ -38,7 +38,7 @@ export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onCon
     <div className={twFromTokens('fixed inset-0 z-50', spacing.fullScreenCenter)}>
       <div className={getModalBackdropClass()} onClick={onClose}></div>
       <div className={getModalContainerClass().replace('max-w-md', 'max-w-lg')}>
-        <div className={twFromTokens(spacing.modalPadding, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+        <div className={twFromTokens(spacing.card, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
           <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
             {typeof icon !== 'undefined' ? <div className={twFromTokens(colors.textSecondary)}>{icon}</div> : null}
             <div>
@@ -48,7 +48,7 @@ export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onCon
           </div>
           <IconButton onClick={onClose} aria-label={t('confirm_bulk_delete_modal.close')}><X /></IconButton>
         </div>
-        <div className={twFromTokens(spacing.modalPadding)}>
+        <div className={twFromTokens(spacing.card)}>
           {filenames.length === 1 ? (
             <>
               <p className={twFromTokens(textSizes.sm, colors.textSecondary, spacing.smallTop)}>{t('confirm_bulk_delete_modal.question_single', { filename: filenames[0] })}</p>
@@ -63,7 +63,7 @@ export default function ConfirmBulkDeleteModal({ open, filenames, onClose, onCon
               </div>
             </>
           )}
-          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2, alignment.justifyEnd)}>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2, alignment.justifyEnd, spacing.sectionButtonTop)}>
             <Button onClick={onClose} disabled={isProcessing}>Close</Button>
             <Button onClick={handleYes} disabled={isProcessing} className={getDangerButtonClass()} icon={<Trash2 className={twFromTokens(spacing.iconsXs)} />} iconColor="text-white">{getConfirmDeleteLabel(isProcessing)}</Button>
           </div>

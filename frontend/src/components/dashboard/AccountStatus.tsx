@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { FileCheck, Star, ArrowRight, RefreshCcw, Trash2, BarChart, CreditCard } from 'lucide-react'
 import useAccountStatusActions from '@/hooks/useAccountStatus'
 import type { ReportMetadata } from '@/types/api'
+import { badgeClass } from '@/lib/navHelpers'
 
 type Props = {
   isPro: boolean
@@ -73,9 +74,10 @@ export default function AccountStatus(props: Props) {
             </CardDescription>
           </div>
           <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap4)}>
-            <span className={twFromTokens(spacing.badgePadding, 'rounded-full', textSizes.sm, fontWeights.medium, isPro ? colors.primaryBgLight : colors.successBg, isPro ? colors.primaryMuted : colors.success)}>
+            <span className={twFromTokens(spacing.badgePadding, 'rounded-full', textSizes.sm, fontWeights.medium, badgeClass(isPro))}>
               {isPro ? t('dashboard.account_status.badge_pro') : t('dashboard.account_status.badge_free')}
             </span>
+            
             {!isPro && (
               <Button
                   className={twFromTokens(colors.primaryBg, hoverFromColor(colors.primaryBg))}
@@ -109,18 +111,18 @@ export default function AccountStatus(props: Props) {
         </CardContent>
       )}
       <CardContent>
-  <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
-          <div>
-            <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.title')}</div>
-            <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.subscriptionCredits : null}</div>
-          </div>
+        <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
             <div>
-              <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.total_files_saved')}</div>
-              <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.purchasedCredits : null}</div>
+                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.title')}</div>
+                <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.subscriptionCredits : null}</div>
             </div>
             <div>
-              <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.total_full_reports_saved')}</div>
-              <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.effectiveCredits : null}</div>
+                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.total_files_saved')}</div>
+                <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.purchasedCredits : null}</div>
+            </div>
+            <div>
+                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.total_full_reports_saved')}</div>
+                <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.effectiveCredits : null}</div>
             </div>
         </div>
         {user && user.subscription_expires && (

@@ -33,10 +33,10 @@ export default function InsufficientCreditsModal({
 
   return (
     <>
-      <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, 'pointer-events-none')}>
+      <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, alignment.flex, 'pointer-events-none')}>
         <div className={twFromTokens(spacing.containerMaxMd, 'pointer-events-auto')}>
           <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
-            <div className={twFromTokens(spacing.cardDefault, alignment.flexRow, alignment.itemsCenter, alignment.gap3, 'border-b', colors.dangerBg)}>
+            <div className={twFromTokens(spacing.cardDefault, alignment.flexRow, alignment.itemsCenter, alignment.gap3, 'border-b', colors.redBorder)}>
               <div className={twFromTokens('p-2 rounded-full', colors.danger)}>
                 <XCircle className={twFromTokens(spacing.iconsMd)} />
               </div>

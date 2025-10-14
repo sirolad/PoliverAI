@@ -13,7 +13,7 @@ export function getCardHeaderClassName(extra?: string) {
 
 export function getCardTitleClassName(extra?: string) {
   // Previously: text-2xl font-semibold leading-none tracking-tight
-  return cn(twFromTokens(textSizes.h2, fontWeights.semibold, 'leading-none', 'tracking-tight'), extra)
+  return cn(twFromTokens(textSizes.h3, fontWeights.semibold, 'leading-none', 'tracking-tight'), extra)
 }
 
 export function getCardDescriptionClassName(extra?: string) {

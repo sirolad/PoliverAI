@@ -196,7 +196,7 @@ export default function Dashboard(): React.ReactElement {
 
   return (
     <div className={twFromTokens('min-h-screen', colors.pageBg)}>
-      <div className={twFromTokens(spacing.containerMaxLg, spacing.pagePadding)}>
+      <div className={twFromTokens(spacing.mainContainer)}>
         <DashboardHeader />
 
         <AccountStatus

@@ -31,14 +31,14 @@ export default function FullReportDashboard({ src }: Props) {
 
         <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, spacing.gridGapLarge, 'mr-6')}>
             <div className={twFromTokens(textSizes.sm, colors.textMuted, alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>{t('policy_analysis.score_label')}</div>
-          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
-              <div className={twFromTokens(alignment.flexRow, 'gap-1')}>
-                {Array.from({ length: full }).map((_, i) => <Star key={`f-${i}`} size={18} weight="fill" className={twFromTokens(colors.warning)} />)}
-                {half ? <StarHalf key="half" size={18} className={twFromTokens(colors.warning)} /> : null}
-                {Array.from({ length: empty }).map((_, i) => <StarEmpty key={`e-${i}`} size={18} weight="duotone" className={twFromTokens(colors.textMuted)} />)}
-              </div>
-              <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{sc}%</div>
-          </div>
+            <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
+                <div className={twFromTokens(alignment.flexRow, 'gap-1')}>
+                    {Array.from({ length: full }).map((_, i) => <Star key={`f-${i}`} size={18} weight="fill" className={twFromTokens(colors.warning)} />)}
+                    {half ? <StarHalf key="half" size={18} className={twFromTokens(colors.warning)} /> : null}
+                    {Array.from({ length: empty }).map((_, i) => <StarEmpty key={`e-${i}`} size={18} weight="duotone" className={twFromTokens(colors.textMuted)} />)}
+                </div>
+                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{sc}%</div>
+            </div>
         </div>
       </div>
 
@@ -55,8 +55,8 @@ export default function FullReportDashboard({ src }: Props) {
                 return (['high', 'medium', 'low'] as const).map((sev) => {
                   const items = (findings || []).filter((f) => String(f['severity']) === sev)
                   if (items.length === 0) return null
-                  const bg = sev === 'high' ? colors.dangerBg : sev === 'medium' ? colors.warningBg : colors.successBg
-                  const pill = sev === 'high' ? colors.danger : sev === 'medium' ? colors.warning : colors.success
+                  const bg = sev === 'high' ? colors.deepRedBg : sev === 'medium' ? colors.warningBgStrong : colors.successBgStrong
+                  const pill = sev === 'high' ? colors.deepRedBg : sev === 'medium' ? colors.warningBgStrong : colors.successBgStrong
                   return (
                     <div key={sev}>
                       <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>

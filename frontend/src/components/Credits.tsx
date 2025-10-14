@@ -218,7 +218,7 @@ export default function Credits() {
           }
         }}
       />
-  {error && <div className={twFromTokens(colors.danger)}>{error}</div>}
+      {error && <div className={twFromTokens(colors.danger)}>{error}</div>}
 
       <div className={`flex-1 ${isMobile ? 'flex flex-col' : 'flex gap-6'}`}>
         {/* Sidebar filters: render as sidebar on desktop, as collapsible block above list on mobile */}

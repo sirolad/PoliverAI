@@ -17,7 +17,7 @@ export default function HowItWorks() {
           {steps.map((s) => (
             <div key={s.id} className={twFromTokens(alignment.centerColumn)}>
               <div className={twFromTokens('bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4 text-xl font-bold')}>{s.id}</div>
-              <h3 className={twFromTokens(textSizes.lg, fontWeights.semibold, 'mb-2')}>{s.title}</h3>
+              <h3 className={twFromTokens(textSizes.xl, fontWeights.semibold, 'mb-2')}>{s.title}</h3>
               <p className={twFromTokens(textSizes.md, colors.textMuted)}>{s.desc}</p>
             </div>
           ))}

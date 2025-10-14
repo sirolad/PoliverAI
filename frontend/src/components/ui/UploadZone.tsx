@@ -17,7 +17,7 @@ export default function UploadZone({ file, setFile, fileInputRef, handleFileChan
   return (
     <div className={twFromTokens(spacing.smallTop)}>
         <label className={twFromTokens('block', baseFontSizes.sm, fontWeights.medium, 'mb-2')}>{t('policy_analysis.upload_label')}</label>
-        
+
         <div
         onDragOver={onDragOver}
         onDrop={onDrop}
@@ -34,7 +34,7 @@ export default function UploadZone({ file, setFile, fileInputRef, handleFileChan
             onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click() }}
             className={twFromTokens(spacing.buttonSmall, 'rounded-md shadow-sm', 'border', colors.mutedBorder, hoverBgFromColor(colors.primaryBgLight))}
             icon={<UploadCloud className={twFromTokens(spacing.iconsXs)} />}
-            iconColor={twFromTokens(colors.primary)}
+            iconColor={twFromTokens(colors.ctaText)}
             collapseToIcon
             >
             {t('policy_analysis.browse_files')}
@@ -43,7 +43,7 @@ export default function UploadZone({ file, setFile, fileInputRef, handleFileChan
             <Button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setFile(null) }}
-                className={twFromTokens(spacing.buttonSmall, 'rounded-md', colors.danger, colors.ctaText)}
+                className={twFromTokens(spacing.buttonSmall, 'rounded-md shadow-sm', colors.deepRedBg, hoverBgFromColor(colors.dangerBg))}
                 icon={<X className={twFromTokens(spacing.iconsXs)} />}
                 iconColor={twFromTokens(colors.ctaText)}
                 collapseToIcon

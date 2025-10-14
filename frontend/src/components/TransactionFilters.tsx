@@ -24,7 +24,7 @@ type Props = {
 
 const TransactionFilters: FC<Props> = ({ search, setSearch, dateFrom, setDateFrom, dateTo, setDateTo, statusFilter, setStatusFilter, progress, showBar, onClear, onRefresh }) => {
   return (
-    <aside className={twFromTokens(spacing.fullWidth, 'w-64', spacing.card, 'border', 'rounded', colors.surface, alignment.flexCol)}>
+    <aside className={twFromTokens('w-64', spacing.card, 'border', 'rounded', colors.surface, alignment.flexCol)}>
       <div className={twFromTokens(spacing.formRow)}>
         <label className={twFromTokens(textSizes.sm, fontWeights.medium, spacing.formLabel)}>{t('credits.search_label')}</label>
         <input value={search} onChange={(e) => setSearch(e.target.value)} className={twFromTokens(spacing.input, colors.mutedBorder)} placeholder={t('credits.search_placeholder')} />

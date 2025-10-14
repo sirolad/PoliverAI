@@ -74,13 +74,13 @@ export default function ReportsToolbar({ filtered, selectedFiles, setSelectedFil
       </div>
       <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
         <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3, spacing.badgeMarginLeft)}>
-          <label className={twFromTokens(textSizes.sm, colors.textMuted, 'hide-below-700')}>{t('toolbar.per_page')}</label>
+          <label className={twFromTokens(textSizes.sm, colors.textMuted, spacing.fullWidth, alignment.whitespaceNoWrap, 'hide-below-700')}>{t('toolbar.per_page')}</label>
           <select value={limit} onChange={(e) => onChangeLimit(Number(e.target.value))} className={twFromTokens(colors.mutedBorder, 'rounded', spacing.input, 'hide-below-700')}>
             {[10,20,30,40,50].map((n) => (<option key={n} value={n}>{n}</option>))}
           </select>
-          <Button size="sm" variant="outline" disabled={page <= 1} onClick={onPrev} className={twFromTokens(alignment.flexRow, alignment.itemsCenter)} icon={<ChevronLeft className={twFromTokens(spacing.iconsXs, colors.textMuted)} />}><span className="hide-below-700">{t('toolbar.prev')}</span></Button>
-          <div className={twFromTokens(spacing.badgePadding, textSizes.sm)}>{page} / {totalPages}</div>
-          <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={onNext} className={twFromTokens(alignment.flexRow, alignment.itemsCenter)} icon={<ChevronRight className={twFromTokens(spacing.iconsXs, colors.textMuted)} />}><span className="hide-below-700">{t('toolbar.next')}</span></Button>
+          <Button size="sm" variant="outline" disabled={page <= 1} onClick={onPrev} className={twFromTokens(alignment.flexRow, alignment.itemsCenter, spacing.fullWidth)} icon={<ChevronLeft className={twFromTokens(spacing.iconsXs, colors.textMuted)} />}><span className="hide-below-700">{t('toolbar.prev')}</span></Button>
+          <div className={twFromTokens(spacing.badgePadding, textSizes.sm, spacing.fullWidth)}>{page} / {totalPages}</div>
+          <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={onNext} className={twFromTokens(alignment.flexRow, alignment.itemsCenter, spacing.fullWidth)} icon={<ChevronRight className={twFromTokens(spacing.iconsXs, colors.textMuted)} />}><span className="hide-below-700">{t('toolbar.next')}</span></Button>
         </div>
       </div>
     </div>

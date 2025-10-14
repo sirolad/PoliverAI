@@ -22,7 +22,7 @@ export default function BrandBlock({ hasBackground = true, subtitleClass = '', s
       ) : null}
 
       {showPartnershipText ? (
-        <div className={twFromTokens(textSizes.sm, subtitleClass, spacing.tinyTop)}>
+        <div className={twFromTokens(textSizes.sm, subtitleClass, spacing.tinyTop, spacing.tinyBottom)}>
           {t('brand_block.partnership')}
         </div>
       ) : null}

@@ -6,19 +6,19 @@ export type PaymentStatus = 'success' | 'pending' | 'error' | string
 export function getPaymentStatusClasses(status: PaymentStatus) {
   if (status === 'success') {
     return {
-      border: twFromTokens('border-b', colors.successBg),
+      border: twFromTokens('border-b', colors.greenBorder),
       iconWrap: twFromTokens('rounded-full', spacing.iconWrapperCompact, colors.successBg, colors.success),
     }
   }
   if (status === 'pending') {
     return {
-      border: twFromTokens('border-b', colors.warningBg),
+      border: twFromTokens('border-b', colors.yellowBorder),
       iconWrap: twFromTokens('rounded-full', spacing.iconWrapperCompact, colors.warningBg, colors.warning),
     }
   }
   // default/error
   return {
-    border: twFromTokens('border-b', colors.dangerBg),
+    border: twFromTokens('border-b', colors.redBorder),
     iconWrap: twFromTokens('rounded-full', spacing.iconWrapperCompact, colors.dangerBg, colors.danger),
   }
 }

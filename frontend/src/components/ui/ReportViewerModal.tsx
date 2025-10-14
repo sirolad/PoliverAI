@@ -134,8 +134,9 @@ export default function ReportViewerModal({ reportUrl, filename, title, inlineCo
       .replace(/[^a-z0-9\s-]/g, '')
       .trim()
       .replace(/\s+/g, '-')
+      
   return (
-    <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart)} style={{ background: 'rgba(0,0,0,0.5)' }}>
+    <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, colors.overlayDark, alignment.flex)}>
       <div className={twFromTokens(spacing.modalMaxXl, 'rounded shadow-lg overflow-hidden', colors.surface)}>
         <div className={twFromTokens('flex items-center justify-between', spacing.modalPadding, colors.mutedBorder)}>
           <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, 'gap-3', 'min-w-0')}>

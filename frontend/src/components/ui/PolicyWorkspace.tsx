@@ -67,7 +67,7 @@ export default function PolicyWorkspace(props: Props) {
   return (
     <div className={twFromTokens('flex-1', alignment.flexCol)}>
       {showWorkInProgress ? (
-        <div className={twFromTokens(spacing.blockSmall, spacing.modalPadding, 'w-40 text-center rounded', colors.warningBg, colors.warning, fontWeights.medium)}>{t('policy_analysis.work_in_progress')}</div>
+        <div className={twFromTokens(spacing.blockSmall, 'w-40 text-center rounded', colors.warningBg, colors.warning, fontWeights.medium)}>{t('policy_analysis.work_in_progress')}</div>
       ) : null}
 
       <div className={twFromTokens('grid grid-cols-1 md:grid-cols-3', spacing.gridGapLarge)}>

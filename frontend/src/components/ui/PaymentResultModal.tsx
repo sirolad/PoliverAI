@@ -19,19 +19,19 @@ export default function PaymentResultModal({
 }) {
   if (!open) return null
   return (
-    <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, 'pointer-events-none')}>
-      <div className={twFromTokens(spacing.modalMaxXl, 'pointer-events-auto')}>
+    <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, alignment.flex, spacing.modalPadding, 'pointer-events-none')}>
+      <div className={twFromTokens(spacing.containerMaxMd, 'pointer-events-auto')}>
         <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
-          <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.itemsCenter, 'gap-3', getPaymentStatusClasses(success ? 'success' : 'error').border)}>
+          <div className={twFromTokens(spacing.card, alignment.flexRow, alignment.itemsCenter, 'gap-3', getPaymentStatusClasses(success ? 'success' : 'error').border)}>
             <div className={getPaymentStatusClasses(success ? 'success' : 'error').iconWrap}>
               {renderPaymentStatusIcon(success ? 'success' : 'error')}
             </div>
             <div>
-              <div className={twFromTokens(fontWeights.semibold, baseFontSizes.sm)}>{title}</div>
+              <div className={twFromTokens(fontWeights.semibold, baseFontSizes.sm, spacing.mt3)}>{title}</div>
               <MetaLine>{message}</MetaLine>
             </div>
           </div>
-          <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.justifyEnd, 'gap-2')}>
+          <div className={twFromTokens(spacing.card, alignment.flexRow, alignment.justifyEnd, 'gap-2')}>
             <Button variant="ghost" onClick={onClose}>
               {t('payment_result_modal.close')}
             </Button>

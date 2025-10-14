@@ -18,7 +18,7 @@ type Props = {
 export default function EnterTitleModal({ open, initial = '', onClose, onConfirm }: Props) {
   const [title, setTitle] = React.useState<string>(initial)
   const [isProcessing, setIsProcessing] = React.useState(false)
-  const [saveType, setSaveType] = React.useState<'regular' | 'html'>('regular')
+  const [saveType, setSaveType] = React.useState<'regular' | 'html'>('html')
 
   React.useEffect(() => {
     setTitle(initial)
@@ -46,7 +46,7 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
       <div className={getModalContainerClass()}>
         <div className={twFromTokens(spacing.modalPadding, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
           <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, 'gap-3')}>
-            <div className={twFromTokens(spacing.iconWrapperCompact, 'rounded-full', colors.successBg, colors.success)}>
+            <div className={twFromTokens(spacing.iconWrapperCompact, 'rounded-full', colors.greenBg, colors.success)}>
               <Save className={twFromTokens(spacing.iconsMd, colors.onPrimary)} />
             </div>
             <div>
@@ -58,7 +58,7 @@ export default function EnterTitleModal({ open, initial = '', onClose, onConfirm
         </div>
         <div className={twFromTokens(spacing.modalPadding)}>
           <Text preset="small" color="textMuted" className={twFromTokens(spacing.smallTop)}>{t('enter_title_modal.description')}</Text>
-          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
+          <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2, spacing.mt3)}>
             <input
               className={getInputClassName(twFromTokens(spacing.input))}
               value={title}

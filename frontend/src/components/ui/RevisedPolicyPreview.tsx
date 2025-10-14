@@ -28,7 +28,7 @@ export default function RevisedPolicyPreview({ downloadUrl, filename }: Props) {
         <div className={twFromTokens('mx-auto rounded-full', 'bg-gray-100', 'flex items-center justify-center', 'w-40 h-40')}>
           <svg className={twFromTokens('text-gray-400', 'h-20 w-20')} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </div>
-        <div className={twFromTokens(spacing.sectionButtonTop, textSizes.h2, fontWeights.semibold)}>{t('policy_analysis.nothing_here_generate')}</div>
+        <div className={twFromTokens(spacing.sectionButtonTop, textSizes.lg, fontWeights.semibold)}>{t('policy_analysis.nothing_here_generate')}</div>
         <div className={twFromTokens(spacing.smallTop, textSizes.sm, colors.textMutedLight)}>{t('policy_analysis.nothing_here_desc')}</div>
       </div>
     </div>

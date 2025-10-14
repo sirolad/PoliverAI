@@ -6,19 +6,19 @@ import { twFromTokens, colors, textSizes, fontWeights, spacing, alignment, baseF
 import { t } from '@/i18n'
 
 export default function PricingSection() {
-  const { freePlan, proPlan } = usePricing()
+  const { freePlan, proPlan, pricing } = usePricing()
 
   return (
     <div className={twFromTokens(spacing.sectionContainer)}>
       <div className={twFromTokens(spacing.sectionTitle)}>
-        <h2 className={twFromTokens(textSizes.h2, fontWeights.bold, colors.textPrimary, spacing.headingMargin)}>{freePlan.title ? t('pricing.heading') : ''}</h2>
-        <p className={twFromTokens(textSizes.lg, colors.textMuted)}>{freePlan.desc}</p>
+        <h2 className={twFromTokens(textSizes.h2, fontWeights.bold, colors.textPrimary, spacing.headingMargin)}>{pricing.title}</h2>
+        <p className={twFromTokens(textSizes.lg, colors.textMuted)}>{pricing.desc}</p>
       </div>
 
       <div className={twFromTokens(spacing.containerMaxLg, 'grid md:grid-cols-2', spacing.gridGapLarge)}>
         <Card className="h-full">
           <CardHeader className={twFromTokens(alignment.centerColumn, 'pb-2')}>
-            <CardTitle className={twFromTokens(textSizes.lg)}>{freePlan.title}</CardTitle>
+            <CardTitle className={twFromTokens(textSizes.h3)}>{freePlan.title}</CardTitle>
             <div className={twFromTokens(baseFontSizes['3xl'].tw, fontWeights.bold, spacing.smallTop, colors.success)}>{freePlan.price}</div>
             <CardDescription>{freePlan.desc}</CardDescription>
           </CardHeader>
@@ -39,8 +39,8 @@ export default function PricingSection() {
 
         <Card className={twFromTokens('h-full', colors.primaryBorder, colors.primaryBgLight)}>
           <CardHeader className={twFromTokens(alignment.centerColumn, 'pb-2')}>
-            <div className={twFromTokens(baseFontSizes.xs, spacing.badgePadding, 'rounded-full w-fit mx-auto', colors.primaryBg, colors.ctaText, spacing.smallTop)}>{t('pricing.popular')}</div>
-            <CardTitle className={twFromTokens(textSizes.lg)}>{proPlan.title}</CardTitle>
+            <div className={twFromTokens(baseFontSizes.xs, spacing.badgePadding, 'rounded-full w-fit mx-auto', colors.primaryBg, colors.ctaText, spacing.smallTop)}>{pricing.popular}</div>
+            <CardTitle className={twFromTokens(textSizes.h3)}>{proPlan.title}</CardTitle>
             <div className={twFromTokens(baseFontSizes['3xl'].tw, fontWeights.bold, spacing.smallTop, colors.primary)}>{proPlan.price}</div>
             <CardDescription>{proPlan.period}</CardDescription>
           </CardHeader>

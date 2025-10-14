@@ -32,19 +32,19 @@ export function PaymentResultProvider({ children }: { children: React.ReactNode 
     <PaymentResultContext.Provider value={{ show }}>
       {children}
       {state.open && (
-        <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, spacing.modalPadding, 'pointer-events-none')}>
-          <div className={twFromTokens(spacing.modalMaxXl, 'pointer-events-auto')}> 
+        <div className={twFromTokens('fixed inset-0 z-50', alignment.justifyCenter, alignment.itemsStart, alignment.flex, spacing.modalPadding, 'pointer-events-none')}>
+          <div className={twFromTokens(spacing.containerMaxMd, 'pointer-events-auto')}> 
             <div className={twFromTokens('rounded-lg shadow-lg overflow-hidden border', colors.surface)}>
-              <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.itemsCenter, 'gap-3', getPaymentStatusClasses(state.status).border)}>
+              <div className={twFromTokens(spacing.card, alignment.flexRow, alignment.itemsCenter, 'gap-3', getPaymentStatusClasses(state.status).border)}>
                 <div className={getPaymentStatusClasses(state.status).iconWrap}>
                   {renderPaymentStatusIcon(state.status)}
                 </div>
                 <div>
-                  <div className={twFromTokens(fontWeights.semibold, baseFontSizes.sm)}>{state.title}</div>
+                  <div className={twFromTokens(fontWeights.semibold, baseFontSizes.sm, spacing.mt3)}>{state.title}</div>
                     <MetaLine>{state.message}</MetaLine>
                 </div>
               </div>
-              <div className={twFromTokens(spacing.modalPadding, alignment.flexRow, alignment.justifyEnd, 'gap-2')}>
+              <div className={twFromTokens(spacing.card, alignment.flexRow, alignment.justifyEnd, 'gap-2')}>
                 <Button variant="ghost" onClick={() => setState((s) => ({ ...s, open: false }))}>
                   {t('payment_result.close')}
                 </Button>

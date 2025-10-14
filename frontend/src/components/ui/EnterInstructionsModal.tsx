@@ -41,7 +41,7 @@ export default function EnterInstructionsModal({ open, initial = '', onClose, on
     <div className={twFromTokens('fixed inset-0 z-50', spacing.fullScreenCenter)}>
       <div className={getModalBackdropClass()} onClick={onClose}></div>
       <div className={getModalContainerClass()}>
-        <div className={twFromTokens(spacing.modalPadding, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+        <div className={twFromTokens(spacing.card, 'border-b', alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
           <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap3)}>
             <div className={twFromTokens(spacing.iconWrapperCompact, 'rounded-full', 'bg-purple-50', 'text-purple-600')}>
               <Bot className={twFromTokens(spacing.iconsMd, baseFontSizes.sm)} />
@@ -53,7 +53,7 @@ export default function EnterInstructionsModal({ open, initial = '', onClose, on
           </div>
           <IconButton onClick={onClose} aria-label={t('enter_instructions_modal.close_aria')}><X /></IconButton>
         </div>
-        <div className={twFromTokens(spacing.modalPadding)}>
+        <div className={twFromTokens(spacing.card)}>
           <p className={twFromTokens(textSizes.sm, colors.textMuted, spacing.smallTop)}>{t('enter_instructions_modal.description')}</p>
           <div className={twFromTokens(alignment.flexCol, alignment.gap3)}>
             <textarea

@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Input from '@/components/ui/Input'
 import FormField from '@/components/ui/FormField'
 import useAuth from '@/contexts/useAuth'
-import { Mail, Lock, User, AlertCircle, UserPlus, LogIn } from 'lucide-react'
+import { Mail, Lock, User, AlertCircle, UserPlus } from 'lucide-react'
 
 const registerSchema = z.object({
   name: z.string().min(2, t('auth.register.validation_name_min')),
@@ -74,15 +74,15 @@ export function Register() {
   return (
     <div className={twFromTokens(spacing.fullScreenCenter, colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
       <div className={twFromTokens(spacing.containerMaxMd, alignment.gap4)}>
-        <div className={twFromTokens(alignment.centerColumn)}>
+        <div className={twFromTokens(alignment.centerColumnMargined)}>
           <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className={twFromTokens('h-48', 'mx-auto')} />
-          <h2 className={twFromTokens(spacing.sectionButtonTop, fontWeights.bold, textSizes.h1, colors.textPrimary)}>{t('auth.register.join_title')}</h2>
+          <h2 className={twFromTokens(spacing.sectionButtonTop, fontWeights.bold, textSizes.h2, colors.textPrimary)}>{t('auth.register.join_title')}</h2>
           <p className={twFromTokens(spacing.tinyTop, textSizes.sm, colors.textMuted)}>
             {t('auth.register.join_subtitle')}
           </p>
         </div>
 
-          <Card>
+        <Card>
           <CardHeader>
             <CardTitle>{t('auth.register.create_account')}</CardTitle>
             <CardDescription>
@@ -98,27 +98,27 @@ export function Register() {
                 </div>
               )}
 
-              <FormField id="name" label={t('auth.register.name_label')} icon={<User />} error={errors.name?.message}>
+              <FormField id="name" label={t('auth.register.name_label')} icon={<User className={twFromTokens(colors.mutedText, 'h-4')} />} error={errors.name?.message}>
                 <Input id="name" type="text" placeholder={t('auth.register.name_placeholder')} className="pl-10" {...register('name')} />
               </FormField>
 
-              <FormField id="email" label={t('auth.register.email_label')} icon={<Mail />} error={errors.email?.message}>
+              <FormField id="email" label={t('auth.register.email_label')} icon={<Mail className={twFromTokens(colors.mutedText, 'h-4')} />} error={errors.email?.message}>
                 <Input id="email" type="email" placeholder={t('auth.register.email_placeholder')} className="pl-10" {...register('email')} />
               </FormField>
 
-              <FormField id="password" label={t('auth.register.password_label')} icon={<Lock />} error={errors.password?.message}>
+              <FormField id="password" label={t('auth.register.password_label')} icon={<Lock className={twFromTokens(colors.mutedText, 'h-4')} />} error={errors.password?.message}>
                 <Input id="password" type="password" placeholder={t('auth.register.password_placeholder')} className="pl-10" {...register('password')} />
               </FormField>
 
-              <FormField id="confirmPassword" label={t('auth.register.confirm_password_label')} icon={<Lock />} error={errors.confirmPassword?.message}>
+              <FormField id="confirmPassword" label={t('auth.register.confirm_password_label')} icon={<Lock className={twFromTokens(colors.mutedText, 'h-4')} />} error={errors.confirmPassword?.message}>
                 <Input id="confirmPassword" type="password" placeholder={t('auth.register.confirm_password_placeholder')} className="pl-10" {...register('confirmPassword')} />
               </FormField>
 
               <div className={twFromTokens(textSizes.sm, colors.textMuted)}>
                 {t('auth.register.terms_prefix')}{' '}
-                <a href="#" className={twFromTokens(fontWeights.medium, alignment.flexRow, alignment.itemsCenter, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>{t('auth.register.terms')}</a>{' '}
+                <a href="#" className={twFromTokens(fontWeights.medium, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>{t('auth.register.terms')}</a>{' '}
                 and{' '}
-                <a href="#" className={twFromTokens(fontWeights.medium, alignment.flexRow, alignment.itemsCenter, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>{t('auth.register.privacy')}</a>.
+                <a href="#" className={twFromTokens(fontWeights.medium, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>{t('auth.register.privacy')}</a>.
               </div>
 
                 <Button
@@ -137,8 +137,7 @@ export function Register() {
               <div className={twFromTokens(alignment.center)}>
                   <p className={twFromTokens(textSizes.sm, colors.textMuted)}>
                     {t('auth.register.already_have_account')}{' '}
-                    <Link to="/login" className={twFromTokens(textSizes.sm, fontWeights.medium, alignment.flexRow, alignment.itemsCenter, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
-                      <LogIn className={twFromTokens(spacing.iconsXs)} />
+                    <Link to="/login" className={twFromTokens(textSizes.sm, fontWeights.medium, alignment.itemsCenter, alignment.gap2, 'transition-colors', colors.primary, hoverFromColor(colors.primary))}>
                       {t('auth.register.sign_in')}
                     </Link>
                   </p>

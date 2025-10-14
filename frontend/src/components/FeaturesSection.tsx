@@ -20,7 +20,7 @@ function FeatureCard({ icon: Icon, title, description, isPro = false }: FeatureC
         <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap2)}>
           <Icon className={twFromTokens(spacing.iconsMd, isPro ? colors.primary : colors.success)} />
           <CardTitle>
-            <Text preset="small" className="font-semibold">{title}</Text>
+            <Text preset="lg" className="font-semibold">{title}</Text>
           </CardTitle>
           {isPro && (
             <span className={twFromTokens(spacing.badgePadding, 'rounded-full', textSizes.sm, colors.primaryBg, colors.onPrimary, spacing.badgeMarginLeft)}>PRO</span>

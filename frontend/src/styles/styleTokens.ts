@@ -24,8 +24,10 @@ export const baseFontSizes = {
 export const textSizes = {
   h1: baseFontSizes['5xl'],
   h2: baseFontSizes['3xl'],
+  h3: baseFontSizes['2xl'],
   lead: baseFontSizes.xl,
   lg: baseFontSizes.lg,
+  xl: baseFontSizes.xl,
   md: baseFontSizes.md,
   sm: baseFontSizes.sm,
 }
@@ -106,6 +108,7 @@ export const colors = {
   // brand
   primary: makeColor('text-blue-600', 'blue600'),
   primaryBg: makeColor('bg-blue-600', 'blue600'),
+  deepRedBg: makeColor('bg-red-600', 'red600'),
   primaryMuted: makeColor('text-blue-100', 'blue100'),
   // light primary background for UI elements that need a soft blue surface
   primaryBgLight: makeColor('bg-blue-100', 'blue100'),
@@ -113,6 +116,7 @@ export const colors = {
   // semantic states
   success: makeColor('text-green-600', 'green600'),
   successBg: makeColor('bg-green-100', 'green100'),
+  greenBg: makeColor('bg-green-600', 'green600'),
   warning: makeColor('text-yellow-600', 'yellow600'),
   warningBg: makeColor('bg-yellow-100', 'yellow100'),
   danger: makeColor('text-red-600', 'red600'),
@@ -132,8 +136,16 @@ export const colors = {
   onPrimary: makeColor('text-white', 'white'),
   ctaText: makeColor('text-white', 'white'),
 
+  // primary text when placed on a light primary background (darker blue)
+  primaryOnLight: makeColor('text-blue-800', 'blue600'),
+
+  mutedText: makeColor('text-gray-400', 'gray400'),
+
   // border and strong-bg tokens for use where a solid color is needed
   primaryBorder: makeColor('border-blue-600', 'blue600'),
+  redBorder: makeColor('border-red-100', 'red100'),
+  greenBorder: makeColor('border-green-100', 'green100'),
+  yellowBorder: makeColor('border-yellow-100', 'yellow100'),
   successBgStrong: makeColor('bg-green-600', 'green600'),
   // utility for darker muted action buttons (used sparingly)
   mutedActionBg: makeColor('bg-gray-700', 'gray700'),
@@ -159,6 +171,7 @@ export const spacing = {
   blockSmall: { tw: 'mb-2', value: 8 },
   // container style for lists that need scrolling and vertical gaps
   listContainer: { tw: 'flex-1 overflow-auto space-y-4', value: null },
+  flexOne: { tw: 'flex-1', value: null },
   // full width utility as a token for consistency
   fullWidth: { tw: 'w-full', value: null },
   // inner gaps used in card layouts
@@ -166,14 +179,16 @@ export const spacing = {
   // general controls gap (used for right-side action cluster)
   controlsGap: { tw: 'gap-3', value: 12 },
   // badge padding and margin utilities
-  badgePadding: { tw: 'px-2 py-1', value: null },
+  badgePadding: { tw: 'px-3 py-1', value: null },
   badgeMarginLeft: { tw: 'ml-2', value: 8 },
+  badgeMarginRight: { tw: 'mr-2', value: 8 },
   // small top margin
   smallTop: { tw: 'mt-2', value: 8 },
   // section divider height/width utilities
   dividerShort: { tw: 'w-36 h-1 rounded-full my-6', value: null },
   // container spacing (used on landing sections)
   sectionContainer: { tw: 'container mx-auto px-4 py-12', value: null },
+  mainContainer: { tw: 'container mx-auto px-4 py-8', value: null },
   // modal-specific padding used across modal components (matches p-6)
   modalPadding: { tw: 'p-6', value: 24 },
   // modal max width for larger modals (matches max-w-5xl)
@@ -191,6 +206,7 @@ export const spacing = {
   // medium-large icon used in standard card views
   iconsMdLarge: { tw: 'h-10 w-10', value: 40 },
   // compact / default icon wrapper paddings used across credit summary and small cards
+  iconWrapper: { tw: 'flex-shrink-0 rounded-md flex items-center justify-center', value: null },
   iconWrapperCompact: { tw: 'flex-shrink-0 rounded-md flex items-center justify-center p-2', value: null },
   iconWrapperLarge: { tw: 'flex-shrink-0 rounded-md flex items-center justify-center p-3', value: null },
   // larger heading bottom margin used for subsection headings
@@ -210,6 +226,7 @@ export const spacing = {
   cardLg: { tw: 'p-10', value: 40 },
   // pill-style button used in platform toggles
   pillBtn: { tw: 'px-4 py-2 rounded-full border transition-colors', value: null },
+  tabBtn: { tw: 'px-3 py-1 border', value: null },
   // utility for centering a full-screen area (used on auth pages)
   fullScreenCenter: { tw: 'min-h-screen flex items-center justify-center', value: null },
   // menu button used in mobile navs and toolbars
@@ -229,6 +246,8 @@ export const spacing = {
   headingOffset: { tw: 'mr-4', value: 16 },
   // tiny top margin for subtle spacing (alias kept for menus and separators)
   tinyTop: { tw: 'mt-1', value: 4 },
+  // tiny bottom margin for subtle spacing (alias kept for menus and separators)
+  tinyBottom: { tw: 'mb-1', value: 4 },
   // small/medium top margin (used where mt-3 was previously used)
   mt3: { tw: 'mt-3', value: 12 },
   // full-width left-aligned utility for menu buttons
@@ -244,6 +263,7 @@ export const spacing = {
   // empty-state outer wrapper sizes and inner icon sizes
   emptyOuterLg: { tw: 'w-40 h-40', value: null },
   emptyOuterMd: { tw: 'w-24 h-24', value: null },
+  emptyOuterMd2: { tw: 'w-28 h-28', value: null },
   emptyIconLg: { tw: 'h-20 w-20', value: null },
   emptyIconMd: { tw: 'h-12 w-12', value: null },
   // navbar container (centered max-width with horizontal padding and fixed height)
@@ -268,11 +288,13 @@ export const buttons = {
   pill: { tw: 'px-4 py-2 rounded-full', value: null },
 }
 
+const centerColumn = 'flex flex-col items-center justify-center mb-4';
 // Alignment tokens: centralized flex/grid alignment utilities so components
 // can consistently reference alignment concerns from one place. These
 // are minimal and intentionally map to small Tailwind utility groups so
 // they can be composed with `twFromTokens` together with spacing tokens.
 export const alignment = {
+  flex: { tw: 'flex' },
   flexRow: { tw: 'flex flex-row' },
   flexCol: { tw: 'flex flex-col' },
   itemsCenter: { tw: 'items-center' },
@@ -284,11 +306,13 @@ export const alignment = {
   justifyEnd: { tw: 'justify-end' },
   // common convenience presets
   center: { tw: 'flex items-center justify-center' },
-  centerColumn: { tw: 'flex flex-col items-center justify-center' },
+  centerColumn: { tw: centerColumn },
+  centerColumnMargined: { tw: `${centerColumn} mb-8` },
   // simple gap helpers to centralize spacing between items
   gap2: { tw: 'gap-2' },
   gap3: { tw: 'gap-3' },
   gap4: { tw: 'gap-4' },
+  whitespaceNoWrap: { tw: 'whitespace-nowrap' },
 }
 
 // Convenience font presets that bundle size + weight (referencing the

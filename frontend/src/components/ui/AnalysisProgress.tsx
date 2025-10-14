@@ -12,8 +12,8 @@ export default function AnalysisProgress({ message, progress, className = '' }: 
   const { displayMessage, percent } = useAnalysisProgress(message, progress)
 
   return (
-    <div className={twFromTokens(spacing.smallTop, className)}>
-      <div className={twFromTokens(alignment.flexRow, alignment.justifyBetween, spacing.tinyTop)}>
+    <div className={twFromTokens(spacing.smallTop, className, spacing.blockSmall)}>
+      <div className={twFromTokens(alignment.flexRow, alignment.justifyBetween, spacing.tinyTop, spacing.blockSmall)}>
         <div className={twFromTokens(textSizes.sm, colors.textSecondary)}>{displayMessage}</div>
         <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{percent}%</div>
       </div>
