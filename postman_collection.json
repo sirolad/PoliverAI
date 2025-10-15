@@ -1,0 +1,255 @@
+{
+  "info": {
+    "name": "PoliverAI - Local Dev",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Import into Postman. Edit the environment variable base_url to http://127.0.0.1:8000 or your deployed URL."
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test+1@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "register"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test+1@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Auth - Me (requires Bearer {{access_token}})",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "me"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Auth - Upgrade to Pro (requires Bearer)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/upgrade",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "upgrade"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ingest - Upload files",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "files",
+              "type": "file",
+              "src": "<path-to-file>"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/ingest",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "ingest"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Query - Ask GDPR",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"What are the data subject rights under GDPR?\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/query",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Comparison - Compare two files",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "draft",
+              "type": "file",
+              "src": "<path-to-draft-file>"
+            },
+            {
+              "key": "final",
+              "type": "file",
+              "src": "<path-to-final-file>"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/compare",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "compare"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Verification - Upload policy and analyze",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "<path-to-policy-file>"
+            },
+            {
+              "key": "analysis_mode",
+              "type": "text",
+              "value": "fast"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/verify",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "verify"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+Starting JS server...
+[36m[1minfo[22m[39m [0mDetected architectures arm64-v8a[0m
+[36m[1minfo[22m[39m [0mInstalling the app...[0m
+[34m
+Welcome to React Native v0.81[39m
+Starting dev server on http://localhost:8081
+
+[34m[39m
+[34m                        ▒▒▓▓▓▓▒▒[39m
+[34m                     ▒▓▓▓▒▒░░▒▒▓▓▓▒[39m
+[34m                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒[39m
+[34m                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓[39m
+[34m                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓[39m
+[34m                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓[39m
+[34m                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒[39m
+[34m                     ▒▓▓▓▒░░░░▒▓▓▓▒[39m
+[34m                        ▒▒▓▓▓▓▒��[39m
+[34m[39m
+[34m[39m
+[34m[1m                Welcome to Metro [37mv0.83.2[39m[34m[22m[39m
+[34m[1m[22m[39m[2m              Fast - Scalable - Integrated[22m
+[2m[22m
+[2m[22m
+[33m[7m[1m WARN [22m[27m[39m Watchman `watch-project` returned a warning: Recrawled this watch 1 time, most recently because:
+MustScanSubDirs UserDroppedTo resolve, please review the information on
+https://facebook.github.io/watchman/docs/troubleshooting.html#recrawl
+To clear this warning, run:
+`watchman watch-del '/Users/gabrieldagadu/PoliverAI' ; watchman watch-project '/Users/gabrieldagadu/PoliverAI'`
+
+[33m[7m[1m WARN [22m[27m[39m Watchman `query` returned a warning: Recrawled this watch 1 time, most recently because:
+MustScanSubDirs UserDroppedTo resolve, please review the information on
+https://facebook.github.io/watchman/docs/troubleshooting.html#recrawl
+To clear this warning, run:
+`watchman watch-del '/Users/gabrieldagadu/PoliverAI' ; watchman watch-project '/Users/gabrieldagadu/PoliverAI'`
+
+
+
+[1A[1m> Connecting to Daemon[m[22D[1B[1A> IDLE[0K[6D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [17ms][m[38D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [172ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [216ms][m[39D[2BRecrawled this watch 1 time, most recently because:
+MustScanSubDirs UserDroppedTo resolve, please review the information on
+https://facebook.github.io/watchman/docs/troubleshooting.html#recrawl
+To clear this warning, run:
+`watchman watch-del '/Users/gabrieldagadu/PoliverAI' ; watchman watch-project '/Users/gabrieldagadu/PoliverAI'`
+
+[2A[1m<[0;1m-------------> 0% INITIALIZING [319ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [417ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [519ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [616ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [718ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [817ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [915ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [1s][m[0K[36D[2B[36m[7m[1m INFO [22m[27m[39m Dev server ready. [2mPress Ctrl+C to exit.[22m
+[36m[7m[1m INFO [22m[27m[39m Key commands available:
+
+  [1m[7m r [27m[22m - reload app(s)
+  [1m[7m d [27m[22m - open Dev Menu
+  [1m[7m j [27m[22m - open DevTools
+
+[1A[1m> Evaluating settings[m[21D[1B[1A[1m> Evaluating settings > Evaluating settings > Resolve dependencies of detachedConfiguration1[m[92D[1B[1A[1m> Evaluating settings > Evaluating settings[m[0K[43D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > :gradle-plugin[m[38D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [2s][m[36D[1B[1m> Evaluating settings > :gradle-plugin > Resolve dependencies of classpath[m[74D[1B[1A[1m> Evaluating settings > :gradle-plugin:react-native-gradle-plugin[m[0K[65D[1B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin[m[0K[54D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared[m[0K[45D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared-testutil[m[54D[1B[1A[1m> Evaluating settings > Discovering toolchains > Detecting local java toolchains[m[80D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin > Resolve files of configuration ':gradle-plugin:sh[m[111D[1B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin:compileKotlin[m[0K[68D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [3s][m[36D[1B[1m> Evaluating settings > Resolve files of configuration 'classpath'[m[0K[66D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [3s][m[0K[35D[1B[1m> Loading projects[m[0K[18D[1B[1A[1m> root project[m[0K[14D[1B[1A[1m> root project > Resolve dependencies of classpath[m[50D[1B[1A[1m> root project > :gradle-plugin:react-native-gradle-plugin:compileKotlin[m[72D[1B[1A[1m> root project > Resolve files of configuration 'classpath'[m[0K[59D[1B[1A[1m> root project > :app[m[0K[21D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [4s][m[35D[2B[2A[1m<[0;32;1m===[0;39;1m----------> 28% CONFIGURING [5s][m[36D[1B[1m> :react-native-gesture-handler > Resolve dependencies of classpath[m[67D[1B[1A[1m> :react-native-gesture-handler > Resolve files of configuration 'classpath'[m[76D[1B[1A[1m> :react-native-gesture-handler[m[0K[31D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [6s][m[36D[1B[1m> :react-native-reanimated[m[0K[26D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [7s][m[36D[2B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [8s][m[36D[1B[1m> :react-native-reanimated > Resolve dependencies of classpath[m[62D[1B[1A[1m> :react-native-reanimated[m[0K[26D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [9s][m[36D[2B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [10s][m[37D[2B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [11s][m[37D[2B[2A[0K
+[1m> Configure project :react-native-reanimated[m
+[Reanimated] Skipping worklets validation: react-native-worklets not installed.
+[Reanimated] react-native-worklets not found; continuing without native worklets.
+[0K
+[0K
+[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [11s][m[37D[1B[1m> :react-native-reanimated[m[26D[1B[2A[1m<[0;32;1m=======[0;39;1m------> 57% CONFIGURING [11s][m[37D[1B[1m> :react-native-safe-area-context > Resolve dependencies of classpath[m[69D[1B[2A[1m<[0;32;1m=======[0;39;1m------> 57% CONFIGURING [12s][m[37D[2B[1A[1m> :react-native-safe-area-context[m[0K[33D[1B[2A[1m<[0;32;1m=========[0;39;1m----> 71% CONFIGURING [12s][m[37D[1B[1m> :react-native-screens > Resolve files of configuration 'classpath'[m[68D[1B[1A[1m> :react-native-screens[m[0K[23D[1B[2A[1m<[0;32;1m===========[0;39;1m--> 85% CONFIGURING [12s][m[37D[1B[1m> :react-native-svg[m[0K[19D[1B[2A[1m<[0;32;1m===========[0;39;1m--> 85% CONFIGURING [13s][m[37D[2B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [13s][m[38D[1B[1m> Discovering toolchains > Detecting local java toolchains[m[58D[1B[1A> IDLE[0K[6D[1B[1A[1m> Resolve dependencies of :app:debugCompileClasspath > Resolve dependencies of :app:debugRuntimeClasspath[m[105D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [14s][m[38D[2B[1A[1m> Resolve dependencies of :app:debugCompileClasspath[m[0K[52D[1B[1A> IDLE[0K[6D[1B[1A[1m> Resolve dependencies of :react-native-gesture-handler:debugCompileClasspath[m[77D[1B[1A[1m> Resolve dependencies of :react-native-reanimated:debugCompileClasspath[m[0K[72D[1B[1A[1m> Resolve dependencies of :react-native-safe-area-context:androidJdkImage[m[73D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [15s][m[38D[1B[1m> Resolve dependencies of :react-native-screens:debugCompileClasspath > Resolve dependencies of :react-native-s[m[111D[1B[1A> IDLE[0K[6D[1B[2A[1m<[0;1m-------------> 3% EXECUTING [15s][m[0K[34D[1B[1m> :react-native-gesture-handler:generateCodegenArtifactsFromSchema[m[66D[1B[2A[1m<[0;1m-------------> 5% EXECUTING [15s][m[34D[1B[1m> :react-native-reanimated:assertMinimalReactNativeVersionTask[m[0K[62D[1B[2A[1m<[0;1m-------------> 6% EXECUTING [15s][m[34D[1B[1m> :react-native-reanimated:generateCodegenSchemaFromJavaScript[m[62D[1B[2A[1m<[0;1m-------------> 6% EXECUTING [16s][m[34D[2B[1A[1m> :react-native-reanimated:generateCodegenArtifactsFromSchema[m[0K[61D[1B[2A[1m<[0;1m-------------> 6% EXECUTING [17s][m[34D[2B[2A[1m<[0;1m-------------> 7% EXECUTING [17s][m[34D[1B[1m> :react-native-reanimated:prepareReanimatedHeadersForPrefabs[m[61D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 8% EXECUTING [18s][m[34D[1B> IDLE[0K[6D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 9% EXECUTING [18s][m[34D[1B[1m> :react-native-safe-area-context:generateCodegenSchemaFromJavaScript[m[69D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 9% EXECUTING [19s][m[34D[2B[1A[1m> :react-native-safe-area-context:generateCodegenArtifactsFromSchema[m[0K[68D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 9% EXECUTING [20s][m[34D[2B[2A[1m<[0;32;1m=[0;39;1m------------> 11% EXECUTING [20s][m[35D[1B[1m> :react-native-screens:generateCodegenSchemaFromJavaScript[m[0K[59D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 11% EXECUTING [21s][m[35D[2B[1A[1m> :react-native-screens:generateCodegenArtifactsFromSchema[m[0K[58D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 11% EXECUTING [22s][m[35D[2B[2A[1m<[0;32;1m=[0;39;1m------------> 13% EXECUTING [23s][m[35D[1B[1m> :react-native-svg:generateCodegenSchemaFromJavaScript[m[0K[55D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 13% EXECUTING [24s][m[35D[2B[1A[1m> :react-native-svg:generateCodegenArtifactsFromSchema[m[0K[54D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 13% EXECUTING [25s][m[35D[2B[2A[1m<[0;32;1m==[0;39;1m-----------> 15% EXECUTING [25s][m[35D[1B[1m> :app:generateDebugResValues[m[0K[29D[1B[1A[1m> :app:checkDebugAarMetadata[m[0K[28D[1B
+[3A[1m<[0;32;1m==[0;39;1m-----------> 17% EXECUTING [26s][m[35D[1B> IDLE[0K[6D[1B[1m> :react-native-gesture-handler:packageDebugResources[m[53D[1B[3A[1m<[0;32;1m==[0;39;1m-----------> 18% EXECUTING [26s][m[35D[2B[1m> :react-native-reanimated:generateDebugResources[m[0K[49D[1B[3A[1m<[0;32;1m==[0;39;1m-----------> 19% EXECUTING [26s][m[35D[2B[1m> :react-native-safe-area-context:generateDebugResources[m[56D[1B[3A[1m<[0;32;1m==[0;39;1m-----------> 20% EXECUTING [26s][m[35D[2B[1m> :react-native-screens:generateDebugResources[m[0K[46D[1B[3A[1m<[0;32;1m==[0;39;1m-----------> 21% EXECUTING [26s][m[35D[2B[1m> :react-native-screens:packageDebugResources[m[0K[45D[1B[1A[1m> :react-native-svg:generateDebugResources[m[0K[42D[1B[3A[1m<[0;32;1m==[0;39;1m-----------> 22% EXECUTING [27s][m[35D[2B[1m> :app:mapDebugSourceSetPaths[m[0K[29D[1B[3A[1m<[0;32;1m===[0;39;1m----------> 23% EXECUTING [27s][m[35D[2B[1m> :app:mergeDebugResources[m[0K[26D[1B[3A[1m<[0;32;1m===[0;39;1m----------> 24% EXECUTING [27s][m[35D[2B[1m> :app:parseDebugLocalResources > Resolve files of configuration ':app:androidApis'[m[83D[1B[3A[1m<[0;32;1m===[0;39;1m----------> 26% EXECUTING [27s][m[35D[2B[1m> :react-native-gesture-handler:processDebugManifest[m[0K[52D[1B
+
+[5A[1m<[0;32;1m===[0;39;1m----------> 27% EXECUTING [28s][m[0K[35D[1B[1m> :react-native-reanimated:processDebugManifest[m[47D[2B[1m> :react-native-safe-area-context:processDebugManifest[m[54D[1B[1m> :react-native-screens:extractDeepLinksDebug[m[45D[1B[5A[0K
+[1m> Task :react-native-safe-area-context:processDebugManifest[m
+package="com.th3rdwave.safeareacontext" found in source AndroidManifest.xml: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.th3rdwave.safeareacontext" from the source AndroidManifest.xml: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+[0K
+[0K
+[0K
+[0K
+[0K
+[5A[1m<[0;32;1m===[0;39;1m----------> 30% EXECUTING [28s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B[1m> :app:processDebugMainManifest[m[31D[1B[1m> :react-native-gesture-handler:compileDebugLibraryResources[m[60D[1B[1A> IDLE[0K[6D[1B[5A[1m<[0;32;1m====[0;39;1m---------> 31% EXECUTING [28s][m[35D[3B[1m> :react-native-gesture-handler:parseDebugLocalResources[m[56D[1B[1m> :react-native-reanimated:compileDebugLibraryResources[m[55D[1B[5A[1m<[0;32;1m====[0;39;1m---------> 33% EXECUTING [28s][m[35D[2B[1m> :react-native-safe-area-context:compileDebugLibraryResources > Resolve dependencies of :react-native-safe-are[m[111D[1B[1m> :react-native-gesture-handler:generateDebugRFile[m[0K[50D[1B[1m> :react-native-reanimated:generateDebugRFile[m[0K[45D[1B[5A[1m<[0;32;1m====[0;39;1m---------> 34% EXECUTING [28s][m[35D[1B[1m> :react-native-safe-area-context:generateDebugRFile[m[52D[1B[1m> :react-native-screens:compileDebugLibraryResources[m[0K[52D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B[5A[1m<[0;32;1m====[0;39;1m---------> 34% EXECUTING [29s][m[35D[5B
+[6A[1m<[0;32;1m====[0;39;1m---------> 35% EXECUTING [29s][m[0K[35D[1B[1m> :react-native-gesture-handler:generateDebugBuildConfig[m[56D[2B[1m> :react-native-svg:compileDebugLibraryResources[m[48D[1B[1m> :react-native-screens:parseDebugLocalResources[m[48D[1B[1m> :react-native-svg:parseDebugLocalResources[m[44D[1B[6A[1m<[0;32;1m====[0;39;1m---------> 37% EXECUTING [29s][m[35D[1B[1m> :react-native-svg:generateDebugRFile[m[0K[38D[2B> IDLE[0K[6D[1B[1m> :react-native-screens:generateDebugRFile[m[0K[42D[1B> IDLE[0K[6D[1B[6A[1m<[0;32;1m=====[0;39;1m--------> 39% EXECUTING [29s][m[35D[1B[1m> :react-native-reanimated:compileDebugJavaWithJavac[m[52D[1B> IDLE[0K[6D[2B> IDLE[0K[6D[2B[6A[1m<[0;32;1m=====[0;39;1m--------> 39% EXECUTING [30s][m[35D[6B[6A[1m<[0;32;1m=====[0;39;1m--------> 39% EXECUTING [31s][m[35D[6B[6A[1m<[0;32;1m=====[0;39;1m--------> 39% EXECUTING [32s][m[35D[6B[6A[0K
+[1m> Task :react-native-reanimated:compileDebugJavaWithJavac[m
+[4B[0K
+[0K
+[6A[1m<[0;32;1m=====[0;39;1m--------> 39% EXECUTING [32s][m[35D[1B[1m> :react-native-reanimated:compileDebugJavaWithJavac[m[52D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[6A[1m<[0;32;1m=====[0;39;1m--------> 39% EXECUTING [33s][m[35D[6B[6A[1m<[0;32;1m=====[0;39;1m--------> 39% EXECUTING [34s][m[35D[6B[6A[0K
+[31;1m> Task :react-native-reanimated:compileDebugJavaWithJavac[0;39m[31m FAILED[39m
+[4B[0K
+[0K
+[6A[1m<[0;31;1m=====[0;39;1m--------> 40% EXECUTING [35s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[6A[0K
+[Incubating] Problems report is available at: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/android/build/reports/problems/problems-report.html
+[3B[0K
+[0K
+[0K
+[6A[1m<[0;31;1m=====[0;39;1m--------> 40% EXECUTING [36s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[6A[0K
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+[0K
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+[0K
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+87 actionable tasks: 61 executed, 26 up-to-date
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[6A[1m<[0;31;1m=====[0;39;1m--------> 40% EXECUTING [36s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[6A[1m<[0;1m-------------> 0% WAITING[m[0K[26D[6B[6A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[5A[0m[?12l[?25h
+[36m[1minfo[22m[39m [0m[2m[2m💡 Tip: Make sure that you have set up your development environment correctly, by running[22m[2m [0m[0m[1mnpx react-native doctor[22m[2m[0m[0m. [2mTo read more about doctor command visit: https://github.com/react-native-community/cli/blob/main/packages/cli-doctor/README.md#doctor [22m[2m[22m[0m
+[0m[2m[2m[22m[2m[22m[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:20: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.WorkletsModule;[0m
+[0m                             ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:28: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.JSCallInvokerResolver;[0m
+[0m                             ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:29: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.WorkletsModule;[0m
+[0m                             ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:65: error: cannot find symbol[0m
+[0m  public NodesManager(ReactApplicationContext context, WorkletsModule workletsModule) {[0m
+[0m                                                       ^[0m
+[0m  symbol:   class WorkletsModule[0m
+[0m  location: class NodesManager[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:44: error: cannot find symbol[0m
+[0m  protected final WorkletsModule mWorkletsModule;[0m
+[0m                  ^[0m
+[0m  symbol:   class WorkletsModule[0m
+[0m  location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:67: error: cannot find symbol[0m
+[0m      ReactApplicationContext context, WorkletsModule workletsModule, NodesManager nodesManager) {[0m
+[0m                                       ^[0m
+[0m  symbol:   class WorkletsModule[0m
+[0m  location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:106: error: cannot find symbol[0m
+[0m      WorkletsModule workletsModule,[0m
+[0m      ^[0m
+[0m  symbol:   class WorkletsModule[0m
+[0m  location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:7: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.WorkletsModule;[0m
+[0m                             ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:12: error: cannot find symbol[0m
+[0m  private final WorkletsModule mWorkletsModule;[0m
+[0m                ^[0m
+[0m  symbol:   class WorkletsModule[0m
+[0m  location: class ReanimatedModule[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:92: error: cannot find symbol[0m
+[0m    CallInvokerHolderImpl callInvokerHolder = JSCallInvokerResolver.getJSCallInvokerHolder(context);[0m
+[0m                                              ^[0m
+[0m  symbol:   variable JSCallInvokerResolver[0m
+[0m  location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:17: error: cannot find symbol[0m
+[0m    mWorkletsModule = reactContext.getNativeModule(WorkletsModule.class);[0m
+[0m                                                   ^[0m
+[0m  symbol:   class WorkletsModule[0m
+[0m  location: class ReanimatedModule[0m
+[0mNote: Some input files use or override a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0mNote: Some input files use unchecked or unsafe operations.[0m
+[0mNote: Recompile with -Xlint:unchecked for details.[0m
+[0m11 errors[0m
+[0m[0m
+[0mFAILURE: Build failed with an exception.[0m
+[0m[0m
+[0m* What went wrong:[0m
+[0mExecution failed for task ':react-native-reanimated:compileDebugJavaWithJavac'.[0m
+[0m> Compilation failed; see the compiler output below.[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:20: error: package com.swmansion.worklets does not exist[0m
+[0m  import com.swmansion.worklets.WorkletsModule;[0m
+[0m                               ^[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:28: error: package com.swmansion.worklets does not exist[0m
+[0m  import com.swmansion.worklets.JSCallInvokerResolver;[0m
+[0m                               ^[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:29: error: package com.swmansion.worklets does not exist[0m
+[0m  import com.swmansion.worklets.WorkletsModule;[0m
+[0m                               ^[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:65: error: cannot find symbol[0m
+[0m    public NodesManager(ReactApplicationContext context, WorkletsModule workletsModule) {[0m
+[0m                                                         ^[0m
+[0m    symbol:   class WorkletsModule[0m
+[0m    location: class NodesManager[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:44: error: cannot find symbol[0m
+[0m    protected final WorkletsModule mWorkletsModule;[0m
+[0m                    ^[0m
+[0m    symbol:   class WorkletsModule[0m
+[0m    location: class NativeProxy[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:67: error: cannot find symbol[0m
+[0m        ReactApplicationContext context, WorkletsModule workletsModule, NodesManager nodesManager) {[0m
+[0m                                         ^[0m
+[0m    symbol:   class WorkletsModule[0m
+[0m    location: class NativeProxy[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:106: error: cannot find symbol[0m
+[0m        WorkletsModule workletsModule,[0m
+[0m        ^[0m
+[0m    symbol:   class WorkletsModule[0m
+[0m    location: class NativeProxy[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:7: error: package com.swmansion.worklets does not exist[0m
+[0m  import com.swmansion.worklets.WorkletsModule;[0m
+[0m                               ^[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:12: error: cannot find symbol[0m
+[0m    private final WorkletsModule mWorkletsModule;[0m
+[0m                  ^[0m
+[0m    symbol:   class WorkletsModule[0m
+[0m    location: class ReanimatedModule[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:92: error: cannot find symbol[0m
+[0m      CallInvokerHolderImpl callInvokerHolder = JSCallInvokerResolver.getJSCallInvokerHolder(context);[0m
+[0m                                                ^[0m
+[0m    symbol:   variable JSCallInvokerResolver[0m
+[0m    location: class NativeProxy[0m
+[0m  /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:17: error: cannot find symbol[0m
+[0m      mWorkletsModule = reactContext.getNativeModule(WorkletsModule.class);[0m
+[0m                                                     ^[0m
+[0m    symbol:   class WorkletsModule[0m
+[0m    location: class ReanimatedModule[0m
+[0m  Note: Some input files use or override a deprecated API.[0m
+[0m  Note: Recompile with -Xlint:deprecation for details.[0m
+[0m  Note: Some input files use unchecked or unsafe operations.[0m
+[0m  Note: Recompile with -Xlint:unchecked for details.[0m
+[0m  11 errors[0m
+[0m[0m
+[0m* Try:[0m
+[0m> Check your code and dependencies to fix the compilation error(s)[0m
+[0m> Run with --scan to get full insights.[0m
+[0m[0m
+[0mBUILD FAILED in 39s[0m
+[31m[1merror[22m[39m [0mFailed to install the app. Command failed with exit code 1: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=arm64-v8a[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:20: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.WorkletsModule; ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:28: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.JSCallInvokerResolver; ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:29: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.WorkletsModule; ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:65: error: cannot find symbol public NodesManager(ReactApplicationContext context, WorkletsModule workletsModule) { ^ symbol: class WorkletsModule location: class NodesManager[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:44: error: cannot find symbol protected final WorkletsModule mWorkletsModule; ^ symbol: class WorkletsModule location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:67: error: cannot find symbol ReactApplicationContext context, WorkletsModule workletsModule, NodesManager nodesManager) { ^ symbol: class WorkletsModule location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:106: error: cannot find symbol WorkletsModule workletsModule, ^ symbol: class WorkletsModule location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:7: error: package com.swmansion.worklets does not exist[0m
+[0mimport com.swmansion.worklets.WorkletsModule; ^[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:12: error: cannot find symbol private final WorkletsModule mWorkletsModule; ^ symbol: class WorkletsModule location: class ReanimatedModule[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:92: error: cannot find symbol CallInvokerHolderImpl callInvokerHolder = JSCallInvokerResolver.getJSCallInvokerHolder(context); ^ symbol: variable JSCallInvokerResolver location: class NativeProxy[0m
+[0m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:17: error: cannot find symbol mWorkletsModule = reactContext.getNativeModule(WorkletsModule.class); ^ symbol: class WorkletsModule location: class ReanimatedModule[0m
+[0mNote: Some input files use or override a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0mNote: Some input files use unchecked or unsafe operations.[0m
+[0mNote: Recompile with -Xlint:unchecked for details.[0m
+[0m11 errors FAILURE: Build failed with an exception. * What went wrong:[0m
+[0mExecution failed for task ':react-native-reanimated:compileDebugJavaWithJavac'.[0m
+[0m> Compilation failed; see the compiler output below. /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:20: error: package com.swmansion.worklets does not exist import com.swmansion.worklets.WorkletsModule; ^ /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:28: error: package com.swmansion.worklets does not exist import com.swmansion.worklets.JSCallInvokerResolver; ^ /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:29: error: package com.swmansion.worklets does not exist import com.swmansion.worklets.WorkletsModule; ^ /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java:65: error: cannot find symbol public NodesManager(ReactApplicationContext context, WorkletsModule workletsModule) { ^ symbol: class WorkletsModule location: class NodesManager /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:44: error: cannot find symbol protected final WorkletsModule mWorkletsModule; ^ symbol: class WorkletsModule location: class NativeProxy /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:67: error: cannot find symbol ReactApplicationContext context, WorkletsModule workletsModule, NodesManager nodesManager) { ^ symbol: class WorkletsModule location: class NativeProxy /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:106: error: cannot find symbol WorkletsModule workletsModule, ^ symbol: class WorkletsModule location: class NativeProxy /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:7: error: package com.swmansion.worklets does not exist import com.swmansion.worklets.WorkletsModule; ^ /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:12: error: cannot find symbol private final WorkletsModule mWorkletsModule; ^ symbol: class WorkletsModule location: class ReanimatedModule /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NativeProxy.java:92: error: cannot find symbol CallInvokerHolderImpl callInvokerHolder = JSCallInvokerResolver.getJSCallInvokerHolder(context); ^ symbol: variable JSCallInvokerResolver location: class NativeProxy /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java:17: error: cannot find symbol mWorkletsModule = reactContext.getNativeModule(WorkletsModule.class); ^ symbol: class WorkletsModule location: class ReanimatedModule Note: Some input files use or override a deprecated API. Note: Recompile with -Xlint:deprecation for details. Note: Some input files use unchecked or unsafe operations. Note: Recompile with -Xlint:unchecked for details. 11 errors * Try:[0m
+[0m> Check your code and dependencies to fix the compilation error(s)[0m
+[0m> Run with --scan to get full insights. BUILD FAILED in 39s.[0m
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31m1[39m
+
+

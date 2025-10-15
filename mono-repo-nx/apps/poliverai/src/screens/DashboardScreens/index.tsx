@@ -1,0 +1,1 @@
+export { DashboardFullScreen } from './DashboardFullScreen';

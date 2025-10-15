@@ -1,0 +1,43 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+  "outDir": "dist",
+  "types": ["node"],
+  "rootDir": "../../",
+    "jsx": "react-jsx",
+    "noUnusedLocals": false,
+    "lib": ["dom"],
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
+  },
+  "files": ["../../node_modules/@nx/react-native/typings/svg.d.ts"],
+  "exclude": [
+    "out-tsc",
+    "dist",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.tsx",
+    "src/**/*.test.js",
+    "src/**/*.spec.js",
+    "src/**/*.test.jsx",
+    "src/**/*.spec.jsx",
+    "src/TestSetup.ts",
+    "jest.config.ts",
+    "eslint.config.js",
+    "eslint.config.cjs",
+    "eslint.config.mjs"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "../../shared-ui/src/**/*.ts",
+    "../../shared-ui/src/**/*.tsx",
+    "../../libs/intl/src/**/*.ts",
+    "../../libs/intl/src/**/*.tsx",
+    "../../libs/intl/src/**/*.json"
+    ,
+    "assets/**/*"
+  ]
+}

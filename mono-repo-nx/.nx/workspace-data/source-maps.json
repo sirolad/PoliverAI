@@ -1,0 +1,1428 @@
+{
+  "apps/poliverai": {
+    "root": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "apps/poliverai/tsconfig.app.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.dependsOn": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.cache": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.inputs": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.outputs": [
+      "apps/poliverai/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.syncGenerators": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.metadata": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.options.cwd": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.metadata.technologies": [
+      "apps/poliverai/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.technologies.0": [
+      "apps/poliverai/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.description": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.metadata.help": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.metadata.help.command": [
+      "apps/poliverai/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help.example": [
+      "apps/poliverai/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.lint": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.cache": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.inputs": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.outputs": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.executor": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.cwd": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.command": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies.0": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.description": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.command": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.example": [
+      "apps/poliverai/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.test": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.cache": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.inputs": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.outputs": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.executor": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options.cwd": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options.env": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.options.command": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.technologies": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.technologies.0": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.description": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.help": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.help.command": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "targets.test.metadata.help.example": [
+      "apps/poliverai/jest.config.ts",
+      "@nx/jest/plugin"
+    ],
+    "projectType": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.dev": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.continuous": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.syncGenerators": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.options.cwd": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.technologies": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.technologies.0": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.description": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.help": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.help.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.dev.metadata.help.example": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.typecheck.metadata.technologies.1": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.continuous": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.dependsOn": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.executor": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.options": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "targets.watch-deps.options.command": [
+      "apps/poliverai/vite.config.ts",
+      "@nx/vite/plugin"
+    ],
+    "name": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "tags": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.0": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.1": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.2": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.3": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.android.metadata.runCommand": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.ios.metadata.runCommand": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.macos.metadata.runCommand": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.executor": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.options": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.metadata": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.options.script": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.metadata.scriptContent": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.postinstall.metadata.runCommand": [
+      "apps/poliverai/package.json",
+      "nx/core/package-json"
+    ],
+    "sourceRoot": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.start": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.start.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.start.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-android": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-android.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-android.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-ios": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-ios.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-ios.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-macos": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-macos.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-macos.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-macos.options.commands": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-macos.options.cwd": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-macos.options.parallel": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-windows": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-windows.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-windows.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-windows.options.commands": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-windows.options.cwd": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.run-windows.options.parallel": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-macos": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-macos.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-macos.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-macos.options.commands": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-macos.options.cwd": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-macos.options.parallel": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-windows": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-windows.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-windows.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-windows.options.commands": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-windows.options.cwd": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.enable-windows.options.parallel": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.config": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.buildTarget": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.config": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.preview": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.preview.executor": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.preview.options": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.preview.options.config": [
+      "apps/poliverai/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  },
+  "apps/poliverai-e2e": {
+    "root": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "targets": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.dependsOn": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.cache": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.inputs": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.outputs": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.syncGenerators": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.executor": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options.cwd": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options.command": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.technologies": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.technologies.0": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.description": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help.command": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help.example": [
+      "apps/poliverai-e2e/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.lint": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.cache": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.inputs": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.outputs": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.executor": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.cwd": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.command": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies.0": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.description": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.command": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.example": [
+      "apps/poliverai-e2e/eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "metadata.targetGroups": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "metadata.targetGroups.E2E (CI)": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "metadata.targetGroups.E2E (CI).0": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "metadata.targetGroups.E2E (CI).1": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.options": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.metadata": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.dependsOn": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.cache": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.inputs": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.outputs": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.executor": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.options.cwd": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.options.command": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.metadata.technologies": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.metadata.technologies.0": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.metadata.description": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.metadata.help": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.metadata.help.command": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e.metadata.help.example": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.options": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.metadata": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.dependsOn": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.cache": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.inputs": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.outputs": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.executor": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.options.cwd": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.options.env": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.options.command": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.metadata.technologies": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.metadata.technologies.0": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.metadata.description": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.metadata.help": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.metadata.help.command": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci--src/example.spec.ts.metadata.help.example": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.executor": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.cache": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.inputs": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.outputs": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.dependsOn": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata.technologies": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata.technologies.0": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata.description": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata.nonAtomizedTarget": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata.help": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata.help.command": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "targets.e2e-ci.metadata.help.example": [
+      "apps/poliverai-e2e/playwright.config.ts",
+      "@nx/playwright/plugin"
+    ],
+    "name": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "tags": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "implicitDependencies": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "implicitDependencies.@poliverai/poliverai": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "apps/poliverai-e2e/package.json",
+      "nx/core/package-json"
+    ]
+  },
+  "shared-ui": {
+    "root": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "targets": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.dependsOn": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.cache": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.inputs": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.outputs": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.syncGenerators": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.executor": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options.cwd": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.options.command": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.technologies": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.technologies.0": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.description": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help.command": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.typecheck.metadata.help.example": [
+      "shared-ui/tsconfig.json",
+      "@nx/js/typescript"
+    ],
+    "targets.lint": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.cache": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.inputs": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.outputs": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.executor": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.cwd": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.command": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies.0": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.description": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.command": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.example": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "name": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "tags": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:public": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageExports": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageMain": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.nx-release-publish": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.nx-release-publish.executor": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.nx-release-publish.dependsOn": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.nx-release-publish.options": [
+      "shared-ui/package.json",
+      "nx/core/package-json"
+    ]
+  },
+  "libs/intl": {
+    "root": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.cache": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.inputs": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.outputs": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.executor": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.cwd": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.options.command": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.technologies.0": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.description": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.command": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ],
+    "targets.lint.metadata.help.example": [
+      "eslint.config.mjs",
+      "@nx/eslint/plugin"
+    ]
+  },
+  "apps/backend": {
+    "root": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "tags": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.python": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "tags.backend": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.executor": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.commands": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.cwd": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.parallel": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.bootstrap": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.bootstrap.executor": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.bootstrap.options": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.bootstrap.options.commands": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.bootstrap.options.cwd": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.executor": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options.commands": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options.cwd": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.executor": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.options": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.options.commands": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.options.cwd": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.executor": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.commands": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.typecheck.options.cwd": [
+      "apps/backend/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  }
+}

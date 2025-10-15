@@ -1,0 +1,131 @@
+{
+  "name": "@poliverai/poliverai",
+  "root": "apps/poliverai",
+  "sourceRoot": "apps/poliverai/src",
+  "projectType": "application",
+  "targets": {
+    "start": {
+      "executor": "@nx/react-native:start",
+      "options": {}
+    },
+    "run-android": {
+      "executor": "@nx/react-native:run-android",
+      "options": {}
+    },
+    "run-ios": {
+      "executor": "@nx/react-native:run-ios",
+      "options": {}
+    },
+    "build-android": {
+      "executor": "@nx/react-native:build-android",
+      "options": {}
+    },
+    "build-ios": {
+      "executor": "@nx/react-native:build-ios",
+      "options": {}
+    },
+    "run-macos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "sh -lc \"if (grep -q '\"react-native-macos\"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native run-macos; else echo 'react-native run-macos not configured: add react-native-macos and initialize the macos/ native project (see https://microsoft.github.io/react-native-macos/).'; fi\""
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "run-windows": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "sh -lc \"if (grep -q '\"react-native-windows\"' package.json 2>/dev/null || [ -d node_modules/react-native-windows ] || [ -d ../node_modules/react-native-windows ]) && [ -d windows ]; then npx react-native run-windows; else echo 'react-native run-windows not configured: add react-native-windows and initialize the windows/ native project (see https://microsoft.github.io/react-native-windows/).'; fi\""
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "build-macos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "sh -lc \"if (grep -q '\"react-native-macos\"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native build-macos; else echo 'react-native build-macos not configured: add react-native-macos and initialize the macos/ native project.'; fi\""
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "build-windows": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "sh -lc \"if (grep -q '\"react-native-windows\"' package.json 2>/dev/null || [ -d node_modules/react-native-windows ] || [ -d ../node_modules/react-native-windows ]) && [ -d windows ]; then npx react-native build-windows; else echo 'react-native build-windows not configured: add react-native-windows and initialize the windows/ native project.'; fi\""
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "enable-macos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "echo 'Installing react-native-macos into @poliverai/poliverai (this will modify package.json). Run this locally:'"
+          },
+          {
+            "command": "echo '  cd apps/poliverai && yarn add react-native-macos@latest'"
+          },
+          {
+            "command": "echo 'After install run native setup instructions: https://microsoft.github.io/react-native-macos/'"
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "enable-windows": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "echo 'Installing react-native-windows into @poliverai/poliverai (this will modify package.json). Run this locally:'"
+          },
+          {
+            "command": "echo '  cd apps/poliverai && yarn add react-native-windows@latest'"
+          },
+          {
+            "command": "echo 'After install run native setup instructions: https://microsoft.github.io/react-native-windows/'"
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "options": {
+        "config": "apps/poliverai/vite.config.ts",
+        "buildTarget": "@poliverai/poliverai:build"
+      }
+    },
+    "build": {
+      "executor": "@nx/vite:build",
+      "options": {
+        "config": "apps/poliverai/vite.config.ts"
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "options": {
+        "config": "apps/poliverai/vite.config.ts"
+      }
+    }
+  }
+}

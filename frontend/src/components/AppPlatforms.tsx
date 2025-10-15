@@ -1,0 +1,269 @@
+import React from 'react'
+import { getApiBaseOrigin } from '@/lib/paymentsHelpers'
+import { Button } from '@/components/ui/Button'
+import { t } from '@/i18n'
+import { DownloadCloud, Smartphone, Monitor, Apple, Server, File, FileStack, CreditCard, User } from 'lucide-react'
+import { Robot, Stack } from 'phosphor-react'
+import StatFooter from './StatFooter'
+import useRampedCounters from '@/hooks/useRampedCounters'
+import { twFromTokens, textSizes, baseFontSizes, fontWeights, colors } from '@/styles/styleTokens'
+import { spacing, alignment, hoverBgFromColor } from '@/styles/styleTokens'
+
+type Platform = 'android' | 'ios' | 'windows' | 'macos' | 'linux'
+
+const PLATFORMS: { key: Platform }[] = [
+  { key: 'android' },
+  { key: 'ios' },
+  { key: 'windows' },
+  { key: 'macos' },
+  { key: 'linux' },
+]
+
+function renderIcon(k: Platform) {
+  const cls = 'w-4 h-4 mr-2 inline-block align-middle'
+  switch (k) {
+    case 'android':
+      // use smartphone icon for Android
+      return <Smartphone className={cls} />
+    case 'ios':
+      return <Smartphone className={cls} />
+    case 'windows':
+      // use monitor for desktop/windows
+      return <Monitor className={cls} />
+    case 'macos':
+      return <Apple className={cls} />
+    case 'linux':
+      // lucide doesn't include a penguin; use Server as representative
+      return <Server className={cls} />
+    default:
+      return null
+  }
+}
+
+export default function AppPlatforms({ hideOnPlatform }: { hideOnPlatform?: Partial<Record<Platform, boolean>> }) {
+  const [visible, setVisible] = React.useState<Record<Platform, boolean>>(() => {
+    const init: Record<Platform, boolean> = { android: false, ios: false, windows: false, macos: false, linux: false }
+    if (hideOnPlatform) {
+      for (const k of Object.keys(hideOnPlatform) as Platform[]) {
+        if (hideOnPlatform[k]) init[k] = false
+      }
+    }
+    return init
+  })
+
+  const [stats, setStats] = React.useState({ free_reports: 0, full_reports: 0, ai_policy_reports: 0, total_downloads: 0, total_users: 0, total_subscriptions: 0 })
+  const [statsLoaded, setStatsLoaded] = React.useState(false)
+
+  // animated counters hook — returns ramped values matching stats keys when enabled
+  const animatedStats = useRampedCounters(stats, statsLoaded)
+  const [downloading, setDownloading] = React.useState(false)
+
+  React.useEffect(() => {
+    let cancelled = false
+    // fetch stats from the backend origin directly to avoid hitting the frontend dev server
+    const apiBase = getApiBaseOrigin() ?? 'http://localhost:8000'
+    const url = `${apiBase}/api/v1/stats/summary`
+    console.debug('[AppPlatforms] fetching stats summary from', url)
+    fetch(url, { method: 'GET', headers: { Accept: 'application/json' } })
+      .then(async (r) => {
+        if (cancelled) return
+        if (!r.ok) {
+          const text = await r.text().catch(() => r.statusText || 'error')
+          throw { message: text, status: r.status }
+        }
+        return r.json()
+      })
+      .then((res) => {
+        if (cancelled) return
+        try {
+          const resObj: unknown = res
+          let payload: Record<string, unknown> = {}
+          if (resObj && typeof resObj === 'object') {
+            const obj = resObj as Record<string, unknown>
+            if ('data' in obj && obj.data && typeof obj.data === 'object') {
+              payload = obj.data as Record<string, unknown>
+            } else {
+              payload = obj
+            }
+          }
+
+          const free = Number((payload['free_reports'] as number) ?? (payload['freeReports'] as number) ?? 0)
+          const full = Number((payload['full_reports'] as number) ?? (payload['fullReports'] as number) ?? 0)
+          const ai = Number((payload['ai_policy_reports'] as number) ?? (payload['aiPolicyReports'] as number) ?? 0)
+          const downloads = Number((payload['total_downloads'] as number) ?? (payload['totalDownloads'] as number) ?? 0)
+          const users = Number((payload['total_users'] as number) ?? (payload['user_count'] as number) ?? (payload['totalUsers'] as number) ?? (payload['userCount'] as number) ?? 0)
+          const subscriptions = Number((payload['total_subscriptions'] as number) ?? (payload['subscription_count'] as number) ?? (payload['totalSubscriptions'] as number) ?? (payload['subscriptionCount'] as number) ?? 0)
+
+          setStats({ free_reports: free, full_reports: full, ai_policy_reports: ai, total_downloads: downloads, total_users: users, total_subscriptions: subscriptions })
+          setStatsLoaded(true)
+        } catch (e) {
+          console.warn('[AppPlatforms] failed to parse stats response', e, res)
+        }
+      })
+      .catch((err) => {
+        console.warn('[AppPlatforms] stats fetch failed', err)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const toggle = (k: Platform) => setVisible((s) => {
+    // If user selects iOS, deselect all other platforms (iOS is mutually exclusive)
+    if (k === 'ios') {
+      const newVal = !s.ios
+      return { android: false, ios: newVal, windows: false, macos: false, linux: false }
+    }
+    // If user selects any other platform, make sure iOS is deselected (mutually exclusive with iOS)
+    return { ...s, ios: false, [k]: !s[k] }
+  })
+
+  const handleDownload = async () => {
+    setDownloading(true)
+    try {
+      const apiBase = getApiBaseOrigin() ?? 'http://localhost:8000'
+      const url = `${apiBase}/api/v1/stats/downloads`
+      const r = await fetch(url, { method: 'POST', headers: { Accept: 'application/json' } })
+      if (!r.ok) {
+        const txt = await r.text().catch(() => r.statusText || 'error')
+        throw { message: txt, status: r.status }
+      }
+      const res = await r.json()
+  const newDownloads = (res && (res.total_downloads ?? res.totalDownloads)) ?? null
+  setStats((s) => ({ ...s, total_downloads: newDownloads ?? s.total_downloads }))
+  if (newDownloads !== null) setStatsLoaded(true)
+    } catch {
+      // ignore errors, we still increment locally
+      setStats((s) => ({ ...s, total_downloads: s.total_downloads + 1 }))
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  return (
+    <div className={twFromTokens(spacing.containerMaxLg, 'py-10')}>
+  <div className={twFromTokens(colors.surface, 'rounded-2xl shadow-xl', 'max-w-3xl mx-auto', spacing.cardLg, alignment.flexCol, alignment.itemsCenter, 'text-center', alignment.gap4)}>
+        <div>
+          <h3 className={twFromTokens(textSizes.h2, fontWeights.semibold)}>{t('app_platforms.heading')}</h3>
+          <p className={twFromTokens(textSizes.lg, colors.textMuted)}>{t('app_platforms.subheading')}</p>
+        </div>
+
+        <div className={twFromTokens(alignment.flexRow, 'flex-wrap', alignment.justifyCenter, alignment.gap3)}>
+          {PLATFORMS.map((p) => (
+            <button
+              key={p.key}
+              onClick={() => toggle(p.key)}
+              className={twFromTokens(
+                spacing.pillBtn,
+                visible[p.key]
+                  ? twFromTokens(colors.primaryBg, colors.ctaText, 'border-blue-600')
+                  : twFromTokens(colors.surface, colors.textSecondary, hoverBgFromColor(colors.surface))
+              )}
+            >
+              <span className={twFromTokens('inline-flex items-center')}>
+                {renderIcon(p.key)}
+                <span className={twFromTokens('align-middle', textSizes.md)}>{t(`app_platforms.platforms.${p.key}`)}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="w-full flex flex-wrap items-center justify-center gap-8">
+          <Button onClick={handleDownload} disabled={downloading} className={twFromTokens('px-6 flex-shrink-0 whitespace-nowrap', colors.successBgStrong, hoverBgFromColor(colors.successBgStrong), colors.ctaText)} icon={<DownloadCloud className={twFromTokens(spacing.iconsMd, colors.ctaText)} />}>
+            {downloading ? t('app_platforms.downloading') : t('app_platforms.download_app')}
+          </Button>
+
+          <div className="flex items-baseline gap-3">
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
+              {statsLoaded && (
+                animatedStats.total_downloads
+              )}
+            </div>
+            <div className={twFromTokens(textSizes.lg, fontWeights.normal, colors.textMutedLight, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <Stack className={twFromTokens('w-5 h-5', colors.textMutedLight)} />
+              <span>{t('app_platforms.downloads_label')}</span>
+              <div className={twFromTokens(baseFontSizes.xs, colors.textMutedLight, 'ml-2')}>{t('app_platforms.downloads_so_far')}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Short write-up between downloads and stats */}
+        <div className="w-full">
+          <div className="max-w-2xl mx-auto text-center mt-4 mb-2">
+            <p className={twFromTokens(textSizes.lg, colors.textMuted)}>{t('app_platforms.description', { defaultValue: 'PoliverAI delivers fast, practical reports for quick checks and deep, AI-powered policy reviews for thorough compliance. Whether you\'re running a quick scan or generating a full policy report, we\'ve made it simple and reliable — built to support teams across devices and platforms.' })}</p>
+          </div>
+        </div>
+
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex flex-col items-center">
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <File className={twFromTokens('w-5 h-5', colors.textMuted)} />
+              {t('app_platforms.free_reports')}
+            </div>
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
+              {statsLoaded && (
+                <>{animatedStats.free_reports} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.reports_label')}</span></>
+              )}
+            </div>
+            <StatFooter />
+          </div>
+
+          <div className="flex flex-col items-center">
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <FileStack className={twFromTokens('w-5 h-5', colors.textMuted)} />
+              {t('app_platforms.full_reports')}
+            </div>
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
+              {statsLoaded && (
+                <>{animatedStats.full_reports} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.reports_label')}</span></>
+              )}
+            </div>
+            <StatFooter />
+          </div>
+
+          <div className="flex flex-col items-center">
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <Robot className={twFromTokens('w-5 h-5', colors.textMuted)} />
+              {t('app_platforms.ai_revised_policies')}
+            </div>
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
+              {statsLoaded && (
+                <>{animatedStats.ai_policy_reports} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.policies_label')}</span></>
+              )}
+            </div>
+            <StatFooter />
+          </div>
+        </div>
+
+        {/* Additional single stats row: users + subscriptions */}
+        <div className="w-full flex justify-center mt-4 gap-8">
+          <div className="flex flex-col items-center">
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <User className={twFromTokens('w-5 h-5', colors.textMuted)} />
+              {t('app_platforms.sign_ups')}
+            </div>
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
+              {statsLoaded && (
+                <>{animatedStats.total_users} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.users_label')}</span></>
+              )}
+            </div>
+            <StatFooter />
+          </div>
+
+          <div className="flex flex-col items-center">
+              <div className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, 'inline-flex items-center gap-2 whitespace-nowrap')}>
+              <CreditCard className={twFromTokens('w-5 h-5', colors.textMuted)} />
+              {t('app_platforms.subs_label')}
+            </div>
+            <div className={twFromTokens(textSizes.h2, fontWeights.bold)}>
+              {statsLoaded && (
+                <>{animatedStats.total_subscriptions} <span className={twFromTokens(textSizes.sm, fontWeights.normal, colors.textMutedLight)}>{t('app_platforms.subs_label')}</span></>
+              )}
+            </div>
+            <StatFooter />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

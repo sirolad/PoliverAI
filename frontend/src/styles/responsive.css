@@ -1,0 +1,21 @@
+/* Small helper utilities for responsive tweaks not covered by Tailwind breakpoints
+   This file provides a class to hide elements on viewports <= 700px which is
+   slightly different from the project's default Tailwind breakpoints.
+*/
+@media (max-width: 700px) {
+  .hide-below-700 {
+    display: none !important;
+  }
+
+  /* Give report cards a predictable minimum height on small screens when
+     they lack metadata (stars/full/verdict) so action buttons can align to
+     the bottom reliably. Using a custom class avoids depending on a Tailwind
+     utility that might not be generated in the build. */
+  .card-min-h-mobile {
+    min-height: 15rem; /* 96px */
+  }
+}
+  /* Longer min-height for cards that contain extra visible content */
+  .card-min-h-mobile-long {
+    min-height: 15rem; /* 144px */
+  }

@@ -1,0 +1,11 @@
+# Example .env (do not commit secrets)
+APP_NAME=poliverai
+APP_ENV=development
+
+# API endpoints
+POLIVERAI_API_URL=https://api.example.com
+EXPO_PUBLIC_API_URL=https://api.example.com
+API_URL=https://api.example.com
+
+ENABLE_SENTRY=false
+SENTRY_DSN=

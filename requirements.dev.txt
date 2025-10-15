@@ -1,0 +1,54 @@
+pydantic-settings>=2.3
+python-dotenv==1.0.1
+fastapi>=0.115,<1.0
+uvicorn==0.30.1
+python-multipart>=0.0.7
+requests==2.32.3
+PyYAML>=6.0
+python-jose[cryptography]>=3.3.0
+email_validator
+# Password hashing dependency required by auth
+argon2-cffi>=21.3.0
+# lightweight test deps
+pytest==8.2.2
+httpx==0.27.0
+tiktoken==0.7.0
+chromadb==0.5.3
+openai==1.40.0
+stripe==5.0.0
+python-docx>=1.1
+gradio==4.35.0
+beautifulsoup4==4.12.3
+pdfplumber>=0.11
+reportlab==4.2.0
+google-cloud-storage==2.11.0
+
+# protobuf constraint to satisfy google-cloud-aiplatform
+# google-cloud-aiplatform requires protobuf>=3.19.5 and <5.0.0dev
+protobuf
+pymongo>=3.6.0
+pyflakes
+certifi
+
+# Optional: sentence-transformers is required for some embedding/semantic search features.
+# Note: this may pull in heavy dependencies (torch). If you want a CPU-only install, consider
+# pinning a cpu build of torch or installing sentence-transformers inside a separate dev venv.
+# dev should turn comment it out for speed build speed
+# transformers==4.44.0
+# sentence-transformers==3.0.1
+# ###
+
+cairosvg
+svglib 
+lxml
+xhtml2pdf
+weasyprint
+Pango
+pydyf
+CFFI
+tinyhtml5
+tinycss2
+cssselect2
+Pyphen
+Pillow
+fontTools

@@ -1,3 +1,124 @@
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# compiled output
+dist/
+tmp/
+out-tsc/
+
+# dependencies
+node_modules/
+**/node_modules/
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# VSCode (allow checked-in settings/extensions/tasks)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# System files
+.DS_Store
+Thumbs.db
+
+# nx caches and workspace data
+.nx/cache
+.nx/workspace-data
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+# React Native / Xcode / macOS
+mono-repo-nx/apps/poliverai/macos/build
+mono-repo-nx/apps/poliverai/ios/build
+DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.xcuserstate
+xcuserdata/
+**/.xcode.env.local
+
+# Android / IntelliJ
+.gradle/
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+mono-repo-nx/patches/generated/android/gradle-generated/intermediates/cxx
+mono-repo-nx/patches/generated/android/gradle-generated/intermediates/merged_native_libs
+mono-repo-nx/patches/generated/android/gradle-generated/intermediates/stripped_native_libs
+
+
+# node.js logs
+npm-debug.log
+yarn-error.log
+
+# fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Bundle artifact
+*.jsbundle
+
+# Ruby / CocoaPods
+mono-repo-nx/apps/poliverai/macos/Pods
+mono-repo-nx/apps/poliverai/ios/Pods
+mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/*/Objects-normal/arm64/Binary
+mono-repo-nx/patches/generated/macos/pods-build-scripts/Debug/*/Objects-normal/arm64/x86_64
+# **/vendor/bundle/
+
+# Metro
+.metro-health-check*
+
+# testing / coverage
+coverage/
+.coverage
+htmlcov/
+test-output
+
+# Vite / Vitest timestamps
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+
+# Local environment files
+.env
+**/.env
+apps/*/.env
+!.env.example
+apps/*/.env.example
+.env.local
+**/.env.local
+apps/*/.env.local
+!.env.example.local
+apps/*/.env.example.local
+.env.dev
+**/.env.dev
+apps/*/.env.dev
+!.env.example.dev
+apps/*/.env.example.dev
+
+
+# History / misc
+.history/
+data/chroma/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -9,23 +130,18 @@ __pycache__/
 .build/
 .dist/
 
-# Environments
-.env
+# Virtual envs
 .venv/
 venv/
 ENV/
 
-# IDEs
+# Logs
+logs/
+*.log
+
+# IDE local overrides
 .vscode/
 .idea/
-
-# OS
-.DS_Store
-
-# Coverage / test
-.coverage
-htmlcov/
-.pytest_cache/
 
 # Reports
 reports/
@@ -33,11 +149,11 @@ reports/
 # Caches
 .cache/
 
-# Logs
-logs/
-*.log
-.history/
-data/
+# Other
+testem.log
+/connect.lock
+/typings
 
-docs/
-data/chroma.*
+key.json
+
+# Ensure sensitive or user-specific files are not committed

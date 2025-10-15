@@ -1,0 +1,53 @@
+JS server already running on port 8081.
+[36m[1minfo[22m[39m [0mDetected architectures arm64-v8a[0m
+[36m[1minfo[22m[39m [0mInstalling the app...[0m
+
+[1A[1m<[0;1m-------------> 0% INITIALIZING [18ms][m[38D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [118ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [218ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [319ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [418ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [518ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [616ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [716ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [819ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [914ms][m[39D[1B
+[2A[1m<[0;1m-------------> 0% INITIALIZING [1s][m[0K[36D[1B[1m> Evaluating settings[m[21D[1B[1A[1m> Evaluating settings > Evaluating settings[m[43D[1B[1A[1m> Evaluating settings > Evaluating settings > Resolve dependencies of detachedConfiguration1[m[92D[1B[1A[1m> Evaluating settings > Evaluating settings[m[0K[43D[1B[1A[1m> Evaluating settings > Evaluating settings > Resolve files of configuration 'classpath'[m[88D[1B[1A[1m> Evaluating settings > Evaluating settings[m[0K[43D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [2s][m[36D[2B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > Loading projects[m[40D[1B[1A[1m> Evaluating settings > :gradle-plugin[m[0K[38D[1B[1A[1m> Evaluating settings > :gradle-plugin > Resolve dependencies of classpath[m[74D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [3s][m[36D[1B[1m> Evaluating settings > :gradle-plugin > Resolve files of configuration 'classpath'[m[83D[1B[1A[1m> Evaluating settings > :gradle-plugin[m[0K[38D[1B[1A[1m> Evaluating settings > :gradle-plugin:react-native-gradle-plugin[m[65D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [4s][m[36D[2B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin[m[0K[54D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared[m[0K[45D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [5s][m[36D[1B[1m> Evaluating settings > :gradle-plugin:shared-testutil[m[54D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > Discovering toolchains > Detecting local java toolchains[m[80D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [6s][m[36D[1B[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin > Resolve files of configuration ':gradle-plugin:shared:detachedConfig[m[130D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A> IDLE[0K[6D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [6s][m[0K[35D[1B[1m> Loading projects[m[18D[1B[1A[1m> root project > Resolve dependencies of classpath[m[50D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [7s][m[35D[2B[1A[1m> root project[m[0K[14D[1B[1A[1m> root project > :gradle-plugin:react-native-gradle-plugin:compileKotlin > Resolve files of configuration ':gradle-plugin:react-na[m[130D[1B[1A[1m> root project > Resolve files of configuration 'classpath'[m[0K[59D[1B[1A[1m> root project > :app[m[0K[21D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [8s][m[35D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [9s][m[35D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [10s][m[36D[2B[2A[1m<[0;32;1m====[0;39;1m---------> 33% CONFIGURING [10s][m[37D[1B[1m> :react-native-gesture-handler[m[31D[1B[1A[1m> :react-native-gesture-handler > Resolve dependencies of classpath[m[67D[1B[1A[1m> :react-native-gesture-handler > Resolve files of configuration 'classpath'[m[76D[1B[2A[1m<[0;32;1m====[0;39;1m---------> 33% CONFIGURING [11s][m[37D[1B[1m> :react-native-gesture-handler[m[0K[31D[1B[2A[1m<[0;32;1m====[0;39;1m---------> 33% CONFIGURING [12s][m[37D[2B[2A[1m<[0;32;1m======[0;39;1m-------> 50% CONFIGURING [12s][m[37D[1B[1m> :react-native-safe-area-context > Resolve dependencies of classpath[m[69D[1B[1A[1m> :react-native-safe-area-context > Resolve files of configuration 'classpath' > Resolve files of configuration 'classpath'[m[123D[1B[2A[1m<[0;32;1m======[0;39;1m-------> 50% CONFIGURING [13s][m[37D[2B[1A[1m> :react-native-safe-area-context[m[0K[33D[1B[2A[1m<[0;32;1m========[0;39;1m-----> 66% CONFIGURING [13s][m[37D[1B[1m> :react-native-svg[m[0K[19D[1B[2A[1m<[0;32;1m========[0;39;1m-----> 66% CONFIGURING [14s][m[37D[2B[2A[1m<[0;32;1m==========[0;39;1m---> 83% CONFIGURING [14s][m[37D[1B[1m> :react-native-worklets[m[24D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [14s][m[38D[1B[1m> Discovering toolchains > Detecting local java toolchains[m[58D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [15s][m[38D[2B[1A> IDLE[0K[6D[1B[1A[1m> Resolve dependencies of :app:debugCompileClasspath > Resolve dependencies of :app:debugRuntimeClasspath[m[105D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [16s][m[38D[1B> IDLE[0K[6D[1B[2A[0K
+[Incubating] Problems report is available at: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+10 actionable tasks: 10 up-to-date
+[0K
+[0K
+[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [16s][m[38D[1B> IDLE[6D[1B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [17s][m[38D[2B[2A[1m<[0;1m-------------> 0% WAITING[m[0K[26D[2B[2A[2K[1B[2K[1A[0m[?12l[?25h
+[36m[1minfo[22m[39m [0m[2m[2m💡 Tip: Make sure that you have set up your development environment correctly, by running[22m[2m [0m[0m[1mnpx react-native doctor[22m[2m[0m[0m. [2mTo read more about doctor command visit: https://github.com/react-native-community/cli/blob/main/packages/cli-doctor/README.md#doctor [22m[2m[22m[0m
+[0m[2m[2m[22m[2m[22m[0m
+[0m[0m
+[0mFAILURE: Build failed with an exception.[0m
+[0m[0m
+[0m* What went wrong:[0m
+[0mCould not determine the dependencies of task ':app:compileDebugJavaWithJavac'.[0m
+[0m> Could not resolve all dependencies for configuration ':app:debugCompileClasspath'.[0m
+[0m   > Could not resolve project :react-native-worklets.[0m
+[0m     Required by:[0m
+[0m         project :app[0m
+[0m      > No matching variant of project :react-native-worklets was found. The consumer was configured to find a library for use during compile-time, preferably optimized for Android, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.8.2', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug', attribute 'org.jetbrains.kotlin.platform.type' with value 'androidJvm' but:[0m
+[0m          - No variants exist.[0m
+[0m[0m
+[0m* Try:[0m
+[0m> Creating consumable variants is explained in more detail at https://docs.gradle.org/8.13/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs.[0m
+[0m> Review the variant matching algorithm at https://docs.gradle.org/8.13/userguide/variant_attributes.html#sec:abm_algorithm.[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org.[0m
+[0m[0m
+[0mBUILD FAILED in 20s[0m
+[31m[1merror[22m[39m [0mFailed to install the app. Command failed with exit code 1: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=arm64-v8a FAILURE: Build failed with an exception. * What went wrong:[0m
+[0mCould not determine the dependencies of task ':app:compileDebugJavaWithJavac'.[0m
+[0m> Could not resolve all dependencies for configuration ':app:debugCompileClasspath'. > Could not resolve project :react-native-worklets. Required by: project :app > No matching variant of project :react-native-worklets was found. The consumer was configured to find a library for use during compile-time, preferably optimized for Android, as well as attribute 'com.android.build.api.attributes.AgpVersionAttr' with value '8.8.2', attribute 'com.android.build.api.attributes.BuildTypeAttr' with value 'debug', attribute 'org.jetbrains.kotlin.platform.type' with value 'androidJvm' but: - No variants exist. * Try:[0m
+[0m> Creating consumable variants is explained in more detail at https://docs.gradle.org/8.13/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs.[0m
+[0m> Review the variant matching algorithm at https://docs.gradle.org/8.13/userguide/variant_attributes.html#sec:abm_algorithm.[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org. BUILD FAILED in 20s.[0m
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31m1[39m
+
+
