@@ -1,40 +1,9 @@
-import React from 'react'
-import { View, ScrollView, Text, StyleSheet } from 'react-native'
-import { useTranslation, useAuth } from '@poliverai/intl'
-import { getDefaultMonthRange, getCost, getCostForReport, computeSavedTotals, computeDerivedFree, formatRangeLabel as _formatRangeLabel } from '../../lib/dashboardHelpers'
-import useRampedCounters from '../../hooks/useRampedCounters'
-import { computeTransactionTotals } from '../../lib/transactionHelpers'
-import transactionsService from '../../services/transactions'
-import policyService from '../../services/policyService'
-import type { ReportMetadata } from '../../types/api'
-import { LoadingSpinner, rnTokens } from '@poliverai/shared-ui'
-import {
-  QuickActions,
-  AvailableFeatures,
-  GettingStarted,
-  DashboardHeader,
-  AccountStatus,
-} from '../../components/dashboard'
+import React from 'react';
+import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import { useAuth, t, getDefaultMonthRange, ReportMetadata, computeSavedTotals, getCostForReport, formatRangeLabel, getCost, computeDerivedFree, transactionsService, computeTransactionTotals, policyService } from '@poliverai/intl';
+import { AccountStatus, QuickActions, AvailableFeatures, GettingStarted, DashboardHeader, colors as rnTokens, spacing } from '@poliverai/shared-ui';
 
-// Local lightweight fallbacks until the RN app store is fully wired
-const useAppDispatch = () => () => {}
-const useAppSelector = (_sel: unknown) => ({ events: [], legacyCounts: {} } as { events: unknown[]; legacyCounts: Record<string, number> })
-const computeDeletedCountsForRange = (_events: unknown, _legacy: unknown, _range: unknown) => ({ full: 0, revision: 0, free: 0 })
-
-const formatRangeLabel = (range: { from: string | null; to: string | null } | null, defFrom: string | null, defTo: string | null) => _formatRangeLabel(range, defFrom ?? '', defTo ?? '')
-
-type DashboardUser = { subscription_credits?: number; credits?: number; subscription_expires?: string | null } | null
-
-type ReportMetadataMinimal = {
-  is_full_report?: boolean
-  status?: string
-  type?: string
-  analysis_mode?: string | number
-  filename?: string
-}
-
-export default function DashboardFullScreen(): React.ReactElement {
-  const { t } = useTranslation()
+export const DashboardFullScreen: React.FC = () => {
   const authFromIntl = useAuth() as unknown as { user?: Record<string, unknown> | null; isAuthenticated?: boolean; isPro?: boolean; loading?: boolean; refreshUser?: () => Promise<void>; reportsCount?: number }
   const { user, isAuthenticated, isPro = false, loading = false, refreshUser, reportsCount } = authFromIntl
 
@@ -86,41 +55,26 @@ export default function DashboardFullScreen(): React.ReactElement {
   }, [completedRange.from, completedRange.to])
 
   const { totalSavedFiles, fullReportsSaved, revisedDocsSaved, totalSavedCredits, totalSavedUsd, freeReportsSaved } = computeSavedTotals(userReports)
-  const hasStatusField = !!((userReports && userReports.find((r) => typeof (r as ReportMetadataMinimal).status !== 'undefined')) || (completedReports && completedReports.find((r) => typeof (r as ReportMetadataMinimal).status !== 'undefined')))
+  const hasStatusField = !!((userReports && userReports.find((r) => typeof (r as ReportMetadata).status !== 'undefined')) || (completedReports && completedReports.find((r) => typeof (r as ReportMetadata).status !== 'undefined')))
 
   const fullReportsDone = (completedReports !== null)
-    ? (hasStatusField ? completedReports.filter((r) => (r as ReportMetadataMinimal).is_full_report && ((r as ReportMetadataMinimal).status === 'completed')).length : (completedReports.filter((r) => (r as ReportMetadataMinimal).is_full_report).length))
-    : (userReports ? (hasStatusField ? userReports.filter((r) => (r as ReportMetadataMinimal).is_full_report && ((r as ReportMetadataMinimal).status === 'completed')).length : fullReportsSaved) : null)
+    ? (hasStatusField ? completedReports.filter((r) => (r as ReportMetadata).is_full_report && ((r as ReportMetadata).status === 'completed')).length : (completedReports.filter((r) => (r as ReportMetadata).is_full_report).length))
+    : (userReports ? (hasStatusField ? userReports.filter((r) => (r as ReportMetadata).is_full_report && ((r as ReportMetadata).status === 'completed')).length : fullReportsSaved) : null)
 
   const revisedCompleted = (completedReports !== null)
-    ? (hasStatusField ? completedReports.filter((r) => (r as ReportMetadataMinimal).type === 'revision' && ((r as ReportMetadataMinimal).status === 'completed')).length : (completedReports.filter((r) => (r as ReportMetadataMinimal).type === 'revision').length))
-    : (userReports ? (hasStatusField ? userReports.filter((r) => (r as ReportMetadataMinimal).type === 'revision' && ((r as ReportMetadataMinimal).status === 'completed')).length : revisedDocsSaved) : null)
+    ? (hasStatusField ? completedReports.filter((r) => (r as ReportMetadata).type === 'revision' && ((r as ReportMetadata).status === 'completed')).length : (completedReports.filter((r) => (r as ReportMetadata).type === 'revision').length))
+    : (userReports ? (hasStatusField ? userReports.filter((r) => (r as ReportMetadata).type === 'revision' && ((r as ReportMetadata).status === 'completed')).length : revisedDocsSaved) : null)
 
   const derivedFreeReportsSaved = computeDerivedFree(totalSavedFiles, fullReportsSaved, revisedDocsSaved)
   const freeReportsSavedDisplay = derivedFreeReportsSaved !== null ? derivedFreeReportsSaved : freeReportsSaved
   const freeReportsCompleted = userReports
-    ? (hasStatusField ? userReports.filter((r) => (((r as ReportMetadataMinimal).analysis_mode || '').toString() === 'fast') && ((r as ReportMetadataMinimal).status === 'completed')).length : freeReportsSaved)
+    ? (hasStatusField ? userReports.filter((r) => (((r as ReportMetadata).analysis_mode || '').toString() === 'fast') && ((r as ReportMetadata).status === 'completed')).length : freeReportsSaved)
     : null
 
-  // store dispatch/selectors are not yet wired in RN; use local no-op placeholders
-  const dispatch = useAppDispatch()
-  const deletedState = useAppSelector((_: unknown) => ({ events: [], legacyCounts: {} } as { events: unknown[]; legacyCounts: Record<string, number> }))
+  // TODO: Wire up Redux dispatch/selectors for RN, stub for now
 
-  React.useEffect(() => {
-    const handler = (_ev: unknown) => {
-      // In RN we don't have the deletedReports store yet; keep handler as a no-op
-      // TODO: integrate with RN store/event emitter to track deleted reports
-      return undefined
-    }
-    // on native, window events may not be used; keep for parity if code emits them elsewhere
-    if (typeof window !== 'undefined' && window?.addEventListener) {
-      window.addEventListener('reports:deleted', handler as EventListener)
-      return () => window.removeEventListener('reports:deleted', handler as EventListener)
-    }
-    return undefined
-  }, [dispatch])
-
-  const displayedDeletedCounts = computeDeletedCountsForRange(deletedState.events, deletedState.legacyCounts, reportsRange)
+  // TODO: Port computeDeletedCountsForRange from frontend/src/lib if needed
+  const displayedDeletedCounts = { full: 0, revision: 0, free: 0 };
 
   const dashboardLoaded = !loading && (userReports !== null) && (txTotals !== null) && (completedReports !== null)
 
@@ -132,7 +86,8 @@ export default function DashboardFullScreen(): React.ReactElement {
     totalSavedCredits: Number(totalSavedCredits ?? 0),
     totalSavedUsd: Number(totalSavedUsd ?? 0),
   }
-  const animatedSaved = useRampedCounters(savedTargets, dashboardLoaded, { durationMs: 1400, maxSteps: 6, minIntervalMs: 60 })
+    // TODO: Port useRampedCounters from frontend/src/lib if needed
+    const animatedSaved = savedTargets;
 
   const deletedTargets = {
     deletedFull: Number(displayedDeletedCounts.full ?? 0),
@@ -140,28 +95,28 @@ export default function DashboardFullScreen(): React.ReactElement {
     deletedFree: Number(displayedDeletedCounts.free ?? 0),
     deletedTotal: Number((displayedDeletedCounts.full || 0) + (displayedDeletedCounts.revision || 0) + (displayedDeletedCounts.free || 0)),
   }
-  const animatedDeleted = useRampedCounters(deletedTargets, dashboardLoaded, { durationMs: 1200, maxSteps: 6, minIntervalMs: 60 })
+    const animatedDeleted = deletedTargets;
 
   const completedTargets = {
     fullReportsDone: Number(fullReportsDone ?? 0),
     revisedCompleted: Number(revisedCompleted ?? 0),
     freeReportsCompleted: Number(freeReportsCompleted ?? 0),
   }
-  const animatedCompleted = useRampedCounters(completedTargets, dashboardLoaded, { durationMs: 1200, maxSteps: 6, minIntervalMs: 60 })
+    const animatedCompleted = completedTargets;
 
   const txTargets = {
     total_bought_credits: Number(txTotals?.total_bought_credits ?? 0),
     total_spent_credits: Number(txTotals?.total_spent_credits ?? 0),
     total_subscription_usd: Number(txTotals?.total_subscription_usd ?? 0),
   }
-  const animatedTx = useRampedCounters(txTargets, dashboardLoaded, { durationMs: 1400, maxSteps: 6, minIntervalMs: 80 })
+    const animatedTx = txTargets;
 
   const creditsTargets = {
     subscriptionCredits: subscriptionCredits,
     purchasedCredits: purchasedCredits,
     effectiveCredits: effectiveCredits,
   }
-  const animatedCredits = useRampedCounters(creditsTargets, dashboardLoaded, { durationMs: 1600, maxSteps: 6, minIntervalMs: 80 })
+    const animatedCredits = creditsTargets;
 
   React.useEffect(() => { return undefined }, [reportsRange.from, reportsRange.to])
 
@@ -199,8 +154,8 @@ export default function DashboardFullScreen(): React.ReactElement {
     return undefined
   }, [refreshUser])
 
-  if (loading) return <View style={styles.centered}><LoadingSpinner message={t('dashboard.loading')} size="lg" /></View>
-  if (!isAuthenticated) return <View style={styles.centered}><Text>{t('auth.not_authenticated') || 'Please sign in'}</Text></View>
+  if (loading) return <View style={styles.centered}><Text>{t('dashboard.loading')}</Text></View>;
+  if (!isAuthenticated) return <View style={styles.centered}><Text>{t('auth.not_authenticated') || 'Please sign in'}</Text></View>;
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
@@ -208,7 +163,7 @@ export default function DashboardFullScreen(): React.ReactElement {
 
       <AccountStatus
         isPro={!!isPro}
-        user={user as DashboardUser}
+        user={user}
         dashboardLoaded={dashboardLoaded}
         animatedCredits={animatedCredits}
         animatedSaved={animatedSaved}
@@ -223,17 +178,17 @@ export default function DashboardFullScreen(): React.ReactElement {
         setTxRange={setTxRange}
         defaultFrom={defaultFrom}
         defaultTo={defaultTo}
-        getCostForReport={(r: unknown) => getCostForReport(r as ReportMetadata)}
-        userReports={(userReports ?? undefined) as unknown[] | undefined}
-        txTotals={(txTotals ?? undefined) as { total_bought_credits?: number; total_spent_credits?: number } | undefined}
-        totalSavedCredits={totalSavedCredits ?? undefined}
-        totalSavedUsd={totalSavedUsd ?? undefined}
+        getCostForReport={(r: ReportMetadata) => getCostForReport(r).credits}
+        userReports={userReports}
+        txTotals={txTotals ?? {}}
+        totalSavedCredits={totalSavedCredits ?? 0}
+        totalSavedUsd={totalSavedUsd ?? 0}
         formatRangeLabel={formatRangeLabel}
       />
 
       <QuickActions reportsCount={reportsCount ?? undefined} />
 
-      <AvailableFeatures getCost={getCost} hasCredits={hasCredits} />
+      <AvailableFeatures getCost={(feature) => getCost(feature?.key) ? getCost(feature?.key)?.credits ?? 0 : 0} hasCredits={hasCredits} />
 
       <GettingStarted />
     </ScrollView>
@@ -243,15 +198,15 @@ export default function DashboardFullScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: rnTokens.colors?.pageBg ?? '#fff',
+    backgroundColor: rnTokens.pageBg.hex,
   },
   container: {
-    padding: 16,
+    padding: spacing.card.value ?? 16,
   },
   centered: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing.sectionPaddingY.value ?? 20,
   },
-})
+});

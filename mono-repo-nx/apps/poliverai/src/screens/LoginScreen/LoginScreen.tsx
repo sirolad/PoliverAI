@@ -1,136 +1,203 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, ActivityIndicator, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Input, Card, Button } from '@poliverai/shared-ui';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth, useTranslation } from '@poliverai/intl';
-import brandAssets from '../../../assets/brand';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { useAuth } from '@poliverai/intl';
+import { t } from '@poliverai/intl';
+import { colors, spacing, twFromTokens } from '@poliverai/shared-ui';
+import { Mail, Lock, AlertCircle, LogIn } from 'lucide-react-native';
 
-type SafeNavigation = { navigate?: (...args: unknown[]) => void; replace?: (...args: unknown[]) => void } | undefined;
-
-function useSafeNavigation(): SafeNavigation {
-  try {
-    return useNavigation() as unknown as SafeNavigation;
-  } catch {
-    return undefined;
-  }
-}
-
-export const LoginScreen: React.FC = () => {
-  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { t } = useTranslation();
-  const navigation = useSafeNavigation();
-
+const LoginScreen: React.FC = () => {
+  const { login, loading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigation?.replace?.('Dashboard');
-    }
-  }, [isAuthenticated, navigation]);
-
-  const validate = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return t('screens.login.errors.invalidEmail', 'Invalid email address');
-    if (password.length < 6) return t('screens.login.errors.passwordShort', 'Password must be at least 6 characters');
-    return '';
-  };
+  // Redirect logic (replace with navigation logic for RN)
+  // if (isAuthenticated) {
+  //   navigation.navigate('Dashboard');
+  //   return null;
+  // }
 
   const onSubmit = async () => {
-    const v = validate();
-    if (v) {
-      setError(v);
-      return;
-    }
-
     try {
       setIsSubmitting(true);
       setError('');
-      // login throws on failure; successful completion means login succeeded
       await login(email, password);
-      navigation?.navigate?.('Dashboard');
-    } catch (e: unknown) {
-      const message = (e as { message?: string })?.message || t('screens.login.errors.loginFailed', 'Login failed');
-      setError(message);
+      // navigation.navigate('Dashboard');
+    } catch (err) {
+      if (err instanceof Error) setError(err.message);
+      else if (typeof err === 'string') setError(err);
+      else setError('Login failed');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (authLoading) {
+  if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.center}><ActivityIndicator size="large" color="#2563eb" /></View>
-      </SafeAreaView>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={colors.primary.hex} />
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Image source={brandAssets.poliveraiIcon} style={styles.logoImage} resizeMode="contain" />
-          <Text style={styles.headerTitle}>{t('screens.login.header.title', 'Welcome back to PoliverAI')}</Text>
-          <Text style={styles.headerSubtitle}>{t('screens.login.header.subtitle', 'Sign in to access your GDPR compliance dashboard')}</Text>
-        </View>
-
-        <Card style={styles.cardStyle}>
-          <View style={{ padding: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>{t('screens.login.form.title', 'Sign In')}</Text>
-            <Text style={{ color: '#6b7280', marginBottom: 12 }}>{t('screens.login.form.subtitle', 'Enter your email and password to access your account')}</Text>
-
-            {error ? (
-              <View style={styles.errorBox}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
-
-            <Input label={t('screens.login.form.emailLabel', 'Email address')} placeholder={t('screens.login.form.emailPlaceholder', 'Enter your email')} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" error={undefined} />
-            <Input label={t('screens.login.form.passwordLabel', 'Password')} placeholder={t('screens.login.form.passwordPlaceholder', 'Enter your password')} value={password} onChangeText={setPassword} secureTextEntry error={undefined} />
-
-            <Button title={isSubmitting ? t('screens.login.form.submitting', 'Signing in...') : t('screens.login.form.submit', 'Sign In')} onPress={onSubmit} loading={isSubmitting} disabled={isSubmitting} />
-
-            <View style={styles.footerText}>
-        <Text style={styles.smallText}>{t('screens.login.footer.noAccount', "Don't have an account? Sign up for free")}</Text>
-            </View>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        {/* Replace with Image component for RN logo if needed */}
+        <Text style={styles.title}>{t('auth_login.welcome_title')}</Text>
+        <Text style={styles.subtitle}>{t('auth_login.welcome_subtitle')}</Text>
+      </View>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>{t('auth_login.sign_in_title')}</Text>
+        <Text style={styles.cardDesc}>{t('auth_login.sign_in_desc')}</Text>
+        {error ? (
+          <View style={styles.errorRow}>
+            <AlertCircle size={18} color={colors.danger.hex} />
+            <Text style={styles.errorText}>{error}</Text>
           </View>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
+        ) : null}
+        <View style={styles.inputRow}>
+          <Mail size={18} color={colors.mutedText.hex} />
+          <TextInput
+            style={styles.input}
+            placeholder={t('auth.register.email_placeholder')}
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+          />
+        </View>
+        <View style={styles.inputRow}>
+          <Lock size={18} color={colors.mutedText.hex} />
+          <TextInput
+            style={styles.input}
+            placeholder={t('auth.register.password_placeholder')}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={onSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <View style={styles.buttonContent}>
+              <LogIn size={16} color="#fff" />
+              <Text style={styles.buttonText}>{t('auth_login.sign_in_cta')}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.pageBg.hex,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
   },
-  scrollView: {
+  centered: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.pageBg.hex,
   },
-  content: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
   },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header: { marginBottom: 20, alignItems: 'center', marginTop: '10%' },
-  logoImage: { 
-    width: 72, 
-    height: 72, 
-    marginBottom: 20 
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.textPrimary.hex,
+    marginBottom: 8,
   },
-  headerTitle: { fontSize: 24, fontWeight: '800', color: '#0f172a' },
-  headerSubtitle: { color: '#6b7280', marginTop: 6, textAlign: 'center' },
-  errorBox: { padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, marginBottom: 12 },
-  errorText: { color: '#b91c1c' },
-  footerText: { marginTop: 12, alignItems: 'center' },
-  smallText: { color: '#6b7280' },
-  cardStyle: {
+  subtitle: {
+    fontSize: 16,
+    color: colors.textMuted.hex,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  card: {
     width: '100%',
-    maxWidth: 450, 
-    alignSelf: 'center' 
-  }
+    maxWidth: 400,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.textPrimary.hex,
+    marginBottom: 4,
+  },
+  cardDesc: {
+    fontSize: 14,
+    color: colors.textMuted.hex,
+    marginBottom: 16,
+  },
+  errorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.dangerBg.hex,
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+  errorText: {
+    color: colors.danger.hex,
+    marginLeft: 8,
+    fontSize: 14,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.mutedBorder.hex,
+    borderRadius: 8,
+    marginBottom: 16,
+    paddingHorizontal: 12,
+    backgroundColor: colors.surface.hex,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
+    color: colors.textPrimary.hex,
+    marginLeft: 8,
+  },
+  button: {
+    backgroundColor: colors.primaryBg.hex,
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
 });
+
+export default LoginScreen;

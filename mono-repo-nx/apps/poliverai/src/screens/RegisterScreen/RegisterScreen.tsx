@@ -1,140 +1,196 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, ActivityIndicator, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Input } from '@poliverai/shared-ui';
-import { Button } from '@poliverai/shared-ui';
-import { Card } from '@poliverai/shared-ui';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth, useTranslation } from '@poliverai/intl';
-import brandAssets from '../../../assets/brand';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { useAuth, t } from '@poliverai/intl';
+import { Input, Button, Card, colors, textSizes } from '@poliverai/shared-ui';
 
 export const RegisterScreen: React.FC = () => {
-  const { register: registerUser, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { t } = useTranslation();
-  const navigation = useNavigation();
-
+  const { register, loading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      // navigate to Dashboard when authenticated
-      // @ts-expect-error: navigation may not expose replace in some environments
-      navigation?.replace?.('Dashboard');
-    }
-  }, [isAuthenticated, navigation]);
-
-  const validate = () => {
-    if (name.trim().length < 2) return t('screens.register.errors.nameShort');
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return t('screens.register.errors.invalidEmail');
-    if (password.length < 6) return t('screens.register.errors.passwordShort');
-    if (password !== confirmPassword) return t('screens.register.errors.passwordsMismatch');
-    return '';
-  };
+  // Redirect logic can be handled by navigation in React Native
+  // if (isAuthenticated) { navigation.replace('Dashboard'); return null; }
 
   const onSubmit = async () => {
-    const v = validate();
-    if (v) {
-      setError(v);
+    if (name.length < 2) {
+      setError(t('auth.register.validation_name_min'));
       return;
     }
-
+    if (!email.includes('@')) {
+      setError(t('auth.register.validation_email'));
+      return;
+    }
+    if (password.length < 6) {
+      setError(t('auth.register.validation_password_min'));
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError(t('auth.register.validation_password_match'));
+      return;
+    }
     try {
       setIsSubmitting(true);
       setError('');
-      // registerUser throws on failure; successful completion means registration succeeded
-      await registerUser(name, email, password);
-      // @ts-expect-error: navigation typing may vary at runtime
-      navigation?.navigate?.('Dashboard');
-    } catch (e: unknown) {
-  const message = (e as { message?: string })?.message || t('screens.register.errors.registrationFailed');
-      setError(message);
+      await register(name, email, password);
+      // navigation.replace('Dashboard');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(t('auth.register.registration_failed'));
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (authLoading) {
+  if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.center}><ActivityIndicator size="large" color="#2563eb" /></View>
-      </SafeAreaView>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={colors.primary.hex} />
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Image source={brandAssets.poliveraiIcon} style={styles.logoImage} resizeMode="contain" />
-          <Text style={styles.headerTitle}>{t('screens.register.header.title')}</Text>
-          <Text style={styles.headerSubtitle}>{t('screens.register.header.subtitle')}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        {/* Replace with your logo asset */}
+        <Text style={styles.logo}>PoliverAI</Text>
+        <Text style={styles.title}>{t('auth.register.join_title')}</Text>
+        <Text style={styles.subtitle}>{t('auth.register.join_subtitle')}</Text>
+      </View>
+      <Card>
+        <Text style={styles.cardTitle}>{t('auth.register.create_account')}</Text>
+        <Text style={styles.cardDesc}>{t('auth.register.create_account_desc')}</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <Input
+          label={t('auth.register.name_label')}
+          value={name}
+          onChangeText={setName}
+          placeholder={t('auth.register.name_placeholder')}
+        />
+        <Input
+          label={t('auth.register.email_label')}
+          value={email}
+          onChangeText={setEmail}
+          placeholder={t('auth.register.email_placeholder')}
+        />
+        <Input
+          label={t('auth.register.password_label')}
+          value={password}
+          onChangeText={setPassword}
+          placeholder={t('auth.register.password_placeholder')}
+          secureTextEntry
+        />
+        <Input
+          label={t('auth.register.confirm_password_label')}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          placeholder={t('auth.register.confirm_password_placeholder')}
+          secureTextEntry
+        />
+        <Text style={styles.terms}>
+          {t('auth.register.terms_prefix')}{' '}
+          <Text style={styles.link}>{t('auth.register.terms')}</Text>{' '}and{' '}
+          <Text style={styles.link}>{t('auth.register.privacy')}</Text>.
+        </Text>
+        <Button
+          title={isSubmitting ? t('auth.register.creating_account') : t('auth.register.create_account_cta')}
+          onPress={onSubmit}
+          disabled={isSubmitting}
+          loading={isSubmitting}
+        />
+        <View style={styles.signInRow}>
+          <Text style={styles.signInText}>{t('auth.register.already_have_account')}{' '}</Text>
+          <TouchableOpacity /* onPress={() => navigation.navigate('LoginScreen')} */>
+            <Text style={styles.link}>{t('auth.register.sign_in')}</Text>
+          </TouchableOpacity>
         </View>
-
-        <Card style={styles.cardStyle}>
-          <View style={{ padding: 12 }}>
-            <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>{t('screens.register.form.title')}</Text>
-            <Text style={{ color: '#6b7280', marginBottom: 12 }}>{t('screens.register.form.subtitle')}</Text>
-
-            {error ? (
-              <View style={styles.errorBox}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
-
-            <Input label={t('screens.register.form.fullNameLabel')} placeholder={t('screens.register.form.fullNamePlaceholder')} value={name} onChangeText={(v) => { setName(v); setError(''); }} error={undefined} />
-            <Input label={t('screens.register.form.emailLabel')} placeholder={t('screens.register.form.emailPlaceholder')} value={email} onChangeText={(v) => { setEmail(v); setError(''); }} keyboardType="email-address" autoCapitalize="none" error={undefined} />
-            <Input label={t('screens.register.form.passwordLabel')} placeholder={t('screens.register.form.passwordPlaceholder')} value={password} onChangeText={(v) => { setPassword(v); setError(''); }} secureTextEntry error={undefined} />
-            <Input label={t('screens.register.form.confirmPasswordLabel')} placeholder={t('screens.register.form.confirmPasswordPlaceholder')} value={confirmPassword} onChangeText={(v) => { setConfirmPassword(v); setError(''); }} secureTextEntry error={undefined} />
-
-            <Button title={isSubmitting ? t('screens.register.form.submitting') : t('screens.register.form.submit')} onPress={onSubmit} loading={isSubmitting} disabled={isSubmitting} />
-
-            <View style={styles.footerText}>
-              <Text style={styles.smallText}>{t('screens.register.footer.haveAccount')}{' '}</Text>
-              <Text style={[styles.smallText, { color: '#2563eb', fontWeight: '700' }]} onPress={() => navigation?.navigate?.('Login' as never)}>{t('screens.register.footer.signIn')}</Text>
-            </View>
-          </View>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
+      </Card>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.pageBg.hex,
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+  },
+  centered: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.pageBg.hex,
   },
-  scrollView: {
-    flex: 1,
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
   },
-  content: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+  logo: {
+    fontSize: textSizes.h2.size,
+  fontWeight: 700,
+    color: colors.primary.hex,
+    marginBottom: 8,
   },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header: { marginBottom: 20, alignItems: 'center', marginTop: '10%'  },
-  logoImage: { 
-    width: 72, 
-    height: 72, 
-    marginBottom: 20 
+  title: {
+    fontSize: textSizes.h2.size,
+  fontWeight: 700,
+    color: colors.textPrimary.hex,
+    marginBottom: 4,
   },
-  headerTitle: { fontSize: 24, fontWeight: '800', color: '#0f172a'},
-  headerSubtitle: { color: '#6b7280', marginTop: 6, textAlign: 'center' },
-  errorBox: { padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, marginBottom: 12 },
-  errorText: { color: '#b91c1c' },
-  footerText: { marginTop: 12, alignItems: 'center' },
-  smallText: { color: '#6b7280' },
-  cardStyle: {
-    width: '100%',
-    maxWidth: 450, 
-    alignSelf: 'center' 
-  }
+  subtitle: {
+    fontSize: textSizes.sm.size,
+    color: colors.textMuted.hex,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  cardTitle: {
+    fontSize: textSizes.h3.size,
+  fontWeight: 700,
+    color: colors.textPrimary.hex,
+    marginBottom: 4,
+  },
+  cardDesc: {
+    fontSize: textSizes.sm.size,
+    color: colors.textMuted.hex,
+    marginBottom: 12,
+  },
+  error: {
+    color: colors.danger.hex,
+    fontSize: textSizes.sm.size,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  terms: {
+    fontSize: textSizes.sm.size,
+    color: colors.textMuted.hex,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  link: {
+    color: colors.primary.hex,
+  fontWeight: 500,
+    textDecorationLine: 'underline',
+  },
+  signInRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  signInText: {
+    fontSize: textSizes.sm.size,
+    color: colors.textMuted.hex,
+  },
 });
 
 export default RegisterScreen;

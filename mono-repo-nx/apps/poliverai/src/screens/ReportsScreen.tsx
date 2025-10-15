@@ -41,7 +41,7 @@ export default function ReportsScreen() {
       <Text style={{ fontSize: 20, fontWeight: '700', padding: 12 }}>Reports</Text>
       <ReportsToolbar total={total} page={page} setPage={setPage} limit={limit} setLimit={setLimit} onSelectAll={onSelectAll} />
       <BulkActions onRefresh={fetchReports} onDeleteSelected={onDeleteSelected} disabled={getSelected().length === 0} />
-  <Filters query={''} setQuery={() => undefined} statusFilter={null} setStatusFilter={() => undefined} />
+      <Filters query={''} setQuery={() => undefined} statusFilter={null} setStatusFilter={() => undefined} />
 
       <ScrollView contentContainerStyle={{ padding: 12 }}>
         {isLoading && <Text>Loading...</Text>}
@@ -52,7 +52,7 @@ export default function ReportsScreen() {
         ))}
       </ScrollView>
 
-  <ReportViewerModal open={!!viewerUrl} reportUrl={viewerUrl ?? undefined} onClose={() => setViewerUrl(null)} />
+      <ReportViewerModal open={!!viewerUrl} reportUrl={viewerUrl ?? undefined} onClose={() => setViewerUrl(null)} />
     </View>
   )
 }

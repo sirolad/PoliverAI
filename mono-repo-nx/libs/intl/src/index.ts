@@ -1,3 +1,10 @@
+export { default as useCreditsSummary } from './hooks/useCreditsSummary';
+export type { Transaction } from './services/transactions';
+export { default as PaymentsService } from './services/payments';
+export * from './lib/eventHelpers';
+export { default as transactionsService } from './services/transactions';
+export * from './lib/transactionHelpers';
+export * from './lib/dashboardHelpers';
 import React from 'react'
 
 let currentToken: string | null = null
@@ -12,30 +19,19 @@ export function setToken(token: string | null) {
 
 export const AuthContext = React.createContext<{ token: string | null; setToken: (t: string | null) => void }>({ token: null, setToken: () => {} })
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, _setToken] = React.useState<string | null>(null)
-  React.useEffect(() => {
-    // sync module-level token for simple synchronous access
-    currentToken = token
-  }, [token])
-  return <AuthContext.Provider value={{ token, setToken: _setToken }}>{children}</AuthContext.Provider>
-}
-
-export function useAuth() {
-  const ctx = React.useContext(AuthContext)
-  return ctx
-}
-
-export default {
-  getToken,
-  setToken,
-  AuthProvider,
-  useAuth,
-}
+// Removed duplicate AuthProvider and useAuth exports to resolve conflicts
 export { ReduxProvider } from './provider';
 export * from './store';
 export * from './slices/authSlice';
 export * from './slices/localeSlice';
 export { useTranslation } from './i18n';
-export { AuthProvider, useAuth } from './hooks/useAuth';
+import { useTranslation } from './i18n';
+export const t = useTranslation().t;
+export { AuthProvider } from './hooks/useAuth';
+export { useAuth } from './hooks/useAuth';
+export * from './types/api';
+export * from './types/feature';
+export { default as policyService } from './services/policyService';
 export { cn } from './utils/cn';
+export * from './hooks/useAvailableFeatures';
+export { useAvailableFeatures } from './hooks/useAvailableFeatures';
