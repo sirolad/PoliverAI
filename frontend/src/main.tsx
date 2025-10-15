@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+<<<<<<< HEAD
 import { Provider } from 'react-redux'
 import { store } from './store/store'
 import { bootstrapLegacyLocalStorage } from './store/legacyBootstrap'
@@ -22,3 +23,11 @@ createRoot(document.getElementById('root')!).render(
 
 // After initial render mount, migrate legacy localStorage keys into the store once.
 bootstrapLegacyLocalStorage()
+=======
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+>>>>>>> main

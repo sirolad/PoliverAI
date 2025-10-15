@@ -21,21 +21,33 @@ dependencies = [
   "jinja2>=3.1",
   "reportlab>=4.2",
   "pdfplumber>=0.11",
+<<<<<<< HEAD
   "python-docx>=0.8.11",
   "beautifulsoup4>=4.12",
   "google-cloud-storage>=2.12",
   "python-socketio>=5.8",
   "sentence-transformers>=3.0,<4.0",
   "transformers>=4.44,<5.0",
+=======
+  "python-docx>=1.1",
+  "beautifulsoup4>=4.12",
+>>>>>>> main
 ]
 
 [project.optional-dependencies]
 rag = [
+<<<<<<< HEAD
   "numpy>=1.26,<2.0",
   "scikit-learn>=1.5,<2.0",
   "sentence-transformers>=3.0,<4.0",
   "faiss-cpu>=1.8,<2.0",
   "google-cloud-storage>=2.12",
+=======
+  "sentence-transformers>=3.0",
+  "faiss-cpu>=1.8",
+  "numpy>=1.26",
+  "scikit-learn>=1.5",
+>>>>>>> main
 ]
 dev = [
   "pytest>=8.3",

@@ -16,6 +16,10 @@
    pip install --upgrade pip
    pip install -e ".[dev]"     # Core + dev tools
    pip install -e ".[rag]"     # Optional RAG dependencies
+<<<<<<< HEAD
+=======
+   pip install openai chromadb tiktoken argon2-cffi python-jose 'pydantic[email]' python-multipart
+>>>>>>> main
    ```
    Or use the bootstrap script: `./scripts/dev/bootstrap.sh`
 
