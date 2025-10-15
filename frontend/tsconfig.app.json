@@ -24,15 +24,9 @@
     "noUncheckedSideEffectImports": true,
 
     /* Path mapping */
-<<<<<<< HEAD
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
-=======
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
->>>>>>> main
     }
   },
   "include": ["src"]

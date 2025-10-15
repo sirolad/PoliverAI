@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # compiled output
@@ -120,8 +119,6 @@ apps/*/.env.example.dev
 .history/
 data/chroma/
 
-=======
->>>>>>> main
 # Python
 __pycache__/
 *.py[cod]
@@ -133,17 +130,11 @@ __pycache__/
 .build/
 .dist/
 
-<<<<<<< HEAD
 # Virtual envs
-=======
-# Environments
-.env
->>>>>>> main
 .venv/
 venv/
 ENV/
 
-<<<<<<< HEAD
 # Logs
 logs/
 *.log
@@ -152,27 +143,12 @@ logs/
 .vscode/
 .idea/
 
-=======
-# IDEs
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-
-# Coverage / test
-.coverage
-htmlcov/
-.pytest_cache/
-
->>>>>>> main
 # Reports
 reports/
 
 # Caches
 .cache/
 
-<<<<<<< HEAD
 # Other
 testem.log
 /connect.lock
@@ -181,13 +157,3 @@ testem.log
 key.json
 
 # Ensure sensitive or user-specific files are not committed
-=======
-# Logs
-logs/
-*.log
-.history/
-data/
-
-docs/
-data/chroma.*
->>>>>>> main

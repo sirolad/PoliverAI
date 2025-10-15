@@ -7,7 +7,6 @@ if [ -f ./.env ]; then
   . ./.env
   set +a
 fi
-<<<<<<< HEAD
 
 # If a project venv exists at /app/.venv, use its python to run uvicorn to avoid
 # entrypoint script shebang issues inside some Docker base images.
@@ -33,6 +32,3 @@ fi
 
 # Default host inside container should be 0.0.0.0 so other containers can reach it
 exec $PYTHON_CMD poliverai.app.main:app --reload --host "${HOST:-0.0.0.0}" --port "${PORT:-8000}"
-=======
-exec uvicorn poliverai.app.main:app --reload --host "${HOST:-127.0.0.1}" --port "${PORT:-8000}"
->>>>>>> main

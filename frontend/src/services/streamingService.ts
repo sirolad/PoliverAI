@@ -1,33 +1,21 @@
-<<<<<<< HEAD
 import type { ComplianceResult } from '@/types/api'
 import { getToken } from './api'
 import { safeDispatch, safeDispatchMultiple } from '@/lib/eventHelpers'
 import { buildApiUrl } from '@/lib/fileHelpers'
 import { getAuthHeader } from '@/lib/authHelpers'
 
-=======
->>>>>>> main
 export interface StreamingUpdate {
   status: 'starting' | 'processing' | 'completed' | 'error'
   progress: number
   message: string
-<<<<<<< HEAD
   result?: ComplianceResult
 }
 export type StreamingCallback = (update: StreamingUpdate) => void
-=======
-  result?: any
-}
-
-export type StreamingCallback = (update: StreamingUpdate) => void
-
->>>>>>> main
 class StreamingService {
   async streamPolicyAnalysis(
     file: File,
     analysisMode: 'fast' | 'balanced' | 'detailed' = 'fast',
     onUpdate: StreamingCallback
-<<<<<<< HEAD
   ): Promise<ComplianceResult> {
     return new Promise((resolve, reject) => {
       // Create FormData for file upload
@@ -46,43 +34,16 @@ class StreamingService {
         method: 'POST',
         body: formData,
         headers,
-=======
-  ): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Create FormData for file upload
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('analysis_mode', analysisMode)
-
-      // Get API base URL
-      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-      const url = `${apiBaseUrl}/api/v1/verify-stream`
-
-      // Create EventSource-like functionality with fetch
-      const controller = new AbortController()
-
-      fetch(url, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-        },
->>>>>>> main
         signal: controller.signal,
       })
       .then(async response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
         const reader = response.body?.getReader()
         if (!reader) {
           throw new Error('No response body reader available')
         }
-<<<<<<< HEAD
         const decoder = new TextDecoder()
         let buffer = ''
         try {
@@ -177,41 +138,6 @@ class StreamingService {
                       reject(new Error(data.message))
                       return
                     }
-=======
-
-        const decoder = new TextDecoder()
-        let buffer = ''
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read()
-
-            if (done) break
-
-            // Decode chunk and add to buffer
-            buffer += decoder.decode(value, { stream: true })
-
-            // Process complete lines
-            const lines = buffer.split('\n')
-            buffer = lines.pop() || '' // Keep incomplete line in buffer
-
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                try {
-                  const data = JSON.parse(line.substring(6)) as StreamingUpdate
-                  onUpdate(data)
-
-                  // If completed, resolve with result
-                  if (data.status === 'completed' && data.result) {
-                    resolve(data.result)
-                    return
-                  }
-
-                  // If error, reject
-                  if (data.status === 'error') {
-                    reject(new Error(data.message))
-                    return
->>>>>>> main
                   }
                 } catch (parseError) {
                   console.warn('Failed to parse SSE data:', line, parseError)
@@ -227,29 +153,17 @@ class StreamingService {
         console.error('Streaming request failed:', error)
         reject(error)
       })
-<<<<<<< HEAD
-=======
-
->>>>>>> main
       // Return cleanup function
       return () => {
         controller.abort()
       }
     })
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
   async streamPolicyAnalysisWithEventSource(
     file: File,
     analysisMode: 'fast' | 'balanced' | 'detailed' = 'fast',
     onUpdate: StreamingCallback
-<<<<<<< HEAD
   ): Promise<ComplianceResult> {
-=======
-  ): Promise<any> {
->>>>>>> main
     return new Promise((resolve, reject) => {
       // For EventSource, we need a different approach since it only supports GET requests
       // We'll use the fetch-based streaming approach above
@@ -259,9 +173,5 @@ class StreamingService {
     })
   }
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export const streamingService = new StreamingService()
 export default streamingService

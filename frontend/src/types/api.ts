@@ -3,85 +3,50 @@ export interface UserLogin {
   email: string
   password: string
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export interface UserCreate {
   name: string
   email: string
   password: string
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export interface User {
   id: string
   name: string
   email: string
   tier: 'free' | 'pro'
   credits: number
-<<<<<<< HEAD
   // Credits allocated as part of an active subscription. These are consumed
   // before regular purchased credits and are intended to show subscription value.
   subscription_credits?: number
-=======
->>>>>>> main
   subscription_expires?: string
   created_at: string
   is_active: boolean
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export interface Token {
   access_token: string
   token_type: string
   user: User
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 // Policy Analysis Types
 export interface ClauseMatch {
   article: string
   policy_excerpt: string
   score: number
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export interface Finding {
   article: string
   issue: string
   severity: 'high' | 'medium' | 'low'
   confidence: number
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export interface Recommendation {
   article: string
   suggestion: string
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export interface ComplianceMetrics {
   total_violations: number
   total_fulfills: number
   critical_violations: number
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 export interface ComplianceResult {
   verdict: string
   score: number
@@ -92,19 +57,11 @@ export interface ComplianceResult {
   summary: string
   metrics: ComplianceMetrics
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 // Analysis request types
 export interface AnalysisRequest {
   file: File
   analysis_mode?: 'fast' | 'balanced' | 'detailed'
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 // Error handling
 export interface ApiErrorDetails {
   message: string
@@ -112,10 +69,6 @@ export interface ApiErrorDetails {
   requested_mode?: string
   available_mode?: string
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 // Frontend-specific types for UI state
 export interface AnalysisResultForUI extends Omit<ComplianceResult, 'findings'> {
   id: string
@@ -131,7 +84,6 @@ export interface AnalysisResultForUI extends Omit<ComplianceResult, 'findings'> 
     confidence?: number
   }>
 }
-<<<<<<< HEAD
 
 export interface ReportMetadata {
   filename: string
@@ -151,5 +103,3 @@ export interface ReportMetadata {
   is_full_report?: boolean
   status?: string
 }
-=======
->>>>>>> main
