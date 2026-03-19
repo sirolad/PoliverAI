@@ -1,7 +1,8 @@
 module.exports = function (api) {
-  api.cache(true);
+  const env = api.env();
+  api.cache.using(() => `${env}:${process.env.NX_TASK_TARGET_TARGET ?? ''}`);
 
-  const isTest = api.env('test');
+  const isTest = env === 'test';
   const isBuild = process.env.NX_TASK_TARGET_TARGET === 'build' ||
     process.env.NX_TASK_TARGET_TARGET?.includes('storybook');
 
@@ -33,10 +34,8 @@ module.exports = function (api) {
   return {
     presets: [
       ['module:@react-native/babel-preset', { useTransformReactJSX: true }],
-    ],
-    plugins: [
       'nativewind/babel',
-      'react-native-reanimated/plugin',
     ],
+    plugins: [],
   };
 };

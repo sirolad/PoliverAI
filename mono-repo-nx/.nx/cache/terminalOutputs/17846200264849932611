@@ -1,0 +1,1029 @@
+JS server already running on port 8081.
+[36m[1minfo[22m[39m [0mDetected architectures arm64-v8a[0m
+[36m[1minfo[22m[39m [0mInstalling the app...[0m
+
+
+[1A[1m> Connecting to Daemon[m[22D[1B[1A> IDLE[0K[6D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [24ms][m[38D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [123ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [224ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [328ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [426ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [523ms][m[39D[1B[1m> Evaluating settings[m[21D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [625ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [726ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [826ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [927ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [1s][m[0K[36D[2B[1A[1m> Evaluating settings > Evaluating settings[m[43D[1B[1A[1m> Evaluating settings > Evaluating settings > Resolve dependencies of detachedConfiguration1[m[92D[1B[1A[1m> Evaluating settings > Evaluating settings[m[0K[43D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [2s][m[36D[2B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > :gradle-plugin[m[38D[1B[1A[1m> Evaluating settings > :gradle-plugin > Resolve dependencies of classpath[m[74D[1B[1A[1m> Evaluating settings > :gradle-plugin[m[0K[38D[1B[1A[1m> Evaluating settings > :gradle-plugin:react-native-gradle-plugin[m[65D[1B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin[m[0K[54D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared[m[0K[45D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared-testutil[m[54D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [3s][m[36D[1B[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > Discovering toolchains > Detecting local java toolchains[m[80D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin[m[59D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin > Resolve files of configuration ':gradle-plugin:shared:detachedConfiguration1' [m[140D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin[m[0K[59D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [4s][m[36D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [5s][m[36D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [6s][m[36D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [7s][m[36D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [8s][m[36D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [9s][m[36D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [10s][m[37D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [11s][m[37D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [12s][m[37D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [13s][m[37D[2B[1A[1m> Evaluating settings > :gradle-plugin:shared:jar[m[0K[49D[1B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin:compileKotlin > Resolve files of configuration ':gradle-plugin:settings-plugin:detach[m[140D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [14s][m[37D[1B[1m> Evaluating settings > :gradle-plugin:settings-plugin:compileKotlin[m[0K[68D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [15s][m[37D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [16s][m[37D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [17s][m[37D[2B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin:jar[m[0K[58D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [17s][m[0K[36D[1B[1m> root project > Resolve dependencies of classpath[m[0K[50D[1B[1A[1m> root project > :gradle-plugin:react-native-gradle-plugin:compileKotlin[m[72D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [18s][m[36D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [19s][m[36D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [20s][m[36D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [21s][m[36D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [22s][m[36D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [23s][m[36D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [24s][m[36D[2B[2A[1m<[0;1m-------------> 0% CONFIGURING [25s][m[36D[2B[1A[1m> root project > :gradle-plugin:react-native-gradle-plugin:jar[m[0K[62D[1B[1A[1m> root project > Resolve files of configuration 'classpath'[m[0K[59D[1B[1A[1m> root project > :app[m[0K[21D[1B[2A[1m<[0;32;1m====[0;39;1m---------> 33% CONFIGURING [26s][m[37D[1B[1m> :react-native-gesture-handler[m[31D[1B[1A[1m> :react-native-gesture-handler > Resolve dependencies of classpath[m[67D[1B[1A[1m> :react-native-gesture-handler > Resolve files of configuration 'classpath'[m[76D[1B[1A[1m> :react-native-gesture-handler[m[0K[31D[1B[2A[1m<[0;32;1m======[0;39;1m-------> 50% CONFIGURING [26s][m[37D[1B[1m> :react-native-safe-area-context > Resolve dependencies of classpath[m[69D[1B[1A[1m> :react-native-safe-area-context[m[0K[33D[1B[2A[1m<[0;32;1m======[0;39;1m-------> 50% CONFIGURING [27s][m[37D[2B[2A[1m<[0;32;1m========[0;39;1m-----> 66% CONFIGURING [27s][m[37D[1B[1m> :react-native-screens[m[0K[23D[1B[1A[1m> :react-native-screens > Resolve dependencies of classpath[m[59D[1B[1A[1m> :react-native-screens > Resolve files of configuration 'classpath'[m[68D[1B[1A[1m> :react-native-screens[m[0K[23D[1B[2A[1m<[0;32;1m==========[0;39;1m---> 83% CONFIGURING [27s][m[37D[1B[1m> :react-native-svg[m[0K[19D[1B[2A[1m<[0;32;1m==========[0;39;1m---> 83% CONFIGURING [28s][m[37D[2B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [28s][m[38D[1B> IDLE[0K[6D[1B[1A[1m> Resolve dependencies of :app:debugCompileClasspath > Resolve dependencies of :app:debugRuntimeClasspath[m[105D[1B[1A> IDLE[0K[6D[1B[1A[1m> Resolve dependencies of :react-native-gesture-handler:debugCompileClasspath > Resolve dependencies of :react-native-gesture-handler:debugR[m[140D[1B[1A[1m> Resolve dependencies of :react-native-safe-area-context:debugCompileClasspath > Resolve dependencies of :react-native-safe-area-context:de[m[140D[1B[1A> IDLE[0K[6D[1B[2A[1m<[0;1m-------------> 0% EXECUTING [29s][m[0K[34D[2B[2A[1m<[0;32;1m=[0;39;1m------------> 12% EXECUTING [29s][m[35D[1B[1m> :react-native-gesture-handler:packageDebugResources[m[53D[1B[1A[1m> :app:checkDebugAarMetadata > Resolve files of configuration ':app:debugRuntimeClasspath'[m[90D[1B[2A[1m<[0;32;1m==[0;39;1m-----------> 16% EXECUTING [29s][m[35D[1B[1m> :react-native-screens:packageDebugResources[m[0K[45D[1B[2A[1m<[0;32;1m==[0;39;1m-----------> 16% EXECUTING [30s][m[35D[2B
+[3A[1m<[0;32;1m===[0;39;1m----------> 23% EXECUTING [30s][m[0K[35D[1B[1m> :react-native-gesture-handler:processDebugManifest[m[52D[1B[1m> :react-native-safe-area-context:processDebugManifest[m[54D[1B
+
+
+
+
+[8A[1m<[0;32;1m===[0;39;1m----------> 25% EXECUTING [30s][m[35D[3B[1m> :react-native-screens:processDebugManifest[m[44D[1B[1m> :react-native-svg:processDebugManifest[m[40D[1B[1m> :react-native-gesture-handler:parseDebugLocalResources[m[56D[1B[1m> :react-native-safe-area-context:parseDebugLocalResources[m[58D[1B[1m> :react-native-screens:compileDebugLibraryResources > Resolve dependencies of :react-native-screens:detachedConfiguration2[m[123D[1B
+
+
+
+[12A[1m<[0;32;1m===[0;39;1m----------> 29% EXECUTING [30s][m[0K[35D[1B[52C[0K[52D[1B[54C[0K[54D[1B[44C[0K[44D[4B[1m> :react-native-screens:compileDebugLibraryResources[m[0K[52D[1B[1m> :react-native-screens:parseDebugLocalResources[m[48D[1B[1m> :react-native-svg:parseDebugLocalResources[m[44D[1B[1m> :react-native-svg:javaPreCompileDebug[m[39D[1B[1m> :react-native-gesture-handler:javaPreCompileDebug[m[51D[1B[12A[0K
+[1m> Task :react-native-safe-area-context:processDebugManifest[m
+package="com.th3rdwave.safeareacontext" found in source AndroidManifest.xml: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
+Recommendation: remove package="com.th3rdwave.safeareacontext" from the source AndroidManifest.xml: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-safe-area-context/android/src/main/AndroidManifest.xml.
+[5B[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[12A[1m<[0;32;1m====[0;39;1m---------> 36% EXECUTING [30s][m[0K[35D[1B[1m> :react-native-gesture-handler:processDebugManifest[m[52D[1B[1m> :react-native-safe-area-context:javaPreCompileDebug[m[53D[1B[1m> :react-native-screens:javaPreCompileDebug[m[43D[1B[1m> :react-native-safe-area-context:generateDebugRFile[m[52D[1B> IDLE[6D[1B> IDLE[6D[1B[1m> :react-native-screens:compileDebugLibraryResources[m[52D[1B[1m> :react-native-gesture-handler:generateDebugRFile[m[50D[1B[1m> :react-native-svg:parseDebugLocalResources[m[44D[1B[1m> :react-native-svg:javaPreCompileDebug[m[39D[1B[1m> :react-native-gesture-handler:javaPreCompileDebug[m[51D[1B[12A[1m<[0;32;1m=====[0;39;1m--------> 45% EXECUTING [30s][m[35D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[3B> IDLE[0K[6D[1B[1m> :react-native-svg:generateDebugRFile[m[0K[38D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B[12A[1m<[0;32;1m=====[0;39;1m--------> 46% EXECUTING [30s][m[35D[4B[1m> :react-native-safe-area-context:compileDebugKotlin[m[52D[4B> IDLE[0K[6D[4B[12A[1m<[0;32;1m=====[0;39;1m--------> 46% EXECUTING [31s][m[35D[12B[12A[1m<[0;32;1m======[0;39;1m-------> 46% EXECUTING [31s][m[35D[8B[1m> :react-native-svg:compileDebugJavaWithJavac[m[45D[4B[12A[1m<[0;32;1m======[0;39;1m-------> 46% EXECUTING [32s][m[35D[12B[12A[1m<[0;32;1m======[0;39;1m-------> 46% EXECUTING [33s][m[35D[12B[12A[1m<[0;32;1m======[0;39;1m-------> 46% EXECUTING [34s][m[35D[12B[12A[1m<[0;32;1m======[0;39;1m-------> 46% EXECUTING [35s][m[35D[12B[12A[1m<[0;32;1m======[0;39;1m-------> 46% EXECUTING [36s][m[35D[12B[12A[0K
+[1m> Task :react-native-svg:compileDebugJavaWithJavac[m
+[10B[0K
+[0K
+[12A[1m<[0;32;1m======[0;39;1m-------> 46% EXECUTING [36s][m[35D[1B> IDLE[6D[1B> IDLE[0K[6D[1B> IDLE[6D[1B[1m> :react-native-safe-area-context:compileDebugKotlin[m[52D[1B> IDLE[6D[1B> IDLE[0K[6D[1B> IDLE[6D[1B[1m> :react-native-svg:compileDebugJavaWithJavac[m[45D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[12A[1m<[0;32;1m======[0;39;1m-------> 47% EXECUTING [36s][m[35D[7B[1m> :react-native-screens:compileDebugKotlin[m[42D[1B[1m> :react-native-svg:bundleLibCompileToJarDebug[m[46D[4B[4A> IDLE[0K[6D[4B[4A[1m> :react-native-gesture-handler:compileDebugKotlin[m[50D[4B[12A[1m<[0;32;1m======[0;39;1m-------> 47% EXECUTING [37s][m[35D[12B[12A[1m<[0;32;1m=======[0;39;1m------> 56% EXECUTING [37s][m[35D[1B[1m> :react-native-svg:bundleLibRuntimeToJarDebug[m[46D[9B[1m> :app:checkDebugDuplicateClasses[m[33D[2B[12A[1m<[0;32;1m========[0;39;1m-----> 62% EXECUTING [37s][m[35D[1B> IDLE[0K[6D[9B[1m> :react-native-svg:bundleLibRuntimeToDirDebug[m[46D[1B[1m> :react-native-screens:configureCMakeDebug[arm64-v8a][m[54D[1B[2A> IDLE[0K[6D[2B[12A[1m<[0;32;1m========[0;39;1m-----> 62% EXECUTING [38s][m[35D[12B[12A[1m<[0;32;1m========[0;39;1m-----> 62% EXECUTING [39s][m[35D[12B[12A[0K
+[1m> Task :react-native-safe-area-context:compileDebugKotlin[m
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-safe-area-context/android/src/main/java/com/th3rdwave/safeareacontext/SafeAreaView.kt:59:23 'val uiImplementation: UIImplementation!' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-safe-area-context/android/src/paper/java/com/th3rdwave/safeareacontext/InsetsChangeEvent.kt:19:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Please add the '@Deprecated' annotation or suppress the diagnostic.
+[5B[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[12A[1m<[0;32;1m========[0;39;1m-----> 62% EXECUTING [40s][m[0K[35D[1B> IDLE[0K[6D[1B> IDLE[6D[1B> IDLE[6D[1B[1m> :react-native-safe-area-context:compileDebugKotlin[m[0K[52D[1B> IDLE[6D[1B> IDLE[6D[1B[1m> :react-native-screens:compileDebugKotlin[m[42D[1B[1m> :react-native-gesture-handler:compileDebugKotlin[m[50D[1B> IDLE[6D[1B> IDLE[6D[1B[1m> :react-native-screens:configureCMakeDebug[arm64-v8a][m[54D[1B[12A[1m<[0;32;1m========[0;39;1m-----> 63% EXECUTING [40s][m[35D[4B> IDLE[0K[6D[8B[12A[1m<[0;32;1m========[0;39;1m-----> 63% EXECUTING [41s][m[35D[12B[12A[1m<[0;32;1m========[0;39;1m-----> 63% EXECUTING [42s][m[35D[12B[12A[1m<[0;32;1m========[0;39;1m-----> 63% EXECUTING [43s][m[35D[12B[12A[1m<[0;32;1m========[0;39;1m-----> 65% EXECUTING [43s][m[35D[4B[1m> Transforming classes.jar (project :react-native-svg) with DexingNoClasspathTransform > DexingNoClasspathTransform classes.jar[m[127D[6B[1m> Transforming bundleLibRuntimeToDirDebug (project :react-native-svg) with DexingNoClasspathTransform > DexingNoClasspathTransform bundleLib[m[140D[1B[1m> :react-native-safe-area-context:compileDebugJavaWithJavac[m[59D[1B[12A[1m<[0;32;1m========[0;39;1m-----> 65% EXECUTING [44s][m[35D[12B[12A[0K
+[1m> Task :react-native-safe-area-context:compileDebugJavaWithJavac[m
+[10B[0K
+[0K
+[12A[1m<[0;32;1m========[0;39;1m-----> 65% EXECUTING [44s][m[35D[1B[1m> :react-native-safe-area-context:bundleLibRuntimeToJarDebug[m[60D[1B> IDLE[0K[6D[1B> IDLE[6D[1B[1m> Transforming classes.jar (project :react-native-svg) with DexingNoClasspathTransform > DexingNoClasspathTransform classes.jar[m[127D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B[1m> :react-native-screens:compileDebugKotlin[m[42D[1B[1m> :react-native-gesture-handler:compileDebugKotlin[m[0K[50D[1B> IDLE[0K[6D[1B[1m> Transforming bundleLibRuntimeToDirDebug (project :react-native-svg) with DexingNoClasspathTransform > DexingNoClasspathTransform bundleLib[m[140D[1B[1m> :react-native-safe-area-context:bundleLibCompileToJarDebug[m[60D[1B[12A[1m<[0;32;1m========[0;39;1m-----> 67% EXECUTING [45s][m[35D[1B[1m> Transforming classes.jar (project :react-native-safe-area-context) with DexingNoClasspathTransform > DexingNoClasspathTransform classes.ja[m[140D[8B[1m> :react-native-screens:buildCMakeDebug[arm64-v8a][m[50D[2B[1m> :react-native-safe-area-context:bundleLibRuntimeToDirDebug[m[60D[1B[12A[1m<[0;32;1m========[0;39;1m-----> 68% EXECUTING [45s][m[35D[11B> IDLE[0K[6D[1B[12A[1m<[0;32;1m=========[0;39;1m----> 69% EXECUTING [45s][m[35D[1B> IDLE[0K[6D[11B[12A[1m<[0;32;1m=========[0;39;1m----> 69% EXECUTING [46s][m[35D[12B[12A[1m<[0;32;1m=========[0;39;1m----> 69% EXECUTING [47s][m[35D[12B[12A[1m<[0;32;1m=========[0;39;1m----> 69% EXECUTING [48s][m[35D[12B[12A[1m<[0;32;1m=========[0;39;1m----> 69% EXECUTING [49s][m[35D[12B[12A[1m<[0;32;1m=========[0;39;1m----> 69% EXECUTING [50s][m[35D[12B[12A[1m<[0;32;1m=========[0;39;1m----> 69% EXECUTING [51s][m[35D[12B[12A[1m<[0;32;1m=========[0;39;1m----> 70% EXECUTING [51s][m[35D[4B> IDLE[0K[6D[8B[12A[1m<[0;32;1m=========[0;39;1m----> 70% EXECUTING [52s][m[35D[12B[2A[1m> Transforming bundleLibRuntimeToDirDebug (project :react-native-svg) with DexingNoClasspathTransform[m[0K[101D[2B[12A[1m<[0;32;1m=========[0;39;1m----> 71% EXECUTING [52s][m[35D[10B> IDLE[0K[6D[2B[12A[1m<[0;32;1m=========[0;39;1m----> 71% EXECUTING [53s][m[35D[12B[12A[1m<[0;32;1m=========[0;39;1m----> 75% EXECUTING [53s][m[35D[9B[1m> Transforming bundleLibRuntimeToDirDebug (project :react-native-safe-area-context) with DexingNoClasspathTransform > DexingNoClasspathTrans[m[140D[1B[1m> :react-native-screens:mergeDebugNativeLibs[m[44D[2B[12A[1m<[0;32;1m==========[0;39;1m---> 79% EXECUTING [53s][m[35D[10B> IDLE[0K[6D[2B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [53s][m[35D[9B> IDLE[0K[6D[3B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [54s][m[35D[12B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [55s][m[35D[12B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [56s][m[35D[12B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [57s][m[35D[12B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [58s][m[35D[12B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [59s][m[35D[12B[12A[0K
+[1m> Task :react-native-gesture-handler:compileDebugKotlin[m
+[10B[0K
+[0K
+[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [59s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B[1m> :react-native-screens:compileDebugKotlin[m[42D[1B[1m> :react-native-gesture-handler:compileDebugKotlin[m[50D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[12AFailed to compile with Kotlin daemon: java.lang.Exception
+        at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69)
+        at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65)
+        at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240)
+        at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159)
+        at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111)
+        at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:76)[0K[0K
+        at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)
+        at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)
+        at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+        at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+        at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)
+        at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)
+        at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)
+        at org.gradle.internal.Factories$1.create(Factories.java:31)
+        at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)
+        at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)
+        at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)
+        at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+        at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+        at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+        at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+        at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.io.FileNotFoundException: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin (No such file or directory)
+        at java.base/java.io.FileOutputStream.open0(Native Method)
+        at java.base/java.io.FileOutputStream.open(FileOutputStream.java:293)
+        at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:235)
+        at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)
+        at org.jetbrains.kotlin.incremental.storage.ExternalizersKt.saveToFile(externalizers.kt:178)
+        at org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotShrinkerKt.shrinkAndSaveClasspathSnapshot(ClasspathSnapshotShrinker.kt:299)
+        at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:476)
+        at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:73)
+        at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:425)
+        at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301)
+        at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129)
+        at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)
+        at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+        at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+        at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+        at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+        at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+        at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+        at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+        at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+        ... 3 more
+Using fallback strategy: Compile without Kotlin daemon
+Try ./gradlew --stop if this issue persists
+If it does not look related to your configuration, please file an issue with logs to https://kotl.in/issue
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [59s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[1m> :react-native-screens:compileDebugKotlin[m[42D[1B[1m> :react-native-gesture-handler:compileDebugKotlin[m[50D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [1m][m[0K[34D[12B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [1m 1s][m[37D[12B[12A[1m<[0;32;1m==========[0;39;1m---> 80% EXECUTING [1m 2s][m[37D[12B[12A[0K
+[31;1m> Task :react-native-gesture-handler:compileDebugKotlin[0;39m[31m FAILED[39m
+[10B[0K
+[0K
+[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 2s][m[37D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B[1m> :react-native-screens:compileDebugKotlin[m[42D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 3s][m[37D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 4s][m[37D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 5s][m[37D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 6s][m[37D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 7s][m[37D[12B[12A[0K
+[1m> Task :react-native-screens:compileDebugKotlin[m
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:76:17 'constructor(name: String, className: String, canOverrideExistingModule: Boolean, needsEagerInit: Boolean, hasConstants: Boolean, isCxxModule: Boolean, isTurboModule: Boolean): ReactModuleInfo' is deprecated. This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)].
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:56:77 Unchecked cast of '(androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior<android.view.View!>?..androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior<*>?)' to 'com.google.android.material.bottomsheet.BottomSheetBehavior<com.swmansion.rnscreens.Screen>'.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:222:31 'var targetElevation: Float' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:225:13 'fun setHasOptionsMenu(p0: Boolean): Unit' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:404:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Please add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:411:22 'fun onPrepareOptionsMenu(p0: Menu): Unit' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:414:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Please add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackFragment.kt:419:22 'fun onCreateOptionsMenu(p0: Menu, p1: MenuInflater): Unit' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:48:42 'fun replaceSystemWindowInsets(p0: Int, p1: Int, p2: Int, p3: Int): @NonNull() WindowInsetsCompat!' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:49:39 'val systemWindowInsetLeft: Int' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:51:39 'val systemWindowInsetRight: Int' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenWindowTraits.kt:52:39 'val systemWindowInsetBottom: Int' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:7:8 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/BottomSheetDialogRootView.kt:25:13 'object ReactFeatureFlags : Any' is deprecated. Use com.facebook.react.internal.featureflags.ReactNativeFeatureFlags instead.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/stack/screen/event/StackScreenLifecycleEvent.kt:8:1 Violation of Finite Bound Restriction for Event.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:153:45 'fun consumeDisplayCutout(): @NonNull() WindowInsetsCompat!' is deprecated. Deprecated in Java.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:201:31 'val uiImplementation: UIImplementation!' is deprecated. Deprecated in Java.
+Failed to compile with Kotlin daemon: java.lang.Exception
+        at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69)
+        at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65)
+        at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240)
+        at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159)
+        at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111)
+        at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:76)
+        at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)
+        at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)
+        at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+        at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+        at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+        at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+        at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)
+        at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)
+        at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)
+        at org.gradle.internal.Factories$1.create(Factories.java:31)
+        at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)
+        at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)
+        at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)
+        at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)
+        at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+        at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+        at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+        at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+        at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.io.FileNotFoundException: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin (No such file or directory)
+        at java.base/java.io.FileOutputStream.open0(Native Method)
+        at java.base/java.io.FileOutputStream.open(FileOutputStream.java:293)
+        at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:235)
+        at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)
+        at org.jetbrains.kotlin.incremental.storage.ExternalizersKt.saveToFile(externalizers.kt:178)
+        at org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotShrinkerKt.shrinkAndSaveClasspathSnapshot(ClasspathSnapshotShrinker.kt:299)
+        at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:476)
+        at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:73)
+        at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:425)
+        at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301)
+        at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129)
+        at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)
+        at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+        at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+        at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+        at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+        at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+        at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+        at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+        at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+        at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+        ... 3 more
+Using fallback strategy: Compile without Kotlin daemon
+Try ./gradlew --stop if this issue persists
+If it does not look related to your configuration, please file an issue with logs to https://kotl.in/issue
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 7s][m[37D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[1m> :react-native-screens:compileDebugKotlin[m[42D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 8s][m[37D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 9s][m[37D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 10s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 11s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 12s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 13s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 14s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 15s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 16s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 17s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 18s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 19s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 20s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 21s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 22s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 23s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 24s][m[38D[12B[12A[1m<[0;31;1m==========[0;39;1m---> 80% EXECUTING [1m 25s][m[38D[12B[12A[0K
+[31;1m> Task :react-native-screens:compileDebugKotlin[0;39m[31m FAILED[39m
+[10B[0K
+[0K
+[12A[1m<[0;31;1m==========[0;39;1m---> 81% EXECUTING [1m 25s][m[38D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[0K[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[12A[0K
+[Incubating] Problems report is available at: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/android/build/reports/problems/problems-report.html
+[0K
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+[0K
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+[0K
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+113 actionable tasks: 85 executed, 28 up-to-date
+[1B[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[0K
+[12A[1m<[0;31;1m==========[0;39;1m---> 81% EXECUTING [1m 25s][m[38D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[12A[1m<[0;1m-------------> 0% WAITING[m[0K[26D[12B[12A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[11A[0m[?12l[?25h
+[36m[1minfo[22m[39m [0m[2m[2m💡 Tip: Make sure that you have set up your development environment correctly, by running[22m[2m [0m[0m[1mnpx react-native doctor[22m[2m[0m[0m. [2mTo read more about doctor command visit: https://github.com/react-native-community/cli/blob/main/packages/cli-doctor/README.md#doctor [22m[2m[22m[0m
+[0m[2m[2m[22m[2m[22m[0m
+[0mNote: Some input files use or override a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0mNote: Some input files use unchecked or unsafe operations.[0m
+[0mNote: Recompile with -Xlint:unchecked for details.[0m
+[0mNote: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-safe-area-context/android/src/paper/java/com/th3rdwave/safeareacontext/NativeSafeAreaContextSpec.java uses or overrides a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0me: Daemon compilation failed: null[0m
+[0mjava.lang.Exception[0m
+[0m	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69)[0m
+[0m	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:76)[0m
+[0m	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)[0m
+[0m	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)[0m
+[0m	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)[0m
+[0m	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)[0m
+[0m	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)[0m
+[0m	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)[0m
+[0m	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)[0m
+[0m	at org.gradle.internal.Factories$1.create(Factories.java:31)[0m
+[0m	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)[0m
+[0m	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)[0m
+[0m	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)[0m
+[0m	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)[0m
+[0m	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)[0m
+[0m	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)[0m
+[0m	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)[0m
+[0m	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)[0m
+[0m	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)[0m
+[0m	at java.base/java.lang.Thread.run(Thread.java:842)[0m
+[0mCaused by: java.io.FileNotFoundException: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin (No such file or directory)[0m
+[0m	at java.base/java.io.FileOutputStream.open0(Native Method)[0m
+[0m	at java.base/java.io.FileOutputStream.open(FileOutputStream.java:293)[0m
+[0m	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:235)[0m
+[0m	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)[0m
+[0m	at org.jetbrains.kotlin.incremental.storage.ExternalizersKt.saveToFile(externalizers.kt:178)[0m
+[0m	at org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotShrinkerKt.shrinkAndSaveClasspathSnapshot(ClasspathSnapshotShrinker.kt:299)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:476)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:73)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:425)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129)[0m
+[0m	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)[0m
+[0m	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)[0m
+[0m	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)[0m
+[0m	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)[0m
+[0m	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)[0m
+[0m	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)[0m
+[0m	at java.base/java.lang.reflect.Method.invoke(Method.java:568)[0m
+[0m	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)[0m
+[0m	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)[0m
+[0m	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)[0m
+[0m	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)[0m
+[0m	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)[0m
+[0m	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)[0m
+[0m	... 3 more[0m
+[0m[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/ScaleGestureDetector.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/swmansion/gesturehandler/NativeRNGestureHandlerModuleSpec.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerButtonManagerDelegate.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerButtonManagerInterface.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerRootViewManagerInterface.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerRootViewManagerDelegate.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/build/generated/source/buildConfig/debug/com/swmansion/gesturehandler/BuildConfig.java[0m
+[0mexception: warning: classpath entry points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar[0m
+[0mexception: warning: classpath entry points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-svg/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/DiagonalDirections.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/PinchGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/TapGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/ManualGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/ViewConfigurationHelper.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/HoverGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/RotationGestureDetector.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerOrchestrator.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/OnTouchEventListener.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/PointerEventsConfig.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/RotationGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/StylusData.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/LongPressGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/Vector.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureUtils.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerRegistry.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/FlingGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerInteractionController.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/PanGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEvent.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/Extensions.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNViewConfigurationHelper.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerTouchEvent.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootInterface.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEnabledRootView.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootViewManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRegistry.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerStateChangeEvent.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEventDispatcher.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerFactoryUtil.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/TapGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/PinchGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/PanGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/RotationGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/FlingGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/ManualGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/HoverGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/LongPressGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/NativeGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/GestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/noreanimated/src/main/java/com/swmansion/gesturehandler/ReanimatedEventDispatcher.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/noreanimated/src/main/java/com/swmansion/common/GestureHandlerStateManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/svg/src/main/java/com/swmansion/gesturehandler/RNSVGHitTester.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/swmansion/gesturehandler/ReactContextExtensions.kt[0m
+[0me: Daemon compilation failed: null[0m
+[0mjava.lang.Exception[0m
+[0m	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69)[0m
+[0m	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111)[0m
+[0m	at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:76)[0m
+[0m	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)[0m
+[0m	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)[0m
+[0m	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)[0m
+[0m	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)[0m
+[0m	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)[0m
+[0m	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)[0m
+[0m	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)[0m
+[0m	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)[0m
+[0m	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)[0m
+[0m	at org.gradle.internal.Factories$1.create(Factories.java:31)[0m
+[0m	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)[0m
+[0m	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)[0m
+[0m	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)[0m
+[0m	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)[0m
+[0m	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)[0m
+[0m	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)[0m
+[0m	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)[0m
+[0m	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)[0m
+[0m	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)[0m
+[0m	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)[0m
+[0m	at java.base/java.lang.Thread.run(Thread.java:842)[0m
+[0mCaused by: java.io.FileNotFoundException: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin (No such file or directory)[0m
+[0m	at java.base/java.io.FileOutputStream.open0(Native Method)[0m
+[0m	at java.base/java.io.FileOutputStream.open(FileOutputStream.java:293)[0m
+[0m	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:235)[0m
+[0m	at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184)[0m
+[0m	at org.jetbrains.kotlin.incremental.storage.ExternalizersKt.saveToFile(externalizers.kt:178)[0m
+[0m	at org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotShrinkerKt.shrinkAndSaveClasspathSnapshot(ClasspathSnapshotShrinker.kt:299)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:476)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:73)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:425)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301)[0m
+[0m	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129)[0m
+[0m	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)[0m
+[0m	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)[0m
+[0m	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)[0m
+[0m	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)[0m
+[0m	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)[0m
+[0m	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)[0m
+[0m	at java.base/java.lang.reflect.Method.invoke(Method.java:568)[0m
+[0m	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)[0m
+[0m	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)[0m
+[0m	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)[0m
+[0m	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)[0m
+[0m	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)[0m
+[0m	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)[0m
+[0m	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)[0m
+[0m	... 3 more[0m
+[0m[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/build/generated/source/buildConfig/debug/com/swmansion/rnscreens/BuildConfig.java[0m
+[0mexception: warning: classpath entry points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:35:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:74:33: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:             val isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED[0m
+[0mexception:                                 ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:175:18: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:             if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:                  ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:303:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:395:14: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:              ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:407:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && !sheetShouldOverflowTopInset) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:443:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:708:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && isStable) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:721:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt:434:17: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:             if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:                 ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt:452:17: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:             if (BuildConfig.DEBUG) DebugMenuToolbar(context, this) else CustomToolbar(context, this)[0m
+[0mexception:                 ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfigViewManager.kt:57:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderSubview.kt:53:24: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (changed && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:                        ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderSubviewManager.kt:65:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:90:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:44:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:55:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:65:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:151:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:159:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/SheetUtils.kt:9:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception:                                ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/SheetUtils.kt:154:9: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && !this.sheetShouldOverflowTopInset && this.usesFormSheetPresentation()) {[0m
+[0mexception:         ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/SheetUtils.kt:158:9: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED || !this.usesFormSheetPresentation()) {[0m
+[0mexception:         ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/fragment/restoration/RNScreensFragmentFactory.kt:8:58: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (className.startsWith(com.swmansion.rnscreens.BuildConfig.LIBRARY_PACKAGE_NAME)) {[0m
+[0mexception:                                                          ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/tabs/TabsHost.kt:18:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception:                                ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/tabs/TabsHost.kt:284:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:21:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception:                                ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:176:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && stateWrapper != null) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:187:21: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         } else if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception:                     ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:4:32: error: unresolved reference 'R'.[0m
+[0mexception: import com.swmansion.rnscreens.R[0m
+[0mexception:                                ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:15:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_default_enter_in,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:16:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_default_enter_out,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:21:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_no_animation_20,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:22:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_no_animation_20,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:27:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_fade_in,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:28:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_fade_out,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:33:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_in_from_right,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:34:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_out_to_left,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:38:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_in_from_left,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:39:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_out_to_right,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:43:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_in_from_bottom,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:44:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_no_animation_medium,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:46:73: error: unresolved reference 'R'.[0m
+[0mexception:             StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_fade_from_bottom, R.anim.rns_no_animation_350)[0m
+[0mexception:                                                                         ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:46:102: error: unresolved reference 'R'.[0m
+[0mexception:             StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_fade_from_bottom, R.anim.rns_no_animation_350)[0m
+[0mexception:                                                                                                      ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:49:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_right_foreground_open,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:50:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_right_background_open,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:54:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_left_foreground_open,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:55:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_left_background_open,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:62:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_default_exit_in,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:63:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_default_exit_out,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:68:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_no_animation_20,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:69:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_no_animation_20,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:74:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_fade_in,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:75:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_fade_out,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:80:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_in_from_left,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:81:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_out_to_right,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:85:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_in_from_right,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:86:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_out_to_left,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:90:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_no_animation_medium,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:91:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_slide_out_to_bottom,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:93:73: error: unresolved reference 'R'.[0m
+[0mexception:             StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_no_animation_250, R.anim.rns_fade_to_bottom)[0m
+[0mexception:                                                                         ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:93:102: error: unresolved reference 'R'.[0m
+[0mexception:             StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_no_animation_250, R.anim.rns_fade_to_bottom)[0m
+[0mexception:                                                                                                      ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:96:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_right_background_close,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:97:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_right_foreground_close,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:101:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_left_background_close,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:102:21: error: unresolved reference 'R'.[0m
+[0mexception:                     R.anim.rns_ios_from_left_foreground_close,[0m
+[0mexception:                     ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/RNSLog.kt:4:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception:                                ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/RNSLog.kt:11:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.RNS_DEBUG_LOGGING) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/RNSLog.kt:21:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception:         if (BuildConfig.RNS_DEBUG_LOGGING) {[0m
+[0mexception:             ^^^^^^^^^^^[0m
+[0m[0m
+[0mFAILURE: Build completed with 2 failures.[0m
+[0m[0m
+[0m1: Task failed with an exception.[0m
+[0m-----------[0m
+[0m* What went wrong:[0m
+[0mExecution failed for task ':react-native-gesture-handler:compileDebugKotlin'.[0m
+[0m> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction[0m
+[0m   > Compilation error. See log for more details[0m
+[0m[0m
+[0m* Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org.[0m
+[0m==============================================================================[0m
+[0m[0m
+[0m2: Task failed with an exception.[0m
+[0m-----------[0m
+[0m* What went wrong:[0m
+[0mExecution failed for task ':react-native-screens:compileDebugKotlin'.[0m
+[0m> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction[0m
+[0m   > Compilation error. See log for more details[0m
+[0m[0m
+[0m* Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org.[0m
+[0m==============================================================================[0m
+[0m[0m
+[0mBUILD FAILED in 1m 27s[0m
+[31m[1merror[22m[39m [0mFailed to install the app. Command failed with exit code 1: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=arm64-v8a[0m
+[0mNote: Some input files use or override a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0mNote: Some input files use unchecked or unsafe operations.[0m
+[0mNote: Recompile with -Xlint:unchecked for details.[0m
+[0mNote: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-safe-area-context/android/src/paper/java/com/th3rdwave/safeareacontext/NativeSafeAreaContextSpec.java uses or overrides a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0me: Daemon compilation failed: null[0m
+[0mjava.lang.Exception at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69) at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65) at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240) at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159) at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111) at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:76) at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63) at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66) at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62) at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100) at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62) at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44) at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41) at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210) at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205) at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67) at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60) at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167) at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60) at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54) at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41) at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59) at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174) at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169) at org.gradle.internal.Factories$1.create(Factories.java:31) at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263) at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127) at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133) at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539) at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64) at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48) at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) at java.base/java.lang.Thread.run(Thread.java:842)[0m
+[0mCaused by: java.io.FileNotFoundException: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin (No such file or directory) at java.base/java.io.FileOutputStream.open0(Native Method) at java.base/java.io.FileOutputStream.open(FileOutputStream.java:293) at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:235) at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184) at org.jetbrains.kotlin.incremental.storage.ExternalizersKt.saveToFile(externalizers.kt:178) at org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotShrinkerKt.shrinkAndSaveClasspathSnapshot(ClasspathSnapshotShrinker.kt:299) at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:476) at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:73) at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:425) at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301) at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129) at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675) at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92) at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660) at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) at java.base/java.lang.reflect.Method.invoke(Method.java:568) at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360) at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200) at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197) at java.base/java.security.AccessController.doPrivileged(AccessController.java:712) at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196) at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587) at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828) at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705) at java.base/java.security.AccessController.doPrivileged(AccessController.java:399) at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704) ... 3 more exception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/ScaleGestureDetector.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/swmansion/gesturehandler/NativeRNGestureHandlerModuleSpec.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerButtonManagerDelegate.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerButtonManagerInterface.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerRootViewManagerInterface.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/facebook/react/viewmanagers/RNGestureHandlerRootViewManagerDelegate.java[0m
+[0mexception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/build/generated/source/buildConfig/debug/com/swmansion/gesturehandler/BuildConfig.java[0m
+[0mexception: warning: classpath entry points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar[0m
+[0mexception: warning: classpath entry points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-svg/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/DiagonalDirections.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/PinchGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/TapGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/ManualGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/ViewConfigurationHelper.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/HoverGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/RotationGestureDetector.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/NativeViewGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerOrchestrator.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/OnTouchEventListener.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/PointerEventsConfig.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/RotationGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/StylusData.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/LongPressGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/Vector.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureUtils.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerRegistry.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/FlingGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/GestureHandlerInteractionController.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/core/PanGestureHandler.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEvent.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/Extensions.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNViewConfigurationHelper.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerTouchEvent.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootHelper.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootInterface.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEnabledRootView.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootViewManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRegistry.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerStateChangeEvent.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerRootView.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerEventDispatcher.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerFactoryUtil.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/TapGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/PinchGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/PanGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/RotationGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/FlingGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/ManualGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/HoverGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/LongPressGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/NativeGestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/eventbuilders/GestureHandlerEventDataBuilder.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerInteractionManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/noreanimated/src/main/java/com/swmansion/gesturehandler/ReanimatedEventDispatcher.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/noreanimated/src/main/java/com/swmansion/common/GestureHandlerStateManager.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/svg/src/main/java/com/swmansion/gesturehandler/RNSVGHitTester.kt[0m
+[0mexception: error: source file or directory not found: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-gesture-handler/android/paper/src/main/java/com/swmansion/gesturehandler/ReactContextExtensions.kt[0m
+[0me: Daemon compilation failed: null[0m
+[0mjava.lang.Exception at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69) at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65) at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240) at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159) at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111) at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:76) at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63) at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66) at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62) at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100) at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62) at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44) at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41) at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210) at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205) at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67) at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60) at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167) at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60) at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54) at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41) at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59) at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174) at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169) at org.gradle.internal.Factories$1.create(Factories.java:31) at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263) at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127) at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164) at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133) at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539) at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264) at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64) at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48) at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) at java.base/java.lang.Thread.run(Thread.java:842)[0m
+[0mCaused by: java.io.FileNotFoundException: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin (No such file or directory) at java.base/java.io.FileOutputStream.open0(Native Method) at java.base/java.io.FileOutputStream.open(FileOutputStream.java:293) at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:235) at java.base/java.io.FileOutputStream.<init>(FileOutputStream.java:184) at org.jetbrains.kotlin.incremental.storage.ExternalizersKt.saveToFile(externalizers.kt:178) at org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotShrinkerKt.shrinkAndSaveClasspathSnapshot(ClasspathSnapshotShrinker.kt:299) at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:476) at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.performWorkAfterCompilation(IncrementalJvmCompilerRunner.kt:73) at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:425) at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:301) at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:129) at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675) at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92) at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660) at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) at java.base/java.lang.reflect.Method.invoke(Method.java:568) at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360) at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200) at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197) at java.base/java.security.AccessController.doPrivileged(AccessController.java:712) at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196) at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587) at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828) at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705) at java.base/java.security.AccessController.doPrivileged(AccessController.java:399) at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704) ... 3 more exception: warning: Java source root points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/build/generated/source/buildConfig/debug/com/swmansion/rnscreens/BuildConfig.java[0m
+[0mexception: warning: classpath entry points to a non-existent location: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:35:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt:74:33: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: val isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:175:18: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:303:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:395:14: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:407:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && !sheetShouldOverflowTopInset) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:443:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:708:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && isStable) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt:721:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt:434:17: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfig.kt:452:17: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.DEBUG) DebugMenuToolbar(context, this) else CustomToolbar(context, this)[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderConfigViewManager.kt:57:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderSubview.kt:53:24: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (changed && BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenStackHeaderSubviewManager.kt:65:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreenViewManager.kt:90:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:44:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:55:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:65:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:151:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/ScreensModule.kt:159:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/SheetUtils.kt:9:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/SheetUtils.kt:154:9: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && !this.sheetShouldOverflowTopInset && this.usesFormSheetPresentation()) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/bottomsheet/SheetUtils.kt:158:9: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED || !this.usesFormSheetPresentation()) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/fragment/restoration/RNScreensFragmentFactory.kt:8:58: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (className.startsWith(com.swmansion.rnscreens.BuildConfig.LIBRARY_PACKAGE_NAME)) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/tabs/TabsHost.kt:18:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/gamma/tabs/TabsHost.kt:284:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:21:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:176:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && stateWrapper != null) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/safearea/SafeAreaView.kt:187:21: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: } else if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:4:32: error: unresolved reference 'R'.[0m
+[0mexception: import com.swmansion.rnscreens.R[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:15:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_default_enter_in,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:16:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_default_enter_out,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:21:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_no_animation_20,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:22:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_no_animation_20,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:27:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_fade_in,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:28:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_fade_out,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:33:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_in_from_right,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:34:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_out_to_left,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:38:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_in_from_left,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:39:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_out_to_right,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:43:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_in_from_bottom,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:44:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_no_animation_medium,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:46:73: error: unresolved reference 'R'.[0m
+[0mexception: StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_fade_from_bottom, R.anim.rns_no_animation_350)[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:46:102: error: unresolved reference 'R'.[0m
+[0mexception: StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_fade_from_bottom, R.anim.rns_no_animation_350)[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:49:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_right_foreground_open,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:50:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_right_background_open,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:54:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_left_foreground_open,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:55:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_left_background_open,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:62:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_default_exit_in,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:63:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_default_exit_out,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:68:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_no_animation_20,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:69:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_no_animation_20,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:74:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_fade_in,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:75:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_fade_out,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:80:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_in_from_left,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:81:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_out_to_right,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:85:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_in_from_right,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:86:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_out_to_left,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:90:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_no_animation_medium,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:91:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_slide_out_to_bottom,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:93:73: error: unresolved reference 'R'.[0m
+[0mexception: StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_no_animation_250, R.anim.rns_fade_to_bottom)[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:93:102: error: unresolved reference 'R'.[0m
+[0mexception: StackAnimation.FADE_FROM_BOTTOM -> this.setCustomAnimations(R.anim.rns_no_animation_250, R.anim.rns_fade_to_bottom)[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:96:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_right_background_close,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:97:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_right_foreground_close,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:101:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_left_background_close,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/FragmentTransactionKt.kt:102:21: error: unresolved reference 'R'.[0m
+[0mexception: R.anim.rns_ios_from_left_foreground_close,[0m
+[0mexception: ^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/RNSLog.kt:4:32: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: import com.swmansion.rnscreens.BuildConfig[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/RNSLog.kt:11:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.RNS_DEBUG_LOGGING) {[0m
+[0mexception: ^^^^^^^^^^^[0m
+[0mexception: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/utils/RNSLog.kt:21:13: error: unresolved reference 'BuildConfig'.[0m
+[0mexception: if (BuildConfig.RNS_DEBUG_LOGGING) {[0m
+[0mexception: ^^^^^^^^^^^ FAILURE: Build completed with 2 failures. 1: Task failed with an exception.[0m
+[0m-----------[0m
+[0m* What went wrong:[0m
+[0mExecution failed for task ':react-native-gesture-handler:compileDebugKotlin'.[0m
+[0m> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction > Compilation error. See log for more details * Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org.[0m
+[0m============================================================================== 2: Task failed with an exception.[0m
+[0m-----------[0m
+[0m* What went wrong:[0m
+[0mExecution failed for task ':react-native-screens:compileDebugKotlin'.[0m
+[0m> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction > Compilation error. See log for more details * Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org.[0m
+[0m============================================================================== BUILD FAILED in 1m 27s.[0m
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31m1[39m
+
+

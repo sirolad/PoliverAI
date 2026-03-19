@@ -1,13 +1,31 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { ActivityIndicator, View, Text, Platform } from 'react-native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { LoginScreen } from '../../screens';
-import { RegisterScreen } from '../../screens/RegisterScreen';
-import { HomeScreen } from '../../screens/HomeScreen/HomeScreen';
+import { appColors } from '@poliverai/shared-ui';
+import LoginScreen from '../../screens/LoginScreen/LoginScreen';
+import PolicyAnalysisScreen from '../../screens/PolicyAnalysisScreen';
+import ReportsScreen from '../../screens/ReportsScreen';
+import RegisterScreen from '../../screens/RegisterScreen/RegisterScreen';
+import DashboardScreen from '../../screens/DashboardScreen';
 import { TabNavigator } from '../TabNavigator/TabNavigator';
 import { LandingScreen } from '../../screens/LandingScreen';
+import CreditsScreen from '../../screens/CreditsScreen';
 
 const Stack = createStackNavigator();
+
+const navigationTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: appColors.blue600,
+    background: appColors.white,
+    card: appColors.white,
+    text: appColors.ink900,
+    border: appColors.slate200,
+    notification: appColors.blue600,
+  },
+};
 
 export const AppNavigator = ({
   initialPlatform,
@@ -23,43 +41,60 @@ export const AppNavigator = ({
   // Prefer passing real auth state from the app root to this navigator to preserve behavior.
   const loading = isLoading ?? false;
   const authenticated = isAuthenticated ?? false;
+  const isWeb = Platform.OS === 'web' && typeof window !== 'undefined';
+  const linking = isWeb
+    ? {
+        prefixes: [window.location.origin, 'poliverai://'],
+        config: {
+          screens: {
+            WebLanding: '',
+            Login: 'login',
+            Register: 'register',
+            Signup: 'signup',
+            Dashboard: 'dashboard',
+            Analyze: 'analyze',
+            Reports: 'reports',
+            Credits: 'credits',
+            PaymentReturn: 'payments/return',
+            Main: {
+              path: 'app',
+            },
+          },
+        },
+      }
+    : undefined;
 
-  if (loading) {
-    return null; // You could show a loading spinner here
+  if (loading && authenticated) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: appColors.sky50, gap: 12 }}>
+        <ActivityIndicator size="large" color={appColors.blue600} />
+        <Text style={{ color: appColors.slate600, fontSize: 16, fontWeight: '600' }}>Loading your dashboard...</Text>
+      </View>
+    );
   }
 
   return (
     <NavigationContainer
-      linking={
-        // Basic web linking configuration so paths map to the intended screens
-        // - '/': LandingScreen
-        // - '/login': LoginScreen
-        // - '/register' and '/signup': RegisterScreen
-        // - '/dashboard': HomeScreen (dashboard)
-        {
-          prefixes: [typeof window !== 'undefined' ? window.location.origin : 'app://'],
-          config: {
-            screens: {
-              WebLanding: '',
-              Login: 'login',
-              Register: 'register',
-              Signup: 'signup',
-              Dashboard: 'dashboard',
-              Main: {
-                path: 'app',
-              },
-            },
-          },
-        }
-      }
+      theme={navigationTheme}
+      linking={linking}
     >
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          cardStyle: { backgroundColor: appColors.white },
+        }}
+        initialRouteName={authenticated ? 'Main' : 'WebLanding'}
+      >
         {/* Always include the key web routes as screens so the linking config can navigate to them */}
         <Stack.Screen name="WebLanding" component={LandingScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Signup" component={RegisterScreen} />
-        <Stack.Screen name="Dashboard" component={HomeScreen} />
+        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+        <Stack.Screen name="Analyze" component={PolicyAnalysisScreen} />
+        <Stack.Screen name="Reports" component={ReportsScreen} />
+        <Stack.Screen name="Credits" component={CreditsScreen} />
+        <Stack.Screen name="PaymentReturn" component={CreditsScreen} />
         {authenticated ? (
           <Stack.Screen name="Main" component={TabNavigator} />
         ) : null}

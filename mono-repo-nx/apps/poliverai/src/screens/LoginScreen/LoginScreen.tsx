@@ -1,29 +1,58 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
-import { useAuth } from '@poliverai/intl';
-import { t } from '@poliverai/intl';
-import { colors, spacing, twFromTokens } from '@poliverai/shared-ui';
-import { Mail, Lock, AlertCircle, LogIn } from 'lucide-react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { appAlphaColors, appColors } from '@poliverai/shared-ui';
+import { t, useAuth } from '@poliverai/intl';
+import { ArrowRight, LogIn, UserPlus } from 'lucide-react-native';
+import AppFooter from '../../components/AppFooter';
+import AppTopNav from '../../components/AppTopNav';
+import { BrandLogo } from '../../components/BrandLogo';
 
-const LoginScreen: React.FC = () => {
-  const { login, loading } = useAuth();
+function copy(path: string, fallback: string) {
+  const value = t(path, fallback);
+  return typeof value === 'string' ? value : fallback;
+}
+
+export default function LoginScreen() {
+  const navigation = useNavigation<any>();
+  const { login, loading, isAuthenticated } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Redirect logic (replace with navigation logic for RN)
-  // if (isAuthenticated) {
-  //   navigation.navigate('Dashboard');
-  //   return null;
-  // }
+  const goTo = React.useCallback((routeName: string, path: string) => {
+    try {
+      navigation.navigate(routeName);
+    } catch {
+      if (typeof window !== 'undefined') {
+        window.location.pathname = path;
+      }
+    }
+  }, [navigation]);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      goTo('Dashboard', '/dashboard');
+    }
+  }, [goTo, isAuthenticated]);
 
   const onSubmit = async () => {
     try {
       setIsSubmitting(true);
       setError('');
       await login(email, password);
-      // navigation.navigate('Dashboard');
+      goTo('Dashboard', '/dashboard');
     } catch (err) {
       if (err instanceof Error) setError(err.message);
       else if (typeof err === 'string') setError(err);
@@ -35,169 +64,264 @@ const LoginScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primary.hex} />
+      <View style={styles.page}>
+        <AppTopNav currentRoute="login" />
+        <ScrollView contentContainerStyle={styles.loadingScrollContent}>
+          <View style={styles.loadingWrap}>
+            <ActivityIndicator size="large" color={appColors.blue600} />
+          </View>
+          <View style={styles.footerWrap}>
+            <AppFooter />
+          </View>
+        </ScrollView>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        {/* Replace with Image component for RN logo if needed */}
-        <Text style={styles.title}>{t('auth_login.welcome_title')}</Text>
-        <Text style={styles.subtitle}>{t('auth_login.welcome_subtitle')}</Text>
-      </View>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{t('auth_login.sign_in_title')}</Text>
-        <Text style={styles.cardDesc}>{t('auth_login.sign_in_desc')}</Text>
-        {error ? (
-          <View style={styles.errorRow}>
-            <AlertCircle size={18} color={colors.danger.hex} />
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : null}
-        <View style={styles.inputRow}>
-          <Mail size={18} color={colors.mutedText.hex} />
-          <TextInput
-            style={styles.input}
-            placeholder={t('auth.register.email_placeholder')}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
-        <View style={styles.inputRow}>
-          <Lock size={18} color={colors.mutedText.hex} />
-          <TextInput
-            style={styles.input}
-            placeholder={t('auth.register.password_placeholder')}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={onSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <View style={styles.buttonContent}>
-              <LogIn size={16} color="#fff" />
-              <Text style={styles.buttonText}>{t('auth_login.sign_in_cta')}</Text>
+    <View style={styles.page}>
+      <AppTopNav currentRoute="login" />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.contentWrap}>
+          <View style={styles.shell}>
+            <View style={styles.hero}>
+              <BrandLogo width={280} height={120} style={styles.heroMarkImage} />
+              <Text style={styles.heroTitle}>{copy('auth_login.welcome_title', 'Welcome back to PoliverAI')}</Text>
+              <Text style={styles.heroSubtitle}>
+                {copy('auth_login.welcome_subtitle', 'Sign in to continue your privacy compliance workflow')}
+              </Text>
             </View>
-          )}
-        </TouchableOpacity>
-      </View>
+
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{copy('auth_login.sign_in_title', 'Sign in to your account')}</Text>
+              <Text style={styles.cardDesc}>{copy('auth_login.sign_in_desc', 'Enter your credentials to access your account')}</Text>
+
+              {error ? (
+                <View style={styles.errorBox}>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              ) : null}
+
+              <View style={styles.field}>
+                <Text style={styles.label}>{copy('auth.register.email_label', 'Email')}</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder={copy('auth.register.email_placeholder', 'Enter your email')}
+                  placeholderTextColor={appColors.slate400}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+
+              <View style={styles.field}>
+                <Text style={styles.label}>{copy('auth.register.password_label', 'Password')}</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder={copy('auth.register.password_placeholder', 'Enter your password')}
+                  placeholderTextColor={appColors.slate400}
+                  secureTextEntry
+                  value={password}
+                  onChangeText={setPassword}
+                />
+              </View>
+
+              <Pressable style={styles.primaryButton} onPress={onSubmit} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" color={appColors.white} />
+                ) : (
+                  <View style={styles.primaryButtonInner}>
+                    <LogIn size={16} color={appColors.white} />
+                    <Text style={styles.primaryButtonText}>{copy('auth_login.sign_in_cta', 'Sign in')}</Text>
+                  </View>
+                )}
+              </Pressable>
+
+              <View style={styles.bottomRow}>
+                <Text style={styles.bottomText}>{copy('auth_login.no_account_prefix', "Don't have an account?")}</Text>
+                <Pressable onPress={() => goTo('Register', '/register')} style={styles.inlineLinkButton}>
+                  <UserPlus size={14} color={appColors.blue600} />
+                  <Text style={styles.linkText}>{copy('auth_login.sign_up_cta', 'Sign up')}</Text>
+                  <ArrowRight size={14} color={appColors.blue600} />
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </View>
+        <View style={styles.footerWrap}>
+          <AppFooter />
+        </View>
+      </ScrollView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
+  page: {
     flex: 1,
-    backgroundColor: colors.pageBg.hex,
+    backgroundColor: appColors.sky50,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingVertical: 48,
+    justifyContent: Platform.OS === 'web' ? 'center' : 'flex-start',
+  },
+  loadingScrollContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    paddingTop: 48,
+  },
+  contentWrap: {
+    width: '100%',
+    paddingHorizontal: 16,
+  },
+  shell: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
+  },
+  footerWrap: {
+    width: '100%',
+    marginTop: 32,
+    alignSelf: 'stretch',
+  },
+  hero: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  heroMark: {
+    width: 64,
+    height: 64,
+    borderRadius: 18,
+    backgroundColor: appColors.blue600,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
+    marginBottom: 12,
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.pageBg.hex,
+  heroMarkText: {
+    color: appColors.white,
+    fontSize: 32,
+    fontWeight: '800',
   },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
+  heroMarkImage: {
+    width: 280,
+    height: 120,
+    marginBottom: 12,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.textPrimary.hex,
-    marginBottom: 8,
+  heroTitle: {
+    color: appColors.ink900,
+    fontSize: 34,
+    fontWeight: '700',
+    textAlign: 'center',
   },
-  subtitle: {
+  heroSubtitle: {
+    marginTop: 10,
+    color: appColors.slate500,
     fontSize: 16,
-    color: colors.textMuted.hex,
-    marginBottom: 16,
+    lineHeight: 24,
     textAlign: 'center',
   },
   card: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: appColors.white,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: appAlphaColors.borderSoftStrong,
+    padding: 28,
+    ...(Platform.OS === 'web'
+      ? ({ boxShadow: '0 24px 60px rgba(15, 23, 42, 0.08)' } as any)
+      : {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.08,
+          shadowRadius: 24,
+          elevation: 3,
+        }),
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.textPrimary.hex,
-    marginBottom: 4,
+    color: appColors.ink900,
+    fontSize: 24,
+    fontWeight: '700',
   },
   cardDesc: {
-    fontSize: 14,
-    color: colors.textMuted.hex,
-    marginBottom: 16,
+    marginTop: 8,
+    color: appColors.slate500,
+    fontSize: 15,
+    lineHeight: 23,
   },
-  errorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.dangerBg.hex,
-    padding: 8,
-    borderRadius: 6,
-    marginBottom: 12,
+  errorBox: {
+    marginTop: 16,
+    borderRadius: 10,
+    backgroundColor: appColors.red100,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   errorText: {
-    color: colors.danger.hex,
-    marginLeft: 8,
+    color: appColors.red600,
     fontSize: 14,
   },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.mutedBorder.hex,
-    borderRadius: 8,
-    marginBottom: 16,
-    paddingHorizontal: 12,
-    backgroundColor: colors.surface.hex,
+  field: {
+    marginTop: 16,
+  },
+  label: {
+    marginBottom: 8,
+    color: appColors.slate700,
+    fontSize: 14,
+    fontWeight: '600',
   },
   input: {
-    flex: 1,
-    height: 40,
-    fontSize: 16,
-    color: colors.textPrimary.hex,
-    marginLeft: 8,
+    height: 48,
+    borderWidth: 1,
+    borderColor: appAlphaColors.borderSoft,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    backgroundColor: appColors.white,
+    color: appColors.ink900,
+    fontSize: 15,
   },
-  button: {
-    backgroundColor: colors.primaryBg.hex,
-    borderRadius: 8,
-    paddingVertical: 12,
+  primaryButton: {
+    marginTop: 22,
+    minHeight: 50,
+    borderRadius: 14,
+    backgroundColor: appColors.blue600,
     alignItems: 'center',
-    marginTop: 8,
+    justifyContent: 'center',
   },
-  buttonContent: {
+  primaryButtonText: {
+    color: appColors.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  primaryButtonInner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
+  bottomRow: {
+    marginTop: 18,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
+  },
+  bottomText: {
+    color: appColors.slate500,
+    fontSize: 14,
+  },
+  linkText: {
+    color: appColors.blue600,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  inlineLinkButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  loadingWrap: {
+    minHeight: 320,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 48,
   },
 });
-
-export default LoginScreen;

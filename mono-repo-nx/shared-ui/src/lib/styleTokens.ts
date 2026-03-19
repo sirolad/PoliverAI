@@ -1,6 +1,8 @@
 // Ported style tokens for React Native and Nx
 // Use with tailwind-react-native-classnames or similar for best results
 
+import { appColors } from './colorTokens';
+
 export const baseFontSizes = {
   xs: { tw: 'text-xs', size: 12 },
   sm: { tw: 'text-sm', size: 14 },
@@ -31,26 +33,26 @@ export const fontWeights = {
 };
 
 export const palette = {
-  gray900: '#111827',
-  gray800: '#1F2937',
-  gray700: '#374151',
-  gray600: '#4B5563',
-  gray500: '#6B7280',
-  gray400: '#9CA3AF',
-  gray300: '#D1D5DB',
-  gray200: '#E5E7EB',
-  gray100: '#F3F4F6',
-  gray50:  '#FAFAFA',
-  blue600: '#2563EB',
-  blue500: '#3B82F6',
-  blue100: '#DBEAFE',
-  green600: '#16A34A',
-  green100: '#DCFCE7',
-  yellow600: '#D97706',
-  yellow100: '#FEF3C7',
-  red600: '#DC2626',
-  red100: '#FEE2E2',
-  white: '#FFFFFF',
+  gray900: appColors.ink900,
+  gray800: appColors.ink800,
+  gray700: appColors.gray700,
+  gray600: appColors.gray600,
+  gray500: appColors.gray500,
+  gray400: appColors.gray400,
+  gray300: appColors.gray300,
+  gray200: appColors.gray200,
+  gray100: appColors.gray100,
+  gray50: appColors.gray50,
+  blue600: appColors.blue600,
+  blue500: appColors.blue500,
+  blue100: appColors.blue100,
+  green600: appColors.green600,
+  green100: appColors.green100,
+  yellow600: appColors.yellow600,
+  yellow100: appColors.yellow100,
+  red600: appColors.red600,
+  red100: appColors.red100,
+  white: appColors.white,
 };
 
 type PaletteKey = keyof typeof palette;

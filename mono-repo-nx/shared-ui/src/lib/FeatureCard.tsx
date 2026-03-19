@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { appColors } from './colorTokens';
 
 export interface FeatureCardProps {
   icon?: React.ReactNode;
@@ -22,11 +23,11 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, ava
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: appColors.gray50,
     borderRadius: 10,
     padding: 16,
     marginVertical: 8,
-    shadowColor: '#000',
+    shadowColor: appColors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
@@ -39,19 +40,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#111827',
+    color: appColors.ink900,
     marginBottom: 4,
   },
   description: {
     fontSize: 14,
-    color: '#374151',
+    color: appColors.gray700,
     marginBottom: 4,
   },
   unavailable: {
     opacity: 0.5,
   },
   unavailableText: {
-    color: '#ef4444',
+    color: appColors.red500,
     fontSize: 12,
     marginTop: 4,
   },

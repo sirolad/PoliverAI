@@ -2,11 +2,14 @@ require 'pathname'
 require 'fileutils'
 
 # If a committed snapshot of macOS generated iOS artifacts exists under
-# ../../patches/macos-generated/ios, copy it into this project's
+# ../../../patches/macos-generated/ios/ios-generated, copy it into this project's
 # build/generated/ios directory before CocoaPods/React codegen runs. This
 # ensures `pod install` can succeed in CI or fresh checkouts when codegen
 # artifacts are not available.
-patch_dir = File.expand_path('../../patches/macos-generated/ios', __dir__)
+# Only copy the canonical generated subtree. The parent directory also contains
+# historical stub podspecs that were used as a temporary workaround and must
+# not override the real generated ReactCodegen podspec.
+patch_dir = File.expand_path('../../../patches/macos-generated/ios/ios-generated', __dir__)
 if File.directory?(patch_dir)
   target_build_dir = File.join(__dir__, 'build', 'generated', 'ios')
   FileUtils.mkdir_p(target_build_dir)
@@ -36,6 +39,20 @@ require Pod::Executable.execute_command('node', ['-p', 'require.resolve("react-n
 
 prepare_react_native_project!
 
+def run_macos_codegen_fix_helper
+  begin
+    helper = File.expand_path('../../../scripts/fix-macos-codegen-paths.sh', __dir__)
+    if File.executable?(helper)
+      system(helper)
+    else
+      File.chmod(0755, helper) if File.exist?(helper)
+      system(helper) if File.executable?(helper)
+    end
+  rescue StandardError => e
+    puts "[podfile] warning: failed to run fix-macos-codegen-paths.sh: #{e.message}"
+  end
+end
+
   # NOTE: React Native codegen must run during `pod install` so that
   # generated headers and podspecs required by other pods (for example
   # react-native-safe-area-context) are created. We avoid disabling
@@ -47,8 +64,13 @@ prepare_react_native_project!
 target 'poliverai-macOS' do
   platform :macos, '11.0'
 
-  # Autolink native modules (this will use the CLI to produce a JSON autolinking file)
-  use_native_modules!
+  # Autolink native modules, but exclude lottie-react-native on macOS. This
+  # app uses the native AppKit splash window plus the JS fallback animation on
+  # desktop, and the lottie-react-native pod does not build cleanly here.
+  autolink_config = list_native_modules!($default_command)
+  autolink_config[:ios_packages].reject! { |pkg| pkg[:name] == 'lottie-react-native' }
+  autolink_config[:ios_packages].reject! { |pkg| pkg[:name] == '@lottiefiles/dotlottie-react-native' }
+  link_native_modules!(autolink_config)
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -58,10 +80,10 @@ target 'poliverai-macOS' do
   mac_react_native_path = File.dirname(mac_react_native_pkg)
   mac_react_native_path = Pathname.new(mac_react_native_path).relative_path_from(Pod::Config.instance.installation_root).to_s
 
-  # Ensure codegen runs during pod install so generated artifacts are created
-  # (remove the temporary disable flags previously used during debugging).
-  # Ensure New Architecture is enabled for pods that validate it (Reanimated requires this)
-  ENV['RCT_NEW_ARCH_ENABLED'] = '1' unless ENV.key?('RCT_NEW_ARCH_ENABLED')
+  # The current macOS target in this repo is not compatible with the New
+  # Architecture pod/codegen path. Keep desktop on the legacy architecture so
+  # pod install and native builds remain stable.
+  ENV['RCT_NEW_ARCH_ENABLED'] = '0'
 
   # For macOS we have a codegen parser issue with the built-in `NativeIdleCallbacks`
   # module (unrecognized generic `IdleCallbackID`) that breaks `pod install` on
@@ -85,22 +107,10 @@ target 'poliverai-macOS' do
     # Call the standard RN post-install first.
     react_native_post_install(installer, mac_react_native_path)
 
-    # Ensure deterministic fallback symlink path for generated codegen scripts
-    # so that any scripts referencing overly-long relative paths can still
-    # resolve react-native-macos during xcodebuild. This is a best-effort
-    # helper and will be a no-op if the script cannot create the symlink.
-    begin
-      helper = File.expand_path('../../../scripts/fix-macos-codegen-paths.sh', __dir__)
-      if File.executable?(helper)
-        system(helper)
-      else
-        # Try to make it executable and run
-        File.chmod(0755, helper) if File.exist?(helper)
-        system(helper) if File.executable?(helper)
-      end
-    rescue StandardError => e
-      puts "[podfile] warning: failed to run fix-macos-codegen-paths.sh: #{e.message}"
-    end
+    # Patch generated codegen paths before integration. The same helper is
+    # also rerun in post_integrate because CocoaPods may rewrite Pods.xcodeproj
+    # after post_install.
+    run_macos_codegen_fix_helper
 
     # Inject the macOS-only codegen-skip flags into each pod target so that
     # generated build settings are consistent during Xcode builds. This loop is
@@ -130,4 +140,8 @@ target 'poliverai-macOS' do
       end
     end
   end
+end
+
+post_integrate do |_installer|
+  run_macos_codegen_fix_helper
 end

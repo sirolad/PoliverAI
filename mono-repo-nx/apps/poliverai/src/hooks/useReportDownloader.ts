@@ -15,21 +15,4 @@ export default function useReportDownloader() {
 
   return { download }
 }
-import { useCallback } from 'react'
-import { Linking } from 'react-native'
-import { buildApiUrl } from '../lib/fileHelpers'
 
-export default function useReportDownloader() {
-  const download = useCallback(async (filename?: string, fallbackContent?: string | null) => {
-    if (!filename) return
-    try {
-      const url = buildApiUrl(`/api/v1/reports/download/${encodeURIComponent(filename)}`)
-      await Linking.openURL(url)
-    } catch (err) {
-      console.warn('Failed to open report URL', err)
-      // fallback: not implemented for RN
-    }
-  }, [])
-
-  return { download }
-}

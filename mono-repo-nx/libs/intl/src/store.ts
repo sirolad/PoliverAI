@@ -13,22 +13,14 @@ import {
   REGISTER,
   PersistConfig,
 } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import createWebStorage from 'redux-persist/lib/storage';
-import { Platform } from 'react-native';
+import { getPlatformStorage } from './lib/platformStorage';
 
 const rootReducer = combineReducers({
   auth: authReducer,
   locale: localeReducer,
 });
 
-// Detect web reliably: prefer feature-detection over Platform.OS because in some
-// dev setups react-native-web/platform mapping can be inconsistent. If running
-// in a browser environment, use the web storage adapter; otherwise use
-// AsyncStorage for native.
-const isWeb = typeof window !== 'undefined' && typeof window.document !== 'undefined' || Platform.OS === 'web';
-
-const storage = isWeb ? createWebStorage : AsyncStorage;
+const storage = getPlatformStorage();
 
 const persistConfig: PersistConfig<unknown> = {
   key: 'root',

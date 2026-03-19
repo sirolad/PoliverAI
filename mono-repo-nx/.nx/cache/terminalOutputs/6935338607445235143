@@ -1,0 +1,93 @@
+JS server already running on port 8081.
+(node:23995) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+/bin/sh: adb: command not found
+[36m[1minfo[22m[39m [0mLaunching emulator...[0m
+[31m[1merror[22m[39m [0mFailed to launch emulator. Reason: [2mNo emulators found as an output of `emulator -list-avds`[22m.[0m
+[33m[1mwarn[22m[39m [0mPlease launch an emulator manually or connect a device. Otherwise app may fail to launch.[0m
+[36m[1minfo[22m[39m [0mInstalling the app...[0m
+(node:23997) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Starting a Gradle Daemon, 2 incompatible Daemons could not be reused, use --status for details
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors
+> Task :gradle-plugin:settings-plugin:processResources
+> Task :gradle-plugin:settings-plugin:compileKotlin
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:classes
+> Task :gradle-plugin:settings-plugin:jar
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateAutolinkingPackageList UP-TO-DATE
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :react-native-gesture-handler:preBuild UP-TO-DATE
+> Task :react-native-gesture-handler:preDebugBuild UP-TO-DATE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:preDebugBuild UP-TO-DATE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :react-native-screens:preDebugBuild UP-TO-DATE
+> Task :react-native-gesture-handler:writeDebugAarMetadata
+> Task :react-native-safe-area-context:writeDebugAarMetadata
+> Task :react-native-screens:writeDebugAarMetadata
+> Task :react-native-svg:preBuild UP-TO-DATE
+> Task :react-native-svg:preDebugBuild UP-TO-DATE
+> Task :react-native-svg:writeDebugAarMetadata
+> Task :react-native-worklets:assertMinimalReactNativeVersionTask SKIPPED
+> Task :react-native-worklets:assertNewArchitectureEnabledTask FAILED
+
+[Incubating] Problems report is available at: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+17 actionable tasks: 9 executed, 8 up-to-date
+
+[36m[1minfo[22m[39m [0m[2m[2m💡 Tip: Make sure that you have set up your development environment correctly, by running[22m[2m [0m[0m[1mnpx react-native doctor[22m[2m[0m[0m. [2mTo read more about doctor command visit: https://github.com/react-native-community/cli/blob/main/packages/cli-doctor/README.md#doctor [22m[2m[22m[0m
+[0m[2m[2m[22m[2m[22m[0m
+[0m[0m
+[0mFAILURE: Build failed with an exception.[0m
+[0m[0m
+[0m* Where:[0m
+[0mBuild file '/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-worklets/android/build.gradle' line: 304[0m
+[0m[0m
+[0m* What went wrong:[0m
+[0mExecution failed for task ':react-native-worklets:assertNewArchitectureEnabledTask'.[0m
+[0m> [Worklets] Worklets require new architecture to be enabled. Please enable it by setting `newArchEnabled` to `true` in `gradle.properties`.[0m
+[0m[0m
+[0m* Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org.[0m
+[0m[0m
+[0mBUILD FAILED in 55s[0m
+[31m[1merror[22m[39m [0mFailed to install the app. Command failed with exit code 1: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 FAILURE: Build failed with an exception. * Where:[0m
+[0mBuild file '/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/react-native-worklets/android/build.gradle' line: 304 * What went wrong:[0m
+[0mExecution failed for task ':react-native-worklets:assertNewArchitectureEnabledTask'.[0m
+[0m> [Worklets] Worklets require new architecture to be enabled. Please enable it by setting `newArchEnabled` to `true` in `gradle.properties`. * Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org. BUILD FAILED in 55s.[0m
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31m1[39m
+
+

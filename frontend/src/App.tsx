@@ -98,9 +98,9 @@ function App() {
     <AuthProvider>
       <PaymentResultProvider>
         <Router>
-          <div className="min-h-screen bg-background flex flex-col">
+          <div className="min-h-screen w-full min-w-full bg-background flex flex-col overflow-x-hidden">
             <Navbar />
-            <main className="flex-1">
+            <main className="flex-1 w-full min-w-0">
               <CheckoutFinalizer />
               <Routes>
                 <Route path="/" element={<LandingPageScreen />} />

@@ -2,10 +2,21 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { ensureAppHoistedLinks } = require('./ensure-app-hoisted-links');
 
 function run(cmd, args, opts = {}) {
   console.log(`> ${cmd} ${args.join(' ')}`);
-  const res = spawnSync(cmd, args, { stdio: 'inherit', shell: true, ...opts });
+  const res = spawnSync(cmd, args, {
+    stdio: 'inherit',
+    shell: true,
+    env: {
+      ...process.env,
+      LANG: 'en_US.UTF-8',
+      LC_ALL: 'en_US.UTF-8',
+      ...(opts.env || {}),
+    },
+    ...opts,
+  });
   if (res.status !== 0) {
     console.error(`${cmd} ${args.join(' ')} failed with code ${res.status}`);
     process.exit(res.status || 1);
@@ -25,21 +36,134 @@ const repoRoot = path.resolve(__dirname, '..');
 const appRoot = path.join(repoRoot, 'apps', 'poliverai');
 const arg = process.argv[2] || '';
 
-// Run yarn at repo root
-if (fs.existsSync(path.join(repoRoot, 'package.json'))) {
-  run('yarn', [], { cwd: repoRoot });
+function copyDirectoryContents(sourceDir, targetDir) {
+  if (!fs.existsSync(sourceDir)) return false;
+
+  fs.mkdirSync(targetDir, { recursive: true });
+  const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const sourcePath = path.join(sourceDir, entry.name);
+    const targetPath = path.join(targetDir, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDirectoryContents(sourcePath, targetPath);
+      continue;
+    }
+
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    fs.copyFileSync(sourcePath, targetPath);
+  }
+
+  return true;
 }
 
-// Run yarn in the app workspace but skip lifecycle scripts; we'll run the
-// important postinstall steps at the right time below to avoid recursion
-/// double-applying patches that are also triggered via postinstall.
-if (fs.existsSync(path.join(appRoot, 'package.json'))) {
-  if (hasCommand('yarn')) {
-    run('yarn', ['install', '--ignore-scripts'], { cwd: appRoot });
-  } else {
-    console.warn('yarn not found in PATH; skipping app install');
+function isStubCodegenPodspec(filePath) {
+  if (!fs.existsSync(filePath)) return false;
+  const content = fs.readFileSync(filePath, 'utf8');
+  return content.includes('Temporary stub for ReactCodegen') ||
+    content.includes('Temporary stub for ReactAppDependencyProvider');
+}
+
+function hydrateMacOSGeneratedCodegenArtifacts() {
+  const canonicalSource = path.join(appRoot, 'ios', 'build', 'generated', 'ios');
+  const canonicalPodspec = path.join(canonicalSource, 'ReactCodegen.podspec');
+  if (!fs.existsSync(canonicalPodspec) || isStubCodegenPodspec(canonicalPodspec)) {
+    return;
+  }
+
+  const targets = [
+    path.join(repoRoot, 'patches', 'macos-generated', 'ios', 'ios-generated'),
+    path.join(appRoot, 'macos', 'build', 'generated', 'ios'),
+  ];
+
+  for (const targetDir of targets) {
+    copyDirectoryContents(canonicalSource, targetDir);
+    console.log(`> hydrated generated codegen artifacts from ${canonicalSource} -> ${targetDir}`);
   }
 }
+
+function normalizeReactCodegenPodspec(filePath) {
+  if (!fs.existsSync(filePath)) return;
+
+  const badRnDir =
+    'export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/../../../../../../../../../../../../../../../PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native"';
+  const badAppPath =
+    'export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/../../../../../../../../../../../../../../../PoliverAI/mono-repo-nx/apps/poliverai"';
+  const goodRnDir =
+    'export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/../node_modules/react-native"';
+  const goodAppPath =
+    'export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/.."';
+
+  const current = fs.readFileSync(filePath, 'utf8');
+  const next = current
+    .replaceAll(badRnDir, goodRnDir)
+    .replaceAll(badAppPath, goodAppPath);
+
+  if (next !== current) {
+    fs.writeFileSync(filePath, next);
+    console.log(`> normalized ReactCodegen podspec paths in ${filePath}`);
+  }
+}
+
+function normalizeGeneratedReactCodegenPodspecs() {
+  const candidates = [
+    path.join(repoRoot, 'patches', 'macos-generated', 'ios', 'ios-generated', 'ReactCodegen.podspec'),
+    path.join(appRoot, 'macos', 'build', 'generated', 'ios', 'ReactCodegen.podspec'),
+    path.join(appRoot, 'ios', 'build', 'generated', 'ios', 'ReactCodegen.podspec'),
+  ];
+
+  for (const filePath of candidates) {
+    normalizeReactCodegenPodspec(filePath);
+  }
+}
+
+function ensureReactNativeGradlePluginArtifacts() {
+  const pluginRoot = path.join(repoRoot, 'node_modules', '@react-native', 'gradle-plugin');
+  const sharedJar = path.join(pluginRoot, 'shared', 'build', 'libs', 'shared.jar');
+  const pluginJar = path.join(
+    pluginRoot,
+    'react-native-gradle-plugin',
+    'build',
+    'libs',
+    'react-native-gradle-plugin.jar'
+  );
+
+  if (fs.existsSync(sharedJar) && fs.existsSync(pluginJar)) {
+    return;
+  }
+
+  const gradlew = path.join(pluginRoot, 'gradlew');
+  if (!fs.existsSync(gradlew)) {
+    console.warn('react-native gradle plugin sources not found; skipping plugin artifact build');
+    return;
+  }
+
+  try {
+    fs.chmodSync(gradlew, 0o755);
+  } catch (err) {
+    console.warn(`failed to chmod ${gradlew}: ${err.message}`);
+  }
+
+  run('./gradlew', ['--no-daemon', ':shared:jar', ':react-native-gradle-plugin:jar'], {
+    cwd: pluginRoot,
+  });
+}
+
+// Run yarn at repo root
+if (fs.existsSync(path.join(repoRoot, 'package.json'))) {
+  run('yarn', ['--ignore-engines'], { cwd: repoRoot });
+}
+
+// Do not run a second install inside the app workspace.
+// This repo is already managed from the workspace root, and re-running
+// `yarn install` in apps/poliverai causes duplicate .bin symlink conflicts.
+
+ensureAppHoistedLinks({
+  repoRoot,
+  appRoot,
+  logPrefix: 'prepare-and-install',
+});
 
 // Platform-specific preparation
 if (arg === 'macos') {
@@ -59,6 +183,8 @@ if (arg === 'macos') {
   if (fs.existsSync(snapshot)) {
     run('node', [snapshot], { cwd: repoRoot });
   }
+  hydrateMacOSGeneratedCodegenArtifacts();
+  normalizeGeneratedReactCodegenPodspecs();
 
   // After snapshot, run app-level postinstall steps (which create codegen
   // stubs) and then apply the repo-level worklets patch so files are
@@ -71,12 +197,16 @@ if (arg === 'macos') {
   if (fs.existsSync(appPatch)) {
     run('node', [appPatch], { cwd: appRoot });
   }
+  hydrateMacOSGeneratedCodegenArtifacts();
+  normalizeGeneratedReactCodegenPodspecs();
 
   // Apply RN worklets patch (repo-level) to ensure exact node_modules layout
   const applyPatch = path.join(repoRoot, 'scripts', 'apply-react-native-worklets-patch.js');
   if (fs.existsSync(applyPatch)) {
     run('node', [applyPatch], { cwd: repoRoot });
   }
+  hydrateMacOSGeneratedCodegenArtifacts();
+  normalizeGeneratedReactCodegenPodspecs();
   // Run pod install in macOS app if Podfile exists
   const macPodfile = path.join(appRoot, 'macos', 'Podfile');
   if (fs.existsSync(macPodfile)) {
@@ -92,6 +222,8 @@ if (arg === 'macos') {
   if (fs.existsSync(applyPatch)) {
     run('node', [applyPatch], { cwd: repoRoot });
   }
+  hydrateMacOSGeneratedCodegenArtifacts();
+  normalizeGeneratedReactCodegenPodspecs();
 } else if (arg === 'ios') {
   // Ensure RN worklets patch is applied for iOS builds
   // First run app-level postinstall and app-level patch scripts so they
@@ -104,12 +236,14 @@ if (arg === 'macos') {
   if (fs.existsSync(appPatch)) {
     run('node', [appPatch], { cwd: appRoot });
   }
+  normalizeGeneratedReactCodegenPodspecs();
 
   // Apply RN worklets patch (repo-level)
   const applyPatch = path.join(repoRoot, 'scripts', 'apply-react-native-worklets-patch.js');
   if (fs.existsSync(applyPatch)) {
     run('node', [applyPatch], { cwd: repoRoot });
   }
+  normalizeGeneratedReactCodegenPodspecs();
 
   // Run pod install in iOS app if Podfile exists
   const iosPodfile = path.join(appRoot, 'ios', 'Podfile');
@@ -126,6 +260,15 @@ if (arg === 'macos') {
   if (fs.existsSync(applyPatch)) {
     run('node', [applyPatch], { cwd: repoRoot });
   }
+  normalizeGeneratedReactCodegenPodspecs();
+} else if (arg === 'android') {
+  ensureReactNativeGradlePluginArtifacts();
 }
+
+ensureAppHoistedLinks({
+  repoRoot,
+  appRoot,
+  logPrefix: 'prepare-and-install',
+});
 
 console.log('prepare-and-install: done');

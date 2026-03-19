@@ -19,10 +19,13 @@
     "customConditions": ["@poliverai/source"],
     "baseUrl": ".",
     "paths": {
+      "@shared-ui": ["shared-ui/src/index.ts"],
+      "@shared-ui/*": ["shared-ui/src/*"],
       "@poliverai/shared-ui": ["shared-ui/src/index.ts"],
       "@poliverai/intl": ["libs/intl/src/index.ts"],
       "@assets": ["apps/poliverai/assets/index.ts"],
-      "@assets/*": ["apps/poliverai/assets/*"]
+      "@assets/*": ["apps/poliverai/assets/*"],
+      "@/*": ["../frontend/src/*"]
     }
     ,
     "resolveJsonModule": true,

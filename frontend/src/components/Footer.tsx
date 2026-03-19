@@ -11,7 +11,7 @@ export default function Footer({ hasBackground = true }: FooterProps) {
   const { bgClass, subtitleClass } = footerClasses(hasBackground)
 
   return (
-  <footer className={twFromTokens(bgClass, spacing.sectionPaddingY)}>
+  <footer className={twFromTokens('w-full', bgClass, spacing.sectionPaddingY)}>
       <div className={twFromTokens(spacing.containerMaxLg, alignment.flexCol, alignment.itemsCenter, 'text-center', alignment.gap4)}>
         <div className={twFromTokens(textSizes.sm, subtitleClass, 'max-w-xl')}>
           {t('footer.short')}

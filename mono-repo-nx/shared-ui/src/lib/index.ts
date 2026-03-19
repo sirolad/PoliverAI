@@ -3,8 +3,9 @@ export { default as Input } from './Input';
 export { Button } from './Button/Button';
 export { default as Card } from './Card';
 export * from './styleTokens';
+export { appColors, appAlphaColors } from './colorTokens';
 export * from './icons/FeatureIcons';
-export { default as Splash } from './Splash/Splash';
+export { default as Splash, POLIVERAI_SPLASH_DOTLOTTIE_URL } from './Splash';
 export { default as FeaturesSection } from './FeaturesSection';
 export { default as Footer } from './Footer';
 export { default as TeamCarousel } from './TeamCarousel';
@@ -19,9 +20,8 @@ export { default as TeamWriteup } from './TeamWriteup';
 // goal is to provide a small surface area (`@poliverai/shared-ui`) that
 // screens can import from while porting web code to React Native.
 
-import rnStyleFromTokens, { rnTokens } from './rnStyleTokens'
-export { rnStyleFromTokens, rnTokens }
-export * from './styleTokens'
+import rnStyleFromTokens, { rnTokens, colorFromToken } from './rnStyleTokens'
+export { rnStyleFromTokens, rnTokens, colorFromToken }
 export { default as AccountStatus } from './AccountStatus'
 export { default as QuickActions } from './QuickActions'
 export { default as AvailableFeatures } from './AvailableFeatures'
@@ -34,10 +34,11 @@ export { default as TopControls } from './TopControls.native'
 export { default as RevisedPolicyPreview } from './RevisedPolicyPreview.native'
 export { default as EnterTitleModal } from './EnterTitleModal.native'
 export { default as EnterInstructionsModal } from './EnterInstructionsModal.native'
+export { default as EnterCreditsModal } from './EnterCreditsModal'
 export { default as InsufficientCreditsModal } from './InsufficientCreditsModal.native'
 export { default as ReportViewerModal } from './ReportViewerModal.native'
 export { default as ReportCard } from './ReportCard.native'
-export { default as Navbar } from './NavBar/Navbar.native'
+export { default as Navbar } from './NavBar/NavBar'
 export { default as EvidenceList } from './EvidenceList.native'
 export { default as PolicyMainPanel } from './PolicyMainPanel.native'
 export { default as AnalysisProgress } from './AnalysisProgress.native'

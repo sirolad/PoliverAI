@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="navigationBarColor">@android:color/transparent</color>
+    <style name="Theme.BootSplash.v27" parent="Theme.BootSplash.Base">
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowLightNavigationBar">?darkContentBarsStyle</item>
+    </style>
+</resources>

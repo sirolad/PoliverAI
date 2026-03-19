@@ -18,7 +18,9 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
     }
   })();
 
-  const { user, logout, isAuthenticated, isPro, reportsCount } = useAuth();
+  const auth = useAuth() as any;
+  const { user, logout, isAuthenticated, isPro } = auth;
+  const reportsCount = auth.reportsCount as number | undefined;
   const { t } = useTranslation();
 
   const handleLogout = async () => {
@@ -94,7 +96,11 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
     <View style={styles.nav}>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => safeNavigate('WebLanding', '/')} style={styles.logoRow} accessibilityRole="link" accessible accessibilityLabel={t('components.navBar.logoAlt', 'PoliverAI logo')}>
-          <Image source={logo} style={styles.logoImage} resizeMode="contain" />
+          {logo ? (
+            <Image source={logo} style={styles.logoImage} resizeMode="contain" />
+          ) : (
+            <Text style={styles.logoFallback}>PoliverAI</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.linksRow}>
@@ -120,7 +126,7 @@ export const NavBar: React.FC<NavBarProps> = ({ logo }) => {
             <View style={styles.userGroup}>
               <View style={styles.userInfo}>
                 <Text style={styles.userIcon}>👤</Text>
-                <Text style={styles.userName}>{user?.name}</Text>
+                <Text style={styles.userName}>{user?.name ?? user?.email ?? 'Account'}</Text>
                 <View style={[styles.tierPill, isPro ? styles.proPill : styles.freePill]}>
                   <Text style={styles.tierText}>{isPro ? t('components.navBar.tier.pro', 'PRO') : t('components.navBar.tier.free', 'FREE')}</Text>
                 </View>
@@ -155,6 +161,11 @@ const styles = StyleSheet.create({
   logoRow: { flexDirection: 'row', alignItems: 'center' },
   logoImage: { 
     height: 40,
+  },
+  logoFallback: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#2563eb',
   },
   linksRow: { flexDirection: 'row', alignItems: 'center' },
   link: { fontSize: 14, fontWeight: '600', color: '#0f172a', marginHorizontal: 6 },

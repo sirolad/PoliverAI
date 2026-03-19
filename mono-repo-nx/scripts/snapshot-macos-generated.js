@@ -8,7 +8,8 @@ const stat = promisify(fs.stat);
 
 // Destination root for snapshots. For macOS we keep a dedicated
 // `patches/macos-generated` folder because the macOS Podfile checks for
-// `patches/macos-generated/ios` when copying pre-generated artifacts.
+// `patches/macos-generated/ios/ios-generated` when copying pre-generated
+// artifacts.
 const destRoot = path.resolve(__dirname, '..', 'patches', 'macos-generated');
 
 // We support multiple source paths to snapshot across macOS, iOS and Android.
@@ -16,10 +17,11 @@ const destRoot = path.resolve(__dirname, '..', 'patches', 'macos-generated');
 const sources = [
   // macOS generated code and pod artifacts
   // The macOS build generates iOS-compatible codegen artifacts under
-  // apps/poliverai/macos/build/generated/ios. The Podfile expects these to
-  // live under patches/macos-generated/ios so name the destination `ios`.
+  // apps/poliverai/macos/build/generated/ios. The macOS Podfile consumes the
+  // canonical subtree at patches/macos-generated/ios/ios-generated, so keep
+  // the macOS snapshot there.
   {
-    name: 'ios',
+    name: 'ios/ios-generated',
     src: path.resolve(__dirname, '..', 'apps', 'poliverai', 'macos', 'build', 'generated', 'ios')
   },
   {
@@ -35,9 +37,11 @@ const sources = [
     src: path.resolve(__dirname, '..', 'apps', 'poliverai', 'macos', 'build', 'Pods.build')
   },
 
-  // iOS generated code and Pod artifacts (if an iOS build was produced locally)
+  // iOS generated code and Pod artifacts (if an iOS build was produced locally).
+  // Keep these in a separate subtree so they cannot overwrite the macOS
+  // fallback snapshot consumed by apps/poliverai/macos/Podfile.
   {
-    name: 'ios/ios-generated',
+    name: 'ios/ios-app-generated',
     src: path.resolve(__dirname, '..', 'apps', 'poliverai', 'ios', 'build', 'generated', 'ios')
   },
   {

@@ -15,7 +15,12 @@ export default function Splash({
   delayMs = 300,
   onFinish,
 }: SplashProps) {
-  const [style, setStyle] = React.useState<React.CSSProperties | undefined>()
+  const [style, setStyle] = React.useState<React.CSSProperties | undefined>({
+    width: 'min(360px, 70vw)',
+    maxWidth: '70vw',
+    maxHeight: '70vh',
+    margin: '0 auto',
+  })
   const timeoutRef = React.useRef<number | undefined>(undefined)
   const playerRef = React.useRef<HTMLElement | null>(null)
 
@@ -38,20 +43,20 @@ export default function Splash({
             const w = typeof json.w === 'number' ? json.w : undefined
             const h = typeof json.h === 'number' ? json.h : undefined
             if (w && h && typeof window !== 'undefined') {
-              const maxW = Math.max(100, Math.round(window.innerWidth * 0.9))
-              const maxH = Math.max(100, Math.round(window.innerHeight * 0.9))
+              const maxW = Math.max(180, Math.round(window.innerWidth * 0.45))
+              const maxH = Math.max(180, Math.round(window.innerHeight * 0.45))
               const scale = Math.min(1, maxW / w, maxH / h)
               const width = Math.max(100, Math.round(w * scale))
               const height = Math.max(100, Math.round(h * scale))
-              setStyle({ width: `${width}px`, height: `${height}px` })
+              setStyle({ width: `${width}px`, height: `${height}px`, margin: '0 auto' })
             } else {
-              setStyle({ maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' })
+              setStyle({ width: 'min(360px, 70vw)', maxWidth: '70vw', maxHeight: '70vh', margin: '0 auto' })
             }
           } catch {
-            setStyle({ maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' })
+            setStyle({ width: 'min(360px, 70vw)', maxWidth: '70vw', maxHeight: '70vh', margin: '0 auto' })
           }
         } else {
-          setStyle({ maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' })
+          setStyle({ width: 'min(360px, 70vw)', maxWidth: '70vw', maxHeight: '70vh', margin: '0 auto' })
         }
       } catch (e) {
         console.debug('Splash: probe failed, falling back to dotLottie', e)
@@ -62,11 +67,11 @@ export default function Splash({
           if (r2.ok) {
             // const json = await r2.json()
             if (!mounted) return
-            setStyle({ maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' })
+            setStyle({ width: 'min(360px, 70vw)', maxWidth: '70vw', maxHeight: '70vh', margin: '0 auto' })
             return
           }
   } catch { /* ignore */ }
-        setStyle({ maxWidth: '90vw', maxHeight: '90vh', width: 'auto', height: 'auto' })
+        setStyle({ width: 'min(360px, 70vw)', maxWidth: '70vw', maxHeight: '70vh', margin: '0 auto' })
       }
 
       // safety timeout if no 'complete' event fires
@@ -100,11 +105,13 @@ export default function Splash({
 
   return (
     <div className={twFromTokens('fixed inset-0', spacing.fullScreenCenter, colors.surfaceOverlay, 'backdrop-blur-sm')} style={{ zIndex: 99999 }}>
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <DotLottieReact
           src="https://lottie.host/60d101b5-d7e9-4e51-8c0c-2624f51e642a/sGDt58V29f.lottie"
           autoplay
           style={style}
         />
+      </div>
     </div>
   )
 }

@@ -142,8 +142,7 @@ class ApiService {
             const result = JSON.parse(xhr.responseText) as T
             resolve(result)
           } catch (error) {
-            const e = error as unknown
-            reject(new Error('Failed to parse response', { cause: e }))
+            reject(new Error('Failed to parse response'))
           }
         } else {
           let errorMessage = `HTTP error! status: ${xhr.status}`

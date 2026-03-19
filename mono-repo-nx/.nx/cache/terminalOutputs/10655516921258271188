@@ -1,0 +1,49 @@
+Starting JS server...
+[34m[39m
+[34mWelcome to React Native v0.79[39m
+Starting dev server on http://localhost:8081
+
+[34m[39m
+[34m                        ▒▒▓▓▓▓▒▒[39m
+[34m                     ▒▓▓▓▒▒░░▒▒▓▓▓▒[39m
+[34m                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒[39m
+[34m                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓[39m
+[34m                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓[39m
+[34m                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓[39m
+[34m                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒[39m
+[34m                     ▒▓▓▓▒░░░░▒▓▓▓▒[39m
+[34m                        ▒▒▓▓▓▓▒��[39m
+[34m[39m
+[34m[39m
+[33m[7m[1m WARN [22m[27m[39m the transform cache was reset.
+[34m[1m                Welcome to Metro [37mv0.82.5[39m[34m[22m[39m
+[34m[1m[22m[39m[2m              Fast - Scalable - Integrated[22m
+[2m[22m
+[2m[22m
+[36m[7m[1m INFO [22m[27m[39m Dev server ready. [2mPress Ctrl+C to exit.[22m
+[36m[7m[1m INFO [22m[27m[39m Key commands available:
+
+  [1m[7m r [27m[22m - reload app(s)
+  [1m[7m d [27m[22m - open Dev Menu
+  [1m[7m j [27m[22m - open DevTools
+
+[36m[7m[1m INFO [22m[27m[39m Connection established to app='com.poliverai.app' on device='SM-A055F - 15 - API 35'.
+[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 0.0% [22m[2m(0/1)[22m
+[95D[1A[0Jtransform[stderr]: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 0.0% [22m[2m(0/1)[22m
+[95D[1A[0J[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 1.0% [22m[2m(1/1)[22m
+[95D[1A[0J[31m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m 
+[31m[7m[1m ERROR [22m[27m[39m RangeError: Maximum call stack size exceeded
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro-resolver/src/resolve.js:37:17)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/metro-resolver/src/resolve.js:36:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro-resolver/src/resolve.js:40:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/metro-resolver/src/resolve.js:36:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro-resolver/src/resolve.js:40:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/metro-resolver/src/resolve.js:36:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro-resolver/src/resolve.js:40:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/metro-resolver/src/resolve.js:36:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro-resolver/src/resolve.js:40:12)
+    at resolve (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/metro-resolver/src/resolve.js:36:12)

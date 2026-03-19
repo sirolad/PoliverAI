@@ -1261,77 +1261,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
   - react-native-safe-area-context (5.6.1):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
     - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsc
-    - React-jsi
-    - react-native-safe-area-context/common (= 5.6.1)
-    - react-native-safe-area-context/fabric (= 5.6.1)
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - react-native-safe-area-context/common (5.6.1):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsc
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - react-native-safe-area-context/fabric (5.6.1):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsc
-    - React-jsi
-    - react-native-safe-area-context/common
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - React-NativeModulesApple (0.79.0):
     - glog
     - React-callinvoker
@@ -1564,9 +1494,29 @@ PODS:
     - React-debug
     - React-jsc
     - React-jsi (= 0.79.0)
-  - ReactAppDependencyProvider (0.0.0):
+  - ReactAppDependencyProvider (0.79.6):
     - ReactCodegen
-  - ReactCodegen (0.0.0)
+  - ReactCodegen (0.79.6):
+    - DoubleConversion
+    - glog
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-FabricImage
+    - React-featureflags
+    - React-graphics
+    - React-jsc
+    - React-jsi
+    - React-jsiexecutor
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
   - ReactCommon (0.79.0):
     - ReactCommon/turbomodule (= 0.79.0)
   - ReactCommon/turbomodule (0.79.0):
@@ -1607,6 +1557,8 @@ PODS:
     - React-logger (= 0.79.0)
     - React-perflogger (= 0.79.0)
     - React-utils (= 0.79.0)
+  - RNCAsyncStorage (2.2.0):
+    - React-Core
   - RNGestureHandler (2.28.0):
     - DoubleConversion
     - glog
@@ -1630,7 +1582,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.13.0):
+  - RNReanimated (3.18.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1652,9 +1604,34 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.13.0)
+    - RNReanimated/reanimated (= 3.18.2)
+    - RNReanimated/worklets (= 3.18.2)
     - Yoga
-  - RNSVG/common (15.13.0):
+  - RNReanimated/reanimated (3.18.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsc
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated/apple (= 3.18.2)
+    - Yoga
+  - RNReanimated/reanimated/apple (3.18.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1677,6 +1654,55 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNReanimated/worklets (3.18.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsc
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/worklets/apple (= 3.18.2)
+    - Yoga
+  - RNReanimated/worklets/apple (3.18.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsc
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNSVG (15.11.2):
+    - React-Core
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -1710,7 +1736,6 @@ DEPENDENCIES:
   - React-idlecallbacksnativemodule (from `../../../node_modules/react-native-macos/ReactCommon/react/nativemodule/idlecallbacks`)
   - React-ImageManager (from `../../../node_modules/react-native-macos/ReactCommon/react/renderer/imagemanager/platform/ios`)
   - React-jsc (from `../../../node_modules/react-native-macos/ReactCommon/jsc`)
-  - React-jsc/Fabric (from `../../../node_modules/react-native-macos/ReactCommon/jsc`)
   - React-jserrorhandler (from `../../../node_modules/react-native-macos/ReactCommon/jserrorhandler`)
   - React-jsi (from `../../../node_modules/react-native-macos/ReactCommon/jsi`)
   - React-jsiexecutor (from `../../../node_modules/react-native-macos/ReactCommon/jsiexecutor`)
@@ -1721,7 +1746,7 @@ DEPENDENCIES:
   - React-logger (from `../../../node_modules/react-native-macos/ReactCommon/logger`)
   - React-Mapbuffer (from `../../../node_modules/react-native-macos/ReactCommon`)
   - React-microtasksnativemodule (from `../../../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks`)
-  - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../../../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../../../node_modules/react-native-macos/ReactCommon/oscompat`)
   - React-perflogger (from `../../../node_modules/react-native-macos/ReactCommon/reactperflogger`)
@@ -1752,7 +1777,9 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../../../node_modules/react-native-macos/ReactCommon`)
-  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SocketRocket (from `../../../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec`)
   - Yoga (from `../../../node_modules/react-native-macos/ReactCommon/yoga`)
@@ -1833,7 +1860,7 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../../../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks"
   react-native-safe-area-context:
-    :path: "../../../node_modules/react-native-safe-area-context"
+    :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../../../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -1894,8 +1921,12 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../../../node_modules/react-native-macos/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNGestureHandler:
-    :path: "../../../node_modules/react-native-gesture-handler"
+    :path: "../node_modules/react-native-gesture-handler"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   SocketRocket:
@@ -1941,21 +1972,21 @@ SPEC CHECKSUMS:
   React-logger: 043ab0e246d3d88fbc37220e564d8c54150f5cd1
   React-Mapbuffer: ff9b8a32826894e5da46d6eaa48ade8b61e81a26
   React-microtasksnativemodule: 38a8e3307971553af502bbdad2574bbc4c9f1004
-  react-native-safe-area-context: c65bb32a1f65e7ad6dabd329b7fdc83b2a20ab15
+  react-native-safe-area-context: 2243039f43d10cb1ea30ec5ac57fc6d1448413f4
   React-NativeModulesApple: 020f0908d1f331f19429752eaedb619f3b20e93c
   React-oscompat: 2098ea5138dec4d965bd9f0fac95fc8419f64087
   React-perflogger: a0b5553ee2c4577708376bb577674eaf01413ca2
   React-performancetimeline: 1ac38f3f68693878ff70c5ac8713cbe0c6dfce34
   React-RCTActionSheet: 09073a99c3fe901b4d5e144a4e5aa00090b5696c
   React-RCTAnimation: eadb7a6abe3ac73f7d983d281ed06dbdcc59e41f
-  React-RCTAppDelegate: f5b382433ca24fec1ad21475441fa09586c206c6
+  React-RCTAppDelegate: 4b625059dbd4b3d8d3aff927b411b8ff9429c59d
   React-RCTBlob: a6eab69067b879965d89cb44b5d945e568e4f817
-  React-RCTFabric: d04e52b161e2ceda7a541b2c6ffe1ea625ae5276
-  React-RCTFBReactNativeSpec: 73645c4a6dbeafafcd056f8b8cd00889165942a0
+  React-RCTFabric: 1f24abd6e2ce2271f617c30b795928843068eee1
+  React-RCTFBReactNativeSpec: 410fc56e6d5364f5ceb4fce3b43c9902a9c5fe83
   React-RCTImage: 4047dc6435c1795502eef126954eedb297c24375
   React-RCTLinking: 36b015df40ae3ab79ab0ec149a1f8da4042d66f7
   React-RCTNetwork: 252560e03ae3ad6f5467acc038bfa4cad4e99cdb
-  React-RCTRuntime: e704e5845210bf209d3e0fd0c64dc3ca17b2890e
+  React-RCTRuntime: ab774c38cbda28946b9dfe977a8dbef30be4ed24
   React-RCTSettings: f428c4f4b6fdbc5b9bc6801ddbd6ea503335a0fa
   React-RCTText: 6cc531da7f1617749fad681f232124e6787084be
   React-RCTVibration: 47ec449f5cad3faf777ca0b0952b694829799ba4
@@ -1969,14 +2000,16 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 7f1d0ed6815c7ecc5ff7a11afd41c0b4de92c5a1
   React-timing: 01fb653bcd2c119213c2a57a70586b906cd328a7
   React-utils: c276acc90b7da1158fc99381943e1b708aec9f35
-  ReactAppDependencyProvider: 91e7fdff29c32e5ad46f083e1837f22bb130d20a
-  ReactCodegen: d69c359e76ed0dd8dfd34503dc2a45f9d63ed758
+  ReactAppDependencyProvider: 4daa106923d734ac9421446da04fee9073321211
+  ReactCodegen: 9cb497b8fa122696da094915f596af11384956d7
   ReactCommon: 6ca2d140e3aac63917c5c45c2a548f94a348130a
-  RNGestureHandler: 74f329e2de9d754abd6ce1040e5a0ff279a81147
-  RNSVG: 9ec6e3511feb0d0c56140081822a63dee6536521
+  RNCAsyncStorage: b44e8a4e798c3e1f56bffccd0f591f674fb9198f
+  RNGestureHandler: 72f670d44736ca932a512f6c01094c7e359b4f35
+  RNReanimated: 2439ec9c13cd7e5cd9abbb43390a89f9df700f07
+  RNSVG: ab84f2de7dd4f2c86d01825b8a65e0ef712fc36b
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 45ce05cb11db042ba2e5e51a2dfaf0ff63d269f9
 
-PODFILE CHECKSUM: e153b9852dcf98fd1046c57ee1a14733c7ab423b
+PODFILE CHECKSUM: c6db9483270870809271236bce66cb4acd6626fa
 
 COCOAPODS: 1.16.2

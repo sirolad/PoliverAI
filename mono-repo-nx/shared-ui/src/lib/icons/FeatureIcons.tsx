@@ -1,4 +1,4 @@
-import React from 'react';
+// React import not required with the new JSX runtime
 import { Svg, Path } from 'react-native-svg';
 
 export const FileCheck = (props: any) => (

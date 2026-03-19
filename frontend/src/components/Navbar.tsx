@@ -44,7 +44,7 @@ export function Navbar() {
     setModalMessage(message)
     setModalOpen(true)
   }
-  const isMobile = useIsMobile(1140)
+  const isMobile = useIsMobile(980)
 
   // Listen for global payment events and persisted results
   usePaymentResult(showResult, refreshUser)
@@ -93,14 +93,14 @@ export function Navbar() {
           }
         }}
       />
-      <nav className={twFromTokens(spacing.navbarBg)}>
-        <div className={twFromTokens(spacing.navbarContainer, alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
+      <nav className={twFromTokens('w-full', spacing.navbarBg)}>
+        <div className={twFromTokens(spacing.navbarContainer, alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween, 'gap-y-3 flex-wrap min-[1400px]:flex-nowrap')}>
           {/* Logo */}
           <NavBrand />
 
           {/* Navigation Links */}
           {/* Desktop links: hidden when collapsed mobile menu is active */}
-          <div className={twFromTokens(isMobile ? 'hidden' : 'hidden md:flex', alignment.itemsCenter, 'gap-6')}>
+          <div className={twFromTokens(isMobile ? 'hidden' : 'hidden md:flex', alignment.itemsCenter, 'gap-6 flex-wrap min-[1400px]:flex-nowrap min-w-0')}>
             {isAuthenticated && (
               <>
                 <NavLinks isPro={isPro} reportsCount={reportsCount} />
@@ -109,7 +109,7 @@ export function Navbar() {
           </div>
 
           {/* User Menu */}
-          <div className="flex items-center gap-4 relative">
+          <div className="flex items-center gap-4 relative flex-shrink-0 min-[1400px]:whitespace-nowrap">
             {isAuthenticated ? (
               <NavUserMenu
                 isMobile={isMobile}

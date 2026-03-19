@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet, Linking, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Linking } from 'react-native'
 import rnStyleFromTokens from './rnStyleTokens'
 
 type Props = { downloadUrl: string | null, filename?: string | null, inlineContent?: string | null }

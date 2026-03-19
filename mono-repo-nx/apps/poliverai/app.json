@@ -7,6 +7,7 @@
     "name": "PoliverAI",
     "slug": "poliverai",
     "version": "1.0.0",
+    "scheme": "poliverai",
     "platforms": ["ios", "android", "web", "macos", "windows"]
   }
 }

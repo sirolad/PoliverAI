@@ -1,0 +1,48 @@
+
+[Nx Vite TsPaths] Found tsconfig at /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/tsconfig.app.json
+
+[Nx Vite TsPaths] first parsed tsconfig:  {
+  resultType: [32m'success'[39m,
+  configFileAbsolutePath: [32m'/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/tsconfig.app.json'[39m,
+  baseUrl: [32m'../..'[39m,
+  absoluteBaseUrl: [32m'/Users/gabrieldagadu/PoliverAI/mono-repo-nx'[39m,
+  paths: {
+    [32m'@poliverai/shared-ui'[39m: [ [32m'shared-ui/src/index.ts'[39m ],
+    [32m'@poliverai/intl'[39m: [ [32m'libs/intl/src/index.ts'[39m ],
+    [32m'@assets'[39m: [ [32m'apps/poliverai/assets/index.ts'[39m ],
+    [32m'@assets/*'[39m: [ [32m'apps/poliverai/assets/*'[39m ],
+    [32m'@/*'[39m: [ [32m'../frontend/src/*'[39m ]
+  },
+  addMatchAll: [33mtrue[39m
+}
+
+[Nx Vite TsPaths] Found tsconfig at /Users/gabrieldagadu/PoliverAI/mono-repo-nx/tsconfig.base.json
+
+[Nx Vite TsPaths] fallback parsed tsconfig:  {
+  resultType: [32m'success'[39m,
+  configFileAbsolutePath: [32m'/Users/gabrieldagadu/PoliverAI/mono-repo-nx/tsconfig.base.json'[39m,
+  baseUrl: [32m'.'[39m,
+  absoluteBaseUrl: [32m'/Users/gabrieldagadu/PoliverAI/mono-repo-nx'[39m,
+  paths: {
+    [32m'@poliverai/shared-ui'[39m: [ [32m'shared-ui/src/index.ts'[39m ],
+    [32m'@poliverai/intl'[39m: [ [32m'libs/intl/src/index.ts'[39m ],
+    [32m'@assets'[39m: [ [32m'apps/poliverai/assets/index.ts'[39m ],
+    [32m'@assets/*'[39m: [ [32m'apps/poliverai/assets/*'[39m ],
+    [32m'@/*'[39m: [ [32m'../frontend/src/*'[39m ]
+  },
+  addMatchAll: [33mtrue[39m
+}
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31mThe "path" argument must be of type string. Received undefined[39m
+
+TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:405:5)
+    at validateString (node:internal/validators:162:11)
+    at Object.join (node:path:1171:7)
+    at joinPathFragments (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/nx/src/utils/path.js:23:31)
+    at viteBuildExecutor (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/@nx/vite/src/executors/build/build.impl.js:29:51)
+    at async getLastValueFromAsyncIterableIterator (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/nx/src/utils/async-iterator.js:15:19)
+    at async iteratorToProcessStatusCode (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/nx/src/command-line/run/run.js:39:25)
+    at async handleErrors (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/nx/src/utils/handle-errors.js:8:24)
+    at async process.<anonymous> (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/nx/bin/run-executor.js:59:28)
+

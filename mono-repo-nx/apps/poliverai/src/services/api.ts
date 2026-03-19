@@ -1,7 +1,10 @@
-// RN-friendly lightweight ApiService ported from frontend/src/services/api.ts
+import { Platform } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { extractErrorMessage } from '../lib/errorHelpers'
+import { getApiBaseOrigin } from '../lib/paymentsHelpers'
 
-const API_BASE_URL = '' // set via environment or runtime config
+const API_BASE_URL = getApiBaseOrigin()
+const TOKEN_KEY = '@poliverai/token'
 
 export interface ApiError {
   message: string
@@ -9,9 +12,15 @@ export interface ApiError {
   details?: unknown
 }
 
-function getTokenFromStore(): string | null {
-  // Placeholder: wiring to auth store / @poliverai/intl will be added later.
-  return null
+async function getTokenFromStore(): Promise<string | null> {
+  try {
+    if (Platform.OS === 'web') {
+      return window.localStorage.getItem('token') || window.localStorage.getItem(TOKEN_KEY)
+    }
+    return await AsyncStorage.getItem(TOKEN_KEY)
+  } catch {
+    return null
+  }
 }
 
 class ApiService {
@@ -19,8 +28,8 @@ class ApiService {
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl
   }
-  private getAuthHeaders(): Record<string, string> {
-    const token = getTokenFromStore()
+  private async getAuthHeaders(): Promise<Record<string, string>> {
+    const token = await getTokenFromStore()
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
   private async handleResponse<T>(response: Response): Promise<T> {
@@ -41,36 +50,40 @@ class ApiService {
     return (await response.text()) as unknown as T
   }
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const authHeaders = await this.getAuthHeaders()
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'GET',
-      headers: { Accept: 'application/json', ...this.getAuthHeaders(), ...options?.headers },
+      headers: { Accept: 'application/json', ...authHeaders, ...options?.headers },
       ...options,
     })
     return this.handleResponse<T>(response)
   }
   async post<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
     const isFormData = data instanceof FormData
+    const authHeaders = await this.getAuthHeaders()
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
-      headers: { ...(isFormData ? {} : { 'Content-Type': 'application/json' }), ...this.getAuthHeaders(), ...options?.headers },
+      headers: { ...(isFormData ? {} : { 'Content-Type': 'application/json' }), ...authHeaders, ...options?.headers },
       body: isFormData ? (data as BodyInit) : JSON.stringify(data as unknown),
       ...options,
     })
     return this.handleResponse<T>(response)
   }
   async put<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
+    const authHeaders = await this.getAuthHeaders()
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...this.getAuthHeaders(), ...options?.headers },
+      headers: { 'Content-Type': 'application/json', ...authHeaders, ...options?.headers },
       body: JSON.stringify(data as unknown),
       ...options,
     })
     return this.handleResponse<T>(response)
   }
   async delete<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const authHeaders = await this.getAuthHeaders()
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', ...this.getAuthHeaders(), ...options?.headers },
+      headers: { 'Content-Type': 'application/json', ...authHeaders, ...options?.headers },
       ...options,
     })
     return this.handleResponse<T>(response)
@@ -83,7 +96,8 @@ class ApiService {
       fd.append('file', file as any)
     }
     if (additionalData) Object.entries(additionalData).forEach(([k, v]) => fd.append(k, v))
-    const response = await fetch(`${this.baseUrl}${endpoint}`, { method: 'POST', headers: { ...this.getAuthHeaders() }, body: fd })
+    const authHeaders = await this.getAuthHeaders()
+    const response = await fetch(`${this.baseUrl}${endpoint}`, { method: 'POST', headers: { ...authHeaders }, body: fd })
     return this.handleResponse<T>(response)
   }
 }
@@ -91,6 +105,6 @@ class ApiService {
 export const apiService = new ApiService()
 export default apiService
 
-export function getToken(): string | null {
+export async function getToken(): Promise<string | null> {
   return getTokenFromStore()
 }

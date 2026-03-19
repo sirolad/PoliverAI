@@ -1,4 +1,4 @@
-import React from 'react'
+// React import not required with modern JSX runtime
 import { View, Text, StyleSheet } from 'react-native'
 import rnStyleFromTokens from './rnStyleTokens'
 import Button from './Button.native'

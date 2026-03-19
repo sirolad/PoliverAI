@@ -72,8 +72,8 @@ export function Register() {
   }
 
   return (
-    <div className={twFromTokens(spacing.fullScreenCenter, colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
-      <div className={twFromTokens(spacing.containerMaxMd, alignment.gap4)}>
+    <div className={twFromTokens('w-full', spacing.fullScreenCenter, colors.pageBg, 'py-12 px-4 sm:px-6 lg:px-8')}>
+      <div className={twFromTokens('w-full', spacing.containerMaxMd, alignment.gap4)}>
         <div className={twFromTokens(alignment.centerColumnMargined)}>
           <img src="/poliverai-icon-transparent.svg" alt="PoliverAI" className={twFromTokens('h-48', 'mx-auto')} />
           <h2 className={twFromTokens(spacing.sectionButtonTop, fontWeights.bold, textSizes.h2, colors.textPrimary)}>{t('auth.register.join_title')}</h2>

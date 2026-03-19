@@ -12,9 +12,9 @@ export default function NavLinks({ isPro, reportsCount }: Props) {
   const links = useNavLinks(isPro, reportsCount)
   return (
     <>
-      <div className={twFromTokens(spacing.navLinksContainer)}>
+      <div className={twFromTokens(spacing.navLinksContainer, 'flex-wrap min-[1400px]:flex-nowrap')}>
         {links.filter(l => l.show).map((l) => (
-          <Link key={l.to} to={l.to} className={twFromTokens(spacing.navLink, textSizes.sm, fontWeights.medium, 'transition-colors', hoverFromColor(colors.primary))}>
+          <Link key={l.to} to={l.to} className={twFromTokens(spacing.navLink, textSizes.sm, fontWeights.medium, 'transition-colors whitespace-nowrap', hoverFromColor(colors.primary))}>
             {t(l.key)}
           </Link>
         ))}

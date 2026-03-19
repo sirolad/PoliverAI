@@ -1,0 +1,77 @@
+Starting JS server...
+[34m
+Welcome to React Native v0.81[39m
+Starting dev server on http://localhost:8081
+
+[34m[39m
+[34m                        ▒▒▓▓▓▓▒▒[39m
+[34m                     ▒▓▓▓▒▒░░▒▒▓▓▓▒[39m
+[34m                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒[39m
+[34m                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓[39m
+[34m                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓[39m
+[34m                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓[39m
+[34m                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒[39m
+[34m                     ▒▓▓▓▒░░░░▒▓▓▓▒[39m
+[34m                        ▒▒▓▓▓▓▒��[39m
+[34m[39m
+[34m[39m
+[34m[1m                Welcome to Metro [37mv0.83.2[39m[34m[22m[39m
+[34m[1m[22m[39m[2m              Fast - Scalable - Integrated[22m
+[2m[22m
+[2m[22m
+[33m[7m[1m WARN [22m[27m[39m Watchman `watch-project` returned a warning: Recrawled this watch 1 time, most recently because:
+MustScanSubDirs UserDroppedTo resolve, please review the information on
+https://facebook.github.io/watchman/docs/troubleshooting.html#recrawl
+To clear this warning, run:
+`watchman watch-del '/Users/gabrieldagadu/PoliverAI' ; watchman watch-project '/Users/gabrieldagadu/PoliverAI'`
+
+[33m[7m[1m WARN [22m[27m[39m Watchman `query` returned a warning: Recrawled this watch 1 time, most recently because:
+MustScanSubDirs UserDroppedTo resolve, please review the information on
+https://facebook.github.io/watchman/docs/troubleshooting.html#recrawl
+To clear this warning, run:
+`watchman watch-del '/Users/gabrieldagadu/PoliverAI' ; watchman watch-project '/Users/gabrieldagadu/PoliverAI'`
+
+Recrawled this watch 1 time, most recently because:
+MustScanSubDirs UserDroppedTo resolve, please review the information on
+https://facebook.github.io/watchman/docs/troubleshooting.html#recrawl
+To clear this warning, run:
+`watchman watch-del '/Users/gabrieldagadu/PoliverAI' ; watchman watch-project '/Users/gabrieldagadu/PoliverAI'`
+
+[36m[7m[1m INFO [22m[27m[39m Dev server ready. [2mPress Ctrl+C to exit.[22m
+[36m[7m[1m INFO [22m[27m[39m Key commands available:
+
+  [1m[7m r [27m[22m - reload app(s)
+  [1m[7m d [27m[22m - open Dev Menu
+  [1m[7m j [27m[22m - open DevTools
+
+[36m[7m[1m INFO [22m[27m[39m Reloading connected app(s)...
+[33m[1mwarn[22m[39m [0mNo apps connected. Sending "reload" to all React Native apps failed. Make sure your app is running in the simulator or on a phone connected via USB.[0m
+[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 0.0% [22m[2m(0/1)[22m
+[95D[1A[0Jtransform[stderr]: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 0.0% [22m[2m(0/1)[22m
+[95D[1A[0J[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 1.0% [22m[2m(1/1)[22m
+[95D[1A[0J[31m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m 
+[31m[7m[1m ERROR [22m[27m[39m Error: Unable to resolve module @poliverai/intl from /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/Main.tsx: @poliverai/intl could not be found within the project or in these directories:
+  node_modules
+  ../../node_modules
+  ../../../node_modules
+[0m [90m 3 |[39m [36mimport[39m { [33mAppRegistry[39m } [36mfrom[39m [32m'react-native'[39m[33m;[39m
+ [90m 4 |[39m [36mimport[39m [33mApp[39m [36mfrom[39m [32m'./App'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 5 |[39m [36mimport[39m { [33mReduxProvider[39m } [36mfrom[39m [32m'@poliverai/intl'[39m[33m;[39m
+ [90m   |[39m                                [31m[1m^[22m[39m
+ [90m 6 |[39m
+ [90m 7 |[39m [36mconst[39m [33mWrappedApp[39m [33m=[39m () [33m=>[39m (
+ [90m 8 |[39m 	[33mReduxProvider[39m [33m?[39m ([0m
+    at ModuleResolver.resolveDependency (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/node-haste/DependencyGraph/ModuleResolution.js:172:15)
+    at DependencyGraph.resolveDependency (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/node-haste/DependencyGraph.js:252:43)
+    at /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/lib/transformHelpers.js:163:21
+    at resolveDependencies (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/buildSubgraph.js:43:25)
+    at visit (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/buildSubgraph.js:81:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/buildSubgraph.js:105:3)
+    at async Graph._buildDelta (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/Graph.js:163:22)
+    at async Graph.initialTraverseDependencies (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/Graph.js:146:19)

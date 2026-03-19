@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import type { ReportMetadata } from './useReports'
+import type { ReportMetadata } from '../../types/api'
 
 export default function useSelection() {
   const [selectedFiles, setSelectedFiles] = useState<Record<string, boolean>>({})

@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.poliverai.app-mergeDebugResources-44:/values-v27/values-v27.xml",
+            "map": [
+                {
+                    "source": "/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-bootsplash/android/build/intermediates/packaged_res/debug/packageDebugResources/values-v27/values-v27.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,127",
+                        "endLines": "2,6",
+                        "endColumns": "71,12",
+                        "endOffsets": "122,368"
+                    }
+                }
+            ]
+        }
+    ]
+}

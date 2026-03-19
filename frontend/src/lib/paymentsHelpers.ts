@@ -1,25 +1,18 @@
 import { store } from '@/store/store'
 import { setPendingCheckout } from '@/store/paymentsSlice'
 
+const DEPLOYED_API_BASE = 'https://poliverai.com'
+
 export function getApiBaseOrigin(): string | undefined {
-  // If a Vite-specific environment flag signals development, prefer localhost
-  // This allows the running SPA in dev to talk to a locally-running backend.
   try {
-    // Avoid using `any` — cast import.meta to unknown first
     const meta = import.meta as unknown as { env?: Record<string, unknown> }
     const viteEnv = meta?.env ?? {}
-    const mode = (viteEnv.MODE ?? viteEnv.VITE_ENVIRONMENT ?? viteEnv.ENVIRONMENT) as string | undefined
     const apiUrl = viteEnv.VITE_API_URL as string | undefined
-    if (mode === 'development') {
-      return 'http://localhost:8000'
-    }
     if (apiUrl && apiUrl.trim() !== '') return apiUrl
   } catch (err) {
-    // intentionally ignore — fall back to runtime values
     void err
   }
-  if (typeof window !== 'undefined' && window.location && window.location.origin) return window.location.origin
-  return undefined
+  return DEPLOYED_API_BASE
 }
 
 export function buildCheckoutUrls() {

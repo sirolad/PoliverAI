@@ -1,0 +1,4683 @@
+[2m1:31:42 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because lockfile has changed
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4200[22m/[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m1:42:32 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m1:47:17 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:15:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:15:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:15:55 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:15:56 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:34:49 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:39:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:39:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:39:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:39:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:39:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/PolicyAnalysisScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:46:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:49:32 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:49:32 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:49:32 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/DashboardScreens/DashboardFullScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:54:12 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:54:12 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:57:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:57:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:58:49 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:59:13 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:59:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m2:59:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m3:05:48 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m3:05:48 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m3:11:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m3:11:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m3:16:11 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m3:25:20 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m3:25:20 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m4:35:41 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/navigation/AppNavigator/AppNavigator.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:01:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:02:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:03:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:04:04 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:04:09 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:04:09 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:04:13 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:04:13 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x6)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:04:15 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x7)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:05:18 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x8)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:15:34 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2massets/brand/index.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:15:35 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:18:13 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+[2m5:18:13 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:18:13 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:18:14 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+      at TransformPluginContext._formatLog (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31185:43)
+      at TransformPluginContext.error (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31182:14)
+      at normalizeUrl (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29665:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29723:32
+      at async Promise.all (index 8)
+      at async TransformPluginContext.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29691:4)
+      at async EnvironmentPluginContainer.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:30984:14)
+      at async loadAndTransform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:26116:26)
+      at async viteTransformMiddleware (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:27187:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:18:28 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+[2m5:18:28 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:18:28 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:18:29 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+      at TransformPluginContext._formatLog (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31185:43)
+      at TransformPluginContext.error (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31182:14)
+      at normalizeUrl (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29665:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29723:32
+      at async Promise.all (index 8)
+      at async TransformPluginContext.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29691:4)
+      at async EnvironmentPluginContainer.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:30984:14)
+      at async loadAndTransform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:26116:26)
+      at async viteTransformMiddleware (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:27187:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:19:26 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+[2m5:19:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:19:26 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:19:26 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+      at TransformPluginContext._formatLog (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31185:43)
+      at TransformPluginContext.error (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31182:14)
+      at normalizeUrl (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29665:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29723:32
+      at async Promise.all (index 8)
+      at async TransformPluginContext.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29691:4)
+      at async EnvironmentPluginContainer.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:30984:14)
+      at async loadAndTransform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:26116:26)
+      at async viteTransformMiddleware (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:27187:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:19:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+[2m5:19:52 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:19:52 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:19:52 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+      at TransformPluginContext._formatLog (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31185:43)
+      at TransformPluginContext.error (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31182:14)
+      at normalizeUrl (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29665:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29723:32
+      at async Promise.all (index 8)
+      at async TransformPluginContext.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29691:4)
+      at async EnvironmentPluginContainer.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:30984:14)
+      at async loadAndTransform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:26116:26)
+      at async viteTransformMiddleware (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:27187:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:21:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+[2m5:21:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:21:23 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:21:24 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../../assets/poliverai-icon.svg" from "apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m:18:26
+[33m  16 |  import AppFooter from "../../components/AppFooter";
+  17 |  import AppTopNav from "../../components/AppTopNav";
+  18 |  import PoliveraiIcon from "../../assets/poliverai-icon.svg";
+     |                             ^
+  19 |  function copy(path, fallback) {
+  20 |    const value = t(path, fallback);[39m
+      at TransformPluginContext._formatLog (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31185:43)
+      at TransformPluginContext.error (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31182:14)
+      at normalizeUrl (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29665:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29723:32
+      at async Promise.all (index 8)
+      at async TransformPluginContext.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29691:4)
+      at async EnvironmentPluginContainer.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:30984:14)
+      at async loadAndTransform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:26116:26)
+      at async viteTransformMiddleware (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:27187:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:22:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:23:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:26:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:27:32 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:27:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:27:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x6)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:27:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x7)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:27:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x8)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:30:04 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x9)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:32:41 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x10)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:32:44 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m [33m(x11)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:33:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:34:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:34:38 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:34:38 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:34:57 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:36:57 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:36:57 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:36:57 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/PolicyAnalysisScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:41:18 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:41:18 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:41:18 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:41:18 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:41:50 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:46:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:49:20 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:49:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:49:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:50:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:50:15 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:50:20 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:54:02 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:57:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:58:30 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m5:59:38 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/PricingSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:00:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/index.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:00:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:00:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:00:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/EnterCreditsModal.native.tsx[22m
+[2m6:00:37 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to load url /@fs/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/EnterCreditsModal.native.tsx (resolved id: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/EnterCreditsModal.native.tsx) in /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx. Does the file exist?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:01:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/InsufficientCreditsModal.native.tsx[22m
+[2m6:01:44 PM[22m [36m[1m[vite][22m[39m changed tsconfig file detected: /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/tsconfig.app.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:02 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:02 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m
+[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/Splash/Splash" from "apps/poliverai/src/screens/LandingScreen/LandingScreenContent.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LandingScreen/LandingScreenContent.tsx[39m:5:19
+[33m  3  |  import { useAuth } from "@poliverai/intl";
+  4  |  import AppFooter from "../../components/AppFooter";
+  5  |  import Splash from "@shared-ui/lib/Splash/Splash";
+     |                      ^
+  6  |  import HeroSection from "@shared-ui/lib/HeroSection";
+  7  |  import FeaturesSection from "@shared-ui/lib/FeaturesSection";[39m
+[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m [33m(x4)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m [33m(x5)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m [33m(x6)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:03 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m [33m(x7)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:04 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@shared-ui/lib/EnterCreditsModal" from "apps/poliverai/src/components/AppTopNav.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/components/AppTopNav.tsx[39m:6:30
+[33m  5  |  import { useSafeAreaInsets } from "react-native-safe-area-context";
+  6  |  import { PaymentsService, useAuth } from "@poliverai/intl";
+  7  |  import EnterCreditsModal from "@shared-ui/lib/EnterCreditsModal";
+     |                                 ^
+  8  |  import { brandAssets } from "@assets/brand";
+  9  |  import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from "lucide-react-na...[39m
+      at TransformPluginContext._formatLog (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31185:43)
+      at TransformPluginContext.error (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31182:14)
+      at normalizeUrl (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29665:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29723:32
+      at async Promise.all (index 6)
+      at async TransformPluginContext.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29691:4)
+      at async EnvironmentPluginContainer.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:30984:14)
+      at async loadAndTransform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:26116:26)
+      at async viteTransformMiddleware (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:27187:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:06:04 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "@shared-ui/lib/Splash/Splash" from "apps/poliverai/src/screens/LandingScreen/LandingScreenContent.tsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LandingScreen/LandingScreenContent.tsx[39m:5:19
+[33m  3  |  import { useAuth } from "@poliverai/intl";
+  4  |  import AppFooter from "../../components/AppFooter";
+  5  |  import Splash from "@shared-ui/lib/Splash/Splash";
+     |                      ^
+  6  |  import HeroSection from "@shared-ui/lib/HeroSection";
+  7  |  import FeaturesSection from "@shared-ui/lib/FeaturesSection";[39m
+      at TransformPluginContext._formatLog (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31185:43)
+      at TransformPluginContext.error (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:31182:14)
+      at normalizeUrl (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29665:18)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29723:32
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:29691:4)
+      at async EnvironmentPluginContainer.transform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:30984:14)
+      at async loadAndTransform (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:26116:26)
+      at async viteTransformMiddleware (file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite/dist/node/chunks/dep-Bm2ujbhY.js:27187:20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:14:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:14:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:17:05 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/index.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:10 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/styleTokens.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:10 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/rnStyleTokens.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:10 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/index.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/navigation/AppNavigator/AppNavigator.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:52 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:52 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: [33mDuplicate key "color" in object literal[33m
+213 |    heroTitle: {
+214 |      color: '#0f172a',
+215 |      color: appColors.ink900,
+    |      ^
+216 |      fontSize: 34,
+217 |      fontWeight: '700',
+[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:23:52 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: [33mDuplicate key "color" in object literal[33m
+213 |    heroTitle: {
+214 |      color: '#0f172a',
+215 |      color: appColors.ink900,
+    |      ^
+216 |      fontSize: 34,
+217 |      fontWeight: '700',
+[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/FeaturesSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/AppPlatforms.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HowItWorks.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/PricingSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/CTASection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/Footer.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:03 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: [33mDuplicate key "color" in object literal[33m
+212 |    heroTitle: {
+213 |      color: '#0f172a',
+214 |      color: appColors.ink900,
+    |      ^
+215 |      fontSize: 34,
+216 |      fontWeight: '700',
+[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/navigation/AppNavigator/AppNavigator.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/FeaturesSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/AppPlatforms.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HowItWorks.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/PricingSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/CTASection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/Footer.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:32 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: [33mDuplicate key "color" in object literal[33m
+212 |    heroTitle: {
+213 |      color: appColors.ink900,
+214 |      color: appColors.ink900,
+    |      ^
+215 |      fontSize: 34,
+216 |      fontWeight: '700',
+[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:25:32 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [33mwarning: [33mDuplicate key "color" in object literal[33m
+212 |    heroTitle: {
+213 |      color: appColors.ink900,
+214 |      color: appColors.ink900,
+    |      ^
+215 |      fontSize: 34,
+216 |      fontWeight: '700',
+[39m
+  Plugin: [35mvite:esbuild[39m
+  File: [36m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/screens/LoginScreen/LoginScreen.tsx[39m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:28:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:28:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/AppPlatforms.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:28:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:28:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:28:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:30:15 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/colorTokens.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/PolicyAnalysisScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/CreditsScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:32 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/ReportsScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/InsufficientCreditsModal.native.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/PolicyAnalysisScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/CreditsScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:31:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/ReportsScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:32:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/InsufficientCreditsModal.native.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:39:01 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/TeamCarousel.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:39:01 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/Footer.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:39:19 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:39:29 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:39:29 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/HeroSection.tsx[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:44:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:44:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LoginScreen/LoginScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:44:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/RegisterScreen/RegisterScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:44:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:45:01 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/BrandLogo.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:48:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/BrandLogo.tsx[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:48:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppTopNav.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:50:41 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/BrandLogo.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:56:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/landingAssets.ts[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:56:47 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/BrandLogo.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:56:47 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m6:58:28 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/BrandLogo.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m7:01:50 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/components/AppFooter.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m7:06:35 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/navigation/AppNavigator/AppNavigator.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m7:06:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/Splash/Splash.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m7:22:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m8:47:58 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m8:50:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/Splash/Splash.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m8:50:54 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreenContent.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m8:51:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m8:52:45 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:00:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/screens/LandingScreen/LandingScreen.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:02:17 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:02:19 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m [33m(x2)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m9:52:55 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m [33m(x3)[39m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m11:17:16 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/navigation/AppNavigator/AppNavigator.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m11:17:16 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m11:23:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/lib/Splash/Splash.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m11:23:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m11:36:14 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m11:46:27 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/App.tsx[22m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[1;1H[0J[2m11:53:35 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mandroid/build/reports/problems/problems-report.html[22m
+^C

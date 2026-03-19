@@ -1,0 +1,89 @@
+JS server already running on port 8081.
+[36m[1minfo[22m[39m [0mDetected architectures arm64-v8a[0m
+[36m[1minfo[22m[39m [0mInstalling the app...[0m
+
+[1A[1m<[0;1m-------------> 0% INITIALIZING [32ms][m[38D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [131ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [231ms][m[39D[1B[1A[1m<[0;1m-------------> 0% INITIALIZING [331ms][m[39D[1B
+[2A[1m<[0;1m-------------> 0% INITIALIZING [432ms][m[39D[1B[1m> Evaluating settings[m[21D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [532ms][m[39D[1B[1m> Evaluating settings > Evaluating settings[m[43D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [629ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [731ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [832ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [928ms][m[39D[2B[2A[1m<[0;1m-------------> 0% INITIALIZING [1s][m[0K[36D[2B[1A[1m> Evaluating settings > Evaluating settings > Resolve files of configuration 'classpath'[m[88D[1B[1A[1m> Evaluating settings > Evaluating settings[m[0K[43D[1B[1A[1m> Evaluating settings > :gradle-plugin > Resolve dependencies of detachedConfiguration1[m[87D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > :gradle-plugin:react-native-gradle-plugin[m[65D[1B[1A[1m> Evaluating settings > :gradle-plugin:settings-plugin[m[0K[54D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [2s][m[36D[1B[1m> Evaluating settings > :gradle-plugin:shared-testutil[m[54D[1B[1A[1m> Evaluating settings[m[0K[21D[1B[1A[1m> Evaluating settings > Discovering toolchains > Detecting local java toolchains[m[80D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin > Cleaning stale outputs[m[84D[1B[1A[1m> Evaluating settings > :gradle-plugin:shared:compileKotlin[m[0K[59D[1B
+[3A[36C[0K[36D[2B[1m> Evaluating settings > :gradle-plugin:shared:processResources[m[62D[1B[1A> IDLE[0K[6D[1B[3A[1m<[0;1m-------------> 0% INITIALIZING [3s][m[36D[3B[3A[1m<[0;1m-------------> 0% INITIALIZING [4s][m[36D[3B[3A[1m<[0;1m-------------> 0% INITIALIZING [5s][m[36D[3B[3A[1m<[0;1m-------------> 0% INITIALIZING [6s][m[36D[3B[2A[1m> Evaluating settings > :gradle-plugin:shared:jar[m[0K[49D[2B[2A[1m> Evaluating settings > :gradle-plugin:settings-plugin:compileKotlin > Resolve files of configuration ':gradle-plugin:settings-plugin:detach[m[140D[2B[2A[1m> Evaluating settings > :gradle-plugin:settings-plugin:compileKotlin[m[0K[68D[2B[3A[1m<[0;1m-------------> 0% INITIALIZING [7s][m[36D[3B[3A[1m<[0;1m-------------> 0% INITIALIZING [8s][m[36D[3B[2A[1m> Evaluating settings[m[0K[21D[2B[3A[1m<[0;1m-------------> 0% CONFIGURING [8s][m[0K[35D[1B[1m> root project > Resolve dependencies of classpath[m[50D[2B[2A[1m> root project > :gradle-plugin:react-native-gradle-plugin:compileKotlin > Cleaning stale outputs[m[97D[2B[2A[1m> root project > :gradle-plugin:react-native-gradle-plugin:compileKotlin[m[0K[72D[2B[3A[1m<[0;1m-------------> 0% CONFIGURING [9s][m[35D[3B[3A[1m<[0;1m-------------> 0% CONFIGURING [10s][m[36D[3B[3A[1m<[0;1m-------------> 0% CONFIGURING [11s][m[36D[3B[3A[1m<[0;1m-------------> 0% CONFIGURING [12s][m[36D[3B[3A[1m<[0;1m-------------> 0% CONFIGURING [13s][m[36D[3B[2A[1m> root project > Resolve files of configuration 'classpath'[m[0K[59D[2B[2A[1m> root project > :app[m[0K[21D[2B[3A[1m<[0;1m-------------> 0% CONFIGURING [14s][m[36D[3B[3A[1m<[0;32;1m==[0;39;1m-----------> 20% CONFIGURING [14s][m[37D[1B[1m> :lottie-react-native > Resolve dependencies of classpath[m[58D[2B[2A[1m> :lottie-react-native > Resolve files of configuration 'classpath'[m[67D[2B[2A[1m> :lottie-react-native[m[0K[22D[2B[3A[1m<[0;32;1m===[0;39;1m----------> 30% CONFIGURING [14s][m[37D[1B[1m> :react-native-async-storage_async-storage[m[43D[2B[3A[1m<[0;32;1m=====[0;39;1m--------> 40% CONFIGURING [15s][m[37D[1B[1m> :react-native-bootsplash > Resolve dependencies of classpath[m[62D[2B[2A[1m> :react-native-bootsplash > Resolve files of configuration 'classpath'[m[71D[2B[2A[1m> :react-native-bootsplash[m[0K[26D[2B[3A[1m<[0;32;1m======[0;39;1m-------> 50% CONFIGURING [15s][m[37D[1B[1m> :react-native-gesture-handler > Resolve dependencies of classpath[m[67D[2B[2A[1m> :react-native-gesture-handler > Resolve files of configuration 'classpath'[m[76D[2B[2A[1m> :react-native-gesture-handler[m[0K[31D[2B[3A[1m<[0;32;1m======[0;39;1m-------> 50% CONFIGURING [16s][m[37D[3B[3A[1m<[0;32;1m=======[0;39;1m------> 60% CONFIGURING [16s][m[37D[1B[1m> :react-native-reanimated > Resolve dependencies of classpath[m[62D[2B[2A[1m> :react-native-reanimated > Resolve files of configuration 'classpath'[m[71D[2B[2A[1m> :react-native-reanimated[m[0K[26D[2B[3A[0K
+[1m> Configure project :react-native-reanimated[m
+Android gradle plugin: 8.8.2
+Gradle: 8.13
+[0K
+[0K
+[0K
+[3A[1m<[0;32;1m=========[0;39;1m----> 70% CONFIGURING [16s][m[37D[1B[1m> :react-native-safe-area-context > Resolve dependencies of classpath[m[69D[1B> IDLE[6D[1B[2A[1m> :react-native-safe-area-context[m[0K[33D[2B[3A[1m<[0;32;1m==========[0;39;1m---> 80% CONFIGURING [16s][m[37D[1B[1m> :react-native-screens > Resolve dependencies of classpath[m[59D[2B[3A[1m<[0;32;1m==========[0;39;1m---> 80% CONFIGURING [17s][m[37D[1B[1m> :react-native-screens[m[0K[23D[2B[3A[1m<[0;32;1m===========[0;39;1m--> 90% CONFIGURING [17s][m[37D[1B[1m> :react-native-svg[m[0K[19D[2B[3A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [17s][m[38D[1B> IDLE[0K[6D[2B[2A[1m> Resolve dependencies of :app:debugCompileClasspath > Resolve dependencies of :app:debugRuntimeClasspath[m[105D[2B[3A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [18s][m[38D[3B[2A> IDLE[0K[6D[2B[2A[1m> Resolve dependencies of :app:kotlinCompilerClasspath[m[54D[2B[2A> IDLE[0K[6D[2B[2A[1m> Resolve dependencies of :lottie-react-native:debugCompileClasspath[m[68D[2B[2A[1m> Resolve dependencies of :react-native-bootsplash:debugCompileClasspath[m[72D[2B[2A[1m> Resolve dependencies of :react-native-gesture-handler:debugCompileClasspath[m[77D[2B[2A[1m> Resolve dependencies of :react-native-reanimated:debugCompileClasspath[m[0K[72D[2B[3A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [19s][m[38D[3B[3A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [20s][m[38D[3B[2A> IDLE[0K[6D[2B[2A[1m> Resolve dependencies of :react-native-safe-area-context:detachedConfiguration6[m[80D[2B[2A[1m> Resolve dependencies of :react-native-screens:debugCompileClasspath[m[0K[69D[2B[2A> IDLE[0K[6D[2B[3A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [21s][m[38D[3B[3A[1m<[0;1m-------------> 6% EXECUTING [21s][m[0K[34D[1B[1m> :react-native-reanimated:prepareWorkletsHeadersForPrefabs[m[59D[2B[3A[1m<[0;32;1m==[0;39;1m-----------> 19% EXECUTING [21s][m[35D[1B[1m> :app:mapDebugSourceSetPaths[m[0K[29D[2B[3A[1m<[0;32;1m====[0;39;1m---------> 35% EXECUTING [21s][m[35D[1B[1m> :app:processDebugResources[m[0K[28D[2B[3A[1m<[0;32;1m====[0;39;1m---------> 36% EXECUTING [21s][m[35D[1B[1m> :lottie-react-native:compileDebugKotlin[m[41D[2B[3A[1m<[0;32;1m====[0;39;1m---------> 37% EXECUTING [21s][m[35D[2B[1m> :react-native-async-storage_async-storage:compileDebugJavaWithJavac[m[69D[1B
+[4A[1m<[0;32;1m====[0;39;1m---------> 38% EXECUTING [21s][m[0K[35D[1B[41C[0K[41D[1B[1m> :react-native-async-storage_async-storage:bundleLibCompileToJarDebug[m[70D[1B[1m> :react-native-bootsplash:compileDebugKotlin[m[45D[1B
+[5A[1m<[0;32;1m=====[0;39;1m--------> 40% EXECUTING [22s][m[0K[35D[1B[41C[0K[41D[1B> IDLE[0K[0K[6D[2B[1m> :react-native-reanimated:compileDebugJavaWithJavac[m[52D[1B[5A[0K
+[31;1m> Task :lottie-react-native:compileDebugKotlin[0;39m[31m FAILED[39m
+[3B[0K
+[0K
+[5A[1m<[0;31;1m=====[0;39;1m--------> 40% EXECUTING [22s][m[35D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B[1m> :react-native-bootsplash:compileDebugKotlin[m[45D[1B[1m> :react-native-reanimated:compileDebugJavaWithJavac[m[52D[1B[5A[1m<[0;31;1m=====[0;39;1m--------> 40% EXECUTING [23s][m[35D[5B[5A[1m<[0;31;1m=====[0;39;1m--------> 40% EXECUTING [24s][m[35D[5B[5A[0K
+[1m> Task :react-native-reanimated:compileDebugJavaWithJavac[m
+[3B[0K
+[0K
+[5A[1m<[0;31;1m=====[0;39;1m--------> 40% EXECUTING [24s][m[35D[1B> IDLE[0K[6D[1B> IDLE[0K[6D[1B[1m> :react-native-bootsplash:compileDebugKotlin[m[45D[1B[1m> :react-native-reanimated:compileDebugJavaWithJavac[m[52D[1B[5A[1m<[0;31;1m=====[0;39;1m--------> 41% EXECUTING [24s][m[35D[4B> IDLE[0K[6D[1B[5A[0K
+[1m> Task :react-native-bootsplash:compileDebugKotlin[m
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-bootsplash/android/src/main/java/com/zoontek/rnbootsplash/RNBootSplashPackage.kt:3:8 'class TurboReactPackage : BaseReactPackage' is deprecated. Use BaseReactPackage instead.
+w: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/react-native-bootsplash/android/src/main/java/com/zoontek/rnbootsplash/RNBootSplashPackage.kt:9:29 'class TurboReactPackage : BaseReactPackage' is deprecated. Use BaseReactPackage instead.
+[0K
+[0K
+[0K
+[0K
+[0K
+[5A[1m<[0;31;1m=====[0;39;1m--------> 41% EXECUTING [24s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[5A[0K
+[Incubating] Problems report is available at: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/android/build/reports/problems/problems-report.html
+[0K
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+113 actionable tasks: 18 executed, 95 up-to-date
+[0K
+[0K
+[0K
+[0K
+[0K
+[5A[1m<[0;31;1m=====[0;39;1m--------> 41% EXECUTING [24s][m[35D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B> IDLE[6D[1B[5A[1m<[0;1m-------------> 0% WAITING[m[0K[26D[5B[5A[2K[1B[2K[1B[2K[1B[2K[1B[2K[4A[0m[?12l[?25h
+[36m[1minfo[22m[39m [0m[2m[2m💡 Tip: Make sure that you have set up your development environment correctly, by running[22m[2m [0m[0m[1mnpx react-native doctor[22m[2m[0m[0m. [2mTo read more about doctor command visit: https://github.com/react-native-community/cli/blob/main/packages/cli-doctor/README.md#doctor [22m[2m[22m[0m
+[0m[2m[2m[22m[2m[22m[0m
+[0me: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt:79:45 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.facebook.react.bridge.ReadableMap?'.[0m
+[0me: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt:80:50 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.facebook.react.bridge.ReadableMap?'.[0m
+[0me: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt:154:38 Argument type mismatch: actual type is 'com.facebook.react.bridge.ReadableMap?', but 'com.facebook.react.bridge.ReadableMap' was expected.[0m
+[0mNote: Some input files use or override a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0mNote: Some input files use unchecked or unsafe operations.[0m
+[0mNote: Recompile with -Xlint:unchecked for details.[0m
+[0m[0m
+[0mFAILURE: Build failed with an exception.[0m
+[0m[0m
+[0m* What went wrong:[0m
+[0mExecution failed for task ':lottie-react-native:compileDebugKotlin'.[0m
+[0m> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction[0m
+[0m   > Compilation error. See log for more details[0m
+[0m[0m
+[0m* Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org.[0m
+[0m[0m
+[0mBUILD FAILED in 26s[0m
+[31m[1merror[22m[39m [0mFailed to install the app. Command failed with exit code 1: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=arm64-v8a[0m
+[0me: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt:79:45 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.facebook.react.bridge.ReadableMap?'.[0m
+[0me: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt:80:50 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'com.facebook.react.bridge.ReadableMap?'.[0m
+[0me: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/lottie-react-native/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt:154:38 Argument type mismatch: actual type is 'com.facebook.react.bridge.ReadableMap?', but 'com.facebook.react.bridge.ReadableMap' was expected.[0m
+[0mNote: Some input files use or override a deprecated API.[0m
+[0mNote: Recompile with -Xlint:deprecation for details.[0m
+[0mNote: Some input files use unchecked or unsafe operations.[0m
+[0mNote: Recompile with -Xlint:unchecked for details. FAILURE: Build failed with an exception. * What went wrong:[0m
+[0mExecution failed for task ':lottie-react-native:compileDebugKotlin'.[0m
+[0m> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction > Compilation error. See log for more details * Try:[0m
+[0m> Run with --stacktrace option to get the stack trace.[0m
+[0m> Run with --info or --debug option to get more log output.[0m
+[0m> Run with --scan to get full insights.[0m
+[0m> Get more help at https://help.gradle.org. BUILD FAILED in 26s.[0m
+
+[0m[7m[1m[31m NX [39m[22m[27m[0m  [31m1[39m
+
+

@@ -1,0 +1,7 @@
+{
+  "platformGreeting": {
+    "macos": "Welcome to PoliverAI (macOS)",
+    "default": "Welcome to PoliverAI",
+    "windows": "Welcome to PoliverAI (Windows)"
+  }
+}

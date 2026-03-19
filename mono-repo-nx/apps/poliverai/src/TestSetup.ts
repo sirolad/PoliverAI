@@ -3,6 +3,7 @@
 
 import 'react-native-gesture-handler/jestSetup';
 import '@testing-library/jest-native/extend-expect';
+// @ts-ignore: node-fetch types resolution in this monorepo can be flaky; types provided in /types
 import fetch from 'node-fetch';
 
 // react-native-web mapping: ensure web-specific behavior is available

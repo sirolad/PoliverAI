@@ -6,7 +6,9 @@ export interface UserState {
   name: string | null;
   tier?: 'free' | 'pro' | null;
   credits?: number | null;
+  subscription_credits?: number | null;
   subscription_expires?: string | null;
+  is_pro?: boolean | null;
 }
 
 const initialState: { user: UserState | null } = {

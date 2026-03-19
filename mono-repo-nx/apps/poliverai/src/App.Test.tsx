@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { AuthProvider } from '@poliverai/shared-ui';
 
 import App from './App';
 
@@ -32,5 +31,5 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 
 test('renders correctly', () => {
   const { getByText } = render(<App />);
-  expect(getByText(/Welcome to PoliverAI/)).toBeTruthy();
+  expect(getByText(/PoliverAI/)).toBeTruthy();
 });

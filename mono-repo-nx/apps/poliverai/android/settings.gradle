@@ -3,4 +3,6 @@ plugins { id("com.facebook.react.settings") }
 extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 rootProject.name = 'PoliverAI'
 include ':app'
+include ':lottiefiles_dotlottie-react-native'
+project(':lottiefiles_dotlottie-react-native').projectDir = file('../../../node_modules/@lottiefiles/dotlottie-react-native/android')
 includeBuild('../../../node_modules/@react-native/gradle-plugin')

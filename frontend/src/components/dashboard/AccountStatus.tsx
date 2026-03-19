@@ -85,7 +85,7 @@ export default function AccountStatus(props: Props) {
                   icon={<ArrowRight className={twFromTokens(spacing.iconsXs, colors.onPrimary)} />}
                   collapseToIcon
                 >
-                  {t('dashboard.account_status.upgrade_cta') || 'Upgrade to Pro'}
+                  {t('dashboard.account_status.upgrade_cta') || t('dashboard.account_status.upgrade_button') || 'Upgrade to Pro'}
                 </Button>
             )}
             <Button size="sm" variant="outline" onClick={refresh} icon={<RefreshCcw className={twFromTokens(spacing.iconsXs, colors.textMuted)} />} collapseToIcon>
@@ -96,12 +96,12 @@ export default function AccountStatus(props: Props) {
       </CardHeader>
       {!isPro && (
         <CardContent>
-          <div className={twFromTokens('rounded-lg', spacing.cardDefault, colors.surfaceMuted, colors.mutedBorder)}>
-            <h3 className={twFromTokens(fontWeights.medium, colors.primaryMuted, spacing.headingMargin)}>{t('dashboard.account_status.unlock_heading')}</h3>
-            <p className={twFromTokens(textSizes.sm, colors.primary)}>{t('dashboard.account_status.unlock_paragraph')}</p>
+          <div className={twFromTokens('rounded-xl border border-blue-200 bg-blue-50', spacing.card)}>
+            <h3 className={twFromTokens(textSizes.lg, fontWeights.semibold, colors.textPrimary, spacing.headingMargin)}>{t('dashboard.account_status.unlock_heading')}</h3>
+            <p className={twFromTokens(textSizes.sm, colors.textSecondary, spacing.blockSmall)}>{t('dashboard.account_status.unlock_paragraph')}</p>
             <Button
               size="sm"
-              className={twFromTokens(colors.primaryBg, hoverFromColor(colors.primary))}
+              className={twFromTokens(spacing.smallTop, colors.primaryBg, hoverFromColor(colors.primaryBg))}
               onClick={purchaseUpgradeAndDispatch}
               icon={<ArrowRight className={twFromTokens(spacing.iconsXs, colors.onPrimary)} />}
             >
@@ -113,15 +113,15 @@ export default function AccountStatus(props: Props) {
       <CardContent>
         <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.justifyBetween)}>
             <div>
-                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.title')}</div>
+                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.credits.subscription_credits')}</div>
                 <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.subscriptionCredits : null}</div>
             </div>
             <div>
-                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.total_files_saved')}</div>
+                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.credits.purchased_credits')}</div>
                 <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.purchasedCredits : null}</div>
             </div>
             <div>
-                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.saved_files.total_full_reports_saved')}</div>
+                <div className={twFromTokens(textSizes.sm, colors.textMuted)}>{t('dashboard.credits.total_available')}</div>
                 <div className={twFromTokens(textSizes.lead, fontWeights.semibold)}>{dashboardLoaded ? animatedCredits.effectiveCredits : null}</div>
             </div>
         </div>

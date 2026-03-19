@@ -1211,8 +1211,8 @@
   },
   "libs/intl": {
     "root": [
-      "eslint.config.mjs",
-      "@nx/eslint/plugin"
+      "libs/intl/package.json",
+      "nx/core/package-json"
     ],
     "targets": [
       "eslint.config.mjs",
@@ -1277,6 +1277,42 @@
     "targets.lint.metadata.help.example": [
       "eslint.config.mjs",
       "@nx/eslint/plugin"
+    ],
+    "name": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "tags": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageExports": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageMain": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "libs/intl/package.json",
+      "nx/core/package-json"
     ]
   },
   "apps/backend": {

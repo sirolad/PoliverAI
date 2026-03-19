@@ -30,12 +30,12 @@ class AuthService {
     // No-op: when intl store is integrated, call the clear token action
   }
 
-  getStoredToken(): string | null {
-    return getToken()
+  async getStoredToken(): Promise<string | null> {
+    return await getToken()
   }
 
-  isTokenStored(): boolean {
-    return !!this.getStoredToken()
+  async isTokenStored(): Promise<boolean> {
+    return !!(await this.getStoredToken())
   }
 }
 

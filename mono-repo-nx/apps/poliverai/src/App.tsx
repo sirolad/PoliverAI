@@ -1,54 +1,70 @@
-import React, { useState } from 'react';
-import { StatusBar, Platform, View, Text } from 'react-native';
+import React from 'react';
+import { StatusBar, Platform, View, StyleSheet, NativeModules } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './navigation';
-import { Splash } from '@poliverai/shared-ui';
+import { AuthProvider, useAuth } from '@poliverai/intl';
+import { Splash, appColors } from '@poliverai/shared-ui';
 
-// Lightweight local AuthProvider to avoid importing from @poliverai/shared-ui and break the circular dependency.
-const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  // TODO: replace with real auth logic or move to a separate package that doesn't depend on this app.
-  return children as React.ReactElement;
-};
+function NativeStartupSplash() {
+  const [visible, setVisible] = React.useState(true);
 
-// Minimal PlatformGreeting replacement to avoid importing from shared-ui.
-const PlatformGreeting: React.FC = () => {
-  if (Platform.OS === 'web') {
+  const hideMacSplashScreen = React.useCallback(() => {
+    if (Platform.OS === 'macos') {
+      NativeModules.MacSplashScreen?.hide?.();
+    }
+  }, []);
+
+  if (!visible || Platform.OS === 'web') {
     return null;
   }
+
   return (
-    <View style={{ padding: 8 }}>
-      <Text>Welcome to PoliverAI</Text>
+    <View style={StyleSheet.absoluteFill} onLayout={hideMacSplashScreen}>
+      <Splash
+        delayMs={200}
+        durationMs={5000}
+        onFinish={() => setVisible(false)}
+      />
     </View>
   );
-};
+}
 
-
-export const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
-
-  // Decide initial behavior based on platform.
-  // For web, we want the web root to show the web landing (handled in MainWeb),
-  // but ensure AppNavigator knows the platform in case it needs to choose initial route.
+function AppContent() {
+  const { isAuthenticated, loading } = useAuth();
   const initialPlatform = Platform.OS === 'web' ? 'web' : 'native';
+  console.log('[startup] AppContent render', {
+    platform: Platform.OS,
+    isAuthenticated,
+    loading,
+    initialPlatform,
+  });
 
   return (
+    <View style={styles.appRoot}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <AppNavigator initialPlatform={initialPlatform} isAuthenticated={isAuthenticated} isLoading={loading} />
+      <NativeStartupSplash />
+    </View>
+  );
+}
+
+export const App = () => {
+  console.log('[startup] App root render', { platform: Platform.OS });
+  console.log('[startup] App root -> AuthProvider path');
+  return (
     <SafeAreaProvider>
-      <StatusBar barStyle="dark-content" />
-      <PlatformGreeting />
-      {showSplash && (
-        <Splash
-          onFinish={() => {
-            setShowSplash(false);
-          }}
-        />
-      )}
-      {!showSplash && (
-        <AuthProvider>
-          <AppNavigator initialPlatform={initialPlatform} />
-        </AuthProvider>
-      )}
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+  appRoot: {
+    flex: 1,
+    backgroundColor: appColors.white,
+  },
+});

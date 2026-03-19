@@ -1,0 +1,11 @@
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4200[22m/[39m
+The request id "/Users/gabrieldagadu/PoliverAI/mono-repo-nx/shared-ui/src/index.ts" is outside of Vite serving allow list.
+
+- /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps
+- /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai
+- /Users/gabrieldagadu/PoliverAI/mono-repo-nx/node_modules/vite
+
+Refer to docs https://vite.dev/config/server-options.html#server-fs-allow for configurations and more details.
+
+The request id "/Users/gabrieldagadu/PoliverAI/mono-repo-nx/libs/intl/src/types/api.ts" is outside of Vite serving allow list.
+The request id "/Users/gabrieldagadu/PoliverAI/mono-repo-nx/libs/intl/src/types/feature.ts" is outside of Vite serving allow list.

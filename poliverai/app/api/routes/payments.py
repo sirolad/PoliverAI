@@ -412,6 +412,7 @@ async def checkout_finalize_get(request: Request):
         raise HTTPException(status_code=500, detail='Stripe not configured')
 
     session_id = request.query_params.get('session_id')
+    redirect_uri = request.query_params.get('redirect_uri')
     if not session_id:
         raise HTTPException(status_code=400, detail='Missing session_id')
 
@@ -427,6 +428,9 @@ async def checkout_finalize_get(request: Request):
         # show a failure result if applicable.
         from fastapi.responses import RedirectResponse
         try:
+            if redirect_uri:
+                separator = '&' if '?' in redirect_uri else '?'
+                return RedirectResponse(url=f'{redirect_uri}{separator}session_id={session_id}&status=failed')
             return RedirectResponse(url=f'/credits?session_id={session_id}&status=failed')
         except Exception:
             return RedirectResponse(url='/credits')
@@ -498,6 +502,9 @@ async def checkout_finalize_get(request: Request):
     try:
         # Include session_id so the frontend can detect the return and show
         # the result modal by calling the transactions endpoint.
+        if redirect_uri:
+            separator = '&' if '?' in redirect_uri else '?'
+            return RedirectResponse(url=f'{redirect_uri}{separator}session_id={session_id}&status=completed')
         return RedirectResponse(url=f'/credits?session_id={session_id}&status=completed')
     except Exception:
         return RedirectResponse(url='/credits')

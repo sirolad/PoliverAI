@@ -267,7 +267,7 @@ export const spacing = {
   emptyIconLg: { tw: 'h-20 w-20', value: null },
   emptyIconMd: { tw: 'h-12 w-12', value: null },
   // navbar container (centered max-width with horizontal padding and fixed height)
-  navbarContainer: { tw: 'container mx-auto px-4 h-16', value: null },
+  navbarContainer: { tw: 'container mx-auto px-4 min-h-16 py-3', value: null },
   // navbar background + border + backdrop blur helper
   navbarBg: { tw: 'border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60', value: null },
   // top margin for small components like progress bars

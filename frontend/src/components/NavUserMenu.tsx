@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
-import { User, LogOut, CreditCard, ChevronRight, Clock, BarChart2, Grid, List, Menu, Plus } from 'lucide-react'
+import { User, LogOut, CreditCard, Clock, BarChart2, Grid, List, Menu, Plus } from 'lucide-react'
 import { t } from '@/i18n'
 import NavUserInfo from './NavUserInfo'
 import { twFromTokens, textSizes, colors, baseFontSizes, fontWeights, hoverBgFromColor, spacing, alignment } from '@/styles/styleTokens'
@@ -23,11 +23,10 @@ type Props = {
 export default function NavUserMenu({ isMobile, isPro, user, reportsCount, menuOpen, setMenuOpen, menuRef, menuButtonRef, setCreditsModalOpen, handleLogout, showResult }: Props) {
   return (
     <>
-  <div className={twFromTokens('hidden md:flex', alignment.itemsCenter, alignment.gap4)}>{/* spacer for desktop */}</div>
       <NavUserInfo showBadge />
 
       {!isMobile && (
-        <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap4)}>
+        <div className={twFromTokens(alignment.flexRow, alignment.itemsCenter, alignment.gap4, 'flex-wrap min-[1400px]:flex-nowrap')}>
           <NavUserInfo showName />
 
           {!isPro && (
@@ -97,7 +96,7 @@ export default function NavUserMenu({ isMobile, isPro, user, reportsCount, menuO
                 <span>{t('navbar.transaction_history')}</span>
               </Link>
               {!isPro && (
-                <Button variant="ghost" className={twFromTokens(textSizes.sm, spacing.fullWidthLeft, spacing.menuItem, alignment.flexRow, alignment.itemsCenter, alignment.gap2, hoverBgFromColor(colors.surfaceMuted))} itIsInNavBar onClick={async () => { setMenuOpen(false); try { await (await import('@/services/payments')).default.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, t('payments.failed'), msg) } }} icon={<ChevronRight className={twFromTokens('h-4 w-4', colors.textMuted, 'flex-shrink-0')} /> }>
+                <Button variant="ghost" className={twFromTokens(textSizes.sm, spacing.fullWidthLeft, spacing.menuItem, alignment.flexRow, alignment.itemsCenter, alignment.gap2, hoverBgFromColor(colors.surfaceMuted))} itIsInNavBar onClick={async () => { setMenuOpen(false); try { await (await import('@/services/payments')).default.purchaseUpgrade(29) } catch (err) { console.error(err); const msg = err instanceof Error ? err.message : String(err); showResult(false, t('payments.failed'), msg) } }}>
                     <span>{t('navbar.upgrade_to_pro')}</span>
                   </Button>
               )}

@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import * as esbuild from 'esbuild';
 import { readFileSync } from 'fs';
+import path from 'path';
+
+const repoRoot = path.resolve(__dirname, '..', '..', '..');
 
 const extensions = [
   '.mjs',
@@ -28,21 +29,24 @@ const rollupPlugin = (matchers: RegExp[]) => ({
   },
 });
 
-export default defineConfig({
+export default {
   root: __dirname,
+  publicDir: path.resolve(__dirname, 'public'),
   cacheDir: '../../node_modules/.vite/apps/poliverai',
   define: {
     global: 'window',
   },
   resolve: {
     extensions,
-    alias: {
-      'react-native': 'react-native-web',
-      'react-native-svg': 'react-native-svg-web',
-      '@react-native/assets-registry/registry':
-        'react-native-web/dist/modules/AssetRegistry/index',
-      '@assets': require('path').resolve(__dirname, 'assets'),
-    },
+    alias: [
+      { find: 'react-native', replacement: 'react-native-web' },
+      { find: 'react-native-svg', replacement: 'react-native-svg-web' },
+      {
+        find: '@react-native/assets-registry/registry',
+        replacement: 'react-native-web/dist/modules/AssetRegistry/index',
+      },
+      { find: '@assets', replacement: require('path').resolve(__dirname, 'assets') },
+    ],
   },
   build: {
     reportCompressedSize: true,
@@ -56,8 +60,7 @@ export default defineConfig({
     port: 4200,
     host: 'localhost',
     fs: {
-      // Allow serving files from one level up to the project root
-      allow: ['..'],
+      allow: [repoRoot],
     },
   },
   preview: {
@@ -71,9 +74,9 @@ export default defineConfig({
       loader: { '.js': 'jsx' },
     },
   },
-  plugins: [react(), nxViteTsPaths()],
+  plugins: [nxViteTsPaths()],
   // Uncomment this if you are using workers.
   // worker: {
   //  plugins: [ nxViteTsPaths() ],
   // },
-});
+};

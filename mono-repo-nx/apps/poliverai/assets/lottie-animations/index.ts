@@ -1,7 +1,7 @@
 // Sub-index for lottie animation assets
 export const lottieAnimations = {
   poliveraiSplash: require('./poliverai-splash.json'),
-  poliveraiLogoAnimated: require('./poliverai-logo-animated.json'),
+  poliveraiLogoAnimated: require('./poliverai-splash.json'),
 };
 
 export default lottieAnimations;

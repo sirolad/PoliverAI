@@ -393,6 +393,7 @@ const en = {
       unlock_heading: 'Unlock Premium Features',
       unlock_paragraph: 'Get AI-powered deep analysis, comprehensive reporting, and policy generation with our Pro plan starting at $29/month.',
       learn_more: 'Learn More',
+      upgrade_cta: 'Upgrade to Pro',
       upgrade_button: 'Upgrade to Pro',
       refresh: 'Refresh'
       ,
@@ -401,6 +402,9 @@ const en = {
     },
     credits: {
       heading: 'How credits are used:',
+      subscription_credits: 'Subscription credits',
+      purchased_credits: 'Purchased credits',
+      total_available: 'Total available',
       explanation: 'Subscription credits are consumed first and each subscription credit covers approx ~1.5x of a regular credit (discounted). If subscription credits run out, the system falls back to purchased credits which are charged at a slightly higher rate (penalty ~1.25x).',
       subscription_expires: 'Subscription expires: {date}'
     },

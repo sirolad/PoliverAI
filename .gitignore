@@ -32,6 +32,7 @@ Thumbs.db
 # nx caches and workspace data
 .nx/cache
 .nx/workspace-data
+mono-repo-nx/.nx/workspace-data/react-native-*.hash
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 
@@ -128,6 +129,11 @@ __pycache__/
 *.egg-info/
 .eggs/
 .build/
+
+# Android generated build output
+mono-repo-nx/apps/poliverai/android/build/
+mono-repo-nx/apps/poliverai/android/app/build/
+mono-repo-nx/patches/macos-generated/android/gradle-generated/outputs/apk/debug/app-debug.apk
 .dist/
 
 # Virtual envs

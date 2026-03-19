@@ -8,7 +8,7 @@ type Props = {
 
 export default function NavBrand({ className }: Props) {
   return (
-    <Link to="/" className={className ?? twFromTokens(spacing.brandGap, textSizes.lead)}>
+    <Link to="/" className={className ?? twFromTokens(spacing.brandGap, textSizes.lead, 'whitespace-nowrap flex-shrink-0')}>
       <img src="/poliverai-icon-transparent.svg" alt={t('brand.alt')} className={twFromTokens(spacing.iconsLg)} />
       <span>{t('brand.poliver')} <span className={twFromTokens(colors.primary)}>{t('brand.ai')}</span></span>
     </Link>

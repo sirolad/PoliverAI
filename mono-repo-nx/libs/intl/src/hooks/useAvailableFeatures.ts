@@ -1,3 +1,4 @@
+// ...existing implementation retained below
 import { Feature } from "..";
 import { useAuth } from "./useAuth";
 import { FileCheck, Clock, Shield, Zap, BarChart } from '@poliverai/shared-ui';
@@ -55,4 +56,4 @@ export function useAvailableFeatures(hasCredits: boolean) {
   return { freeFeatures, proFeatures };
 }
 
-export default useAvailableFeatures;
+// default export already provided by the named implementation above if needed

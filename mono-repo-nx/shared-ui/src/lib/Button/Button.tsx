@@ -1,15 +1,17 @@
 import React from 'react';
 import { TouchableOpacity, Text, ViewStyle, TextStyle, ActivityIndicator } from 'react-native';
+import { rnTokens, colorFromToken } from '../rnStyleTokens'
 
 export interface ButtonProps {
-  title: string;
+  title?: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'destructive' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   loading?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  children?: React.ReactNode;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -21,6 +23,7 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   style,
   textStyle,
+  children,
 }) => {
   const getButtonStyles = (): ViewStyle => {
     const baseStyle: ViewStyle = {
@@ -40,16 +43,22 @@ export const Button: React.FC<ButtonProps> = ({
     // Variant styles
     const variantStyles: Record<string, ViewStyle> = {
       primary: {
-        backgroundColor: disabled ? '#9CA3AF' : '#3B82F6',
+        backgroundColor: disabled ? colorFromToken(rnTokens.colors.mutedText) : colorFromToken(rnTokens.colors.primary),
       },
       secondary: {
-        backgroundColor: disabled ? '#F3F4F6' : '#6B7280',
+        backgroundColor: disabled ? colorFromToken(rnTokens.colors.surfaceMuted) : colorFromToken(rnTokens.colors.textSecondary),
       },
       outline: {
         backgroundColor: 'transparent',
         // borderWidth: 1,
-        // borderColor: disabled ? '#D1D5DB' : '#3B82F6',
+        // borderColor: disabled ? colorFromToken(rnTokens.colors.mutedBorder) : colorFromToken(rnTokens.colors.primary),
       },
+      destructive: {
+        backgroundColor: disabled ? colorFromToken(rnTokens.colors.mutedText) : colorFromToken(rnTokens.colors.danger),
+      },
+      ghost: {
+        backgroundColor: 'transparent',
+      }
     };
 
     return {
@@ -75,14 +84,20 @@ export const Button: React.FC<ButtonProps> = ({
     // Variant styles
     const variantStyles: Record<string, TextStyle> = {
       primary: {
-        color: disabled ? '#FFFFFF' : '#FFFFFF',
+        color: disabled ? colorFromToken(rnTokens.colors.ctaText) ?? '#FFFFFF' : colorFromToken(rnTokens.colors.ctaText) ?? '#FFFFFF',
       },
       secondary: {
-        color: disabled ? '#9CA3AF' : '#FFFFFF',
+        color: disabled ? colorFromToken(rnTokens.colors.mutedText) ?? '#9CA3AF' : colorFromToken(rnTokens.colors.surface) ?? '#FFFFFF',
       },
       outline: {
-        color: disabled ? '#9CA3AF' : '#3B82F6',
+        color: disabled ? colorFromToken(rnTokens.colors.mutedText) ?? '#9CA3AF' : colorFromToken(rnTokens.colors.primary) ?? '#3B82F6',
       },
+      destructive: {
+        color: colorFromToken(rnTokens.colors.surface) ?? '#FFFFFF',
+      },
+      ghost: {
+        color: colorFromToken(rnTokens.colors.textPrimary) ?? '#111827',
+      }
     };
 
     return {
@@ -103,11 +118,11 @@ export const Button: React.FC<ButtonProps> = ({
       {loading && (
         <ActivityIndicator 
           size="small" 
-          color={variant === 'outline' ? '#3B82F6' : '#FFFFFF'} 
+          color={variant === 'outline' ? (colorFromToken(rnTokens.colors.primary) ?? '#3B82F6') : (colorFromToken(rnTokens.colors.ctaText) ?? '#FFFFFF')} 
           style={{ marginRight: 8 }} 
         />
       )}
-      <Text style={getTextStyles()}>{title}</Text>
+      {children ? children : <Text style={getTextStyles()}>{title}</Text>}
     </TouchableOpacity>
   );
 };

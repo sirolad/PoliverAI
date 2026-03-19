@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { Text, ScrollView, StyleSheet } from 'react-native'
 import rnStyleFromTokens from './rnStyleTokens'
 import AnalysisProgress from './AnalysisProgress.native'
 import RevisedPolicyPreview from './RevisedPolicyPreview.native'

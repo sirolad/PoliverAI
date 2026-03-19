@@ -1,0 +1,87 @@
+Starting JS server...
+[36m[1minfo[22m[39m [0mDetected architectures arm64-v8a[0m
+[36m[1minfo[22m[39m [0mInstalling the app...[0m
+[34m
+Welcome to React Native v0.81[39m
+Starting dev server on http://localhost:8081
+
+[34m[39m
+[34m                        ▒▒▓▓▓▓▒▒[39m
+[34m                     ▒▓▓▓▒▒░░▒▒▓▓▓▒[39m
+[34m                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒[39m
+[34m                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓[39m
+[34m                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓[39m
+[34m                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓[39m
+[34m                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓[39m
+[34m                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒[39m
+[34m                     ▒▓▓▓▒░░░░▒▓▓▓▒[39m
+[34m                        ▒▒▓▓▓▓▒��[39m
+[34m[39m
+[34m[39m
+[34m[1m                Welcome to Metro [37mv0.83.2[39m[34m[22m[39m
+[34m[1m[22m[39m[2m              Fast - Scalable - Integrated[22m
+[2m[22m
+[2m[22m
+
+
+[2A[1m<[0;1m-------------> 0% INITIALIZING [104ms][m[39D[1B[1m> Evaluating settings > Evaluating settings[m[43D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [204ms][m[39D[1B[1m> Evaluating settings > :gradle-plugin > Resolve files of configuration 'classpath'[m[83D[1B[36m[7m[1m INFO [22m[27m[39m Dev server ready. [2mPress Ctrl+C to exit.[22m
+[36m[7m[1m INFO [22m[27m[39m Key commands available:
+
+  [1m[7m r [27m[22m - reload app(s)
+  [1m[7m d [27m[22m - open Dev Menu
+  [1m[7m j [27m[22m - open DevTools
+
+[36m[7m[1m INFO [22m[27m[39m Connection established to app='com.poliverai.app' on device='SM-A055F - 15 - API 35'.
+[2A[1m<[0;1m-------------> 0% INITIALIZING [306ms][m[39D[1B[1m> Evaluating settings > :gradle-plugin:shared[m[0K[45D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [407ms][m[39D[1B[1m> Evaluating settings > Discovering toolchains > Detecting local java toolchains[m[80D[1B[2A[1m<[0;1m-------------> 0% INITIALIZING [508ms][m[39D[1B[1m> Evaluating settings > :gradle-plugin:settings-plugin:compileKotlin > Resolve files of configuration ':gradle-plugin:settings-plugin:detach[m[140D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [604ms][m[0K[38D[1B[1m> root project > Resolve dependencies of classpath[m[0K[50D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [708ms][m[38D[1B[1m> root project > Resolve files of configuration 'classpath' > Resolve files of configuration 'classpath'[m[104D[1B[2A[1m<[0;1m-------------> 0% CONFIGURING [808ms][m[38D[1B[1m> root project > :app[m[0K[21D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 14% CONFIGURING [919ms][m[39D[1B[1m> root project[m[0K[14D[1B[2A[1m<[0;32;1m===[0;39;1m----------> 28% CONFIGURING [1s][m[0K[36D[1B[1m> :react-native-gesture-handler > Resolve dependencies of classpath[m[67D[1B[1A[1m> :react-native-gesture-handler[m[0K[31D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 42% CONFIGURING [1s][m[36D[1B[1m> :react-native-safe-area-context > Resolve dependencies of classpath[m[69D[1B[1A[1m> :react-native-safe-area-context[m[0K[33D[1B[2A[1m<[0;32;1m=======[0;39;1m------> 57% CONFIGURING [1s][m[36D[1B[1m> :react-native-screens > Resolve files of configuration 'classpath'[m[68D[1B[1A[1m> :react-native-screens[m[0K[23D[1B[2A[1m<[0;32;1m=========[0;39;1m----> 71% CONFIGURING [1s][m[36D[1B[1m> :react-native-svg[m[0K[19D[1B[2A[1m<[0;32;1m=========[0;39;1m----> 71% CONFIGURING [2s][m[36D[2B[2A[1m<[0;32;1m=============[0;39;1m> 100% CONFIGURING [2s][m[37D[1B[1m> Resolve dependencies of :app:debugCompileClasspath > Resolve dependencies of :app:debugRuntimeClasspath[m[105D[1B[1A> IDLE[0K[6D[1B[1A[1m> Resolve dependencies of :react-native-gesture-handler:debugCompileClasspath > Resolve dependencies of :react-native-gesture-handler:debugR[m[140D[1B[1A> IDLE[0K[6D[1B[2A[1m<[0;32;1m=[0;39;1m------------> 12% EXECUTING [2s][m[0K[34D[1B[1m> :react-native-gesture-handler:packageDebugResources[m[53D[1B[2A[1m<[0;32;1m===[0;39;1m----------> 29% EXECUTING [2s][m[34D[1B> IDLE[0K[6D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 38% EXECUTING [2s][m[34D[1B[1m> :react-native-gesture-handler:compileDebugKotlin[m[50D[1B[2A[1m<[0;32;1m=====[0;39;1m--------> 44% EXECUTING [2s][m[34D[1B[1m> :react-native-screens:compileDebugKotlin[m[0K[42D[1B[2A[1m<[0;32;1m=======[0;39;1m------> 55% EXECUTING [3s][m[34D[1B> IDLE[0K[6D[1B[2A[1m<[0;32;1m==========[0;39;1m---> 77% EXECUTING [3s][m[34D[1B[1m> :react-native-gesture-handler:bundleLibRuntimeToDirDebug[m[58D[1B[2A[1m<[0;32;1m===========[0;39;1m--> 91% EXECUTING [3s][m[34D[1B[1m> :react-native-screens:buildCMakeDebug[arm64-v8a][m[0K[50D[1B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [3s][m[34D[1B[1m> :app:installDebug[m[0K[19D[1B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [4s][m[34D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [5s][m[34D[2B[2A[0K
+[1m> Task :app:installDebug[m
+Installing APK 'app-debug.apk' on 'SM-A055F - 15' for :app:debug
+[0K
+[0K
+[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [5s][m[34D[1B[1m> :app:installDebug[m[19D[1B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [6s][m[34D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [7s][m[34D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [8s][m[34D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [9s][m[34D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [10s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [11s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [12s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [13s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [14s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [15s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [16s][m[35D[2B[36m[7m[1m INFO [22m[27m[39m Connection closed to device='SM-A055F - 15 - API 35' for app='com.poliverai.app' with code='1006' and reason=''.
+[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [17s][m[35D[2B[2A[1m<[0;32;1m============[0;39;1m-> 99% EXECUTING [18s][m[35D[2B[2AInstalled on 1 device.[0K
+[0K
+[Incubating] Problems report is available at: file:///Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+[32;1mBUILD SUCCESSFUL[0;39m in 19s
+153 actionable tasks: 3 executed, 150 up-to-date
+[0K
+[0K
+[2A[1m<[0;1m-------------> 0% WAITING[m[26D[1B> IDLE[6D[1B[2A[2K[1B[2K[1A[0m[?12l[?25h[36m[1minfo[22m[39m [0mConnecting to the development server...[0m
+[36m[1minfo[22m[39m [0mStarting the app on "R9WWC00WNDY"...[0m
+Starting: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] cmp=com.poliverai.app/.MainActivity }
+[36m[7m[1m INFO [22m[27m[39m Connection established to app='com.poliverai.app' on device='SM-A055F - 15 - API 35'.
+[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 0.0% [22m[2m(0/1)[22m
+[141D[1A[0Jtransform[stderr]: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 0.0% [22m[2m(0/1)[22m
+[141D[1A[0J[33m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m [47m[37m░░░░░░░░░░░░░░░░[39m[49m[1m 1.0% [22m[2m(1/1)[22m
+[141D[1A[0J[31m[7m[1m BUNDLE [22m[27m[39m[0m[2m src/[22m[0m[1mMain.tsx[22m 
+[31m[7m[1m ERROR [22m[27m[39m Error: Unable to resolve module ../../../node_modules/react-native-gesture-handler from /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/src/Main.tsx: 
+
+None of these files exist:
+  * ../../node_modules/react-native-gesture-handler(.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx)
+  * ../../node_modules/react-native-gesture-handler
+[0m [90m 1 |[39m [36mimport[39m [32m'./NativewindEnv'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m [32m'../../../node_modules/react-native-gesture-handler'[39m[33m;[39m
+ [90m   |[39m         [31m[1m^[22m[39m
+ [90m 3 |[39m [36mimport[39m { [33mAppRegistry[39m } [36mfrom[39m [32m'react-native'[39m[33m;[39m
+ [90m 4 |[39m [36mimport[39m [33mApp[39m [36mfrom[39m [32m'./App'[39m[33m;[39m
+ [90m 5 |[39m [36mimport[39m { [33mReduxProvider[39m } [36mfrom[39m [32m'@poliverai/intl'[39m[33m;[39m[0m
+    at ModuleResolver.resolveDependency (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/node-haste/DependencyGraph/ModuleResolution.js:136:15)
+    at DependencyGraph.resolveDependency (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/node-haste/DependencyGraph.js:252:43)
+    at /Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/lib/transformHelpers.js:163:21
+    at resolveDependencies (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/buildSubgraph.js:43:25)
+    at visit (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/buildSubgraph.js:81:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Promise.all (index 0)
+    at async buildSubgraph (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/buildSubgraph.js:105:3)
+    at async Graph._buildDelta (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/Graph.js:163:22)
+    at async Graph.initialTraverseDependencies (/Users/gabrieldagadu/PoliverAI/mono-repo-nx/apps/poliverai/node_modules/metro/src/DeltaBundler/Graph.js:146:19)
+^C

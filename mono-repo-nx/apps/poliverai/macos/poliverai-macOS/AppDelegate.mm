@@ -1,17 +1,18 @@
 #import "AppDelegate.h"
+#import "MacSplashScreen.h"
 
 #import <React/RCTBundleURLProvider.h>
-#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-  self.moduleName = @"poliverai";
+  self.moduleName = @"PoliverAI";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
-  self.dependencyProvider = [RCTAppDependencyProvider new];
+
+  [MacSplashScreen show];
   
   return [super applicationDidFinishLaunching:notification];
 }
@@ -24,7 +25,7 @@
 - (NSURL *)bundleURL
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.macos"];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif

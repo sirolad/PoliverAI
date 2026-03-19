@@ -12,6 +12,7 @@
 		514201522437B4B40078DB4F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 514201512437B4B40078DB4F /* Assets.xcassets */; };
 		514201552437B4B40078DB4F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 514201532437B4B40078DB4F /* Main.storyboard */; };
 		514201582437B4B40078DB4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 514201572437B4B40078DB4F /* main.m */; };
+		5142015D2437B4B50078DB4F /* MacSplashScreen.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5142015F2437B4B50078DB4F /* MacSplashScreen.mm */; };
 		7160109D736384D26B1E734B /* libPods-poliverai-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEDC26E87284153DF5E39541 /* libPods-poliverai-macOS.a */; };
 		E970B7C88C4C03975F3D9A4C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FC569CEE78F6025103182ADF /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,8 @@
 		514201562437B4B40078DB4F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		514201572437B4B40078DB4F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		514201592437B4B40078DB4F /* poliverai.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = poliverai.entitlements; sourceTree = "<group>"; };
+		5142015E2437B4B50078DB4F /* MacSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacSplashScreen.h; sourceTree = "<group>"; };
+		5142015F2437B4B50078DB4F /* MacSplashScreen.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MacSplashScreen.mm; sourceTree = "<group>"; };
 		5C6DBDA0D5359F333F07C064 /* Pods-poliverai-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poliverai-macOS.release.xcconfig"; path = "Target Support Files/Pods-poliverai-macOS/Pods-poliverai-macOS.release.xcconfig"; sourceTree = "<group>"; };
 		7357F54051473B9289127CF6 /* Pods-poliverai-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poliverai-macOS.debug.xcconfig"; path = "Target Support Files/Pods-poliverai-macOS/Pods-poliverai-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -66,6 +69,8 @@
 			children = (
 				5142014B2437B4B30078DB4F /* AppDelegate.h */,
 				5142014C2437B4B30078DB4F /* AppDelegate.mm */,
+				5142015E2437B4B50078DB4F /* MacSplashScreen.h */,
+				5142015F2437B4B50078DB4F /* MacSplashScreen.mm */,
 				514201512437B4B40078DB4F /* Assets.xcassets */,
 				514201532437B4B40078DB4F /* Main.storyboard */,
 				514201562437B4B40078DB4F /* Info.plist */,
@@ -277,6 +282,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-poliverai-macOS/Pods-poliverai-macOS-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
@@ -286,6 +292,7 @@
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
@@ -313,6 +320,7 @@
 			files = (
 				514201582437B4B40078DB4F /* main.m in Sources */,
 				5142014D2437B4B30078DB4F /* AppDelegate.mm in Sources */,
+				5142015D2437B4B50078DB4F /* MacSplashScreen.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

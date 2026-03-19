@@ -195,8 +195,8 @@ export default function Dashboard(): React.ReactElement {
   if (!isAuthenticated) return <Navigate to="/login" replace />
 
   return (
-    <div className={twFromTokens('min-h-screen', colors.pageBg)}>
-      <div className={twFromTokens(spacing.mainContainer)}>
+    <div className={twFromTokens('min-h-screen w-full overflow-x-hidden', colors.pageBg)}>
+      <div className={twFromTokens('w-full', spacing.mainContainer)}>
         <DashboardHeader />
 
         <AccountStatus
@@ -233,4 +233,3 @@ export default function Dashboard(): React.ReactElement {
     </div>
   )
 }
-

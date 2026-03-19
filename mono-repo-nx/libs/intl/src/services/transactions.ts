@@ -25,9 +25,14 @@ type TxListResp = {
 };
 
 const listTransactions = async (opts?: { page?: number; limit?: number; date_from?: string | null; date_to?: string | null }): Promise<TxListResp> => {
-  // TODO: Implement buildUrl for Nx
   const url = '/api/v1/transactions';
-  const res = await apiService.get<TxListResp>(url);
+  const qs = new URLSearchParams();
+  if (opts?.page) qs.set('page', String(opts.page));
+  if (opts?.limit) qs.set('limit', String(opts.limit));
+  if (opts?.date_from) qs.set('date_from', opts.date_from);
+  if (opts?.date_to) qs.set('date_to', opts.date_to);
+  const finalUrl = qs.toString() ? `${url}?${qs.toString()}` : url;
+  const res = await apiService.get<TxListResp>(finalUrl);
   return res as TxListResp;
 };
 

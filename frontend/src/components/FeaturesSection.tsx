@@ -48,10 +48,10 @@ export default function FeaturesSection() {
 
       {/* Free Features */}
       <div className={twFromTokens(spacing.smallTop)}>
-        <h3 className={twFromTokens(alignment.flexRow, spacing.headingLarge, alignment.gap2)}>
+        <div className={twFromTokens(alignment.flexRow, spacing.headingLarge, alignment.gap2)}>
           <CheckCircle2 className={twFromTokens(spacing.iconsMd, colors.success)} />
           <Heading as="h3" preset="subheading">{t('landing.features.free_heading')}</Heading>
-        </h3>
+        </div>
         <div className={twFromTokens('grid md:grid-cols-3', spacing.cardInnerGap.tw ? spacing.cardInnerGap.tw : spacing.cardInnerGap)}>
           {freeFeatures.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
@@ -61,10 +61,10 @@ export default function FeaturesSection() {
 
       {/* Pro Features */}
       <div className={twFromTokens(spacing.smallTop)}>
-        <h3 className={twFromTokens(alignment.flexRow, spacing.headingLarge, alignment.gap2)}>
+        <div className={twFromTokens(alignment.flexRow, spacing.headingLarge, alignment.gap2)}>
           <Zap className={twFromTokens(spacing.iconsMd, colors.primary)} />
           <Heading as="h3" preset="subheading">{t('landing.features.pro_heading')}</Heading>
-        </h3>
+        </div>
         <div className={twFromTokens('grid md:grid-cols-3', spacing.cardInnerGap.tw ? spacing.cardInnerGap.tw : spacing.cardInnerGap)}>
           {proFeatures.map((feature, index) => (
             <FeatureCard key={index} {...feature} />

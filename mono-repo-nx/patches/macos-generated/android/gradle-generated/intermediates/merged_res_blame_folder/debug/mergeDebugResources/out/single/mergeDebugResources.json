@@ -1,0 +1,82 @@
+[
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-ldpi_ic_launcher.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-ldpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/drawable-nodpi_bootsplash_logo.png.flat",
+        "source": "com.poliverai.app-main-67:/drawable-nodpi/bootsplash_logo.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xxxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/drawable_rn_edit_text_material.xml.flat",
+        "source": "com.poliverai.app-main-67:/drawable/rn_edit_text_material.xml"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.poliverai.app-debug-65:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.poliverai.app-main-67:/mipmap-xxxhdpi/ic_launcher.png"
+    }
+]

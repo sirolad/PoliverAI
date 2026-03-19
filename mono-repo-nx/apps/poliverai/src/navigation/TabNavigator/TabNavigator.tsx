@@ -3,6 +3,7 @@ import { Text, useWindowDimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { HomeScreen } from '../../screens';
+import CreditsScreen from '../../screens/CreditsScreen';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -10,6 +11,10 @@ const Drawer = createDrawerNavigator();
 // Small icon components using emoji (keeps things simple and cross-platform)
 const HomeIcon = ({ color, size }: { color?: string; size?: number }) => (
   <Text style={{ color, fontSize: size || 18, fontWeight: 'bold' }}>🏠</Text>
+);
+
+const CreditsIcon = ({ color, size }: { color?: string; size?: number }) => (
+  <Text style={{ color, fontSize: size || 18, fontWeight: 'bold' }}>💳</Text>
 );
 
 export const TabNavigator = () => {
@@ -53,6 +58,13 @@ export const TabNavigator = () => {
             tabBarIcon: ({ color, size }) => <HomeIcon color={color} size={size} />,
           }}
         />
+        <Tab.Screen
+          name="Credits"
+          component={CreditsScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => <CreditsIcon color={color} size={size} />,
+          }}
+        />
       </Tab.Navigator>
     );
   }
@@ -71,6 +83,11 @@ export const TabNavigator = () => {
         name="Home"
         component={HomeScreen}
         options={{ drawerIcon: ({ color, size }) => <HomeIcon color={color} size={size} /> }}
+      />
+      <Drawer.Screen
+        name="Credits"
+        component={CreditsScreen}
+        options={{ drawerIcon: ({ color, size }) => <CreditsIcon color={color} size={size} /> }}
       />
     </Drawer.Navigator>
   );

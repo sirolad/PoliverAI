@@ -1,6 +1,6 @@
 import React from 'react'
 import { TouchableOpacity, ViewStyle, Text, AccessibilityProps } from 'react-native'
-import rnStyleFromTokens, { rnTokens } from './rnStyleTokens'
+import rnStyleFromTokens from './rnStyleTokens'
 
 type Props = AccessibilityProps & {
   children?: React.ReactNode

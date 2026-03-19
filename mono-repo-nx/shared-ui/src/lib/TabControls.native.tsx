@@ -1,5 +1,5 @@
-import { View, Text, Button, StyleSheet } from 'react-native'
-import rnStyleFromTokens from './rnStyleTokens'
+import { View, Button, StyleSheet } from 'react-native'
+// rnStyleFromTokens not needed here
 
 type Props = { activeTab: string, setActiveTab: (s: string) => void, reportFilename?: string | null }
 
