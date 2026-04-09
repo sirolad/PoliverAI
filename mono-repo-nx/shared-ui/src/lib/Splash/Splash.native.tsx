@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, View, StyleSheet, Text, useWindowDimensions } from 'react-native';
-import { DotLottie } from '@lottiefiles/dotlottie-react-native';
+import { Animated, Easing, Platform, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 export const POLIVERAI_SPLASH_DOTLOTTIE_URL =
   'https://lottie.host/60d101b5-d7e9-4e51-8c0c-2624f51e642a/sGDt58V29f.lottie';
@@ -14,8 +13,10 @@ interface SplashProps {
   durationMs?: number;
 }
 
+const DotLottieComponent =
+  Platform.OS === 'windows' ? null : (require('@lottiefiles/dotlottie-react-native').DotLottie as React.ComponentType<any>);
+
 const NativeAnimatedLogo =
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   require('../../../../apps/poliverai/assets/brand/poliverai-icon-transparent.svg')?.default ?? null;
 
 export const Splash: React.FC<SplashProps> = ({
@@ -60,10 +61,6 @@ export const Splash: React.FC<SplashProps> = ({
   }, [delayMs, duration, durationMs, onFinish]);
 
   useEffect(() => {
-    if (NativeAnimatedLogo) {
-      return;
-    }
-
     const animation = Animated.loop(
       Animated.sequence([
         Animated.parallel([
@@ -105,44 +102,48 @@ export const Splash: React.FC<SplashProps> = ({
     animRef.current?.resize?.(clampedPlayerSize, clampedPlayerSize);
   }, [clampedPlayerSize]);
 
+  const showDotLottie = DotLottieComponent != null;
+
   return (
     <View style={[styles.container, styles.pointerEventsNone]}>
-      <View
-        style={[
-          styles.playerFrame,
-          {
-            width: clampedPlayerSize,
-            height: clampedPlayerSize,
-            left: playerLeft,
-            top: playerTop,
-          },
-        ]}
-      >
-        <DotLottie
-          ref={animRef}
-          source={dotLottieSource}
-          autoplay
-          loop={false}
-          style={{
-            width: clampedPlayerSize,
-            height: clampedPlayerSize,
-          }}
-          onComplete={onFinish}
-        />
-      </View>
-      {false && NativeAnimatedLogo ? (
-        <>
-          <Animated.View
+      {showDotLottie ? (
+        <View
+          style={[
+            styles.playerFrame,
+            {
+              width: clampedPlayerSize,
+              height: clampedPlayerSize,
+              left: playerLeft,
+              top: playerTop,
+            },
+          ]}
+        >
+          <DotLottieComponent
+            ref={animRef}
+            source={dotLottieSource}
+            autoplay
+            loop={false}
             style={{
-              opacity: fallbackOpacity,
-              transform: [{ scale: fallbackScale }],
+              width: clampedPlayerSize,
+              height: clampedPlayerSize,
             }}
-          >
-            <NativeAnimatedLogo width={180} height={180} />
-          </Animated.View>
+            onComplete={onFinish}
+          />
+        </View>
+      ) : (
+        <Animated.View
+          style={{
+            opacity: fallbackOpacity,
+            transform: [{ scale: fallbackScale }],
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {NativeAnimatedLogo ? <NativeAnimatedLogo width={180} height={180} /> : null}
           <Text style={styles.brand}>PoliverAI</Text>
-        </>
-      ) : null}
+          {Platform.OS === 'windows' ? <Text style={styles.meta}>Windows fallback splash</Text> : null}
+        </Animated.View>
+      )}
     </View>
   );
 };
@@ -164,9 +165,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   brand: {
+    marginTop: 12,
     fontSize: 24,
     fontWeight: '800',
     color: '#0f172a',
+  },
+  meta: {
+    marginTop: 6,
+    fontSize: 12,
+    color: '#64748b',
   },
 });
 

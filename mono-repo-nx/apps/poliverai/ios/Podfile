@@ -1,13 +1,22 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+# Resolve react_native_pods.rb from either app-local or workspace-level node_modules.
+react_native_pods_rb = File.expand_path('../node_modules/react-native/scripts/react_native_pods.rb', __dir__)
+unless File.exist?(react_native_pods_rb)
+  react_native_pods_rb = File.expand_path('../../../node_modules/react-native/scripts/react_native_pods.rb', __dir__)
+end
+
+require react_native_pods_rb
 
 platform :ios, '15.4'
-ENV['RCT_NEW_ARCH_ENABLED'] = '0'
 prepare_react_native_project!
+
+project 'PoliverAI', {
+  'Debug' => :debug,
+  'DebugExperimental' => :debug,
+  'Release' => :release,
+}
+
+new_arch_enabled = ENV.fetch('RCT_NEW_ARCH_ENABLED', '0') == '1'
+ENV['RCT_NEW_ARCH_ENABLED'] = new_arch_enabled ? '1' : '0'
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -20,6 +29,7 @@ target 'PoliverAI' do
 
   use_react_native!(
     :path => config[:reactNativePath],
+    :new_arch_enabled => new_arch_enabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

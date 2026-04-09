@@ -24,6 +24,16 @@ export function BrandLogo({ width, height, style }: BrandLogoProps) {
     );
   }
 
+  if (Platform.OS === 'macos') {
+    const nativePoliveraiLogoPng = require('../../public/poliverai-logo.png') as number;
+
+    return (
+      <View style={style}>
+        <Image source={nativePoliveraiLogoPng} style={{ width, height }} resizeMode="contain" />
+      </View>
+    );
+  }
+
   const NativePoliveraiIconTransparent = require('../../assets/brand/poliverai-icon-transparent.svg').default as React.ComponentType<{
     width: number;
     height: number;

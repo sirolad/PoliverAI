@@ -1,6 +1,6 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { getApiBaseOrigin, t } from '@poliverai/intl';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { apiService, getApiBaseOrigin, t } from '@poliverai/intl';
 import { Apple, ArrowDownToLine, Monitor, MonitorCog, Smartphone, TerminalSquare } from 'lucide-react-native';
 import { appAlphaColors, appColors } from './colorTokens';
 
@@ -49,12 +49,15 @@ export default function AppPlatforms() {
   React.useEffect(() => {
     let cancelled = false;
     const apiBase = getApiBaseOrigin() || 'https://poliverai.com';
-    fetch(`${apiBase}/api/v1/stats/summary`, { headers: { Accept: 'application/json' } })
-      .then((r) => (r.ok ? r.json() : null))
+    if (Platform.OS === 'macos') {
+      console.log('[startup] AppPlatforms loading stats', { apiBase });
+    }
+    apiService
+      .get<Record<string, unknown> | { data?: Record<string, unknown> }>('/api/v1/stats/summary')
       .then((res) => {
         if (cancelled || !res) return;
         const payload = typeof res === 'object' && res && 'data' in res ? (res as any).data : res;
-        setStats({
+        const nextStats = {
           free_reports: Number(payload?.free_reports ?? payload?.freeReports ?? 0),
           full_reports: Number(payload?.full_reports ?? payload?.fullReports ?? 0),
           ai_policy_reports: Number(payload?.ai_policy_reports ?? payload?.aiPolicyReports ?? 0),
@@ -63,9 +66,23 @@ export default function AppPlatforms() {
           total_subscriptions: Number(
             payload?.total_subscriptions ?? payload?.subscription_count ?? payload?.totalSubscriptions ?? 0
           ),
-        });
+        };
+        if (Platform.OS === 'macos') {
+          console.log('[startup] AppPlatforms stats loaded', {
+            apiBase,
+            nextStats,
+          });
+        }
+        setStats(nextStats);
       })
-      .catch(() => undefined);
+      .catch((error: unknown) => {
+        if (Platform.OS === 'macos') {
+          console.warn('[startup] AppPlatforms stats load failed', {
+            apiBase,
+            error,
+          });
+        }
+      });
     return () => {
       cancelled = true;
     };
@@ -84,9 +101,14 @@ export default function AppPlatforms() {
   const handleDownload = async () => {
     const apiBase = getApiBaseOrigin() || 'https://poliverai.com';
     try {
-      await fetch(`${apiBase}/api/v1/stats/downloads`, { method: 'POST', headers: { Accept: 'application/json' } });
-    } catch {
-      // noop
+      await apiService.post('/api/v1/stats/downloads');
+    } catch (error) {
+      if (Platform.OS === 'macos') {
+        console.warn('[startup] AppPlatforms download stat update failed', {
+          apiBase,
+          error,
+        });
+      }
     }
     setStats((current) => ({ ...current, total_downloads: current.total_downloads + 1 }));
   };

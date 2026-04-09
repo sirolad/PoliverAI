@@ -2,6 +2,9 @@
 #import "MacSplashScreen.h"
 
 #import <React/RCTBundleURLProvider.h>
+#if DEBUG
+#import <React/RCTDevLoadingView.h>
+#endif
 
 @implementation AppDelegate
 
@@ -12,9 +15,19 @@
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
 
+  [super applicationDidFinishLaunching:notification];
+
+#if DEBUG
+  [RCTDevLoadingView setEnabled:NO];
+#endif
+
+  if (self.window != nil) {
+    self.window.backgroundColor = NSColor.whiteColor;
+    [self.window makeKeyAndOrderFront:nil];
+  }
+
+  [NSApp activateIgnoringOtherApps:YES];
   [MacSplashScreen show];
-  
-  return [super applicationDidFinishLaunching:notification];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -25,7 +38,7 @@
 - (NSURL *)bundleURL
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.macos"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"src/Main"];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif

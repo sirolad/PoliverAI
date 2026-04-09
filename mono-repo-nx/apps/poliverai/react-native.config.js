@@ -1,16 +1,8 @@
 module.exports = {
   dependencies: {
-    '@lottiefiles/dotlottie-react-native': {
+    'react-native-document-picker': {
       platforms: {
-        macos: null,
         windows: null,
-      },
-    },
-    'react-native-worklets': {
-      platforms: {
-        android: null,
-        ios: null,
-        macos: null,
       },
     },
   },

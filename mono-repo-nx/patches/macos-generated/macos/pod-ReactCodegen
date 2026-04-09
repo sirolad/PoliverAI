@@ -42,7 +42,8 @@
     "React-utils": [],
     "React-featureflags": [],
     "React-RCTAppDelegate": [],
-    "React-jsc": []
+    "hermes-engine": [],
+    "React-hermes": []
   },
   "script_phases": {
     "name": "Generate Specs",

@@ -1,5 +1,6 @@
 import React from 'react'
-import { Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import CrossPlatformModal from './CrossPlatformModal'
 
 type Props = { open: boolean, initial?: string, onClose: () => void, onConfirm: (title?: string, type?: string) => void }
 
@@ -11,7 +12,7 @@ export default function EnterTitleModal({ open, initial, onClose, onConfirm }: P
   }, [initial, open])
 
   return (
-    <Modal visible={open} animationType="fade" transparent presentationStyle="overFullScreen" onRequestClose={onClose}>
+    <CrossPlatformModal open={open} animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.center} onPress={onClose}>
         <Pressable style={styles.box} onPress={() => undefined}>
           <Text style={styles.title}>Save Report</Text>
@@ -27,7 +28,7 @@ export default function EnterTitleModal({ open, initial, onClose, onConfirm }: P
           </View>
         </Pressable>
       </Pressable>
-    </Modal>
+    </CrossPlatformModal>
   )
 }
 
@@ -35,6 +36,7 @@ const cardShadow = Platform.select({
   web: {
     boxShadow: '0 24px 56px rgba(15, 23, 42, 0.24)',
   },
+  macos: undefined,
   default: {
     shadowColor: '#0f172a',
     shadowOpacity: 0.18,

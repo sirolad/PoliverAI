@@ -7,7 +7,9 @@ export const POLIVERAI_SPLASH_DOTLOTTIE_URL =
 const splashModule: any =
   Platform.OS === 'web'
     ? require('./Splash.web')
-    : require('./Splash.native');
+    : Platform.OS === 'macos'
+      ? require('./Splash.macos')
+      : require('./Splash.native');
 
 export const Splash = splashModule.Splash;
 

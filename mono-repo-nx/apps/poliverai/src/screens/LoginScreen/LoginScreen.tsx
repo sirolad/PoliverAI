@@ -17,11 +17,20 @@ import { ArrowRight, LogIn, UserPlus } from 'lucide-react-native';
 import AppFooter from '../../components/AppFooter';
 import AppTopNav from '../../components/AppTopNav';
 import { BrandLogo } from '../../components/BrandLogo';
+import { getPendingPaymentReturn } from '../../lib/pendingPaymentReturn';
 
 function copy(path: string, fallback: string) {
   const value = t(path, fallback);
   return typeof value === 'string' ? value : fallback;
 }
+
+const desktopSingleLineInputStyle =
+  Platform.OS === 'macos' || Platform.OS === 'windows'
+    ? ({
+        paddingTop: 12,
+        paddingBottom: 12,
+      } as const)
+    : null;
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
@@ -42,9 +51,25 @@ export default function LoginScreen() {
   }, [navigation]);
 
   React.useEffect(() => {
-    if (isAuthenticated) {
+    if (!isAuthenticated) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const pendingPayment = await getPendingPaymentReturn();
+      if (cancelled) return;
+      if (pendingPayment) {
+        goTo('PaymentReturn', '/payments/return');
+        return;
+      }
       goTo('Dashboard', '/dashboard');
-    }
+    })().catch(() => {
+      goTo('Dashboard', '/dashboard');
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [goTo, isAuthenticated]);
 
   const onSubmit = async () => {
@@ -230,6 +255,8 @@ const styles = StyleSheet.create({
     padding: 28,
     ...(Platform.OS === 'web'
       ? ({ boxShadow: '0 24px 60px rgba(15, 23, 42, 0.08)' } as any)
+      : Platform.OS === 'macos'
+        ? null
       : {
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 12 },
@@ -275,6 +302,7 @@ const styles = StyleSheet.create({
     borderColor: appAlphaColors.borderSoft,
     borderRadius: 12,
     paddingHorizontal: 14,
+    ...(desktopSingleLineInputStyle ?? null),
     backgroundColor: appColors.white,
     color: appColors.ink900,
     fontSize: 15,

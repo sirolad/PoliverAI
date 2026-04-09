@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState, ReactNode } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import { Platform } from 'react-native';
 import { setUser as setUserAction, clearUser as clearUserAction } from '../slices/authSlice';
 import type { User } from '../types/user';
 import { AuthContext } from '../contexts/auth-context';
@@ -49,8 +50,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [reportsCount, setReportsCount] = useState<number | undefined>(undefined);
   const dispatch = useDispatch();
 
+  console.log('[startup] AuthProvider render', {
+    platform: Platform.OS,
+    hasPersistedUser: !!persistedUser,
+    hasUser: !!user,
+    loading,
+  });
+
   useEffect(() => {
     if (persistedUser) {
+      console.log('[startup] AuthProvider persisted user detected');
       setUser((current) => current ?? persistedUser);
     }
   }, [persistedUser]);
@@ -58,12 +67,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     (async () => {
       try {
+        console.log('[startup] AuthProvider init start', {
+          platform: Platform.OS,
+          isWeb: isWebPlatform(),
+        });
         let token: string | null = null;
         if (isWebPlatform()) {
           token = window.localStorage.getItem('token') || window.localStorage.getItem(TOKEN_KEY);
         } else {
           token = await storage.getItem(TOKEN_KEY);
         }
+
+        console.log('[startup] AuthProvider token lookup complete', {
+          hasToken: !!token,
+        });
 
         if (token) {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -72,6 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch (e) {
         console.warn('auth init error', e);
       } finally {
+        console.log('[startup] AuthProvider init complete');
         setLoading(false);
       }
     })();
@@ -222,6 +240,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     refreshReportsCount,
     refreshUser,
   };
+
+  console.log('[startup] AuthProvider return', {
+    platform: Platform.OS,
+    loading,
+    isAuthenticated: !!user,
+  });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

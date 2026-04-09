@@ -1,8 +1,11 @@
 export { default as useCreditsSummary } from './hooks/useCreditsSummary';
 export type { Transaction } from './services/transactions';
 export { default as PaymentsService } from './services/payments';
+export type { ApiError } from './services/api';
+export { default as apiService } from './services/api';
 export * from './lib/eventHelpers';
 export * from './lib/paymentsHelpers';
+export * from './lib/platformStorage';
 export {
   getApiBaseOrigin,
   buildCheckoutUrls,

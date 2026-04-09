@@ -1,9 +1,9 @@
 import React from 'react';
-import { Image, Modal, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PaymentsService, useAuth } from '@poliverai/intl';
-import { appAlphaColors, appColors, EnterCreditsModal } from '@poliverai/shared-ui';
+import { appAlphaColors, appColors, CrossPlatformModal, EnterCreditsModal } from '@poliverai/shared-ui';
 import { CreditCard, LayoutDashboard, LogIn, LogOut, Menu, ShieldCheck, Sparkles, UserPlus, X } from 'lucide-react-native';
 import { BrandLogo } from './BrandLogo';
 
@@ -73,17 +73,34 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
     logout?: () => void | Promise<void>;
   };
   const { width } = useWindowDimensions();
+  const [containerWidth, setContainerWidth] = React.useState(0);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [creditsModalOpen, setCreditsModalOpen] = React.useState(false);
 
-  const isDesktop = width > 980;
   const isDashboard =
     currentRoute === 'dashboard' ||
     currentRoute === 'analyze' ||
     currentRoute === 'credits' ||
     currentRoute === 'reports';
+  const desktopBreakpoint =
+    Platform.OS === 'macos'
+      ? isAuthenticated && isDashboard
+        ? 1560
+        : 1240
+      : 980;
+  const effectiveWidth = containerWidth > 0 ? containerWidth : width;
+  const isDesktop = effectiveWidth > desktopBreakpoint;
   const creditCount = Number(user?.credits ?? 0);
   const displayName = user?.name?.trim() || 'Account';
+  const handleContainerLayout = React.useCallback((nextWidth: number) => {
+    setContainerWidth((current) => (Math.abs(current - nextWidth) > 1 ? nextWidth : current));
+  }, []);
+
+  React.useEffect(() => {
+    if (isDesktop && menuOpen) {
+      setMenuOpen(false);
+    }
+  }, [isDesktop, menuOpen]);
 
   const safeNavigate = React.useCallback((routeName: string, webPath: string) => {
     try {
@@ -108,10 +125,92 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
     }
   }, [logout, safeNavigate]);
 
+  const openCreditsModal = React.useCallback(() => {
+    if (Platform.OS !== 'web' && menuOpen) {
+      setMenuOpen(false);
+      setTimeout(() => setCreditsModalOpen(true), 150);
+      return;
+    }
+    setCreditsModalOpen(true);
+  }, [menuOpen]);
+
   const showLoginAction = !isAuthenticated && currentRoute !== 'login';
   const showSignupAction = !isAuthenticated && currentRoute !== 'register';
 
   if (Platform.OS !== 'web') {
+    const nativeDesktopActions = isAuthenticated ? (
+      <>
+        <Pressable onPress={() => safeNavigate('Dashboard', '/dashboard')} style={[styles.nativeActionButton, styles.nativePrimaryButton]}>
+          <View style={styles.nativeActionButtonInner}>
+            <LayoutDashboard size={16} color={appColors.white} />
+            <Text style={styles.primaryButtonText}>Dashboard</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => safeNavigate('Analyze', '/analyze')} style={styles.nativeActionButton}>
+          <View style={styles.nativeActionButtonInner}>
+            <ShieldCheck size={16} color={appColors.ink900} />
+            <Text style={styles.nativeSecondaryButtonText}>Analyze Policy</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => safeNavigate('Reports', '/reports')} style={styles.nativeActionButton}>
+          <View style={styles.nativeActionButtonInner}>
+            <ShieldCheck size={16} color={appColors.ink900} />
+            <Text style={styles.nativeSecondaryButtonText}>Reports</Text>
+          </View>
+        </Pressable>
+        <Pressable onPress={() => safeNavigate('Credits', '/credits')} style={styles.nativeActionButton}>
+          <View style={styles.nativeActionButtonInner}>
+            <CreditCard size={16} color={appColors.ink900} />
+            <Text style={styles.nativeSecondaryButtonText}>Transaction History</Text>
+          </View>
+        </Pressable>
+        {!isPro ? (
+          <Pressable onPress={() => PaymentsService.purchaseUpgrade(29).catch(() => undefined)} style={[styles.nativeActionButton, styles.nativePrimaryButton]}>
+            <View style={styles.nativeActionButtonInner}>
+              <Sparkles size={16} color={appColors.white} />
+              <Text style={styles.primaryButtonText}>Upgrade to Pro</Text>
+            </View>
+          </Pressable>
+        ) : null}
+        <Pressable onPress={openCreditsModal} style={[styles.nativeActionButton, styles.nativeDarkButton]}>
+          <View style={styles.nativeActionButtonInner}>
+            <CreditCard size={16} color={appColors.white} />
+            <Text style={styles.nativeDarkButtonText}>Buy Credits</Text>
+          </View>
+        </Pressable>
+        <View style={styles.nativeDesktopMeta}>
+          <Text style={styles.nativeMetaPill}>{isPro ? 'PRO' : 'FREE'}</Text>
+          <Text style={styles.nativeDesktopMetaText}>Credits: {creditCount}</Text>
+          <Text style={styles.nativeDesktopMetaText}>{displayName}</Text>
+        </View>
+        <Pressable onPress={handleLogout} style={styles.nativeActionButton}>
+          <View style={styles.nativeActionButtonInner}>
+            <LogOut size={16} color={appColors.ink900} />
+            <Text style={styles.nativeSecondaryButtonText}>Logout</Text>
+          </View>
+        </Pressable>
+      </>
+    ) : (
+      <>
+        {showLoginAction ? (
+          <Pressable onPress={() => safeNavigate('Login', '/login')} style={styles.nativeActionButton}>
+            <View style={styles.nativeActionButtonInner}>
+              <LogIn size={16} color={appColors.ink900} />
+              <Text style={styles.nativeSecondaryButtonText}>Login</Text>
+            </View>
+          </Pressable>
+        ) : null}
+        {showSignupAction ? (
+          <Pressable onPress={() => safeNavigate('Register', '/register')} style={[styles.nativeActionButton, styles.nativePrimaryButton]}>
+            <View style={styles.nativeActionButtonInner}>
+              <UserPlus size={16} color={appColors.white} />
+              <Text style={styles.primaryButtonText}>Sign Up</Text>
+            </View>
+          </Pressable>
+        ) : null}
+      </>
+    );
+
     const nativeMobileActions = isAuthenticated ? (
       <>
         <NavActionButton
@@ -122,12 +221,54 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
           fullWidth
         />
         <NavActionButton
+          label="Analyze Policy"
+          onPress={() => safeNavigate('Analyze', '/analyze')}
+          icon={<ShieldCheck size={16} color={appColors.ink900} />}
+          variant="ghost"
+          fullWidth
+        />
+        <NavActionButton
+          label="Reports"
+          onPress={() => safeNavigate('Reports', '/reports')}
+          icon={<ShieldCheck size={16} color={appColors.ink900} />}
+          variant="ghost"
+          fullWidth
+        />
+        <NavActionButton
+          label="Transaction History"
+          onPress={() => safeNavigate('Credits', '/credits')}
+          icon={<CreditCard size={16} color={appColors.ink900} />}
+          variant="ghost"
+          fullWidth
+        />
+        {!isPro ? (
+          <NavActionButton
+            label="Upgrade to Pro"
+            onPress={() => PaymentsService.purchaseUpgrade(29).catch(() => undefined)}
+            icon={<Sparkles size={16} color={appColors.white} />}
+            variant="primary"
+            fullWidth
+          />
+        ) : null}
+        <NavActionButton
+          label="Buy Credits"
+          onPress={openCreditsModal}
+          icon={<CreditCard size={16} color={appColors.white} />}
+          variant="secondary"
+          fullWidth
+        />
+        <NavActionButton
           label="Logout"
           onPress={handleLogout}
           icon={<LogOut size={16} color={appColors.ink900} />}
           variant="ghost"
           fullWidth
         />
+        <View style={styles.mobileMeta}>
+          <Text style={styles.mobileMetaText}>{isPro ? 'PRO' : 'FREE'}</Text>
+          <Text style={styles.mobileMetaText}>Credits: {creditCount}</Text>
+          <Text style={styles.mobileMetaText}>{displayName}</Text>
+        </View>
       </>
     ) : (
       <>
@@ -154,7 +295,10 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
 
     return (
       <>
-        <View style={[styles.nativeOuter, { paddingTop: Math.max(insets.top, 8), minHeight: 56 + insets.top }]}>
+        <View
+          onLayout={(event) => handleContainerLayout(event.nativeEvent.layout.width)}
+          style={[styles.nativeOuter, { paddingTop: Math.max(insets.top, 8), minHeight: 56 + insets.top }]}
+        >
           <Pressable onPress={() => safeNavigate('WebLanding', '/')} style={styles.nativeBrandButton}>
             <BrandLogo width={40} height={40} />
             <Text style={styles.brandText}>
@@ -164,41 +308,7 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
 
           {isDesktop ? (
             <View style={styles.nativeActionsRow}>
-              {isAuthenticated ? (
-                <>
-                  <Pressable onPress={() => safeNavigate('Dashboard', '/dashboard')} style={[styles.nativeActionButton, styles.nativePrimaryButton]}>
-                    <View style={styles.nativeActionButtonInner}>
-                      <LayoutDashboard size={16} color={appColors.white} />
-                      <Text style={styles.primaryButtonText}>Dashboard</Text>
-                    </View>
-                  </Pressable>
-                  <Pressable onPress={handleLogout} style={styles.nativeActionButton}>
-                    <View style={styles.nativeActionButtonInner}>
-                      <LogOut size={16} color={appColors.ink900} />
-                      <Text style={styles.nativeSecondaryButtonText}>Logout</Text>
-                    </View>
-                  </Pressable>
-                </>
-              ) : (
-                <>
-                  {showLoginAction ? (
-                    <Pressable onPress={() => safeNavigate('Login', '/login')} style={styles.nativeActionButton}>
-                      <View style={styles.nativeActionButtonInner}>
-                        <LogIn size={16} color={appColors.ink900} />
-                        <Text style={styles.nativeSecondaryButtonText}>Login</Text>
-                      </View>
-                    </Pressable>
-                  ) : null}
-                  {showSignupAction ? (
-                    <Pressable onPress={() => safeNavigate('Register', '/register')} style={[styles.nativeActionButton, styles.nativePrimaryButton]}>
-                      <View style={styles.nativeActionButtonInner}>
-                        <UserPlus size={16} color={appColors.white} />
-                        <Text style={styles.primaryButtonText}>Sign Up</Text>
-                      </View>
-                    </Pressable>
-                  ) : null}
-                </>
-              )}
+              {nativeDesktopActions}
             </View>
           ) : (
             <Pressable onPress={() => setMenuOpen(true)} style={styles.menuButton}>
@@ -211,7 +321,7 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
         </View>
 
         {!isDesktop ? (
-          <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
+          <CrossPlatformModal open={menuOpen} animationType="fade" onRequestClose={() => setMenuOpen(false)}>
             <Pressable style={styles.mobileMenuBackdrop} onPress={() => setMenuOpen(false)}>
               <Pressable style={styles.mobileMenuSheet} onPress={() => undefined}>
                 <View style={styles.mobileMenuHeader}>
@@ -223,8 +333,15 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
                 <View style={styles.mobileActionsRow}>{nativeMobileActions}</View>
               </Pressable>
             </Pressable>
-          </Modal>
+          </CrossPlatformModal>
         ) : null}
+        <EnterCreditsModal
+          open={creditsModalOpen}
+          onClose={() => setCreditsModalOpen(false)}
+          onConfirm={async (amountUsd) => {
+            await PaymentsService.purchaseCredits(amountUsd);
+          }}
+        />
       </>
     );
   }
@@ -260,7 +377,7 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
           variant="primary"
         />
       ) : null}
-      <NavActionButton label="Buy Credits" onPress={() => setCreditsModalOpen(true)} icon={<CreditCard size={16} color={appColors.white} />} variant="secondary" />
+      <NavActionButton label="Buy Credits" onPress={openCreditsModal} icon={<CreditCard size={16} color={appColors.white} />} variant="secondary" />
       <NavActionButton label="Logout" onPress={handleLogout} icon={<LogOut size={16} color={appColors.ink900} />} variant="ghost" />
     </>
   );
@@ -298,7 +415,7 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
           fullWidth
         />
       ) : null}
-      <NavActionButton label="Buy Credits" onPress={() => setCreditsModalOpen(true)} icon={<CreditCard size={16} color={appColors.white} />} variant="secondary" fullWidth />
+      <NavActionButton label="Buy Credits" onPress={openCreditsModal} icon={<CreditCard size={16} color={appColors.white} />} variant="secondary" fullWidth />
       <NavActionButton label="Logout" onPress={handleLogout} icon={<LogOut size={16} color={appColors.ink900} />} variant="ghost" fullWidth />
       <View style={styles.mobileMeta}>
         <Text style={styles.mobileMetaText}>{isPro ? 'PRO' : 'FREE'}</Text>
@@ -328,7 +445,10 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
   );
 
   return (
-    <View style={[styles.outer, Platform.OS === 'web' ? webStickyStyle : null]}>
+    <View
+      onLayout={(event) => handleContainerLayout(event.nativeEvent.layout.width)}
+      style={[styles.outer, Platform.OS === 'web' ? webStickyStyle : null]}
+    >
       <View style={styles.inner}>
         <Pressable onPress={() => safeNavigate('WebLanding', '/')} style={styles.brandButton}>
           {Platform.OS === 'web' ? (
@@ -358,7 +478,7 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
       </View>
 
       {!isDesktop ? (
-        <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
+        <CrossPlatformModal open={menuOpen} animationType="fade" onRequestClose={() => setMenuOpen(false)}>
           <Pressable style={styles.mobileMenuBackdrop} onPress={() => setMenuOpen(false)}>
             <Pressable style={styles.mobileMenuSheet} onPress={() => undefined}>
               <View style={styles.mobileMenuHeader}>
@@ -372,7 +492,7 @@ export default function AppTopNav({ currentRoute = 'landing' }: AppTopNavProps) 
               </View>
             </Pressable>
           </Pressable>
-        </Modal>
+        </CrossPlatformModal>
       ) : null}
       <EnterCreditsModal
         open={creditsModalOpen}
@@ -424,6 +544,9 @@ const styles = StyleSheet.create({
   nativePrimaryButton: {
     backgroundColor: appColors.blue600,
   },
+  nativeDarkButton: {
+    backgroundColor: appColors.ink900,
+  },
   nativeActionButtonInner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -433,6 +556,32 @@ const styles = StyleSheet.create({
     color: appColors.ink900,
     fontSize: 14,
     fontWeight: '700',
+  },
+  nativeDarkButtonText: {
+    color: appColors.white,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  nativeDesktopMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 4,
+  },
+  nativeMetaPill: {
+    color: appColors.ink900,
+    fontSize: 12,
+    fontWeight: '800',
+    backgroundColor: appColors.blue100,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  nativeDesktopMetaText: {
+    color: appColors.ink900,
+    fontSize: 14,
+    fontWeight: '600',
   },
   outer: {
     backgroundColor: appAlphaColors.white94,

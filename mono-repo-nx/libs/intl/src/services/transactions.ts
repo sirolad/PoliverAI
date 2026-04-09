@@ -24,14 +24,25 @@ type TxListResp = {
   total_spent_credits?: number;
 };
 
+const buildQuery = (params?: Record<string, string | number | null | undefined>) => {
+  if (!params) return '';
+  const parts: string[] = [];
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue;
+    parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
+  }
+  return parts.join('&');
+};
+
 const listTransactions = async (opts?: { page?: number; limit?: number; date_from?: string | null; date_to?: string | null }): Promise<TxListResp> => {
   const url = '/api/v1/transactions';
-  const qs = new URLSearchParams();
-  if (opts?.page) qs.set('page', String(opts.page));
-  if (opts?.limit) qs.set('limit', String(opts.limit));
-  if (opts?.date_from) qs.set('date_from', opts.date_from);
-  if (opts?.date_to) qs.set('date_to', opts.date_to);
-  const finalUrl = qs.toString() ? `${url}?${qs.toString()}` : url;
+  const query = buildQuery({
+    page: opts?.page,
+    limit: opts?.limit,
+    date_from: opts?.date_from ?? undefined,
+    date_to: opts?.date_to ?? undefined,
+  });
+  const finalUrl = query ? `${url}?${query}` : url;
   const res = await apiService.get<TxListResp>(finalUrl);
   return res as TxListResp;
 };

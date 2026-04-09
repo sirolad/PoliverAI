@@ -81,6 +81,12 @@ RCT_EXPORT_MODULE();
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     if (splashWindow == nil) {
+      [NSApp activateIgnoringOtherApps:YES];
+      NSWindow *mainWindow = NSApp.mainWindow ?: NSApp.windows.firstObject;
+      if (mainWindow != nil) {
+        mainWindow.backgroundColor = NSColor.whiteColor;
+        [mainWindow makeKeyAndOrderFront:nil];
+      }
       return;
     }
 
@@ -93,6 +99,12 @@ RCT_EXPORT_MODULE();
     } completionHandler:^{
       [window orderOut:nil];
       [window close];
+      [NSApp activateIgnoringOtherApps:YES];
+      NSWindow *mainWindow = NSApp.mainWindow ?: NSApp.windows.firstObject;
+      if (mainWindow != nil) {
+        mainWindow.backgroundColor = NSColor.whiteColor;
+        [mainWindow makeKeyAndOrderFront:nil];
+      }
     }];
   });
 }

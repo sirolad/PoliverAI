@@ -13,8 +13,28 @@
       "options": {}
     },
     "run-ios": {
-      "executor": "@nx/react-native:run-ios",
-      "options": {}
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "node ../../scripts/prepare-and-install.js ios && yarn run ios"
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "run-ios-debug-experimental": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "RCT_NEW_ARCH_ENABLED=1 node ../../scripts/prepare-and-install.js ios && RCT_NEW_ARCH_ENABLED=1 npx react-native run-ios --scheme PoliverAI-DebugExperimental --mode DebugExperimental"
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
     },
     "build-android": {
       "executor": "@nx/react-native:build-android",
@@ -41,7 +61,7 @@
       "options": {
         "commands": [
           {
-            "command": "sh -lc \"if (grep -q '\"react-native-windows\"' package.json 2>/dev/null || [ -d node_modules/react-native-windows ] || [ -d ../node_modules/react-native-windows ]) && [ -d windows ]; then npx react-native run-windows; else echo 'react-native run-windows not configured: add react-native-windows and initialize the windows/ native project (see https://microsoft.github.io/react-native-windows/).'; fi\""
+            "command": "node ../../scripts/prepare-and-install.js windows && node ../../node_modules/react-native/cli.js run-windows --logging"
           }
         ],
         "cwd": "apps/poliverai",
@@ -65,7 +85,7 @@
       "options": {
         "commands": [
           {
-            "command": "sh -lc \"if (grep -q '\"react-native-windows\"' package.json 2>/dev/null || [ -d node_modules/react-native-windows ] || [ -d ../node_modules/react-native-windows ]) && [ -d windows ]; then npx react-native build-windows; else echo 'react-native build-windows not configured: add react-native-windows and initialize the windows/ native project.'; fi\""
+            "command": "node ../../scripts/prepare-and-install.js windows && node ../../node_modules/react-native/cli.js build-windows"
           }
         ],
         "cwd": "apps/poliverai",
@@ -125,6 +145,30 @@
       "executor": "@nx/vite:preview-server",
       "options": {
         "config": "apps/poliverai/vite.config.ts"
+      }
+    },
+    "run-windows-no-packager": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "node ../../scripts/prepare-and-install.js windows && node ../../node_modules/react-native/cli.js run-windows --logging --no-packager"
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
+      }
+    },
+    "start-metro-windows": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "node ./scripts/start-metro-windows.js"
+          }
+        ],
+        "cwd": "apps/poliverai",
+        "parallel": false
       }
     }
   }

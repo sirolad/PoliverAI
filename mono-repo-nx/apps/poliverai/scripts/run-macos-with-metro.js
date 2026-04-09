@@ -11,6 +11,8 @@ const repoRoot = path.resolve(appRoot, '..', '..');
 const metroPort = Number(process.env.RCT_METRO_PORT || 8081);
 const metroHost = 'localhost';
 const reactNativeCli = path.join(repoRoot, 'node_modules', 'react-native-macos', 'cli.js');
+const reactNativeMetroCli = path.join(repoRoot, 'node_modules', 'react-native', 'cli.js');
+let startedMetroProcess = null;
 
 function supportsStyleText(nodeBinary) {
   if (!nodeBinary || !fs.existsSync(nodeBinary)) {
@@ -91,20 +93,26 @@ async function ensureMetroRunning() {
 
   const metroProcess = spawn(
     metroNodeBinary,
-    [reactNativeCli, 'start', '--port', String(metroPort), '--config', 'metro.config.js'],
+    [
+      reactNativeMetroCli,
+      'start',
+      '--port',
+      String(metroPort),
+      '--config',
+      'metro.config.js',
+    ],
     {
       cwd: appRoot,
       env: {
         ...process.env,
         RCT_METRO_PORT: String(metroPort),
       },
-      detached: true,
       shell: false,
-      stdio: 'ignore',
+      stdio: 'inherit',
     }
   );
 
-  metroProcess.unref();
+  startedMetroProcess = metroProcess;
 
   for (let attempt = 0; attempt < 30; attempt += 1) {
     if (await isMetroRunning()) {
@@ -115,6 +123,15 @@ async function ensureMetroRunning() {
   }
 
   throw new Error(`Metro did not start on port ${metroPort} within 30 seconds.`);
+}
+
+function stopStartedMetro() {
+  if (startedMetroProcess == null || startedMetroProcess.killed) {
+    return;
+  }
+
+  startedMetroProcess.kill('SIGINT');
+  startedMetroProcess = null;
 }
 
 function runMacOS() {
@@ -154,7 +171,18 @@ async function main() {
   await runMacOS();
 }
 
+process.on('SIGINT', () => {
+  stopStartedMetro();
+  process.exit(130);
+});
+
+process.on('SIGTERM', () => {
+  stopStartedMetro();
+  process.exit(143);
+});
+
 main().catch((error) => {
+  stopStartedMetro();
   console.error(error.message);
   process.exit(1);
 });

@@ -8,9 +8,9 @@ import PolicyAnalysisScreen from '../../screens/PolicyAnalysisScreen';
 import ReportsScreen from '../../screens/ReportsScreen';
 import RegisterScreen from '../../screens/RegisterScreen/RegisterScreen';
 import DashboardScreen from '../../screens/DashboardScreen';
-import { TabNavigator } from '../TabNavigator/TabNavigator';
 import { LandingScreen } from '../../screens/LandingScreen';
 import CreditsScreen from '../../screens/CreditsScreen';
+import PaymentReturnScreen from '../../screens/PaymentReturnScreen';
 
 const Stack = createStackNavigator();
 
@@ -42,27 +42,25 @@ export const AppNavigator = ({
   const loading = isLoading ?? false;
   const authenticated = isAuthenticated ?? false;
   const isWeb = Platform.OS === 'web' && typeof window !== 'undefined';
-  const linking = isWeb
-    ? {
-        prefixes: [window.location.origin, 'poliverai://'],
-        config: {
-          screens: {
-            WebLanding: '',
-            Login: 'login',
-            Register: 'register',
-            Signup: 'signup',
-            Dashboard: 'dashboard',
-            Analyze: 'analyze',
-            Reports: 'reports',
-            Credits: 'credits',
-            PaymentReturn: 'payments/return',
-            Main: {
-              path: 'app',
-            },
-          },
+  const linking = {
+    prefixes: isWeb ? [window.location.origin, 'poliverai://'] : ['poliverai://'],
+    config: {
+      screens: {
+        WebLanding: '',
+        Login: 'login',
+        Register: 'register',
+        Signup: 'signup',
+        Dashboard: 'dashboard',
+        Analyze: 'analyze',
+        Reports: 'reports',
+        Credits: 'credits',
+        PaymentReturn: 'payments/return',
+        Main: {
+          path: 'app',
         },
-      }
-    : undefined;
+      },
+    },
+  };
 
   if (loading && authenticated) {
     return (
@@ -82,8 +80,9 @@ export const AppNavigator = ({
         screenOptions={{
           headerShown: false,
           cardStyle: { backgroundColor: appColors.white },
+          ...(Platform.OS === 'macos' ? ({ animationEnabled: false } as any) : null),
         }}
-        initialRouteName={authenticated ? 'Main' : 'WebLanding'}
+        initialRouteName={authenticated ? 'Dashboard' : 'WebLanding'}
       >
         {/* Always include the key web routes as screens so the linking config can navigate to them */}
         <Stack.Screen name="WebLanding" component={LandingScreen} />
@@ -94,10 +93,7 @@ export const AppNavigator = ({
         <Stack.Screen name="Analyze" component={PolicyAnalysisScreen} />
         <Stack.Screen name="Reports" component={ReportsScreen} />
         <Stack.Screen name="Credits" component={CreditsScreen} />
-        <Stack.Screen name="PaymentReturn" component={CreditsScreen} />
-        {authenticated ? (
-          <Stack.Screen name="Main" component={TabNavigator} />
-        ) : null}
+        <Stack.Screen name="PaymentReturn" component={PaymentReturnScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

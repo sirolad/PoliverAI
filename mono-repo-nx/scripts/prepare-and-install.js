@@ -2,7 +2,12 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const { ensureAppHoistedLinks } = require('./ensure-app-hoisted-links');
+const {
+  ensureAppHoistedLinks,
+  removeAppHoistedLinks,
+  WINDOWS_APP_LOCAL_PACKAGES,
+  WINDOWS_LINKED_PACKAGES,
+} = require('./ensure-app-hoisted-links');
 
 function run(cmd, args, opts = {}) {
   console.log(`> ${cmd} ${args.join(' ')}`);
@@ -159,11 +164,19 @@ if (fs.existsSync(path.join(repoRoot, 'package.json'))) {
 // This repo is already managed from the workspace root, and re-running
 // `yarn install` in apps/poliverai causes duplicate .bin symlink conflicts.
 
-ensureAppHoistedLinks({
-  repoRoot,
-  appRoot,
-  logPrefix: 'prepare-and-install',
-});
+if (arg === 'windows') {
+  removeAppHoistedLinks({
+    appRoot,
+    packages: WINDOWS_APP_LOCAL_PACKAGES,
+    logPrefix: 'prepare-and-install',
+  });
+} else {
+  ensureAppHoistedLinks({
+    repoRoot,
+    appRoot,
+    logPrefix: 'prepare-and-install',
+  });
+}
 
 // Platform-specific preparation
 if (arg === 'macos') {
@@ -263,11 +276,17 @@ if (arg === 'macos') {
   normalizeGeneratedReactCodegenPodspecs();
 } else if (arg === 'android') {
   ensureReactNativeGradlePluginArtifacts();
+} else if (arg === 'windows') {
+  const windowsPatch = path.join(repoRoot, 'scripts', 'patch-react-native-windows-projects.js');
+  if (fs.existsSync(windowsPatch)) {
+    run('node', [windowsPatch], { cwd: repoRoot });
+  }
 }
 
 ensureAppHoistedLinks({
   repoRoot,
   appRoot,
+  packages: arg === 'windows' ? WINDOWS_LINKED_PACKAGES : undefined,
   logPrefix: 'prepare-and-install',
 });
 

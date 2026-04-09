@@ -32,7 +32,9 @@ Thumbs.db
 # nx caches and workspace data
 .nx/cache
 .nx/workspace-data
+mono-repo-nx/.nx/
 mono-repo-nx/.nx/workspace-data/react-native-*.hash
+mono-repo-nx/11.12.0
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 

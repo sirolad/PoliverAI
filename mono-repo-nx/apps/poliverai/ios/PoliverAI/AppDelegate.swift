@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey : Any] = [:]
   ) -> Bool {
-    RCTLinkingManager.application(app, open: url, options: options)
+    return RCTLinkingManager.application(app, open: url, options: options)
   }
 
   func application(
@@ -45,7 +45,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     continue userActivity: NSUserActivity,
     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
   ) -> Bool {
-    RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    return RCTLinkingManager.application(
+      application,
+      continue: userActivity,
+      restorationHandler: restorationHandler
+    )
   }
 }
 
@@ -55,14 +59,24 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   }
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {
-    self.bundleURL()
+    return self.bundleURL()
   }
 
   override func bundleURL() -> URL? {
+#if IOS_EXPERIMENTAL_DEBUG
+    NSLog("[iOS Experimental Debug] Active")
+#endif
 #if DEBUG
-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "src/Main")
+    if let url = RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "src/Main") {
+      return url
+    }
+#if targetEnvironment(simulator)
+    return URL(string: "http://localhost:8081/src/Main.bundle?platform=ios&dev=true&minify=false")
 #else
-    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+    return nil
+#endif
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
   }
 }

@@ -13,6 +13,7 @@
 		514201552437B4B40078DB4F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 514201532437B4B40078DB4F /* Main.storyboard */; };
 		514201582437B4B40078DB4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 514201572437B4B40078DB4F /* main.m */; };
 		5142015D2437B4B50078DB4F /* MacSplashScreen.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5142015F2437B4B50078DB4F /* MacSplashScreen.mm */; };
+		514201612437B4B60078DB4F /* MacDocumentPicker.mm in Sources */ = {isa = PBXBuildFile; fileRef = 514201632437B4B60078DB4F /* MacDocumentPicker.mm */; };
 		7160109D736384D26B1E734B /* libPods-poliverai-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEDC26E87284153DF5E39541 /* libPods-poliverai-macOS.a */; };
 		E970B7C88C4C03975F3D9A4C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = FC569CEE78F6025103182ADF /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
@@ -29,6 +30,8 @@
 		514201592437B4B40078DB4F /* poliverai.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = poliverai.entitlements; sourceTree = "<group>"; };
 		5142015E2437B4B50078DB4F /* MacSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacSplashScreen.h; sourceTree = "<group>"; };
 		5142015F2437B4B50078DB4F /* MacSplashScreen.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MacSplashScreen.mm; sourceTree = "<group>"; };
+		514201622437B4B60078DB4F /* MacDocumentPicker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacDocumentPicker.h; sourceTree = "<group>"; };
+		514201632437B4B60078DB4F /* MacDocumentPicker.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MacDocumentPicker.mm; sourceTree = "<group>"; };
 		5C6DBDA0D5359F333F07C064 /* Pods-poliverai-macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poliverai-macOS.release.xcconfig"; path = "Target Support Files/Pods-poliverai-macOS/Pods-poliverai-macOS.release.xcconfig"; sourceTree = "<group>"; };
 		7357F54051473B9289127CF6 /* Pods-poliverai-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-poliverai-macOS.debug.xcconfig"; path = "Target Support Files/Pods-poliverai-macOS/Pods-poliverai-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -69,6 +72,8 @@
 			children = (
 				5142014B2437B4B30078DB4F /* AppDelegate.h */,
 				5142014C2437B4B30078DB4F /* AppDelegate.mm */,
+				514201622437B4B60078DB4F /* MacDocumentPicker.h */,
+				514201632437B4B60078DB4F /* MacDocumentPicker.mm */,
 				5142015E2437B4B50078DB4F /* MacSplashScreen.h */,
 				5142015F2437B4B50078DB4F /* MacSplashScreen.mm */,
 				514201512437B4B40078DB4F /* Assets.xcassets */,
@@ -152,6 +157,7 @@
 				514201472437B4B30078DB4F /* Resources */,
 				381D8A6E24576A4E00465D17 /* Bundle React Native code and images */,
 				D74545C6D35C2D9E453AADE5 /* [CP] Copy Pods Resources */,
+				2F356D98F1A2FFAD7008FB47 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -256,6 +262,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		2F356D98F1A2FFAD7008FB47 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-poliverai-macOS/Pods-poliverai-macOS-frameworks.sh",
+				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/macosx/hermes.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-poliverai-macOS/Pods-poliverai-macOS-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		381D8A6E24576A4E00465D17 /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -320,6 +344,7 @@
 			files = (
 				514201582437B4B40078DB4F /* main.m in Sources */,
 				5142014D2437B4B30078DB4F /* AppDelegate.mm in Sources */,
+				514201612437B4B60078DB4F /* MacDocumentPicker.mm in Sources */,
 				5142015D2437B4B50078DB4F /* MacSplashScreen.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -489,7 +514,7 @@
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native-macos";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
-				USE_HERMES = false;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -547,7 +572,7 @@
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native-macos";
 				SDKROOT = iphoneos;
-				USE_HERMES = false;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

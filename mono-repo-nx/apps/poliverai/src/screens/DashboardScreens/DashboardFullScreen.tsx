@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, Text } from 'react-native';
-import { useAuth, t, getDefaultMonthRange, ReportMetadata, computeSavedTotals, getCostForReport, formatRangeLabel, computeDerivedFree, transactionsService, computeTransactionTotals, policyService } from '@poliverai/intl';
+import { useAuth, t, getDefaultMonthRange, ReportMetadata, computeSavedTotals, getCostForReport, formatRangeLabel, computeDerivedFree, computeTransactionTotals } from '@poliverai/intl';
 import { AccountStatus, QuickActions, AvailableFeatures, GettingStarted, DashboardHeader, colors as rnTokens, spacing } from '@poliverai/shared-ui';
 import AppTopNav from '../../components/AppTopNav';
 import AppFooter from '../../components/AppFooter';
 import useRampedCounters from '../../hooks/useRampedCounters';
+import policyService from '../../services/policyService';
+import transactionsService from '../../services/transactions';
 
 export const DashboardFullScreen: React.FC = () => {
   const authFromIntl = useAuth() as unknown as { user?: Record<string, unknown> | null; isAuthenticated?: boolean; isPro?: boolean; loading?: boolean; refreshUser?: () => Promise<void>; reportsCount?: number }
@@ -28,6 +30,9 @@ export const DashboardFullScreen: React.FC = () => {
     events: [],
     legacyCounts: { full: 0, revision: 0, free: 0 },
   })
+  const browserWindow = typeof window !== 'undefined' ? window : undefined
+  const supportsWindowEvents = !!browserWindow && typeof browserWindow.addEventListener === 'function' && typeof browserWindow.removeEventListener === 'function'
+  const supportsLocalStorage = !!browserWindow && !!browserWindow.localStorage
 
   const computeDeletedCountsForRange = React.useCallback((
     events: Array<{ ts: number; counts: { full: number; revision: number; free: number } }>,
@@ -153,9 +158,9 @@ export const DashboardFullScreen: React.FC = () => {
   React.useEffect(() => { return undefined }, [reportsRange.from, reportsRange.to])
 
   React.useEffect(() => {
-    if (typeof window === 'undefined') return undefined
+    if (!supportsLocalStorage) return undefined
     try {
-      const raw = window.localStorage.getItem('poliverai:deletedReports')
+      const raw = browserWindow.localStorage.getItem('poliverai:deletedReports')
       if (!raw) return undefined
       const parsed = JSON.parse(raw) as { events?: Array<{ ts: number; counts: { full: number; revision: number; free: number } }>; legacyCounts?: { full?: number; revision?: number; free?: number } }
       setDeletedState({
@@ -170,10 +175,10 @@ export const DashboardFullScreen: React.FC = () => {
       return undefined
     }
     return undefined
-  }, [])
+  }, [browserWindow, supportsLocalStorage])
 
   React.useEffect(() => {
-    if (typeof window === 'undefined') return undefined
+    if (!supportsWindowEvents || !supportsLocalStorage) return undefined
     const handler = (event: Event) => {
       try {
         const customEvent = event as CustomEvent<{ counts?: { full?: number; revision?: number; free?: number } }>
@@ -192,16 +197,16 @@ export const DashboardFullScreen: React.FC = () => {
               free: current.legacyCounts.free + normalized.free,
             },
           }
-          window.localStorage.setItem('poliverai:deletedReports', JSON.stringify(next))
+          browserWindow.localStorage.setItem('poliverai:deletedReports', JSON.stringify(next))
           return next
         })
       } catch {
         // ignore
       }
     }
-    window.addEventListener('reports:deleted', handler as EventListener)
-    return () => window.removeEventListener('reports:deleted', handler as EventListener)
-  }, [])
+    browserWindow.addEventListener('reports:deleted', handler as EventListener)
+    return () => browserWindow.removeEventListener('reports:deleted', handler as EventListener)
+  }, [browserWindow, supportsLocalStorage, supportsWindowEvents])
 
   React.useEffect(() => {
     if (loading || !isAuthenticated) {
@@ -233,13 +238,13 @@ export const DashboardFullScreen: React.FC = () => {
       }
     }
     // On RN, global event emitters should be used; for parity keep window-based handlers if available
-    if (typeof window !== 'undefined' && window?.addEventListener) {
-      window.addEventListener('payment:refresh-user', handler as EventListener)
-      window.addEventListener('transactions:refresh', handler as EventListener)
-      return () => { window.removeEventListener('payment:refresh-user', handler as EventListener); window.removeEventListener('transactions:refresh', handler as EventListener) }
+    if (supportsWindowEvents) {
+      browserWindow.addEventListener('payment:refresh-user', handler as EventListener)
+      browserWindow.addEventListener('transactions:refresh', handler as EventListener)
+      return () => { browserWindow.removeEventListener('payment:refresh-user', handler as EventListener); browserWindow.removeEventListener('transactions:refresh', handler as EventListener) }
     }
     return undefined
-  }, [refreshUser])
+  }, [browserWindow, refreshUser, supportsWindowEvents])
 
   if (loading) return <View style={styles.centered}><Text>{t('dashboard.loading')}</Text></View>;
   if (!isAuthenticated) return <View style={styles.centered}><Text>{t('auth.not_authenticated') || 'Please sign in'}</Text></View>;
@@ -247,7 +252,8 @@ export const DashboardFullScreen: React.FC = () => {
   return (
     <View style={styles.page}>
       <AppTopNav currentRoute="dashboard" />
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
       <DashboardHeader name={typeof (user as { name?: string } | null)?.name === 'string' ? (user as { name?: string }).name : undefined} />
 
       <AccountStatus
@@ -281,6 +287,7 @@ export const DashboardFullScreen: React.FC = () => {
       <AvailableFeatures hasCredits={hasCredits} />
 
       <GettingStarted />
+      </View>
       <AppFooter />
       </ScrollView>
     </View>
@@ -292,10 +299,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: rnTokens.pageBg.hex,
   },
+  scrollContent: {
+    width: '100%',
+  },
   container: {
     padding: spacing.card.value ?? 16,
     paddingTop: 32,
-    paddingBottom: 56,
+    paddingBottom: 40,
     width: '100%',
     maxWidth: 1240,
     alignSelf: 'center',

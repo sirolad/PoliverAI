@@ -6,6 +6,7 @@ const path = require('path');
 const LINKED_PACKAGES = [
   'react',
   'react-native',
+  'react-native-windows',
   '@react-native-async-storage/async-storage',
   'react-native-bootsplash',
   'react-native-reanimated',
@@ -23,6 +24,26 @@ const WORKSPACE_PACKAGE_DIRS = {
   '@poliverai/shared-ui': 'shared-ui',
   '@poliverai/intl': path.join('libs', 'intl'),
 };
+
+const WINDOWS_APP_LOCAL_PACKAGES = [
+  'react',
+  'react-native',
+  'react-native-windows',
+  '@react-native-async-storage/async-storage',
+  'react-native-bootsplash',
+  'react-native-reanimated',
+  'react-native-gesture-handler',
+  'react-native-safe-area-context',
+  'react-native-screens',
+  'react-native-svg',
+];
+
+const WINDOWS_LINKED_PACKAGES = [
+  'nativewind',
+  'react-native-css-interop',
+  '@poliverai/shared-ui',
+  '@poliverai/intl',
+];
 
 function ensureFileContents(filePath, contents) {
   if (fs.existsSync(filePath)) {
@@ -210,7 +231,8 @@ function ensureHoistedModuleLink({ repoRoot, appRoot, packageName, onSkip } = {}
     // destination missing, create it below
   }
 
-  fs.symlinkSync(expected, dest, 'dir');
+  const linkType = process.platform === 'win32' ? 'junction' : 'dir';
+  fs.symlinkSync(expected, dest, linkType);
   return true;
 }
 
@@ -245,6 +267,31 @@ function ensureAppHoistedLinks({ repoRoot, appRoot, packages = LINKED_PACKAGES, 
   return linkedPackages;
 }
 
+function removeAppHoistedLinks({ appRoot, packages, logPrefix = '' } = {}) {
+  const removedPackages = [];
+
+  for (const packageName of packages || []) {
+    const dest = path.join(appRoot, 'node_modules', packageName);
+    if (!fs.existsSync(dest)) {
+      continue;
+    }
+
+    try {
+      fs.rmSync(dest, { recursive: true, force: true });
+      removedPackages.push(packageName);
+      if (logPrefix) {
+        console.log(`${logPrefix}: removed ${packageName} from app node_modules`);
+      }
+    } catch (error) {
+      if (logPrefix) {
+        console.warn(`${logPrefix}: failed to remove ${packageName} from app node_modules (${error.message})`);
+      }
+    }
+  }
+
+  return removedPackages;
+}
+
 if (require.main === module) {
   const repoRoot = path.resolve(__dirname, '..');
   const appRoot = path.join(repoRoot, 'apps', 'poliverai');
@@ -257,6 +304,9 @@ if (require.main === module) {
 
 module.exports = {
   LINKED_PACKAGES,
+  WINDOWS_APP_LOCAL_PACKAGES,
+  WINDOWS_LINKED_PACKAGES,
   ensureAppHoistedLinks,
   ensureHoistedModuleLink,
+  removeAppHoistedLinks,
 };

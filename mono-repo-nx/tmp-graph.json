@@ -1,0 +1,1024 @@
+{
+  "graph": {
+    "nodes": {
+      "@poliverai/poliverai-e2e": {
+        "name": "@poliverai/poliverai-e2e",
+        "type": "app",
+        "data": {
+          "root": "apps/poliverai-e2e",
+          "targets": {
+            "typecheck": {
+              "dependsOn": [
+                "^typecheck"
+              ],
+              "options": {
+                "cwd": "apps/poliverai-e2e",
+                "command": "tsc --build --emitDeclarationOnly"
+              },
+              "cache": true,
+              "inputs": [
+                "production",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "typescript"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{projectRoot}/out-tsc/playwright/**/*.d.ts",
+                "{projectRoot}/out-tsc/playwright/tsconfig.tsbuildinfo"
+              ],
+              "syncGenerators": [
+                "@nx/js:typescript-sync"
+              ],
+              "metadata": {
+                "technologies": [
+                  "typescript"
+                ],
+                "description": "Runs type-checking for the project.",
+                "help": {
+                  "command": "yarn tsc --build --help",
+                  "example": {
+                    "args": [
+                      "--force"
+                    ]
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "lint": {
+              "cache": true,
+              "options": {
+                "cwd": "apps/poliverai-e2e",
+                "command": "eslint ."
+              },
+              "inputs": [
+                "default",
+                "^default",
+                "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/apps/poliverai-e2e/eslint.config.mjs",
+                "{workspaceRoot}/tools/eslint-rules/**/*",
+                {
+                  "externalDependencies": [
+                    "eslint"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{options.outputFile}"
+              ],
+              "metadata": {
+                "technologies": [
+                  "eslint"
+                ],
+                "description": "Runs ESLint on project",
+                "help": {
+                  "command": "yarn eslint --help",
+                  "example": {
+                    "options": {
+                      "max-warnings": 0
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "e2e": {
+              "options": {
+                "cwd": "apps/poliverai-e2e",
+                "command": "playwright test"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests",
+                "help": {
+                  "command": "yarn playwright test --help",
+                  "example": {
+                    "options": {
+                      "workers": 1
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                {
+                  "projects": [
+                    "@poliverai/poliverai"
+                  ],
+                  "target": "preview"
+                }
+              ],
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "@playwright/test"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{projectRoot}/test-output/playwright/output",
+                "{projectRoot}/test-output/playwright/report"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "e2e-ci--src/example.spec.ts": {
+              "options": {
+                "cwd": "apps/poliverai-e2e",
+                "env": {
+                  "PLAYWRIGHT_HTML_OUTPUT_DIR": "test-output/playwright/report/src-example-spec-ts",
+                  "PLAYWRIGHT_HTML_REPORT": "test-output/playwright/report/src-example-spec-ts"
+                },
+                "command": "playwright test src/example.spec.ts --output=test-output/playwright/output/src-example-spec-ts"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in src/example.spec.ts in CI",
+                "help": {
+                  "command": "yarn playwright test --help",
+                  "example": {
+                    "options": {
+                      "workers": 1
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                {
+                  "projects": [
+                    "@poliverai/poliverai"
+                  ],
+                  "target": "preview"
+                }
+              ],
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "@playwright/test"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{projectRoot}/test-output/playwright/output/src-example-spec-ts",
+                "{projectRoot}/test-output/playwright/report/src-example-spec-ts"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "e2e-ci": {
+              "executor": "nx:noop",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "@playwright/test"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{projectRoot}/test-output/playwright/output",
+                "{projectRoot}/test-output/playwright/report"
+              ],
+              "dependsOn": [
+                {
+                  "target": "e2e-ci--src/example.spec.ts",
+                  "projects": "self",
+                  "params": "forward"
+                }
+              ],
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in CI",
+                "nonAtomizedTarget": "e2e",
+                "help": {
+                  "command": "yarn playwright test --help",
+                  "example": {
+                    "options": {
+                      "workers": 1
+                    }
+                  }
+                }
+              },
+              "configurations": {},
+              "options": {},
+              "parallelism": true
+            }
+          },
+          "metadata": {
+            "targetGroups": {
+              "E2E (CI)": [
+                "e2e-ci--src/example.spec.ts",
+                "e2e-ci"
+              ]
+            },
+            "js": {
+              "packageName": "@poliverai/poliverai-e2e",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "name": "@poliverai/poliverai-e2e",
+          "tags": [
+            "npm:private"
+          ],
+          "implicitDependencies": [
+            "@poliverai/poliverai"
+          ]
+        }
+      },
+      "@poliverai/poliverai": {
+        "name": "@poliverai/poliverai",
+        "type": "app",
+        "data": {
+          "root": "apps/poliverai",
+          "targets": {
+            "typecheck": {
+              "dependsOn": [
+                "^typecheck"
+              ],
+              "cache": true,
+              "inputs": [
+                "production",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "typescript"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{projectRoot}/**/*.js",
+                "{projectRoot}/**/*.cjs",
+                "{projectRoot}/**/*.mjs",
+                "{projectRoot}/**/*.jsx",
+                "{projectRoot}/**/*.js.map",
+                "{projectRoot}/**/*.jsx.map",
+                "{projectRoot}/**/*.d.ts",
+                "{projectRoot}/**/*.d.cts",
+                "{projectRoot}/**/*.d.mts",
+                "{projectRoot}/**/*.d.ts.map",
+                "{projectRoot}/**/*.d.cts.map",
+                "{projectRoot}/**/*.d.mts.map",
+                "{projectRoot}/tsconfig.tsbuildinfo",
+                "{projectRoot}/dist/**/*.d.ts",
+                "{projectRoot}/dist/tsconfig.app.tsbuildinfo",
+                "{projectRoot}/out-tsc/jest/**/*.d.ts",
+                "{projectRoot}/out-tsc/jest/tsconfig.tsbuildinfo"
+              ],
+              "syncGenerators": [
+                "@nx/js:typescript-sync"
+              ],
+              "metadata": {
+                "technologies": [
+                  "typescript",
+                  "typescript"
+                ],
+                "description": "Runs type-checking for the project.",
+                "help": {
+                  "command": "yarn tsc --build --help",
+                  "example": {
+                    "args": [
+                      "--force"
+                    ]
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "options": {
+                "cwd": "apps/poliverai",
+                "command": "tsc --build --emitDeclarationOnly"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "lint": {
+              "cache": true,
+              "options": {
+                "cwd": "apps/poliverai",
+                "command": "eslint ."
+              },
+              "inputs": [
+                "default",
+                "^default",
+                "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/apps/poliverai/eslint.config.mjs",
+                "{workspaceRoot}/tools/eslint-rules/**/*",
+                {
+                  "externalDependencies": [
+                    "eslint"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{options.outputFile}"
+              ],
+              "metadata": {
+                "technologies": [
+                  "eslint"
+                ],
+                "description": "Runs ESLint on project",
+                "help": {
+                  "command": "yarn eslint --help",
+                  "example": {
+                    "options": {
+                      "max-warnings": 0
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "test": {
+              "options": {
+                "cwd": "apps/poliverai",
+                "env": {
+                  "TS_NODE_COMPILER_OPTIONS": "{\"moduleResolution\":\"node10\",\"module\":\"commonjs\",\"customConditions\":null}"
+                },
+                "command": "jest"
+              },
+              "metadata": {
+                "technologies": [
+                  "jest"
+                ],
+                "description": "Run Jest Tests",
+                "help": {
+                  "command": "yarn jest --help",
+                  "example": {
+                    "options": {
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "jest",
+                    "react-native"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}\\coverage\\apps\\poliverai"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true,
+              "dependsOn": [
+                "^build"
+              ]
+            },
+            "build": {
+              "executor": "@nx/vite:build",
+              "options": {
+                "config": "apps/poliverai/vite.config.ts"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "serve": {
+              "executor": "@nx/vite:dev-server",
+              "options": {
+                "config": "apps/poliverai/vite.config.ts",
+                "buildTarget": "@poliverai/poliverai:build"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "continuous": true
+            },
+            "dev": {
+              "continuous": true,
+              "options": {
+                "cwd": "apps/poliverai",
+                "command": "vite"
+              },
+              "metadata": {
+                "technologies": [
+                  "vite"
+                ],
+                "description": "Starts Vite dev server",
+                "help": {
+                  "command": "yarn vite --help",
+                  "example": {
+                    "options": {
+                      "port": 3000
+                    }
+                  }
+                }
+              },
+              "syncGenerators": [
+                "@nx/js:typescript-sync"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "preview": {
+              "executor": "@nx/vite:preview-server",
+              "options": {
+                "config": "apps/poliverai/vite.config.ts"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "continuous": true
+            },
+            "serve-static": {
+              "continuous": true,
+              "executor": "@nx/web:file-server",
+              "options": {
+                "buildTarget": "build",
+                "spa": true
+              },
+              "syncGenerators": [
+                "@nx/js:typescript-sync"
+              ],
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "yarn nx watch --projects @poliverai/poliverai --includeDependentProjects -- yarn nx build-deps @poliverai/poliverai"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "android": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "android"
+              },
+              "metadata": {
+                "scriptContent": "npx react-native run-android",
+                "runCommand": "yarn android"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "ios": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "ios"
+              },
+              "metadata": {
+                "scriptContent": "npx react-native run-ios",
+                "runCommand": "yarn ios"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "macos": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "macos"
+              },
+              "metadata": {
+                "scriptContent": "node ./scripts/run-macos-with-metro.js",
+                "runCommand": "yarn macos"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "start:metro": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "start:metro"
+              },
+              "metadata": {
+                "scriptContent": "node ./scripts/start-metro.js",
+                "runCommand": "yarn start:metro"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "postinstall": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "postinstall"
+              },
+              "metadata": {
+                "scriptContent": "node ./scripts/postinstall-apply-patches.js",
+                "runCommand": "yarn postinstall"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "start": {
+              "executor": "@nx/react-native:start",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "continuous": true
+            },
+            "run-android": {
+              "executor": "@nx/react-native:run-android",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "continuous": true
+            },
+            "run-ios": {
+              "executor": "@nx/react-native:run-ios",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "continuous": true
+            },
+            "build-android": {
+              "executor": "@nx/react-native:build-android",
+              "options": {},
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-ios": {
+              "executor": "@nx/react-native:build-ios",
+              "options": {},
+              "configurations": {},
+              "parallelism": true
+            },
+            "run-macos": {
+              "executor": "nx:run-commands",
+              "options": {
+                "commands": [
+                  {
+                    "command": "sh -lc \"if (grep -q '\"react-native-macos\"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native run-macos; else echo 'react-native run-macos not configured: add react-native-macos and initialize the macos/ native project (see https://microsoft.github.io/react-native-macos/).'; fi\""
+                  }
+                ],
+                "cwd": "apps/poliverai",
+                "parallel": false
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "run-windows": {
+              "executor": "nx:run-commands",
+              "options": {
+                "commands": [
+                  {
+                    "command": "node ../../../scripts/prepare-and-install.js windows && node ../../../node_modules/react-native/cli.js run-windows --logging"
+                  }
+                ],
+                "cwd": "apps/poliverai",
+                "parallel": false
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-macos": {
+              "executor": "nx:run-commands",
+              "options": {
+                "commands": [
+                  {
+                    "command": "sh -lc \"if (grep -q '\"react-native-macos\"' package.json 2>/dev/null || [ -d node_modules/react-native-macos ] || [ -d ../node_modules/react-native-macos ]) && [ -d macos ]; then npx react-native build-macos; else echo 'react-native build-macos not configured: add react-native-macos and initialize the macos/ native project.'; fi\""
+                  }
+                ],
+                "cwd": "apps/poliverai",
+                "parallel": false
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-windows": {
+              "executor": "nx:run-commands",
+              "options": {
+                "commands": [
+                  {
+                    "command": "node ../../../scripts/prepare-and-install.js windows && node ../../../node_modules/react-native/cli.js build-windows"
+                  }
+                ],
+                "cwd": "apps/poliverai",
+                "parallel": false
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "enable-macos": {
+              "executor": "nx:run-commands",
+              "options": {
+                "commands": [
+                  {
+                    "command": "echo 'Installing react-native-macos into @poliverai/poliverai (this will modify package.json). Run this locally:'"
+                  },
+                  {
+                    "command": "echo '  cd apps/poliverai && yarn add react-native-macos@latest'"
+                  },
+                  {
+                    "command": "echo 'After install run native setup instructions: https://microsoft.github.io/react-native-macos/'"
+                  }
+                ],
+                "cwd": "apps/poliverai",
+                "parallel": false
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "enable-windows": {
+              "executor": "nx:run-commands",
+              "options": {
+                "commands": [
+                  {
+                    "command": "echo 'Installing react-native-windows into @poliverai/poliverai (this will modify package.json). Run this locally:'"
+                  },
+                  {
+                    "command": "echo '  cd apps/poliverai && yarn add react-native-windows@latest'"
+                  },
+                  {
+                    "command": "echo 'After install run native setup instructions: https://microsoft.github.io/react-native-windows/'"
+                  }
+                ],
+                "cwd": "apps/poliverai",
+                "parallel": false
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "projectType": "application",
+          "metadata": {
+            "targetGroups": {
+              "NPM Scripts": [
+                "android",
+                "ios",
+                "macos",
+                "start:metro",
+                "postinstall"
+              ]
+            },
+            "js": {
+              "packageName": "@poliverai/poliverai",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "name": "@poliverai/poliverai",
+          "tags": [
+            "npm:private"
+          ],
+          "sourceRoot": "apps/poliverai/src",
+          "implicitDependencies": []
+        }
+      },
+      "backend": {
+        "name": "backend",
+        "type": "app",
+        "data": {
+          "root": "apps/backend",
+          "name": "backend",
+          "sourceRoot": "../default/src",
+          "projectType": "application",
+          "tags": [
+            "python",
+            "backend"
+          ],
+          "targets": {
+            "serve": {
+              "executor": "@nx/workspace:run-commands",
+              "options": {
+                "commands": [
+                  "bash ./scripts/run_server.sh"
+                ],
+                "cwd": "./",
+                "parallel": false
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "bootstrap": {
+              "executor": "@nx/workspace:run-commands",
+              "options": {
+                "commands": [
+                  "bash ./scripts/dev/bootstrap.sh"
+                ],
+                "cwd": "./"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test": {
+              "executor": "@nx/workspace:run-commands",
+              "options": {
+                "commands": [
+                  "pytest"
+                ],
+                "cwd": "./"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "dependsOn": [
+                "^build"
+              ]
+            },
+            "lint": {
+              "executor": "@nx/workspace:run-commands",
+              "options": {
+                "commands": [
+                  "ruff check src/ tests/ || true"
+                ],
+                "cwd": "./"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "executor": "@nx/workspace:run-commands",
+              "options": {
+                "commands": [
+                  "mypy src/ || true"
+                ],
+                "cwd": "./"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "implicitDependencies": []
+        }
+      },
+      "@poliverai/intl": {
+        "name": "@poliverai/intl",
+        "type": "lib",
+        "data": {
+          "root": "libs/intl",
+          "targets": {
+            "lint": {
+              "cache": true,
+              "options": {
+                "cwd": "libs/intl",
+                "command": "eslint ."
+              },
+              "inputs": [
+                "default",
+                "^default",
+                "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/tools/eslint-rules/**/*",
+                {
+                  "externalDependencies": [
+                    "eslint"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{options.outputFile}"
+              ],
+              "metadata": {
+                "technologies": [
+                  "eslint"
+                ],
+                "description": "Runs ESLint on project",
+                "help": {
+                  "command": "yarn eslint --help",
+                  "example": {
+                    "options": {
+                      "max-warnings": 0
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "name": "@poliverai/intl",
+          "tags": [
+            "npm:private"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@poliverai/intl",
+              "packageExports": {
+                ".": {
+                  "types": "./src/index.ts",
+                  "import": "./src/index.ts",
+                  "default": "./src/index.ts"
+                },
+                "./package.json": "./package.json"
+              },
+              "packageMain": "./src/index.ts",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "implicitDependencies": []
+        }
+      },
+      "@poliverai/shared-ui": {
+        "name": "@poliverai/shared-ui",
+        "type": "lib",
+        "data": {
+          "root": "shared-ui",
+          "targets": {
+            "typecheck": {
+              "dependsOn": [
+                "^typecheck"
+              ],
+              "options": {
+                "cwd": "shared-ui",
+                "command": "tsc --build --emitDeclarationOnly"
+              },
+              "cache": true,
+              "inputs": [
+                "production",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "typescript"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{projectRoot}/**/*.js",
+                "{projectRoot}/**/*.cjs",
+                "{projectRoot}/**/*.mjs",
+                "{projectRoot}/**/*.jsx",
+                "{projectRoot}/**/*.js.map",
+                "{projectRoot}/**/*.jsx.map",
+                "{projectRoot}/**/*.d.ts",
+                "{projectRoot}/**/*.d.cts",
+                "{projectRoot}/**/*.d.mts",
+                "{projectRoot}/**/*.d.ts.map",
+                "{projectRoot}/**/*.d.cts.map",
+                "{projectRoot}/**/*.d.mts.map",
+                "{projectRoot}/tsconfig.tsbuildinfo",
+                "{projectRoot}/dist/**/*.d.ts",
+                "{projectRoot}/dist/tsconfig.lib.tsbuildinfo"
+              ],
+              "syncGenerators": [
+                "@nx/js:typescript-sync"
+              ],
+              "metadata": {
+                "technologies": [
+                  "typescript"
+                ],
+                "description": "Runs type-checking for the project.",
+                "help": {
+                  "command": "yarn tsc --build --help",
+                  "example": {
+                    "args": [
+                      "--force"
+                    ]
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "lint": {
+              "cache": true,
+              "options": {
+                "cwd": "shared-ui",
+                "command": "eslint ."
+              },
+              "inputs": [
+                "default",
+                "^default",
+                "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/tools/eslint-rules/**/*",
+                {
+                  "externalDependencies": [
+                    "eslint"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{options.outputFile}"
+              ],
+              "metadata": {
+                "technologies": [
+                  "eslint"
+                ],
+                "description": "Runs ESLint on project",
+                "help": {
+                  "command": "yarn eslint --help",
+                  "example": {
+                    "options": {
+                      "max-warnings": 0
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "nx-release-publish": {
+              "executor": "@nx/js:release-publish",
+              "dependsOn": [
+                "^nx-release-publish"
+              ],
+              "options": {},
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "name": "@poliverai/shared-ui",
+          "tags": [
+            "npm:public"
+          ],
+          "metadata": {
+            "targetGroups": {},
+            "js": {
+              "packageName": "@poliverai/shared-ui",
+              "packageExports": {
+                ".": {
+                  "types": "./src/index.ts",
+                  "import": "./src/index.ts",
+                  "default": "./src/index.ts"
+                },
+                "./package.json": "./package.json"
+              },
+              "packageMain": "./src/index.ts",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "implicitDependencies": []
+        }
+      }
+    },
+    "dependencies": {
+      "@poliverai/poliverai-e2e": [
+        {
+          "source": "@poliverai/poliverai-e2e",
+          "target": "@poliverai/poliverai",
+          "type": "implicit"
+        }
+      ],
+      "@poliverai/poliverai": [
+        {
+          "source": "@poliverai/poliverai",
+          "target": "@poliverai/intl",
+          "type": "static"
+        },
+        {
+          "source": "@poliverai/poliverai",
+          "target": "@poliverai/shared-ui",
+          "type": "static"
+        }
+      ],
+      "backend": [],
+      "@poliverai/intl": [
+        {
+          "source": "@poliverai/intl",
+          "target": "@poliverai/shared-ui",
+          "type": "static"
+        }
+      ],
+      "@poliverai/shared-ui": [
+        {
+          "source": "@poliverai/shared-ui",
+          "target": "@poliverai/intl",
+          "type": "static"
+        },
+        {
+          "source": "@poliverai/shared-ui",
+          "target": "@poliverai/poliverai",
+          "type": "dynamic"
+        },
+        {
+          "source": "@poliverai/shared-ui",
+          "target": "@poliverai/poliverai",
+          "type": "static"
+        }
+      ]
+    }
+  }
+}

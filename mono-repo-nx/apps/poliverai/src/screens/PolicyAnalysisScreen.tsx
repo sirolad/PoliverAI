@@ -2,7 +2,6 @@ import React from 'react';
 import {
   ActivityIndicator,
   Image,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -26,21 +25,24 @@ import {
   WalletCards,
   X,
 } from 'lucide-react-native';
-import { EnterInstructionsModal, EnterTitleModal, InsufficientCreditsModal, appAlphaColors, appColors } from '@poliverai/shared-ui';
+import { CrossPlatformModal, EnterInstructionsModal, EnterTitleModal, InsufficientCreditsModal, appAlphaColors, appColors } from '@poliverai/shared-ui';
 import { t, useAuth } from '@poliverai/intl';
 import { brandAssets } from '@assets/brand';
 import AppFooter from '../components/AppFooter';
 import AppTopNav from '../components/AppTopNav';
 import policyService, { type ReportDetail, type UploadFile } from '../services/policyService';
+import { isDocumentPickerCancel, pickDocument } from '../lib/documentPicker';
 import { getReportDownloadUrl } from '../lib/policyHelpers';
 import type { ComplianceResult, Finding } from '../types/api';
 
 type AnalysisTab = 'free' | 'full' | 'revised';
+type SelectedFile = File | UploadFile;
 
 const cardSurfaceShadow = Platform.select({
   web: {
     boxShadow: `0 12px 28px ${appAlphaColors.shadowCard}`,
   },
+  macos: undefined,
   default: {
     shadowColor: appColors.ink900,
     shadowOpacity: 0.08,
@@ -54,6 +56,7 @@ const mutedCardShadow = Platform.select({
   web: {
     boxShadow: `0 8px 18px ${appAlphaColors.shadowSoft}`,
   },
+  macos: undefined,
   default: {
     shadowColor: appColors.ink900,
     shadowOpacity: 0.05,
@@ -260,13 +263,18 @@ export default function PolicyAnalysisScreen() {
     refreshUser?: () => Promise<void>;
   };
   const { width } = useWindowDimensions();
-  const isDesktop = width >= 1100;
-  const isWideFullReport = width >= 1200;
+  const [contentWidth, setContentWidth] = React.useState(0);
+  const effectiveWidth = contentWidth > 0 ? contentWidth : width;
+  const isDesktop = effectiveWidth >= 1100;
+  const isWideFullReport = effectiveWidth >= 1200;
+  const handleContentLayout = React.useCallback((nextWidth: number) => {
+    setContentWidth((current) => (Math.abs(current - nextWidth) > 1 ? nextWidth : current));
+  }, []);
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   const progressIntervalRef = React.useRef<number | null>(null);
 
-  const [file, setFile] = React.useState<File | null>(null);
+  const [file, setFile] = React.useState<SelectedFile | null>(null);
   const [progress, setProgress] = React.useState(0);
   const [message, setMessage] = React.useState('');
   const [result, setResult] = React.useState<ComplianceResult | null>(null);
@@ -319,6 +327,7 @@ export default function PolicyAnalysisScreen() {
     return null;
   }, [detailedReport, result]);
   const revisedContent = revisedPolicy?.content ?? detailedContent;
+  const selectedFileSize = file && 'size' in file && typeof file.size === 'number' ? file.size : null;
 
   const stopIndeterminateProgress = React.useCallback(() => {
     if (progressIntervalRef.current !== null && typeof window !== 'undefined') {
@@ -475,7 +484,7 @@ export default function PolicyAnalysisScreen() {
     startIndeterminateProgress('Generating revised policy');
 
     try {
-      const original = file ? await file.text() : '';
+      const original = file && 'text' in file ? await file.text() : '';
       const response = await policyService.generatePolicyRevision(
         original,
         result.findings as unknown as Record<string, unknown>[],
@@ -545,7 +554,33 @@ export default function PolicyAnalysisScreen() {
   }, [stopIndeterminateProgress]);
 
   const triggerBrowse = React.useCallback(() => {
-    if (Platform.OS === 'web') inputRef.current?.click();
+    void pickDocument({
+      allowedExtensions: ['pdf', 'docx', 'html', 'xhtml', 'txt'],
+      types: [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/html',
+        'application/xhtml+xml',
+        'text/plain',
+      ],
+    })
+      .then((picked) => {
+        if (picked.file) {
+          setFile(picked.file);
+          return;
+        }
+
+        setFile({
+          uri: picked.uri ?? '',
+          name: picked.name ?? 'policy',
+          type: picked.type ?? 'application/octet-stream',
+        });
+      })
+      .catch((err) => {
+        if (!isDocumentPickerCancel(err)) {
+          setStatusDialog(statusDialogFromError(err, 'Unable to open file picker'));
+        }
+      });
   }, []);
 
   const onFileChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -815,7 +850,10 @@ export default function PolicyAnalysisScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <View
+      style={styles.screen}
+      onLayout={(event) => handleContentLayout(event.nativeEvent.layout.width)}
+    >
       <AppTopNav currentRoute="analyze" />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.pageWrap}>
@@ -866,7 +904,7 @@ export default function PolicyAnalysisScreen() {
               {file ? (
                 <View style={styles.selectedFileCard}>
                   <Text style={styles.selectedFileLabel}>Selected file</Text>
-                  <Text style={styles.selectedFileMeta}>{file.name} • {formatBytes(file.size)} • {file.type || 'document'}</Text>
+                  <Text style={styles.selectedFileMeta}>{file.name} • {formatBytes(selectedFileSize)} • {file.type || 'document'}</Text>
                 </View>
               ) : null}
 
@@ -954,13 +992,14 @@ export default function PolicyAnalysisScreen() {
             </View>
           </View>
         </View>
+        <AppFooter />
       </ScrollView>
 
       <EnterTitleModal open={titleModalOpen} initial={file?.name ?? ''} onClose={() => setTitleModalOpen(false)} onConfirm={async (title?: string) => { await handleSaveReport(title); }} />
       <EnterInstructionsModal open={instructionsModalOpen} initial="" onClose={() => setInstructionsModalOpen(false)} onConfirm={async (instructions?: string) => { await handleGenerateRevision(instructions); setInstructionsModalOpen(false); }} />
       <InsufficientCreditsModal open={insufficientOpen} onClose={() => setInsufficientOpen(false)} />
 
-      <Modal visible={Boolean(statusDialog)} animationType="fade" transparent presentationStyle="overFullScreen" onRequestClose={() => setStatusDialog(null)}>
+      <CrossPlatformModal open={Boolean(statusDialog)} animationType="fade" onRequestClose={() => setStatusDialog(null)}>
         <Pressable style={styles.dialogBackdrop} onPress={() => setStatusDialog(null)}>
           <Pressable style={styles.dialogCard} onPress={() => undefined}>
             <Text style={styles.dialogTitle}>{statusDialog?.title}</Text>
@@ -975,9 +1014,8 @@ export default function PolicyAnalysisScreen() {
             </View>
           </Pressable>
         </Pressable>
-      </Modal>
+      </CrossPlatformModal>
 
-      <AppFooter />
     </View>
   );
 }
@@ -988,15 +1026,15 @@ const styles = StyleSheet.create({
     backgroundColor: appColors.sky50,
   },
   content: {
-    flexGrow: 1,
-    paddingHorizontal: 16,
-    paddingTop: 28,
-    paddingBottom: 56,
+    width: '100%',
   },
   pageWrap: {
     width: '100%',
     maxWidth: 1280,
     alignSelf: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 28,
+    paddingBottom: 40,
     gap: 16,
   },
   headerRow: {

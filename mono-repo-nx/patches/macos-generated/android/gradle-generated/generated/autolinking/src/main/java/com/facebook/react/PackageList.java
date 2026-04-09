@@ -10,10 +10,12 @@ import com.facebook.react.shell.MainReactPackage;
 import java.util.Arrays;
 import java.util.ArrayList;
 
-// @lottiefiles/dotlottie-react-native
-import com.dotlottiereactnative.DotlottieReactNativePackage;
+// react-native-document-picker
+import com.reactnativedocumentpicker.RNDocumentPickerPackage;
 // @react-native-async-storage/async-storage
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+// @lottiefiles/dotlottie-react-native
+import com.dotlottiereactnative.DotlottieReactNativePackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 // lottie-react-native
@@ -71,8 +73,9 @@ public class PackageList {
   public ArrayList<ReactPackage> getPackages() {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
-      new DotlottieReactNativePackage(),
+      new RNDocumentPickerPackage(),
       new AsyncStoragePackage(),
+      new DotlottieReactNativePackage(),
       new RNGestureHandlerPackage(),
       new LottiePackage(),
       new ReanimatedPackage(),

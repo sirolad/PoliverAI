@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import CrossPlatformModal from './CrossPlatformModal';
 
 type Props = {
   open: boolean;
@@ -32,7 +33,7 @@ export default function EnterCreditsModal({ open, onClose, onConfirm }: Props) {
   };
 
   return (
-    <Modal visible={open} animationType="fade" transparent onRequestClose={onClose}>
+    <CrossPlatformModal open={open} animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.card} onPress={() => undefined}>
           <View style={styles.header}>
@@ -75,7 +76,7 @@ export default function EnterCreditsModal({ open, onClose, onConfirm }: Props) {
           </View>
         </Pressable>
       </Pressable>
-    </Modal>
+    </CrossPlatformModal>
   );
 }
 
